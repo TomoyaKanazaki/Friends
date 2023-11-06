@@ -24,7 +24,7 @@
 #define MAX_LENGTH		(20000.0f)			// Å‘å‹——£
 #define MIN_LENGTH		(10.0f)				// Å­‹——£
 //#define START_CAMERALEN	(5100.0f)			// Œ³‚Ì‹——£
-#define START_CAMERALEN	(545.0f)			// Œ³‚Ì‹——£
+#define START_CAMERALEN	(1000.0f)			// Œ³‚Ì‹——£
 #define ROT_MOVE_MOUSE	(0.01f)				// ‰ñ“]ˆÚ“®—Ê
 #define ROT_MOVE_STICK	(0.0015f)			// ‰ñ“]ˆÚ“®—Ê
 #define ROT_MOVE		(0.025f)			// ‰ñ“]ˆÚ“®—Ê

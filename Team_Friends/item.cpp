@@ -60,6 +60,7 @@ CItem::COLLISION_FUNC CItem::m_CollisionFuncList[] =	// 当たり判定のリスト
 CItem::CItem(int nPriority) : CObjectX(nPriority), m_nLifeMax(1)
 {
 	// 値のクリア
+	m_type = TYPE_NONE;
 	m_state = STATE_NONE;			// 状態
 	m_nCntState = 0;			// 状態遷移カウンター
 	m_nLife = 0;
@@ -124,24 +125,15 @@ HRESULT CItem::Init(void)
 	// 各種変数の初期化
 	m_nLifeMax = 60 * 5;
 	m_nLife = m_nLifeMax;	// 寿命
-	SetColor(D3DXCOLOR(0.3f, 0.3f, 1.0f, 1.0f));
-
-	// モデルの割り当て
-	CScene *pScene = CManager::GetInstance()->GetScene();
-	m_nModelIdx = pScene->GetXLoad()->XLoad(m_apModelFile[m_type]);
-
-	// モデルの割り当て
-	BindXData(m_nModelIdx);
-
-	// 種類の設定
-	CObject::SetType(TYPE_BULLET);
 
 	// 初期化処理
-	hr = CObjectX::Init();
+	hr = CObjectX::Init(m_apModelFile[m_type]);
 	if (FAILED(hr))
 	{// 失敗したとき
 		return E_FAIL;
 	}
+	// 種類の設定
+	CObject::SetType(TYPE_BULLET);
 
 	return S_OK;
 }
@@ -261,29 +253,31 @@ void CItem::StateDamage(void)
 void CItem::CollisionPlayer(void)
 {
 	// プレイヤー情報取得
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-	if (pPlayer == NULL)
-	{// NULLだったら
-		return;
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	{
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+		if (pPlayer == NULL)
+		{// NULLだったら
+			return;
+		}
+
+		// プレイヤーの情報取得
+		D3DXVECTOR3 PlayerPosition = pPlayer->GetCenterPosition();
+		D3DXVECTOR3 PlayerRotation = pPlayer->GetRotation();
+		float fPlayerRadius = pPlayer->GetRadius();
+
+		// 情報取得
+		D3DXVECTOR3 pos = GetPosition();
+		float fRadius = GetVtxMax().x;
+
+		if (SphereRange(pos, PlayerPosition, fRadius, fPlayerRadius))
+		{// 当たっていたら
+
+			// 終了処理
+			Uninit();
+			return;
+		}
 	}
-
-	// プレイヤーの情報取得
-	D3DXVECTOR3 PlayerPosition = pPlayer->GetCenterPosition();
-	D3DXVECTOR3 PlayerRotation = pPlayer->GetRotation();
-	float fPlayerRadius = pPlayer->GetRadius();
-
-	// 情報取得
-	D3DXVECTOR3 pos = GetPosition();
-	float fRadius = GetVtxMax().x;
-
-	if (SphereRange(pos, PlayerPosition, fRadius, fPlayerRadius))
-	{// 当たっていたら
-
-		// 終了処理
-		Uninit();
-		return;
-	}
-
 }
 
 //==========================================================================

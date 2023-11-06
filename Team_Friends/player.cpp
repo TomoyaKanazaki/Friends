@@ -36,6 +36,7 @@
 #include "hp_gauge_player.h"
 #include "fade.h"
 #include "listmanager.h"
+#include "item.h"
 
 // îhê∂êÊ
 #include "tutorialplayer.h"
@@ -597,6 +598,8 @@ void CPlayer::Controll(void)
 			// çUåÇîªíËON
 			m_sMotionFrag.bJump = false;
 			m_sMotionFrag.bATK = true;
+
+			CItem::Create(D3DXVECTOR3(pos.x, pos.y + 200.0f, pos.z), mylib_const::DEFAULT_VECTOR3);
 		}
 	}
 

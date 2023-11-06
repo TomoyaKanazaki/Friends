@@ -434,6 +434,8 @@ HRESULT map::ReadTexture(void)
 				// 最後尾に追加
 				TextureFile.push_back(&aComment[0]);
 
+				//TextureFile.push_back(std::string());
+
 				// テクスチャの割り当て
 				CManager::GetInstance()->GetTexture()->Regist(&TextureFile[nCntTexture][0]);
 

@@ -40,24 +40,26 @@ public:
 	void Uninit(void);
 	void Update(void);
 
-	void CreatePos(int nPattern, D3DXVECTOR3 pos, int nRush);	// 位置作成
-	void DeletePos(int nIdx);					// 位置削除
+	void CreatePos(int nStage, int nPattern, D3DXVECTOR3 pos, int nRush);	// 位置作成
+	void DeletePos(int nStage, int nIdx);					// 位置削除
 	HRESULT ReadText(const char *pFileName);	// 外部ファイル読み込み処理
 	void Save(void);			// 外部ファイル書き出し処理
 
 	static CEnemyBase *Create(const char *pFileName);
 	int GetSpawnPointNum(void);			// 位置数取得
-	D3DXVECTOR3 GetSpawnPoint(int nIdx);	// 位置取得
-	void SetSpawnPoint(int nIdx, D3DXVECTOR3 pos);	// 位置設定
-	sInfo GetChaseChangeInfo(int nIdx);	// 変更の情報取得
-	static int GetNumAll(void) { return m_nNumAll; }	// 総数取得
+	D3DXVECTOR3 GetSpawnPoint(int nStage, int nIdx);	// 位置取得
+	void SetSpawnPoint(int nStage, int nIdx, D3DXVECTOR3 pos);	// 位置設定
+	sInfo GetChaseChangeInfo(int nStage, int nIdx);	// 変更の情報取得
+	int GetNumAll(void) { return m_nNumAll; }	// 総数取得
 private:
 
-	std::vector<sInfo> m_ChaseChangeInfo;		// 追従変更の情報
+	std::vector<std::vector<sInfo>> m_EnemyBaseInfo;		// 拠点の情報
 	CObjectX *m_apObjX[mylib_const::MAX_CAMERAAXIS];	// オブジェクトX
 	CDebugPointNumber *m_pMultiNumber[mylib_const::MAX_CAMERAAXIS];
 
-	static int m_nNumAll;		// 総数
+	int m_nNumStage;	// ステージの総数
+	std::vector<int> m_nBaseNum;	// 拠点の数
+	int m_nNumAll;		// 総数
 };
 
 

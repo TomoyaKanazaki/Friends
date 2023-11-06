@@ -45,7 +45,6 @@ public:
 	virtual void Uninit(void);
 	virtual void Update(void);
 	virtual void Draw(void);
-	void SetVtx(void);
 
 	void SetType(TYPE type);	// í—Şİ’è
 	TYPE GetType(void);	// í—Şæ“¾

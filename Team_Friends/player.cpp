@@ -58,6 +58,13 @@
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
+const char *CPlayer::m_apModelFile[mylib_const::MAX_PLAYER] =	// モデルのファイル
+{
+	"data\\TEXT\\motion_1p.txt",
+	"data\\TEXT\\motion_2p.txt",
+	"data\\TEXT\\motion_3p.txt",
+	"data\\TEXT\\motion_4p.txt",
+};
 
 //==========================================================================
 // コンストラクタ
@@ -158,7 +165,7 @@ HRESULT CPlayer::Init(void)
 	m_bLandOld = true;		// 前回の着地状態
 
 	// キャラ作成
-	HRESULT hr = SetCharacter(CHARAFILE);
+	HRESULT hr = SetCharacter(m_apModelFile[m_nMyPlayerIdx]);
 
 	if (FAILED(hr))
 	{// 失敗していたら
@@ -166,7 +173,7 @@ HRESULT CPlayer::Init(void)
 	}
 
 	// モーションの生成処理
-	m_pMotion = CMotion::Create(CHARAFILE);
+	m_pMotion = CMotion::Create(m_apModelFile[m_nMyPlayerIdx]);
 
 	// オブジェクトキャラクターの情報取得
 	CObjectChara *pObjChar = GetObjectChara();
@@ -340,13 +347,13 @@ void CPlayer::Update(void)
 		m_pHPGauge->SetLife(GetLife());
 	}
 
-	// デバッグ表示
-	CManager::GetInstance()->GetDebugProc()->Print(
-		"------------------[プレイヤーの操作]------------------\n"
-		"位置：【X：%f, Y：%f, Z：%f】【X：%f, Y：%f, Z：%f】 【W / A / S / D】\n"
-		"向き：【X：%f, Y：%f, Z：%f】 【Z / C】\n"
-		"移動量：【X：%f, Y：%f, Z：%f】\n"
-		"体力：【%d】\n", pos.x, pos.y, pos.z, posCenter.x, posCenter.y, posCenter.z, rot.x, rot.y, rot.y, move.x, move.y, move.z, GetLife());
+	//// デバッグ表示
+	//CManager::GetInstance()->GetDebugProc()->Print(
+	//	"------------------[プレイヤーの操作]------------------\n"
+	//	"位置：【X：%f, Y：%f, Z：%f】【X：%f, Y：%f, Z：%f】 【W / A / S / D】\n"
+	//	"向き：【X：%f, Y：%f, Z：%f】 【Z / C】\n"
+	//	"移動量：【X：%f, Y：%f, Z：%f】\n"
+	//	"体力：【%d】\n", pos.x, pos.y, pos.z, posCenter.x, posCenter.y, posCenter.z, rot.x, rot.y, rot.y, move.x, move.y, move.z, GetLife());
 }
 
 //==========================================================================
@@ -810,6 +817,11 @@ void CPlayer::Atack(void)
 
 			while (1)
 			{
+				if (nCntEnemy >= nNumAll)
+				{// 総数超えたら終わり
+					break;
+				}
+
 				// インデックス加算
 				i++;
 				if (ppEnemy[i] == NULL)
@@ -834,11 +846,6 @@ void CPlayer::Atack(void)
 
 				// 敵の数加算
 				nCntEnemy++;
-
-				if (nCntEnemy >= nNumAll)
-				{// 総数超えたら終わり
-					break;
-				}
 			}
 #else
 

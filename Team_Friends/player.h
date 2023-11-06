@@ -119,6 +119,7 @@ private:
 	CShadow *m_pShadow;			// 影の情報
 	CTargetPoint *m_pTargetP;	// 目標の地点
 	CHP_GaugePlayer *m_pHPGauge;	// HPゲージの情報
+	static const char *m_apModelFile[mylib_const::MAX_PLAYER];	// モデルのファイル
 };
 
 

@@ -140,7 +140,7 @@ void CEnemyFly::Update(void)
 	float fRotDest = GetRotDest();
 
 	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 	if (pPlayer == NULL)
 	{
 		return;
@@ -190,23 +190,29 @@ void CEnemyFly::ChangeToAttackState(void)
 	D3DXVECTOR3 pos = GetPosition();
 
 	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-
-	if (pPlayer == NULL)
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
-		return;
-	}
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+		if (pPlayer == NULL)
+		{
+			return;
+		}
 
-	// 親の位置取得
-	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+		// 親の位置取得
+		D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 
-	float fRadius = 700.0f;
+		float fRadius = 700.0f;
 
-	if (m_pMotion->GetType() != MOTION_ATK && CircleRange3D(pos, posPlayer, fRadius, pPlayer->GetRadius()) == true)
-	{// 一定距離間にプレイヤーが入ったら
+		if (m_pMotion->GetType() != MOTION_ATK && CircleRange3D(pos, posPlayer, fRadius, pPlayer->GetRadius()) == true)
+		{// 一定距離間にプレイヤーが入ったら
 
-		// 攻撃状態にする
-		m_sMotionFrag.bATK = true;
+			// 攻撃状態にする
+			m_sMotionFrag.bATK = true;
+
+			// 追い掛けるプレイヤーの番号設定
+			m_nTargetPlayerIndex = nCntPlayer;
+			break;
+		}
 	}
 }
 
@@ -402,7 +408,7 @@ void CEnemyFly::AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo)
 	// 武器の位置
 	D3DXVECTOR3 weponpos = D3DXVECTOR3(mtxWepon._41, mtxWepon._42, mtxWepon._43);
 
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 
 	if (pPlayer == NULL)
 	{// NULLだったら

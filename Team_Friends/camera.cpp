@@ -635,7 +635,7 @@ void CCamera::SetCameraVGame(void)
 	{// 追従ON
 
 		// プレイヤーの情報取得
-		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(0);
 
 		if (pPlayer == NULL)
 		{
@@ -658,13 +658,6 @@ void CCamera::SetCameraVGame(void)
 		float fRotDest = atan2f((m_posVDest.x - m_posR.x), (m_posVDest.z - m_posR.z));
 		while (1)
 		{
-			// プレイヤーの情報取得
-			CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-
-			if (pPlayer == NULL)
-			{
-				return;
-			}
 
 			D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
 
@@ -821,7 +814,7 @@ void CCamera::SetCameraRGame(void)
 	{// 追従ON
 
 		// プレイヤーの情報取得
-		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(0);
 
 		if (pPlayer == NULL)
 		{

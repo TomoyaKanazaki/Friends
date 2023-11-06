@@ -39,6 +39,7 @@ CGameManager *CGame::m_pGameManager = NULL;			// ゲームマネージャのオブジェクト
 CGame::EEditType CGame::m_EditType = EDITTYPE_OFF;		// エディットの種類
 CEnemyBase *CGame::m_pEnemyBase = NULL;	// 敵の拠点
 CEnemyManager *CGame::m_pEnemyManager = NULL;	// 敵マネージャのオブジェクト
+bool CGame::m_bEdit = false;				// エディットの判定
 
 //==========================================================================
 // コンストラクタ
@@ -61,6 +62,8 @@ CGame::~CGame()
 //==========================================================================
 HRESULT CGame::Init(void)
 {
+	// エディット判定OFF
+	m_bEdit = false;
 
 	// 初期化処理
 	if (FAILED(CScene::Init()))
@@ -95,10 +98,13 @@ HRESULT CGame::Init(void)
 	//**********************************
 	// プレイヤー
 	//**********************************
-	if (CManager::GetInstance()->GetScene()->GetPlayer() != NULL)
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
-		CManager::GetInstance()->GetScene()->GetPlayer()->SetPosition(D3DXVECTOR3(0.0f, 1000.0f, -1000.0f));
-		CManager::GetInstance()->GetScene()->GetPlayer()->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		if (CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer) != NULL)
+		{
+			CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer)->SetPosition(D3DXVECTOR3(-1000.0f + nCntPlayer * 500.0f, 1000.0f, -1000.0f));
+			CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer)->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		}
 	}
 
 	//**********************************
@@ -232,12 +238,17 @@ void CGame::Update(void)
 		// 切り替え
 		m_EditType = (EEditType)(((int)m_EditType + 1) % (int)EDITTYPE_MAX);	// 追従の種類
 
+		// リセット
 		EditReset();
+
+		// エディット判定ON
+		m_bEdit = true;
 
 		switch (m_EditType)
 		{
 		case CGame::EDITTYPE_OFF:	// 全部オフ
-
+			// エディット判定OFF
+			m_bEdit = false;
 			break;
 
 		case EDITTYPE_ENEMYBASE:

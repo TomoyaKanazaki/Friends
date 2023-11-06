@@ -46,7 +46,6 @@ public:
 	CPlayer(int nPriority = mylib_const::DEF2D_PRIORITY);
 	~CPlayer();
 
-	static CPlayer *Create();
 
 	// オーバーライドされた関数
 	virtual HRESULT Init(void);
@@ -56,7 +55,8 @@ public:
 	bool Hit(const int nValue);	// ヒット処理
 	int GetState(void) override;
 
-	virtual void UninitByMode(void);
+	static CPlayer *Create(int nIdx);	// 生成
+	void UninitByMode(void);
 	void Kill(void);	// 死亡処理
 
 protected:
@@ -91,6 +91,7 @@ protected:
 	bool m_bHitStage;			// ステージの当たり判定
 	bool m_bLandField;			// フィールドの着地判定
 	bool m_bHitWall;			// 壁の当たり判定
+	int m_nMyPlayerIdx;			// プレイヤーインデックス番号
 	int m_nCntWalk;				// 歩行カウンター
 	STATE m_state;			// 状態
 	CMotion *m_pMotion;		// モーションの情報

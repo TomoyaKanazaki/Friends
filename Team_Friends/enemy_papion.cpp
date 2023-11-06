@@ -108,7 +108,7 @@ void CEnemyPapion::Update(void)
 	float fRotDest = GetRotDest();
 
 	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 	if (pPlayer == NULL)
 	{
 		return;
@@ -350,8 +350,7 @@ void CEnemyPapion::AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo)
 	// 武器の位置
 	D3DXVECTOR3 weponpos = D3DXVECTOR3(mtxWepon._41, mtxWepon._42, mtxWepon._43);
 
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-
+	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 	if (pPlayer == NULL)
 	{// NULLだったら
 		return;

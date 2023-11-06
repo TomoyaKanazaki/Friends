@@ -154,6 +154,10 @@ void CEnemyManager::Kill(void)
 //==========================================================================
 void CEnemyManager::Update(void)
 {
+
+	// 敵の配置
+	//SetEnemy(敵拠点の位置, 敵拠点の向き, 敵拠点に設定されてる敵パターン);
+
 	// テキストの描画
 	CManager::GetInstance()->GetDebugProc()->Print(
 		"---------------- 敵情報 ----------------\n"
@@ -183,11 +187,33 @@ CEnemy **CEnemyManager::SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nPattern)
 
 			int nType = NowPattern.EnemyData[nCntEnemy].nType;
 
+
+			// 計算用マトリックス
+			D3DXMATRIX mtxRot, mtxTrans, mtxWorld;
+
+			// マトリックスの初期化
+			D3DXMatrixIdentity(&mtxWorld);
+
+			// 敵拠点の向きを反映する
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
+			D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+
+			// パターン内の位置を反映する
+			D3DXMatrixTranslation(&mtxTrans, NowPattern.EnemyData[nCntEnemy].pos.x, NowPattern.EnemyData[nCntEnemy].pos.y, NowPattern.EnemyData[nCntEnemy].pos.z);
+			D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
+
+			// スポーン時の向きを掛け合わせる
+			D3DXVECTOR3 spawnPos = D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43);
+
+			// 拠点の位置分加算
+			spawnPos += pos;
+
+
 			// 敵の生成
 			m_pEnemy[nCntNULL] = CEnemy::Create(
 				nCntNULL,						// インデックス番号
 				sMotionFileName[nType].c_str(),	// ファイル名
-				pos,							// 位置
+				spawnPos,						// 位置
 				(CEnemy::TYPE)nType);			// 種類
 
 			if (m_pEnemy[nCntNULL] == NULL)
@@ -198,6 +224,7 @@ CEnemy **CEnemyManager::SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nPattern)
 				break;
 			}
 
+			// ポインタコピー
 			pEnemy[nCntEnemy] = m_pEnemy[nCntNULL];
 
 			// 向き設定
@@ -329,11 +356,13 @@ HRESULT CEnemyManager::ReadText(const std::string pTextFile)
 							fscanf(pFile, "%d", &m_aPattern[nCntPatten].EnemyData[nCntEnemy].nType);	// キャラファイル番号
 						}
 
-						if (strcmp(aComment, "STARTKEY") == 0)
-						{// STARTKEYが来たら初期キー読み込み
+						if (strcmp(aComment, "POS") == 0)
+						{// POSが来たら位置読み込み
 
-							fscanf(pFile, "%s", &aComment[0]);	// =の分
-							fscanf(pFile, "%d", &m_aPattern[nCntPatten].EnemyData[nCntEnemy].nStartKey);	// 初期キー
+							fscanf(pFile, "%s", &aComment[0]);		// =の分
+							fscanf(pFile, "%f", &m_aPattern[nCntPatten].EnemyData[nCntEnemy].pos.x);	// X座標
+							fscanf(pFile, "%f", &m_aPattern[nCntPatten].EnemyData[nCntEnemy].pos.y);	// Y座標
+							fscanf(pFile, "%f", &m_aPattern[nCntPatten].EnemyData[nCntEnemy].pos.z);	// Z座標
 						}
 
 						if (strcmp(aComment, "STARTFRAME") == 0)
@@ -341,13 +370,6 @@ HRESULT CEnemyManager::ReadText(const std::string pTextFile)
 
 							fscanf(pFile, "%s", &aComment[0]);	// =の分
 							fscanf(pFile, "%d", &m_aPattern[nCntPatten].EnemyData[nCntEnemy].nStartFrame);	// 初期フレーム
-						}
-
-						if (strcmp(aComment, "STARTMOVEVALUE") == 0)
-						{// STARTMOVEVALUEが来たら初期マップ移動量読み込み
-
-							fscanf(pFile, "%s", &aComment[0]);	// =の分
-							fscanf(pFile, "%f", &m_aPattern[nCntPatten].EnemyData[nCntEnemy].fStartMoveValue);	// 初期マップ移動量
 						}
 
 					}// END_ENEMYSETのかっこ

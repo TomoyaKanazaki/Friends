@@ -27,8 +27,7 @@ public:
 	{
 		int nType;	// キャラクター種類
 		int nStartFrame;	// 初期フレーム
-		int nStartKey;		// 初期キー
-		float fStartMoveValue;	// 初期マップ移動量
+		D3DXVECTOR3 pos;		// 位置
 	};
 
 	struct Pattern

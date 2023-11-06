@@ -62,6 +62,7 @@ public:
 
 	static CEnemyManager *GetEnemyManager(void);
 	static CEnemyBase *GetEnemyBase(void);		// 敵の拠点
+	static bool IsEdit(void) { return m_bEdit; }	// エディットの判定
 
 private:
 
@@ -77,6 +78,7 @@ private:
 	static EEditType m_EditType;		// エディットの種類
 	static CEnemyManager *m_pEnemyManager;		// 敵マネージャのオブジェクト
 	static CEnemyBase *m_pEnemyBase;	// 敵の拠点
+	static bool m_bEdit;				// エディットの判定
 };
 
 

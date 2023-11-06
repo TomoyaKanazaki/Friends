@@ -209,12 +209,6 @@ void CElevation::Update(void)
 	// キーボード情報取得
 	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 
-	// コンボ演出中は抜ける
-	if (CGame::GetEnemyManager()->GetState() == CEnemyManager::STATE_COMBOANIM)
-	{
-		return;
-	}
-
 	if (pInputKeyboard->GetTrigger(DIK_F3) == true)
 	{// 切り替え
 		m_bEdit = m_bEdit ? false : true;

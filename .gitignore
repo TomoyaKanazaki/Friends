@@ -397,3 +397,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 /もーしょんえでぃたー
+/Team_Friends/Team_Friends.vcxproj
+/Team_Friends/Team_Friends.vcxproj.filters

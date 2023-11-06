@@ -9,30 +9,11 @@ SCRIPT			# ���̍s�͐�Ώ����Ȃ����ƁI
 #------------------------------------------------------------------------------
 # ���f����
 #------------------------------------------------------------------------------
-NUM_MODEL = 16
+NUM_MODEL = 17
 
 #------------------------------------------------------------------------------
 # ���f���t�@�C����
 #------------------------------------------------------------------------------
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-
-=======
 MODEL_FILENAME = data/MODEL/3p/3p.x		# [0]��
 MODEL_FILENAME = data/MODEL/3p/3p.x		# [1]��
 MODEL_FILENAME = data/MODEL/3p/3p.x		# [2]��
@@ -50,7 +31,6 @@ MODEL_FILENAME = data/MODEL/3p/3p.x		# [13]��������
 MODEL_FILENAME = data/MODEL/3p/3p.x		# [14]����
 MODEL_FILENAME = data/MODEL/3p/3p.x		# [15]����
 MODEL_FILENAME = data/MODEL/3p/3p.x		# [16]�匕
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 
 #------------------------------------------------------------------------------
 # �L�����N�^�[���
@@ -190,7 +170,15 @@ CHARACTERSET
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
-		
+	
+	PARTSSET						# [16]����
+		INDEX = 16
+		PARENT = 9					# (�e)�E��
+		POS = 13.0 0.0 0.0
+		ROT = 1.57 -3.14 0.0
+		START = 1
+	END_PARTSSET
+	
 END_CHARACTERSET
 
 #------------------------------------------------------------------------------
@@ -954,10 +942,6 @@ MOTIONSET
 	# �U�����
 	#===================
 	ATTACKINFO
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-		COLLISIONPARTS = 6
-		ATTACKRANGE = 33.00
-=======
 		COLLISIONPARTS = 4
 		ATTACKRANGE = 48.00
 		OFFSET = 0.00 0.00 0.00
@@ -969,9 +953,8 @@ MOTIONSET
 	ATTACKINFO
 		COLLISIONPARTS = 5
 		ATTACKRANGE = 48.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 		OFFSET = 0.00 0.00 0.00
-		ATTACKCOUNT = 0 23
+		ATTACKCOUNT = 0 0
 		INPACTCOUNT = 0
 		DAMAGE = 0
 	END_ATTACKINFO
@@ -979,30 +962,17 @@ MOTIONSET
 	KEYSET			# --- << KEY : 0 / 2 >> ---
 		FRAME = 2
 		PARTS	# ----- [ 0 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.00 0.00 0.00
-			POS = 0.00 -31.23 0.00
-		END_PARTS
-
-		PARTS	# ----- [ 1 ] -----
-			ROT = -0.31 0.50 0.00
-=======
 			ROT = -0.72 -0.91 0.63
 			POS = 0.00 -4.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
 			ROT = -0.19 0.47 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 2 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.00 0.00 0.00
-=======
 			ROT = 0.66 0.41 0.22
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1012,20 +982,12 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 4 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.00 0.63 0.63
-=======
 			ROT = 0.00 -1.70 -0.25
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 5 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.00 -1.76 0.00
-=======
 			ROT = 0.00 -1.04 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1035,84 +997,52 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 7 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.00 0.22 -1.07
-=======
 			ROT = 0.88 -0.44 -0.25
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 8 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.00 2.14 0.00
-=======
 			ROT = 0.00 0.25 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 9 ] -----
-			ROT = 0.03 0.00 0.00
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 10 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = -0.82 0.00 0.00
-=======
 			ROT = 0.66 0.72 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 11 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = -0.09 0.00 0.00
-=======
 			ROT = -1.00 0.00 -0.09
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 12 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.94 0.00 0.00
-=======
 			ROT = 0.00 0.00 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 13 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 1.13 0.00 0.00
-=======
 			ROT = -0.00 0.63 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 14 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = -0.97 0.00 0.00
-=======
 			ROT = -0.44 0.00 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 15 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = -0.16 0.00 0.00
-=======
 			ROT = -0.63 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 16 ] -----
 			ROT = 0.00 0.00 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1121,30 +1051,17 @@ MOTIONSET
 	KEYSET			# --- << KEY : 1 / 2 >> ---
 		FRAME = 6
 		PARTS	# ----- [ 0 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.00 0.00 0.00
-			POS = 0.00 -31.23 0.00
-		END_PARTS
-
-		PARTS	# ----- [ 1 ] -----
-			ROT = -0.40 0.75 0.00
-=======
 			ROT = -0.72 -0.91 0.63
 			POS = 0.00 -4.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
 			ROT = -0.19 -0.13 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 2 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.00 0.00 0.00
-=======
 			ROT = 0.66 0.41 0.22
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1154,20 +1071,12 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 4 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.00 0.69 0.63
-=======
 			ROT = 0.00 -1.89 -0.25
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 5 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.00 -1.85 0.00
-=======
 			ROT = 0.00 -1.04 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1177,84 +1086,52 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 7 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.00 0.22 -1.07
-=======
 			ROT = 0.88 -0.44 -0.25
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 8 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.00 2.14 0.00
-=======
 			ROT = 0.00 0.25 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 9 ] -----
-			ROT = 0.03 0.00 0.00
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 10 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = -0.82 0.00 0.00
-=======
 			ROT = 0.66 0.72 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 11 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = -0.09 0.00 0.00
-=======
 			ROT = -1.00 0.00 -0.09
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 12 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 0.94 0.00 0.00
-=======
 			ROT = 0.00 0.00 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 13 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = 1.13 0.00 0.00
-=======
 			ROT = -0.00 0.63 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 14 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = -0.97 0.00 0.00
-=======
 			ROT = -0.44 0.00 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 15 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-			ROT = -0.16 0.00 0.00
-=======
 			ROT = -0.63 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 16 ] -----
 			ROT = 0.00 0.00 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 

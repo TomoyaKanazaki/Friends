@@ -55,25 +55,6 @@ HRESULT CTutorialPlayer::Init(void)
 }
 
 //==========================================================================
-// モード別終了処理
-//==========================================================================
-void CTutorialPlayer::UninitByMode(void)
-{
-
-	// プレイヤー情報
-	//CPlayer **ppPlayer = CTutorial::GetPlayer(0);
-	CScene *pScene = CManager::GetInstance()->GetScene();
-	if (pScene != NULL)
-	{
-		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-		CPlayer **ppPlayer = &pPlayer;
-
-		// プレイヤーをNULL
-		ppPlayer = NULL;
-	}
-}
-
-//==========================================================================
 // 更新処理
 //==========================================================================
 void CTutorialPlayer::Update(void)

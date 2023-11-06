@@ -33,7 +33,7 @@ CScene::CScene()
 {
 	// 変数のクリア
 	m_mode = MODE_TITLE;
-	m_pPlayer = NULL;
+	memset(&m_pPlayer[0], 0, sizeof(m_pPlayer));
 }
 
 //==========================================================================
@@ -137,8 +137,11 @@ HRESULT CScene::Init(void)
 		return E_FAIL;
 	}
 
-	// メモリ確保
-	m_pPlayer = CPlayer::Create();
+	// キャラ生成
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	{
+		m_pPlayer[nCntPlayer] = CPlayer::Create(nCntPlayer);
+	}
 
 	return S_OK;
 }
@@ -161,11 +164,14 @@ void CScene::Uninit(void)
 	}
 
 	// プレイヤーの破棄
-	if (m_pPlayer != NULL)
-	{// メモリの確保が出来ていたら
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	{
+		if (m_pPlayer[nCntPlayer] != NULL)
+		{// メモリの確保が出来ていたら
 
-		m_pPlayer->Uninit();
-		m_pPlayer = NULL;
+			m_pPlayer[nCntPlayer]->Uninit();
+			m_pPlayer[nCntPlayer] = NULL;
+		}
 	}
 
 }
@@ -230,15 +236,15 @@ CElevation *CScene::GetElevation(void)
 //==========================================================================
 // プレイヤーの取得
 //==========================================================================
-CPlayer *CScene::GetPlayer(void)
+CPlayer *CScene::GetPlayer(int nIdx)
 {
-	return m_pPlayer;
+	return m_pPlayer[nIdx];
 }
 
 //==========================================================================
 // プレイヤーの終了
 //==========================================================================
-void CScene::UninitPlayer()
+void CScene::UninitPlayer(int nIdx)
 {
-	m_pPlayer = NULL;
+	m_pPlayer[nIdx] = NULL;
 }

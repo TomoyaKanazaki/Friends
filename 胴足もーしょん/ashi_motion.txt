@@ -1,191 +1,171 @@
 #==============================================================================
 #
-# �w�K�w���f���x�X�N���v�g�t�@�C�� [motion_3p2.txt]
-# Author : ���n �Ή�
+# 『階層モデル』スクリプトファイル [motion_set_buddy1.txt]
+# Author : 相馬 靜雅
 #
 #==============================================================================
-SCRIPT			# ���̍s�͐�Ώ����Ȃ����ƁI
+SCRIPT			# この行は絶対消さないこと！
 
 #------------------------------------------------------------------------------
-# ���f����
+# モデル数
 #------------------------------------------------------------------------------
 NUM_MODEL = 16
 
 #------------------------------------------------------------------------------
-# ���f���t�@�C����
+# モデルファイル名
 #------------------------------------------------------------------------------
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
-MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]��
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
+MODEL_FILENAME = data/MODEL/ashi_000.x				# [0]腰
 
-=======
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [0]��
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [1]��
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [2]��
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [3]��
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [4]�E��r
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [5]�E�O�r
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [6]�E��
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [7]����r
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [8]���O�r
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [9]����
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [10]�E������
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [11]�E��
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [12]�E��
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [13]��������
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [14]����
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [15]����
-MODEL_FILENAME = data/MODEL/3p/3p.x		# [16]�匕
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 
 #------------------------------------------------------------------------------
-# �L�����N�^�[���
+# キャラクター情報
 #------------------------------------------------------------------------------
 CHARACTERSET
-	VELOCITY = 2.5					# �ړ���
-	JUMP = 8.65						# �W�����v��
-	RADIUS = 60.0					# ���a
-	HEIGHT = 80.0					# ����
-	LIFE = 5						# �̗�
-	NUM_PARTS = 17					# �p�[�c��
+	VELOCITY = 2.5					# 移動量
+	JUMP = 8.65						# ジャンプ量
+	RADIUS = 60.0					# 半径
+	HEIGHT = 80.0					# 高さ
+	LIFE = 5						# 体力
+	NUM_PARTS = 16					# パーツ数
 
-	PARTSSET						# [0]��
+	PARTSSET						# [0]腰
 		INDEX = 0
-		PARENT = -1					# (�e)NULL
+		PARENT = -1					# (親)NULL
 		POS = 0.0 88.5 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 
-	PARTSSET						# [1]��
+	PARTSSET						# [1]体
 		INDEX = 1
-		PARENT = 0					# (�e)
+		PARENT = 0					# (親)
 		POS = 0.0 7.0 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 
-	PARTSSET						# [2]��
+	PARTSSET						# [2]頭
 		INDEX = 2
-		PARENT = 1					# (�e)��
+		PARENT = 1					# (親)体
 		POS = 0.0 53.0 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 
-	PARTSSET						# [3]��
+	PARTSSET						# [3]髪
 		INDEX = 3
-		PARENT = 2					# (�e)��
+		PARENT = 2					# (親)体
 		POS = 0.0 14.5 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 
-	PARTSSET						# [4]����r
+	PARTSSET						# [4]左上腕
 		INDEX = 4
-		PARENT = 1					# (�e)��
+		PARENT = 1					# (親)体
 		POS = -17.0 40.0 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 
-	PARTSSET						# [5]���O�r
+	PARTSSET						# [5]左前腕
 		INDEX = 5
-		PARENT = 4					# (�e)����r
+		PARENT = 4					# (親)左上腕
 		POS = -27.5 0.0 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 
-	PARTSSET						# [6]����
+	PARTSSET						# [6]左手
 		INDEX = 6
-		PARENT = 5					# (�e)���O�r
+		PARENT = 5					# (親)左前腕
 		POS = -26.75 0.0 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 
-	PARTSSET						# [7]�E��r
+	PARTSSET						# [7]右上腕
 		INDEX = 7
-		PARENT = 1					# (�e)��
+		PARENT = 1					# (親)体
 		POS = 17.0 40.0 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 	
-	PARTSSET						# [8]�E�O�r
+	PARTSSET						# [8]右前腕
 		INDEX = 8
-		PARENT = 7					# (�e)�E��r
+		PARENT = 7					# (親)右上腕
 		POS = 27.5 0.0 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 	
-	PARTSSET						# [9]�E��
+	PARTSSET						# [9]右手
 		INDEX = 9
-		PARENT = 8					# (�e)�E�O�r
+		PARENT = 8					# (親)右前腕
 		POS = 26.75 0.0 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 	
-	PARTSSET						# [10]��������
+	PARTSSET						# [10]左太もも
 		INDEX = 10
-		PARENT = 0					# (�e)��
+		PARENT = 0					# (親)腰
 		POS = -10.0 -4.5 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 	
-	PARTSSET						# [11]���ӂ���͂�
+	PARTSSET						# [11]左ふくらはぎ
 		INDEX = 11
-		PARENT = 10					# (�e)��������
+		PARENT = 10					# (親)左太もも
 		POS = 0.0 -39.0 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 	
-	PARTSSET						# [12]����
+	PARTSSET						# [12]左足
 		INDEX = 12
-		PARENT = 11					# (�e)���ӂ���͂�
+		PARENT = 11					# (親)左ふくらはぎ
 		POS = 0.0 -22.75 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 	
-	PARTSSET						# [13]�E������
+	PARTSSET						# [13]右太もも
 		INDEX = 13
-		PARENT = 0					# (�e)��
+		PARENT = 0					# (親)腰
 		POS = 13.5 -4.5 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 	
-	PARTSSET						# [14]�E�ӂ���͂�
+	PARTSSET						# [14]右ふくらはぎ
 		INDEX = 14
-		PARENT = 13					# (�e)�E������
+		PARENT = 13					# (親)右太もも
 		POS = 0.0 -39.0 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 	
-	PARTSSET						# [15]�E��
+	PARTSSET						# [15]右足
 		INDEX = 15
-		PARENT = 14					# (�e)���ӂ���͂�
+		PARENT = 14					# (親)左ふくらはぎ
 		POS = 0.0 -22.75 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
@@ -194,18 +174,18 @@ CHARACTERSET
 END_CHARACTERSET
 
 #------------------------------------------------------------------------------
-# ���[�V�������
+# モーション情報
 #------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------
-# �j���[�g�������[�V����
+# ニュートラルモーション
 #-------------------------------------------------------------------------------------------------
 MOTIONSET
-	LOOP = 1		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
-	NUM_KEY = 2		# �L�[��
-	MOVE = 1		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
+	LOOP = 1		# ループするかどうか[0:ループしない / 1:ループする]
+	NUM_KEY = 2		# キー数
+	MOVE = 1		# 移動できるかどうか[0:移動できない / 1:移動できる]
 	
 	#===================
-	# �U�����
+	# 攻撃情報
 	#===================
 	ATTACKINFO
 		COLLISIONPARTS = 0
@@ -385,15 +365,15 @@ MOTIONSET
 END_MOTIONSET
 
 #-------------------------------------------------------------------------------------------------
-# �ړ����[�V����
+# 移動モーション
 #-------------------------------------------------------------------------------------------------
 MOTIONSET
-	LOOP = 1		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
-	NUM_KEY = 6		# �L�[��
-	MOVE = 1		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
+	LOOP = 1		# ループするかどうか[0:ループしない / 1:ループする]
+	NUM_KEY = 6		# キー数
+	MOVE = 1		# 移動できるかどうか[0:移動できない / 1:移動できる]
 
 	#===================
-	# �U�����
+	# 攻撃情報
 	#===================
 	ATTACKINFO
 		COLLISIONPARTS = 0
@@ -943,33 +923,19 @@ END_MOTIONSET
 
 
 #-------------------------------------------------------------------------------------------------
-# �U�����[�V����
+# 攻撃モーション
 #-------------------------------------------------------------------------------------------------
 MOTIONSET
-	LOOP = 0		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
-	NUM_KEY = 2		# �L�[��
-	MOVE = 0		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
+	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
+	NUM_KEY = 2		# キー数
+	MOVE = 0		# 移動できるかどうか[0:移動できない / 1:移動できる]
 
 	#===================
-	# �U�����
+	# 攻撃情報
 	#===================
 	ATTACKINFO
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 		COLLISIONPARTS = 6
 		ATTACKRANGE = 33.00
-=======
-		COLLISIONPARTS = 4
-		ATTACKRANGE = 48.00
-		OFFSET = 0.00 0.00 0.00
-		ATTACKCOUNT = 0 0
-		INPACTCOUNT = 4
-		DAMAGE = 0
-	END_ATTACKINFO
-
-	ATTACKINFO
-		COLLISIONPARTS = 5
-		ATTACKRANGE = 48.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 		OFFSET = 0.00 0.00 0.00
 		ATTACKCOUNT = 0 23
 		INPACTCOUNT = 0
@@ -977,32 +943,19 @@ MOTIONSET
 	END_ATTACKINFO
 
 	KEYSET			# --- << KEY : 0 / 2 >> ---
-		FRAME = 2
+		FRAME = 10
 		PARTS	# ----- [ 0 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.00 0.00 0.00
 			POS = 0.00 -31.23 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
 			ROT = -0.31 0.50 0.00
-=======
-			ROT = -0.72 -0.91 0.63
-			POS = 0.00 -4.00 0.00
-		END_PARTS
-
-		PARTS	# ----- [ 1 ] -----
-			ROT = -0.19 0.47 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 2 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.00 0.00 0.00
-=======
-			ROT = 0.66 0.41 0.22
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1012,20 +965,12 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 4 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.00 0.63 0.63
-=======
-			ROT = 0.00 -1.70 -0.25
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 5 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.00 -1.76 0.00
-=======
-			ROT = 0.00 -1.04 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1035,20 +980,12 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 7 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.00 0.22 -1.07
-=======
-			ROT = 0.88 -0.44 -0.25
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 8 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.00 2.14 0.00
-=======
-			ROT = 0.00 0.25 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1058,93 +995,51 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 10 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = -0.82 0.00 0.00
-=======
-			ROT = 0.66 0.72 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 11 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = -0.09 0.00 0.00
-=======
-			ROT = -1.00 0.00 -0.09
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 12 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.94 0.00 0.00
-=======
-			ROT = 0.00 0.00 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 13 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 1.13 0.00 0.00
-=======
-			ROT = -0.00 0.63 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 14 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = -0.97 0.00 0.00
-=======
-			ROT = -0.44 0.00 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 15 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = -0.16 0.00 0.00
-=======
-			ROT = -0.63 0.00 0.00
-			POS = 0.00 0.00 0.00
-		END_PARTS
-
-		PARTS	# ----- [ 16 ] -----
-			ROT = 0.00 0.00 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 	END_KEYSET
 
 	KEYSET			# --- << KEY : 1 / 2 >> ---
-		FRAME = 6
+		FRAME = 13
 		PARTS	# ----- [ 0 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.00 0.00 0.00
 			POS = 0.00 -31.23 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
 			ROT = -0.40 0.75 0.00
-=======
-			ROT = -0.72 -0.91 0.63
-			POS = 0.00 -4.00 0.00
-		END_PARTS
-
-		PARTS	# ----- [ 1 ] -----
-			ROT = -0.19 -0.13 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 2 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.00 0.00 0.00
-=======
-			ROT = 0.66 0.41 0.22
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1154,20 +1049,12 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 4 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.00 0.69 0.63
-=======
-			ROT = 0.00 -1.89 -0.25
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 5 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.00 -1.85 0.00
-=======
-			ROT = 0.00 -1.04 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1177,20 +1064,12 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 7 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.00 0.22 -1.07
-=======
-			ROT = 0.88 -0.44 -0.25
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 8 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.00 2.14 0.00
-=======
-			ROT = 0.00 0.25 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1200,61 +1079,32 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 10 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = -0.82 0.00 0.00
-=======
-			ROT = 0.66 0.72 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 11 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = -0.09 0.00 0.00
-=======
-			ROT = -1.00 0.00 -0.09
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 12 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 0.94 0.00 0.00
-=======
-			ROT = 0.00 0.00 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 13 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = 1.13 0.00 0.00
-=======
-			ROT = -0.00 0.63 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 14 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = -0.97 0.00 0.00
-=======
-			ROT = -0.44 0.00 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 15 ] -----
-<<<<<<< HEAD:もーしょんえでぃたー/モーションビューワ/data/TEXT/motion_set_player.txt
 			ROT = -0.16 0.00 0.00
-=======
-			ROT = -0.63 0.00 0.00
-			POS = 0.00 0.00 0.00
-		END_PARTS
-
-		PARTS	# ----- [ 16 ] -----
-			ROT = 0.00 0.00 0.00
->>>>>>> a53de26402da622c1cf6dae70b548ae7b26d4194:もーしょん/3p/motion_3p.txt
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1262,16 +1112,18 @@ MOTIONSET
 
 END_MOTIONSET
 
+
+
 #-------------------------------------------------------------------------------------------------
-# �U�����[�V����(�h��)
+# 攻撃モーション(派生)
 #-------------------------------------------------------------------------------------------------
 MOTIONSET
-	LOOP = 0		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
-	NUM_KEY = 3		# �L�[��
-	MOVE = 0		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
+	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
+	NUM_KEY = 3		# キー数
+	MOVE = 0		# 移動できるかどうか[0:移動できない / 1:移動できる]
 
 	#===================
-	# �U�����
+	# 攻撃情報
 	#===================
 	ATTACKINFO
 		COLLISIONPARTS = 16
@@ -1552,15 +1404,15 @@ MOTIONSET
 END_MOTIONSET
 
 #-------------------------------------------------------------------------------------------------
-# ���ꃂ�[�V����
+# やられモーション
 #-------------------------------------------------------------------------------------------------
 MOTIONSET
-	LOOP = 0		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
-	NUM_KEY = 4		# �L�[��
-	MOVE = 0		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
+	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
+	NUM_KEY = 4		# キー数
+	MOVE = 0		# 移動できるかどうか[0:移動できない / 1:移動できる]
 
 	#===================
-	# �U�����
+	# 攻撃情報
 	#===================
 	ATTACKINFO
 		COLLISIONPARTS = 0
@@ -1931,15 +1783,15 @@ END_MOTIONSET
 
 
 #==============================================================================
-# ������
+# 落下中
 #==============================================================================
 MOTIONSET
-	LOOP = 0		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
-	NUM_KEY = 2		# �L�[��
-	MOVE = 0		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
+	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
+	NUM_KEY = 2		# キー数
+	MOVE = 0		# 移動できるかどうか[0:移動できない / 1:移動できる]
 
 	#===================
-	# �U�����
+	# 攻撃情報
 	#===================
 	ATTACKINFO
 		COLLISIONPARTS = 0
@@ -2131,4 +1983,4 @@ MOTIONSET
 END_MOTIONSET
 
 
-END_SCRIPT		# ���̍s�͐�Ώ����Ȃ����ƁI
+END_SCRIPT		# この行は絶対消さないこと！

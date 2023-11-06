@@ -119,14 +119,17 @@ void CGameManager::Update(void)
 			CManager::GetInstance()->GetScene()->ResetScene();
 
 			// プレイヤー情報
-			CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-			if (pPlayer == NULL)
+			for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 			{
-				return;
-			}
+				CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+				if (pPlayer == NULL)
+				{
+					return;
+				}
 
-			// 位置設定
-			pPlayer->SetPosition(mylib_const::DEFAULT_VECTOR3);
+				// 位置設定
+				pPlayer->SetPosition(mylib_const::DEFAULT_VECTOR3);
+			}
 
 			// カメラの情報取得
 			CCamera *pCamera = CManager::GetInstance()->GetCamera();

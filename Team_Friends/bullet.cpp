@@ -466,40 +466,44 @@ void CBullet::StateDamage(void)
 void CBullet::CollisionPlayer(void)
 {
 	// プレイヤー情報取得
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-	if (pPlayer == NULL)
-	{// NULLだったら
-		return;
-	}
-
-	// プレイヤーの情報取得
-	D3DXVECTOR3 PlayerPosition = pPlayer->GetCenterPosition();
-	D3DXVECTOR3 PlayerRotation = pPlayer->GetRotation();
-	float fPlayerRadius = pPlayer->GetRadius();
-
-	// 情報取得
-	D3DXVECTOR3 pos = GetPosition();
-	float fRadius = GetWidthLen();
-
-	if (SphereRange(pos, PlayerPosition, fRadius, fPlayerRadius))
-	{// 当たっていたら
-
-		// ヒット処理
-		pPlayer->Hit(1);
-
-		if (m_pMeshSphereEffect != NULL)
-		{
-			m_pMeshSphereEffect->Uninit();
-			m_pMeshSphereEffect = NULL;
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	{
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+		if (pPlayer == NULL)
+		{// NULLだったら
+			return;
 		}
 
-		if (m_pEffectThunderRing != NULL)
-		{// 雷のリングのエフェクト
-			m_pEffectThunderRing->Uninit();
-			m_pEffectThunderRing = NULL;
+		// プレイヤーの情報取得
+		D3DXVECTOR3 PlayerPosition = pPlayer->GetCenterPosition();
+		D3DXVECTOR3 PlayerRotation = pPlayer->GetRotation();
+		float fPlayerRadius = pPlayer->GetRadius();
+
+		// 情報取得
+		D3DXVECTOR3 pos = GetPosition();
+		float fRadius = GetWidthLen();
+
+		if (SphereRange(pos, PlayerPosition, fRadius, fPlayerRadius))
+		{// 当たっていたら
+
+			// ヒット処理
+			pPlayer->Hit(1);
+
+			if (m_pMeshSphereEffect != NULL)
+			{
+				m_pMeshSphereEffect->Uninit();
+				m_pMeshSphereEffect = NULL;
+			}
+
+			if (m_pEffectThunderRing != NULL)
+			{// 雷のリングのエフェクト
+				m_pEffectThunderRing->Uninit();
+				m_pEffectThunderRing = NULL;
+			}
+			// 終了処理
+			Uninit();
+			break;
 		}
-		// 終了処理
-		Uninit();
 	}
 
 }

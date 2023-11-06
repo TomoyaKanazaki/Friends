@@ -196,28 +196,31 @@ void CBulletObstacle::UpdatePos(void)
 void CBulletObstacle::CollisionPlayer(void)
 {
 	// プレイヤー情報取得
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-	if (pPlayer == NULL)
-	{// NULLだったら
-		return;
-	}
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	{
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+		if (pPlayer == NULL)
+		{// NULLだったら
+			return;
+		}
 
-	// プレイヤーの情報取得
-	D3DXVECTOR3 PlayerPosition = pPlayer->GetCenterPosition();
-	D3DXVECTOR3 PlayerRotation = pPlayer->GetRotation();
-	float fPlayerRadius = pPlayer->GetRadius();
+		// プレイヤーの情報取得
+		D3DXVECTOR3 PlayerPosition = pPlayer->GetCenterPosition();
+		D3DXVECTOR3 PlayerRotation = pPlayer->GetRotation();
+		float fPlayerRadius = pPlayer->GetRadius();
 
-	// 情報取得
-	D3DXVECTOR3 pos = GetPosition();
+		// 情報取得
+		D3DXVECTOR3 pos = GetPosition();
 
-	if (SphereRange(pos, PlayerPosition, m_fRadius, fPlayerRadius))
-	{// 当たっていたら
+		if (SphereRange(pos, PlayerPosition, m_fRadius, fPlayerRadius))
+		{// 当たっていたら
 
-		// ヒット処理
-		pPlayer->Hit(1);
+			// ヒット処理
+			pPlayer->Hit(1);
 
-		// 終了処理
-		Uninit();
+			// 終了処理
+			Uninit();
+		}
 	}
 
 }

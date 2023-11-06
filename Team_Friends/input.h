@@ -9,13 +9,13 @@
 #define _INPUT_H_	//二重インクルード防止のマクロを定義する
 
 #include "main.h"
+#include "constans.h"
 #pragma comment(lib, "xinput.lib")	//コントローラーに必要
 
 //==========================================================================
 // マクロ定義
 //==========================================================================
 #define NUM_KEY_MAX	(256)	// キーの最大数
-#define MAX_PLAYER	(1)		// 最大プレイヤー
 
 //==========================================================================
 // クラス定義
@@ -138,14 +138,14 @@ public:
 	int GetnCntPad(void);
 
 private:
-	XINPUT_STATE m_aGamepadState[MAX_PLAYER];				// プレス情報
-	XINPUT_STATE m_aGamepadStateTrigger[MAX_PLAYER];		// トリガー情報
-	XINPUT_STATE m_aGamepadStateRepeat[MAX_PLAYER];			// リピート情報
-	XINPUT_STATE m_aGamepadStateRelease[MAX_PLAYER];		// リリース情報
-	XINPUT_VIBRATION m_aGamepadStateVib[MAX_PLAYER];		// バイブレーション
-	VIBRATION_STATE m_VibrationState[MAX_PLAYER];			// 振動の種類
-	int m_nCntVibration[MAX_PLAYER];						// 振動の時間
-	int m_nMaxCntVibration[MAX_PLAYER];						// 振動の時間
+	XINPUT_STATE m_aGamepadState[mylib_const::MAX_PLAYER];				// プレス情報
+	XINPUT_STATE m_aGamepadStateTrigger[mylib_const::MAX_PLAYER];		// トリガー情報
+	XINPUT_STATE m_aGamepadStateRepeat[mylib_const::MAX_PLAYER];			// リピート情報
+	XINPUT_STATE m_aGamepadStateRelease[mylib_const::MAX_PLAYER];		// リリース情報
+	XINPUT_VIBRATION m_aGamepadStateVib[mylib_const::MAX_PLAYER];		// バイブレーション
+	VIBRATION_STATE m_VibrationState[mylib_const::MAX_PLAYER];			// 振動の種類
+	int m_nCntVibration[mylib_const::MAX_PLAYER];						// 振動の時間
+	int m_nMaxCntVibration[mylib_const::MAX_PLAYER];						// 振動の時間
 	int m_nCntPadrepeat;									// リピート用カウント
 	int m_nLeftStickCount;									// 左トリガーの選択カウント
 	bool m_bLeftStickSelect[STICK_MAX];								// 左トリガーの選択判定

@@ -32,10 +32,7 @@
 
 // 子クラス
 #include "enemy_boss.h"
-#include "enemy_crowd.h"
 #include "enemy_fly.h"
-#include "enemy_papion.h"
-#include "enemy_bee.h"
 
 //==========================================================================
 // マクロ定義
@@ -75,6 +72,7 @@ CEnemy::CEnemy(int nPriority) : CObjectChara(nPriority)
 	m_nIdxManager = 0;		// マネージャのインデックス番号
 	m_nSurvivalLife = 0;	// 生存時間
 	m_nSurvivalLifeOrigin = 0;	// 生存時間
+	m_nTargetPlayerIndex = 0;	// 追い掛けるプレイヤーのインデックス番号
 	m_bAddScore = false;	// スコア加算するかの判定
 	m_nBallastEmission = 0;	// 瓦礫の発生カウンター
 	m_sMotionFrag.bJump = false;		// ジャンプ中かどうか
@@ -117,20 +115,8 @@ CEnemy *CEnemy::Create(int nIdx, const char *pFileName, D3DXVECTOR3 pos, TYPE ty
 			pEnemy = DEBUG_NEW CEnemyBoss;
 			break;
 
-		case TYPE_CROUWD:
-			pEnemy = DEBUG_NEW CEnemyCrowd;
-			break;
-
 		case TYPE_FLY:
 			pEnemy = DEBUG_NEW CEnemyFly;
-			break;
-
-		case TYPE_PAPION:
-			pEnemy = DEBUG_NEW CEnemyPapion;
-			break;
-
-		case TYPE_BEE:
-			pEnemy = DEBUG_NEW CEnemyBee;
 			break;
 
 		default:
@@ -489,7 +475,7 @@ void CEnemy::Collision(void)
 	D3DXVECTOR3 rot = GetRotation();
 
 	// 重力処理
-	if (m_type != TYPE_FLY && m_type != TYPE_PAPION)
+	if (m_type != TYPE_FLY)
 	{
 		move.y -= mylib_const::GRAVITY;
 	}
@@ -571,42 +557,44 @@ void CEnemy::Collision(void)
 void CEnemy::CollisionPlayer(void)
 {
 	// プレイヤーの取得
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-	if (pPlayer == NULL)
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
-		return;
-	}
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+		if (pPlayer == NULL)
+		{
+			return;
+		}
 
-	if (m_state == STATE_SPAWN || m_state == STATE_DEAD || m_state == STATE_FADEOUT)
-	{
-		return;
-	}
+		if (m_state == STATE_SPAWN || m_state == STATE_DEAD || m_state == STATE_FADEOUT)
+		{
+			return;
+		}
 
-	// 自分の情報取得
-	D3DXVECTOR3 pos = GetPosition();
-	float fRadius = GetRadius();
+		// 自分の情報取得
+		D3DXVECTOR3 pos = GetPosition();
+		float fRadius = GetRadius();
 
-	// プレイヤー情報取得
-	D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
-	float PlayerRadius = pPlayer->GetRadius();
-	CPlayer::STATE PlayerState = (CPlayer::STATE)pPlayer->GetState();
+		// プレイヤー情報取得
+		D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
+		float PlayerRadius = pPlayer->GetRadius();
+		CPlayer::STATE PlayerState = (CPlayer::STATE)pPlayer->GetState();
 
-	// 球の判定
-	if (SphereRange(pos, PlayerPos, fRadius, PlayerRadius) &&
-		PlayerState != CPlayer::STATE_DEAD &&
-		PlayerState != CPlayer::STATE_DMG &&
-		PlayerState != CPlayer::STATE_KNOCKBACK &&
-		PlayerState != CPlayer::STATE_INVINCIBLE)
-	{
-		// ヒット処理
-		if (pPlayer->Hit(1) == false)
-		{// 死んでなかったら
+		// 球の判定
+		if (SphereRange(pos, PlayerPos, fRadius, PlayerRadius) &&
+			PlayerState != CPlayer::STATE_DEAD &&
+			PlayerState != CPlayer::STATE_DMG &&
+			PlayerState != CPlayer::STATE_KNOCKBACK &&
+			PlayerState != CPlayer::STATE_INVINCIBLE)
+		{
+			// ヒット処理
+			if (pPlayer->Hit(1) == false)
+			{// 死んでなかったら
 
-			// 吹っ飛び移動量設定
-			pPlayer->SetMove(D3DXVECTOR3(8.0f, 0.0f, 0.0f));
+				// 吹っ飛び移動量設定
+				pPlayer->SetMove(D3DXVECTOR3(8.0f, 0.0f, 0.0f));
+			}
 		}
 	}
-
 }
 
 //==========================================================================
@@ -831,17 +819,6 @@ void CEnemy::StateNone(void)
 	// 色設定
 	m_mMatcol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
-	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-
-	if (pPlayer == NULL)
-	{// NULLのとき
-		return;
-	}
-
-	// 親の位置取得
-	D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
-
 	// 状態遷移カウンター減算
 	m_nCntState--;
 
@@ -940,9 +917,6 @@ void CEnemy::Damage(void)
 	// 距離の判定
 	bool bLen = false;
 
-	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-
 #if _DEBUG
 	// 色設定
 	m_mMatcol = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
@@ -996,9 +970,6 @@ void CEnemy::Dead(void)
 
 	// 距離の判定
 	bool bLen = false;
-
-	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
 
 	// 状態遷移カウンター減算
 	m_nCntState--;
@@ -1154,7 +1125,7 @@ void CEnemy::PlayerChase(void)
 	bool bLen = false;
 
 	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 
 	// オブジェクト情報
 	CObject *pObj = NULL;
@@ -1246,9 +1217,6 @@ void CEnemy::ParentChase(void)
 
 	// かなり離れてるかの判定
 	bool bLongDistance = true;
-
-	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
 
 	// オブジェクト情報
 	CObject *pObj = NULL;
@@ -1386,8 +1354,6 @@ void CEnemy::StateAttack(void)
 	// 距離の判定
 	bool bLen = false;
 
-	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
 
 	// オブジェクト情報
 	CObject *pObj = NULL;
@@ -1448,62 +1414,69 @@ void CEnemy::StateAttack(void)
 		}
 	}
 
-	if (nType == MOTION_DEF && pPlayer != NULL)
-	{// ニュートラルに戻れば
+	// プレイヤー情報
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	{
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
 
-		if (CircleRange3D(pos, pPlayer->GetPosition(), 400.0f, PLAYER_SERCH) == false)
-		{// プレイヤーと離れすぎていたら
+		if (nType == MOTION_DEF && pPlayer != NULL)
+		{// ニュートラルに戻れば
 
-			// 間隔をあける状態にする
-			m_state = STATE_NONE;
-		}
-		else
-		{// まだ追える時
+			if (CircleRange3D(pos, pPlayer->GetPosition(), 400.0f, PLAYER_SERCH) == false)
+			{// プレイヤーと離れすぎていたら
 
-			m_state = STATE_PLAYERCHASE;
-
-			if (m_pParent != NULL)
-			{// 親がいる場合
-
-				// 親も追い掛け状態にする
-				if (m_pParent->m_state != STATE_DMG && m_pParent->m_state != STATE_DEAD)
-				{
-					m_pParent->m_state = STATE_PLAYERCHASE;
-				}
-
-				for (int nCntEnemy = 0; nCntEnemy < m_pParent->m_nNumChild; nCntEnemy++)
-				{// 子の数分回す
-
-					if (m_pParent->m_pChild[nCntEnemy] == NULL)
-					{
-						continue;
-					}
-
-					if (m_pParent->m_pChild[nCntEnemy]->m_state == STATE_DMG || m_pParent->m_pChild[nCntEnemy]->m_state == STATE_DEAD)
-					{
-						continue;
-					}
-
-					m_pParent->m_pChild[nCntEnemy]->m_state = STATE_PLAYERCHASE;
-				}
+				// 間隔をあける状態にする
+				m_state = STATE_NONE;
+				break;
 			}
 			else
-			{// 自分が親な場合
+			{// まだ追える時
 
-				for (int nCntEnemy = 0; nCntEnemy < m_nNumChild; nCntEnemy++)
-				{// 子の数分回す
+				m_state = STATE_PLAYERCHASE;
 
-					if (m_pChild[nCntEnemy] == NULL)
+				if (m_pParent != NULL)
+				{// 親がいる場合
+
+					// 親も追い掛け状態にする
+					if (m_pParent->m_state != STATE_DMG && m_pParent->m_state != STATE_DEAD)
 					{
-						continue;
+						m_pParent->m_state = STATE_PLAYERCHASE;
 					}
 
-					if (m_pChild[nCntEnemy]->m_state == STATE_DMG || m_pChild[nCntEnemy]->m_state == STATE_DEAD)
-					{
-						continue;
-					}
+					for (int nCntEnemy = 0; nCntEnemy < m_pParent->m_nNumChild; nCntEnemy++)
+					{// 子の数分回す
 
-					m_pChild[nCntEnemy]->m_state = STATE_PLAYERCHASE;
+						if (m_pParent->m_pChild[nCntEnemy] == NULL)
+						{
+							continue;
+						}
+
+						if (m_pParent->m_pChild[nCntEnemy]->m_state == STATE_DMG || m_pParent->m_pChild[nCntEnemy]->m_state == STATE_DEAD)
+						{
+							continue;
+						}
+
+						m_pParent->m_pChild[nCntEnemy]->m_state = STATE_PLAYERCHASE;
+					}
+				}
+				else
+				{// 自分が親な場合
+
+					for (int nCntEnemy = 0; nCntEnemy < m_nNumChild; nCntEnemy++)
+					{// 子の数分回す
+
+						if (m_pChild[nCntEnemy] == NULL)
+						{
+							continue;
+						}
+
+						if (m_pChild[nCntEnemy]->m_state == STATE_DMG || m_pChild[nCntEnemy]->m_state == STATE_DEAD)
+						{
+							continue;
+						}
+
+						m_pChild[nCntEnemy]->m_state = STATE_PLAYERCHASE;
+					}
 				}
 			}
 		}
@@ -1552,64 +1525,71 @@ void CEnemy::TriggerChasePlayer(void)
 {
 
 	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	{
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
 
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
+		// 位置取得
+		D3DXVECTOR3 pos = GetPosition();
 
-	if (pPlayer != NULL)
-	{// NULLじゃないとき
+		if (pPlayer != NULL)
+		{// NULLじゃないとき
 
-		float fRadius = PLAYER_SERCH;
+			float fRadius = PLAYER_SERCH;
 
-		if (CircleRange3D(pos, pPlayer->GetPosition(), 200.0f, fRadius) == true)
-		{// プレイヤーが範囲に入れば
-			m_state = STATE_PLAYERCHASE;
+			if (CircleRange3D(pos, pPlayer->GetPosition(), 200.0f, fRadius) == true)
+			{// プレイヤーが範囲に入れば
+				m_state = STATE_PLAYERCHASE;
 
-			if (m_pParent != NULL)
-			{// 親がいる場合
+				if (m_pParent != NULL)
+				{// 親がいる場合
 
-				// 親も追い掛け状態にする
-				if (m_pParent->m_state != STATE_DMG && m_pParent->m_state != STATE_DEAD)
-				{
-					m_pParent->m_state = STATE_PLAYERCHASE;
+					// 親も追い掛け状態にする
+					if (m_pParent->m_state != STATE_DMG && m_pParent->m_state != STATE_DEAD)
+					{
+						m_pParent->m_state = STATE_PLAYERCHASE;
+					}
+
+					for (int nCntEnemy = 0; nCntEnemy < m_pParent->m_nNumChild; nCntEnemy++)
+					{// 子の数分回す
+
+						if (m_pParent->m_pChild[nCntEnemy] == NULL)
+						{
+							continue;
+						}
+
+						if (m_pParent->m_pChild[nCntEnemy]->m_state == STATE_DMG || m_pParent->m_pChild[nCntEnemy]->m_state == STATE_DEAD)
+						{
+							continue;
+						}
+
+						// 自分の親の子もプレイヤー追い掛け状態
+						m_pParent->m_pChild[nCntEnemy]->m_state = STATE_PLAYERCHASE;
+					}
+				}
+				else
+				{// 自分が親な場合
+
+					for (int nCntEnemy = 0; nCntEnemy < m_nNumChild; nCntEnemy++)
+					{// 子の数分回す
+
+						if (m_pChild[nCntEnemy] == NULL)
+						{
+							continue;
+						}
+
+						if (m_pChild[nCntEnemy]->m_state == STATE_DMG || m_pChild[nCntEnemy]->m_state == STATE_DEAD)
+						{
+							continue;
+						}
+
+						m_pChild[nCntEnemy]->m_state = STATE_PLAYERCHASE;
+					}
 				}
 
-				for (int nCntEnemy = 0; nCntEnemy < m_pParent->m_nNumChild; nCntEnemy++)
-				{// 子の数分回す
-
-					if (m_pParent->m_pChild[nCntEnemy] == NULL)
-					{
-						continue;
-					}
-
-					if (m_pParent->m_pChild[nCntEnemy]->m_state == STATE_DMG || m_pParent->m_pChild[nCntEnemy]->m_state == STATE_DEAD)
-					{
-						continue;
-					}
-
-					// 自分の親の子もプレイヤー追い掛け状態
-					m_pParent->m_pChild[nCntEnemy]->m_state = STATE_PLAYERCHASE;
-				}
-			}
-			else
-			{// 自分が親な場合
-
-				for (int nCntEnemy = 0; nCntEnemy < m_nNumChild; nCntEnemy++)
-				{// 子の数分回す
-
-					if (m_pChild[nCntEnemy] == NULL)
-					{
-						continue;
-					}
-
-					if (m_pChild[nCntEnemy]->m_state == STATE_DMG || m_pChild[nCntEnemy]->m_state == STATE_DEAD)
-					{
-						continue;
-					}
-
-					m_pChild[nCntEnemy]->m_state = STATE_PLAYERCHASE;
-				}
+				// 追い掛けるプレイヤーの番号設定
+				m_nTargetPlayerIndex = nCntPlayer;
+				break;
 			}
 		}
 	}
@@ -1624,22 +1604,28 @@ void CEnemy::ChangeToAttackState(void)
 	D3DXVECTOR3 pos = GetPosition();
 
 	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-
-	if (pPlayer == NULL)
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
-		return;
-	}
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+		if (pPlayer == NULL)
+		{
+			return;
+		}
 
-	// 親の位置取得
-	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+		// 親の位置取得
+		D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 
-	if (CircleRange3D(pos, posPlayer, 400.0f, pPlayer->GetRadius()) == true && m_sMotionFrag.bJump == false)
-	{// 一定距離間にプレイヤーが入ったら
+		if (CircleRange3D(pos, posPlayer, 400.0f, pPlayer->GetRadius()) == true && m_sMotionFrag.bJump == false)
+		{// 一定距離間にプレイヤーが入ったら
 
-		// 攻撃状態にする
-		m_state = STATE_ATTACK;
-		m_sMotionFrag.bATK = true;
+			// 攻撃状態にする
+			m_state = STATE_ATTACK;
+			m_sMotionFrag.bATK = true;
+
+			// 追い掛けるプレイヤーの番号設定
+			m_nTargetPlayerIndex = nCntPlayer;
+			break;
+		}
 	}
 }
 
@@ -1705,93 +1691,72 @@ void CEnemy::Atack(void)
 		{// 攻撃判定中
 
 			// プレイヤー情報
-			CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-
-			if (pPlayer == NULL)
-			{// NULLだったら
-				return;
-			}
-
-			// 敵の位置取得
-			D3DXVECTOR3 TargetPos = pPlayer->GetPosition();
-
-			// モデル情報取得
-			CModel **pModel = GetObjectChara()->GetModel();
-			D3DXMATRIX mtxTrans;	// 計算用マトリックス宣言
-
-			// 武器のマトリックス取得
-			D3DXMATRIX mtxWepon;
-			D3DXMatrixIdentity(&mtxWepon);
-
-			if (pModel[aInfo.AttackInfo[nCntAttack]->nCollisionNum] == NULL)
-			{// NULLだったら
-				return;
-			}
-
-			// 判定するパーツのマトリックス取得
-			mtxWepon = pModel[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetWorldMtx();
-
-			// 位置を反映する
-			D3DXMatrixTranslation(&mtxTrans, aInfo.AttackInfo[nCntAttack]->Offset.x, aInfo.AttackInfo[nCntAttack]->Offset.y, aInfo.AttackInfo[nCntAttack]->Offset.z);
-			D3DXMatrixMultiply(&mtxWepon, &mtxTrans, &mtxWepon);
-
-			// 武器の位置
-			D3DXVECTOR3 weponpos = D3DXVECTOR3(mtxWepon._41, mtxWepon._42, mtxWepon._43);
-#if _DEBUG
-			CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize * 0.5f, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
-#endif
-			// 判定サイズ取得
-			float fRadius = pPlayer->GetObjectChara()->GetRadius();
-
-			if (aInfo.AttackInfo[nCntAttack]->fRangeSize == 0.0f)
+			for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 			{
-				continue;
-			}
+				CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+				if (pPlayer == NULL)
+				{// NULLだったら
+					return;
+				}
 
-			if (SphereRange(weponpos, TargetPos, aInfo.AttackInfo[nCntAttack]->fRangeSize, fRadius))
-			{// 球の判定
+				// 武器の位置
+				D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
+#if _DEBUG
+				CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize * 0.5f, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+#endif
+				// 判定サイズ取得
+				float fRadius = pPlayer->GetRadius();
+
+				if (aInfo.AttackInfo[nCntAttack]->fRangeSize == 0.0f)
+				{
+					continue;
+				}
+
+				if (SphereRange(weponpos, pPlayer->GetPosition(), aInfo.AttackInfo[nCntAttack]->fRangeSize, fRadius))
+				{// 球の判定
 
 #if 0
-				int playerState = pPlayer->GetState();
-				if (playerState != CPlayer::STATE_DMG &&
-					playerState != CPlayer::STATE_KNOCKBACK &&
-					playerState != CPlayer::STATE_DEAD &&
-					playerState != CPlayer::STATE_INVINCIBLE)
-				{
-					D3DXVECTOR3 PlayerRot = pPlayer->GetRotation();
+					int playerState = pPlayer->GetState();
+					if (playerState != CPlayer::STATE_DMG &&
+						playerState != CPlayer::STATE_KNOCKBACK &&
+						playerState != CPlayer::STATE_DEAD &&
+						playerState != CPlayer::STATE_INVINCIBLE)
+					{
+						D3DXVECTOR3 PlayerRot = pPlayer->GetRotation();
 
-					// ターゲットと敵との向き
-					float fRot = atan2f((pos.x - TargetPos.x), (pos.z - TargetPos.z));
+						// ターゲットと敵との向き
+						float fRot = atan2f((pos.x - TargetPos.x), (pos.z - TargetPos.z));
 
-					// 向きを正面にする
-					fRot = D3DX_PI + fRot;
+						// 向きを正面にする
+						fRot = D3DX_PI + fRot;
 
-					// 角度の正規化
-					RotNormalize(fRot);
+						// 角度の正規化
+						RotNormalize(fRot);
 
-					pPlayer->SetRotation(D3DXVECTOR3(PlayerRot.x, fRot, PlayerRot.z));
-					fRot = pPlayer->GetRotation().y;
+						pPlayer->SetRotation(D3DXVECTOR3(PlayerRot.x, fRot, PlayerRot.z));
+						fRot = pPlayer->GetRotation().y;
 
-					// 吹き飛ばし
-					pPlayer->SetMove(D3DXVECTOR3(
-						sinf(fRot) * 4.0f,
-						12.0f,
-						cosf(fRot) * 4.0f));
-				}
-				if (pPlayer->Hit(aInfo.AttackInfo[nCntAttack]->nDamage) == true)
-				{// 死んでたら
+						// 吹き飛ばし
+						pPlayer->SetMove(D3DXVECTOR3(
+							sinf(fRot) * 4.0f,
+							12.0f,
+							cosf(fRot) * 4.0f));
+					}
+					if (pPlayer->Hit(aInfo.AttackInfo[nCntAttack]->nDamage) == true)
+					{// 死んでたら
 
-					my_particle::Create(TargetPos, my_particle::TYPE_OFFSETTING);
+						my_particle::Create(TargetPos, my_particle::TYPE_OFFSETTING);
 
-					// プレイヤー情報
-					CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-					CPlayer **ppPlayer = &pPlayer;
+						// プレイヤー情報
+						CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+						CPlayer **ppPlayer = &pPlayer;
 
-					// プレイヤーをNULL
-					ppPlayer = NULL;
-					int m = 0;
-				}
+						// プレイヤーをNULL
+						ppPlayer = NULL;
+						int m = 0;
+					}
 #endif
+				}
 			}
 		}
 	}

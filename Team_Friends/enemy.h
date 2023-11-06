@@ -33,10 +33,7 @@ public:
 	typedef enum
 	{
 		TYPE_BOSS = 0,	// ボス
-		TYPE_CROUWD,
 		TYPE_FLY,
-		TYPE_PAPION,
-		TYPE_BEE,
 		TYPE_MAX
 	}TYPE;
 
@@ -155,6 +152,7 @@ protected:
 	int m_nCntState;						// 状態遷移カウンター
 	int m_nSurvivalLife;					// 生存時間
 	int m_nSurvivalLifeOrigin;				// 生存時間
+	int m_nTargetPlayerIndex;				// 追い掛けるプレイヤーのインデックス番号
 	D3DXVECTOR3 m_posOrigin;				// 最初の位置
 	D3DXVECTOR3 m_posKnokBack;				// ノックバックの位置
 	SMotionFrag m_sMotionFrag;				// モーションのフラグ

@@ -248,7 +248,7 @@ bool CInputKeyboard::GetRepeat(int nKey, int nPattern)
 //==================================================================================
 CInputGamepad::CInputGamepad()
 {
-	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++)
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
 		memset(&m_aGamepadState[nCntPlayer], 0, sizeof(XINPUT_STATE));
 		memset(&m_aGamepadStateTrigger[nCntPlayer], 0, sizeof(XINPUT_STATE));
@@ -293,7 +293,7 @@ HRESULT CInputGamepad::Init(HINSTANCE hInstance, HWND hWnd)
 	m_bVibrationUse = true;
 
 	// メモリクリア
-	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++)
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
 		m_nCntVibration[nCntPlayer] = 0;
 		m_VibrationState[nCntPlayer] = VIBRATION_STATE_NONE;
@@ -323,11 +323,11 @@ void CInputGamepad::Uninit(void)
 //==================================================================================
 void CInputGamepad::Update(void)
 {
-	XINPUT_STATE  aGamepadState[MAX_PLAYER];
+	XINPUT_STATE  aGamepadState[mylib_const::MAX_PLAYER];
 	int nCntPlayer;
 
 	// 入力デバイスからデータを取得
-	for (nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++)
+	for (nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
 		if (XInputGetState(nCntPlayer, &aGamepadState[nCntPlayer]) == ERROR_SUCCESS)
 		{

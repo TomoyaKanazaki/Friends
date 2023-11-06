@@ -121,8 +121,11 @@ void CEnemyBoss::Uninit(void)
 	CEnemy::Uninit();
 
 	// モード設定
-	CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RESULT);
-	CManager::GetInstance()->GetSound()->StopSound(CSound::LABEL_BGM_HOBARING);
+	if (CGame::IsEdit() == false)
+	{
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RESULT);
+		CManager::GetInstance()->GetSound()->StopSound(CSound::LABEL_BGM_HOBARING);
+	}
 }
 
 //==========================================================================
@@ -248,13 +251,6 @@ bool CEnemyBoss::Hit(const int nValue)
 			else if(m_sAct.AtkType == ATKTYPE_BULLET || m_sAct.AtkType == ATKTYPE_ENEMYSPAWN)
 			{
 
-				// プレイヤー情報
-				CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-				if (pPlayer == NULL)
-				{// NULLだったら
-					return false;
-				}
-
 				// スタンノックバック状態にする
 				m_state = STATE_ATTACK;
 				m_nCntState = STUNKNOCKBACK_TIME;
@@ -359,49 +355,51 @@ void CEnemyBoss::Update(void)
 void CEnemyBoss::CollisionPlayer(void)
 {
 	// プレイヤーの取得
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-	if (pPlayer == NULL)
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
-		return;
-	}
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+		if (pPlayer == NULL)
+		{
+			return;
+		}
 
-	if (m_state == STATE_SPAWN || m_state == STATE_DEAD || m_state == STATE_FADEOUT)
-	{
-		return;
-	}
+		if (m_state == STATE_SPAWN || m_state == STATE_DEAD || m_state == STATE_FADEOUT)
+		{
+			return;
+		}
 
-	// 自分の情報取得
-	D3DXVECTOR3 pos = GetPosition();
-	float fRadius = GetRadius();
+		// 自分の情報取得
+		D3DXVECTOR3 pos = GetPosition();
+		float fRadius = GetRadius();
 
-	if (m_sAct.AtkType == ATKTYPE_STUN ||
-		m_sAct.AtkType == ATKTYPE_STUNKNOCKBACK)
-	{
-		fRadius *= 0.5f;
-	}
+		if (m_sAct.AtkType == ATKTYPE_STUN ||
+			m_sAct.AtkType == ATKTYPE_STUNKNOCKBACK)
+		{
+			fRadius *= 0.5f;
+		}
 
-	// プレイヤー情報取得
-	D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
-	float PlayerRadius = pPlayer->GetRadius();
-	CPlayer::STATE PlayerState = (CPlayer::STATE)pPlayer->GetState();
+		// プレイヤー情報取得
+		D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
+		float PlayerRadius = pPlayer->GetRadius();
+		CPlayer::STATE PlayerState = (CPlayer::STATE)pPlayer->GetState();
 
-	// 球の判定
-	if (SphereRange(pos, PlayerPos, fRadius, PlayerRadius) &&
-		PlayerState != CPlayer::STATE_DEAD &&
-		PlayerState != CPlayer::STATE_DMG &&
-		PlayerState != CPlayer::STATE_KNOCKBACK &&
-		PlayerState != CPlayer::STATE_INVINCIBLE)
-	{
+		// 球の判定
+		if (SphereRange(pos, PlayerPos, fRadius, PlayerRadius) &&
+			PlayerState != CPlayer::STATE_DEAD &&
+			PlayerState != CPlayer::STATE_DMG &&
+			PlayerState != CPlayer::STATE_KNOCKBACK &&
+			PlayerState != CPlayer::STATE_INVINCIBLE)
+		{
 
-		// ヒット処理
-		if (pPlayer->Hit(1) == false)
-		{// 死んでなかったら
+			// ヒット処理
+			if (pPlayer->Hit(1) == false)
+			{// 死んでなかったら
 
-			// 吹っ飛び移動量設定
-			pPlayer->SetMove(D3DXVECTOR3(8.0f, 0.0f, 0.0f));
+				// 吹っ飛び移動量設定
+				pPlayer->SetMove(D3DXVECTOR3(8.0f, 0.0f, 0.0f));
+			}
 		}
 	}
-
 }
 
 //==========================================================================
@@ -552,7 +550,7 @@ void CEnemyBoss::UpdateAppearance(void)
 	D3DXVECTOR3 pos = GetPosition();
 
 	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 	if (pPlayer == NULL)
 	{
 		return;
@@ -828,17 +826,6 @@ void CEnemyBoss::ChangeToAttackState(void)
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
 
-	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-
-	if (pPlayer == NULL)
-	{
-		return;
-	}
-
-	// 親の位置取得
-	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-
 	float fRadius = 500.0f;
 
 	//if (CircleRange3D(pos, posPlayer, fRadius, pPlayer->GetRadius()) == true && m_sMotionFrag.bJump == false)
@@ -889,7 +876,7 @@ void CEnemyBoss::StateWait(void)
 {
 
 	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 	if (pPlayer == NULL)
 	{// NULLだったら
 		return;
@@ -960,7 +947,7 @@ void CEnemyBoss::PlayerChase(void)
 	bool bLen = false;
 
 	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 
 	// オブジェクト情報
 	CObject *pObj = NULL;
@@ -1052,7 +1039,7 @@ void CEnemyBoss::StateAttack(void)
 void CEnemyBoss::ChaseMove(float fMove)
 {
 	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 	if (pPlayer == NULL)
 	{
 		return;
@@ -1109,9 +1096,6 @@ void CEnemyBoss::Damage(void)
 
 	// 距離の判定
 	bool bLen = false;
-
-	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
 
 #if _DEBUG
 	// 色設定
@@ -1322,7 +1306,7 @@ void CEnemyBoss::AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo)
 	// 武器の位置
 	D3DXVECTOR3 weponpos = D3DXVECTOR3(mtxWepon._41, mtxWepon._42, mtxWepon._43);
 
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 
 	if (pPlayer == NULL)
 	{// NULLだったら
@@ -1388,21 +1372,6 @@ void CEnemyBoss::AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo)
 
 		// ボストーク
 		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_BOSSTALK);
-
-		int nNumAll = CGame::GetEnemyBase()->GetNumAll();
-		int nRandom = Random(0, nNumAll - 1);
-
-		// 敵の拠点情報取得
-		CEnemyBase::sInfo sInfo = CGame::GetEnemyBase()->GetChaseChangeInfo(nRandom);
-
-		// 敵配置
-		CGame::GetEnemyManager()->SetEnemy(
-					D3DXVECTOR3(0.0f, sInfo.fSpawnPosY, 0.0f),
-					mylib_const::DEFAULT_VECTOR3,
-					sInfo.nPattern);
-
-		// 敵のスポーンエフェクト生成
-		CEffectEnemySpawn::Create(mylib_const::DEFAULT_VECTOR3);
 		break;
 	}
 	
@@ -1426,7 +1395,7 @@ void CEnemyBoss::RotPlayer(void)
 	float fRotDiff = 0.0f;
 
 	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 
 	if (pPlayer == NULL)
 	{

@@ -32,7 +32,7 @@ int CEnemyBase::m_nNumAll = 0;		// 総数
 CEnemyBase::CEnemyBase()
 {
 	// 値のクリア
-		memset(&m_pMultiNumber[0], NULL, sizeof(m_pMultiNumber));	// オブジェクトX
+	memset(&m_pMultiNumber[0], NULL, sizeof(m_pMultiNumber));	// オブジェクトX
 	memset(&m_apObjX[0], NULL, sizeof(m_apObjX));	// オブジェクトX
 }
 
@@ -92,20 +92,20 @@ HRESULT CEnemyBase::Init(void)
 	// 敵マネージャ取得
 	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
 
-	// 生成する
-	for (int i = 0; i < m_nNumAll; i++)
-	{
-		// デバッグ用数字の生成
-		m_pMultiNumber[i] = CDebugPointNumber::Create(i);
+	//// 生成する
+	//for (int i = 0; i < m_nNumAll; i++)
+	//{
+	//	// デバッグ用数字の生成
+	//	m_pMultiNumber[i] = CDebugPointNumber::Create(i);
 
-		if (m_ChaseChangeInfo[i].nRush == 0)
-		{// ラッシュ用じゃなかったら
-			pEnemyManager->SetEnemy(
-				D3DXVECTOR3(0.0f, m_ChaseChangeInfo[i].fSpawnPosY, 0.0f),
-				mylib_const::DEFAULT_VECTOR3,
-				m_ChaseChangeInfo[i].nPattern);
-		}
-	}
+	//	if (m_ChaseChangeInfo[i].nRush == 0)
+	//	{// ラッシュ用じゃなかったら
+	//		pEnemyManager->SetEnemy(
+	//			m_ChaseChangeInfo[i].pos,
+	//			mylib_const::DEFAULT_VECTOR3,
+	//			m_ChaseChangeInfo[i].nPattern);
+	//	}
+	//}
 
 	return S_OK;
 }
@@ -113,7 +113,7 @@ HRESULT CEnemyBase::Init(void)
 //==========================================================================
 // 位置作成
 //==========================================================================
-void CEnemyBase::CreatePos(int nPattern, int nMapIdx, float fMapMoveValue, int nRush, float PosY)
+void CEnemyBase::CreatePos(int nPattern, D3DXVECTOR3 pos, int nRush)
 {
 	sInfo InitInfo;
 	memset(&InitInfo, NULL, sizeof(InitInfo));
@@ -121,15 +121,13 @@ void CEnemyBase::CreatePos(int nPattern, int nMapIdx, float fMapMoveValue, int n
 	// 位置生成
 	m_ChaseChangeInfo.push_back(InitInfo);
 	m_ChaseChangeInfo[m_nNumAll].nPattern = nPattern;	// 種類
-	m_ChaseChangeInfo[m_nNumAll].nMapIdx = nMapIdx;
-	m_ChaseChangeInfo[m_nNumAll].fMapMoveValue = fMapMoveValue;
-	m_ChaseChangeInfo[m_nNumAll].fSpawnPosY = PosY;
+	m_ChaseChangeInfo[m_nNumAll].pos = pos;
 	m_ChaseChangeInfo[m_nNumAll].nRush = nRush;
 
 	// 目印生成
 	m_apObjX[m_nNumAll] = CObjectX::Create(MARKOBJ, mylib_const::DEFAULT_VECTOR3, mylib_const::DEFAULT_VECTOR3, false);	// オブジェクトX
 	m_apObjX[m_nNumAll]->SetType(CObject::TYPE_BALLAST);
-	m_apObjX[m_nNumAll]->SetPosition(D3DXVECTOR3(0.0f, PosY, 0.0f));
+	m_apObjX[m_nNumAll]->SetPosition(m_ChaseChangeInfo[m_nNumAll].pos);
 
 	// 総数加算
 	m_nNumAll++;
@@ -175,14 +173,11 @@ void CEnemyBase::Update(void)
 			//m_apObjX[i]->SetPositionD3DXVECTOR3(pos.x, m_apObjX[i]->GetPosition().y, pos.z);
 		}
 
-		// マップ情報から位置取得
-		D3DXVECTOR3 pos = mylib_const::DEFAULT_VECTOR3;
-
-		m_apObjX[i]->SetPosition(D3DXVECTOR3(pos.x, m_ChaseChangeInfo[i].fSpawnPosY, pos.z));
+		m_apObjX[i]->SetPosition(m_ChaseChangeInfo[i].pos);
 
 		if (m_pMultiNumber[i] != NULL)
 		{
-			m_pMultiNumber[i]->SetPosition(D3DXVECTOR3(pos.x, m_ChaseChangeInfo[i].fSpawnPosY + 50.0f, pos.z));
+			m_pMultiNumber[i]->SetPosition(m_ChaseChangeInfo[i].pos);
 		}
 	}
 #endif
@@ -235,25 +230,13 @@ HRESULT CEnemyBase::ReadText(const char *pFileName)
 					fscanf(pFile, "%d", &m_ChaseChangeInfo[m_nNumAll].nPattern);	// キャラファイル番号
 				}
 
-				if (strcmp(aComment, "MAPIDX") == 0)
-				{// MAPIDXが来たらマップインデックス番号読み込み
+				if (strcmp(aComment, "POS") == 0)
+				{// POSが来たら位置読み込み
 
-					fscanf(pFile, "%s", &aComment[0]);	// =の分
-					fscanf(pFile, "%d", &m_ChaseChangeInfo[m_nNumAll].nMapIdx);	// マップインデックス番号
-				}
-
-				if (strcmp(aComment, "MAPMOVEVALUE") == 0)
-				{// MAPMOVEVALUEが来たらマップ移動量読み込み
-
-					fscanf(pFile, "%s", &aComment[0]);	// =の分
-					fscanf(pFile, "%f", &m_ChaseChangeInfo[m_nNumAll].fMapMoveValue);	// マップ移動量
-				}
-
-				if (strcmp(aComment, "SPAWN_Y") == 0)
-				{// SPAWN_Yが来たら出現高さ読み込み
-
-					fscanf(pFile, "%s", &aComment[0]);	// =の分
-					fscanf(pFile, "%f", &m_ChaseChangeInfo[m_nNumAll].fSpawnPosY);	// マップ移動量
+					fscanf(pFile, "%s", &aComment[0]);		// =の分
+					fscanf(pFile, "%f", &m_ChaseChangeInfo[m_nNumAll].pos.x);	// X座標
+					fscanf(pFile, "%f", &m_ChaseChangeInfo[m_nNumAll].pos.y);	// Y座標
+					fscanf(pFile, "%f", &m_ChaseChangeInfo[m_nNumAll].pos.z);	// Z座標
 				}
 
 				if (strcmp(aComment, "RUSH") == 0)
@@ -307,15 +290,11 @@ void CEnemyBase::Save(void)
 		fprintf(pFile,
 			"BASESET\n"
 			"\tPATTERN = %d\n"
-			"\tMAPIDX = %d\n"
-			"\tMAPMOVEVALUE = %.2f\n"
-			"\tSPAWN_Y = %.2f\n"
+			"\tPOS = %.2f %.2f %.2f\n"
 			"\tRUSH = %d\n"
 			"END_BASESET\n\n",
 			m_ChaseChangeInfo[i].nPattern,
-			m_ChaseChangeInfo[i].nMapIdx,
-			m_ChaseChangeInfo[i].fMapMoveValue,
-			m_ChaseChangeInfo[i].fSpawnPosY,
+			m_ChaseChangeInfo[i].pos.x, m_ChaseChangeInfo[i].pos.y, m_ChaseChangeInfo[i].pos.z,
 			m_ChaseChangeInfo[i].nRush);
 	}
 
@@ -328,41 +307,34 @@ void CEnemyBase::Save(void)
 //==========================================================================
 // 軸数取得
 //==========================================================================
-int CEnemyBase::GetAxisNum(void)
+int CEnemyBase::GetSpawnPointNum(void)
 {
 	return m_ChaseChangeInfo.size() - 1;
 }
 
 //==========================================================================
-// 軸取得
+// 位置取得
 //==========================================================================
-D3DXVECTOR3 CEnemyBase::GetAxis(int nIdx)
+D3DXVECTOR3 CEnemyBase::GetSpawnPoint(int nIdx)
 {
 	if (nIdx < 0)
 	{
 		nIdx = 0;
 	}
 
-	D3DXVECTOR3 pos = mylib_const::DEFAULT_VECTOR3;
-
 	if (nIdx >= (int)m_ChaseChangeInfo.size())
 	{// 要素数を超えていたら
 
-		int nMaxIdx = (int)m_ChaseChangeInfo.size() - 1;
 		return mylib_const::DEFAULT_VECTOR3;
 	}
 
-	// マップ情報から位置取得
-	pos = mylib_const::DEFAULT_VECTOR3;
-	pos.y = m_ChaseChangeInfo[nIdx].fSpawnPosY;
-
-	return pos;
+	return m_ChaseChangeInfo[nIdx].pos;
 }
 
 //==========================================================================
-// 軸設定
+// 位置設定
 //==========================================================================
-void CEnemyBase::SetSpawnPoint(int nIdx, int nMapIdx, float fMapMoveValue, float PosY)
+void CEnemyBase::SetSpawnPoint(int nIdx, D3DXVECTOR3 pos)
 {
 	if (nIdx < 0)
 	{
@@ -370,9 +342,7 @@ void CEnemyBase::SetSpawnPoint(int nIdx, int nMapIdx, float fMapMoveValue, float
 	}
 
 	// 情報渡す
-	m_ChaseChangeInfo[nIdx].nMapIdx = nMapIdx;
-	m_ChaseChangeInfo[nIdx].fMapMoveValue = fMapMoveValue;
-	m_ChaseChangeInfo[nIdx].fSpawnPosY = PosY;
+	m_ChaseChangeInfo[nIdx].pos = pos;
 }
 
 //==========================================================================

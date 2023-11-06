@@ -87,6 +87,7 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 	m_nCntState = 0;			// 状態遷移カウンター
 	m_nTexIdx = 0;				// テクスチャのインデックス番号
 	m_nIdxXFile = 0;			// Xファイルのインデックス番号
+	m_nMyPlayerIdx = 0;			// プレイヤーインデックス番号
 	m_pShadow = NULL;			// 影の情報
 	m_pTargetP = NULL;	// 目標の地点
 	m_pHPGauge = NULL;	// HPゲージの情報
@@ -103,7 +104,7 @@ CPlayer::~CPlayer()
 //==========================================================================
 // 生成処理
 //==========================================================================
-CPlayer *CPlayer::Create(void)
+CPlayer *CPlayer::Create(int nIdx)
 {
 	// 生成用のオブジェクト
 	CPlayer *pPlayer = NULL;
@@ -129,6 +130,9 @@ CPlayer *CPlayer::Create(void)
 
 		if (pPlayer != NULL)
 		{// メモリの確保が出来ていたら
+
+			// プレイヤーインデックス番号
+			pPlayer->m_nMyPlayerIdx = nIdx;
 
 			// 初期化処理
 			pPlayer->Init();
@@ -224,14 +228,8 @@ void  CPlayer::UninitByMode(void)
 	CScene *pScene = CManager::GetInstance()->GetScene();
 	if (pScene != NULL)
 	{
-		// プレイヤー情報
-		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-		CPlayer **ppPlayer = &pPlayer;
-
 		// プレイヤーをNULL
-		*ppPlayer = NULL;
-		int n = 0;
-		CManager::GetInstance()->GetScene()->UninitPlayer();
+		CManager::GetInstance()->GetScene()->UninitPlayer(m_nMyPlayerIdx);
 	}
 }
 
@@ -399,20 +397,20 @@ void CPlayer::Controll(void)
 			m_state != STATE_FADEOUT)
 		{// 移動可能モーションの時
 
-			if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(0).x < 0)
+			if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).x < 0)
 			{//←キーが押された,左移動
 
 				// 移動中にする
 				m_sMotionFrag.bMove = true;
 
-				if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(0).y > 0)
+				if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
 				{//A+W,左上移動
 
 					move.x += sinf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
 					move.z += cosf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
 					fRotDest = D3DX_PI * 0.75f + Camerarot.y;
 				}
-				else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(0).y < 0)
+				else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y < 0)
 				{//A+S,左下移動
 
 					move.x += sinf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
@@ -427,20 +425,20 @@ void CPlayer::Controll(void)
 					fRotDest = D3DX_PI * 0.5f + Camerarot.y;
 				}
 			}
-			else if (pInputKeyboard->GetPress(DIK_D) == true || pInputGamepad->GetStickMoveL(0).x > 0)
+			else if (pInputKeyboard->GetPress(DIK_D) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).x > 0)
 			{//Dキーが押された,右移動
 
 				// 移動中にする
 				m_sMotionFrag.bMove = true;
 
-				if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(0).y > 0)
+				if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
 				{//D+W,右上移動
 
 					move.x += sinf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
 					move.z += cosf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
 					fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
 				}
-				else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(0).y < 0)
+				else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y < 0)
 				{//D+S,右下移動
 
 					move.x += sinf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
@@ -455,7 +453,7 @@ void CPlayer::Controll(void)
 					fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
 				}
 			}
-			else if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(0).y > 0)
+			else if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
 			{//Wが押された、上移動
 
 				// 移動中にする
@@ -464,7 +462,7 @@ void CPlayer::Controll(void)
 				move.z += cosf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
 				fRotDest = D3DX_PI * 1.0f + Camerarot.y;
 			}
-			else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(0).y < 0)
+			else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y < 0)
 			{//Sが押された、下移動
 
 				// 移動中にする
@@ -480,7 +478,7 @@ void CPlayer::Controll(void)
 			}
 
 			if (m_bJump == false &&
-				(pInputKeyboard->GetTrigger(DIK_SPACE) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LB, 0)))
+				(pInputKeyboard->GetTrigger(DIK_SPACE) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LB, m_nMyPlayerIdx)))
 			{//SPACEが押された,ジャンプ
 
 				m_bJump = true;
@@ -593,13 +591,30 @@ void CPlayer::Controll(void)
 	{// 行動できるとき
 
 		if (m_sMotionFrag.bATK == false && 
-			(pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) || pInputKeyboard->GetTrigger(DIK_RETURN)))
+			(pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, m_nMyPlayerIdx) || pInputKeyboard->GetTrigger(DIK_RETURN)))
 		{// 攻撃
 
 			// 攻撃判定ON
 			m_sMotionFrag.bJump = false;
 			m_sMotionFrag.bATK = true;
 		}
+	}
+
+	if (pInputKeyboard->GetPress(DIK_1) == true)
+	{//SPACEが押された,ジャンプ
+
+		int nLife = GetLife();
+
+		// 体力減らす
+		nLife -= 1;
+
+		// 体力設定
+		SetLife(nLife);
+	}
+	if (pInputKeyboard->GetPress(DIK_2) == true)
+	{//SPACEが押された,ジャンプ
+
+		Hit(1);
 	}
 }
 
@@ -1016,11 +1031,11 @@ bool CPlayer::Hit(const int nValue)
 	// 体力取得
 	int nLife = GetLife();
 
-	if (nLife <= 0)
-	{
-		// 死んだ
-		return true;
-	}
+	//if (nLife <= 0)
+	//{
+	//	// 死んだ
+	//	return true;
+	//}
 
 	if (m_state != STATE_DMG && m_state != STATE_KNOCKBACK && m_state != STATE_INVINCIBLE && m_state != STATE_DEAD && m_state != STATE_FADEOUT)
 	{// ダメージ受付状態の時
@@ -1235,7 +1250,7 @@ void CPlayer::Damage(void)
 	pos.z += move.z;*/
 
 	// 起伏との判定
-	if (m_bHitStage && m_nCntState >= 10)
+	if ((CManager::GetInstance()->GetScene()->GetElevation()->IsHit(pos) || m_bHitStage) && m_nCntState >= 10)
 	{// 地面と当たっていたら
 		m_state = STATE_INVINCIBLE;
 		m_nCntState = INVINCIBLE_TIME;
@@ -1316,7 +1331,7 @@ void CPlayer::Dead(void)
 	m_nCntState--;
 
 	// 起伏との判定
-	if (m_bHitStage && m_nCntState >= 10)
+	if ((CManager::GetInstance()->GetScene()->GetElevation()->IsHit(pos) || m_bHitStage) && m_nCntState >= 10)
 	{// 地面と当たっていたら
 
 		//// フェードを設定する
@@ -1430,9 +1445,6 @@ void CPlayer::KnockBack(void)
 	// 距離の判定
 	bool bLen = false;
 
-	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-
 
 	// 状態遷移カウンター減算
 	m_nCntState++;
@@ -1444,7 +1456,7 @@ void CPlayer::KnockBack(void)
 	pos.z += move.z;*/
 
 	// 起伏との判定
-	if (m_bHitStage)
+	if ((CManager::GetInstance()->GetScene()->GetElevation()->IsHit(pos) || m_bHitStage))
 	{// 地面と当たっていたら
 		m_state = STATE_INVINCIBLE;
 		m_nCntState = INVINCIBLE_TIME;

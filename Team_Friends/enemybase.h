@@ -28,10 +28,8 @@ public:
 	// 構造体定義
 	struct sInfo
 	{
+		D3DXVECTOR3 pos;		// 位置
 		int nPattern;			// 種類
-		int nMapIdx;			// マップインデックス
-		float fMapMoveValue;	// マップの移動量
-		float fSpawnPosY;		// 出現の高さ
 		int nRush;				// ラッシュ用かどうか
 	};
 
@@ -42,15 +40,15 @@ public:
 	void Uninit(void);
 	void Update(void);
 
-	void CreatePos(int nPattern, int nMapIdx, float fMapMoveValue, int nRush, float PosY);	// 位置作成
+	void CreatePos(int nPattern, D3DXVECTOR3 pos, int nRush);	// 位置作成
 	void DeletePos(int nIdx);					// 位置削除
 	HRESULT ReadText(const char *pFileName);	// 外部ファイル読み込み処理
 	void Save(void);			// 外部ファイル書き出し処理
 
 	static CEnemyBase *Create(const char *pFileName);
-	int GetAxisNum(void);			// 軸数取得
-	D3DXVECTOR3 GetAxis(int nIdx);	// 軸取得
-	void SetSpawnPoint(int nIdx, int nMapIdx, float fMapMoveValue, float PosY);	// 軸設定
+	int GetSpawnPointNum(void);			// 位置数取得
+	D3DXVECTOR3 GetSpawnPoint(int nIdx);	// 位置取得
+	void SetSpawnPoint(int nIdx, D3DXVECTOR3 pos);	// 位置設定
 	sInfo GetChaseChangeInfo(int nIdx);	// 変更の情報取得
 	static int GetNumAll(void) { return m_nNumAll; }	// 総数取得
 private:

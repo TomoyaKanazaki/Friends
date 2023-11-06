@@ -93,7 +93,7 @@ HRESULT CEditEnemyBase::Init(void)
 {
 	m_pos = CManager::GetInstance()->GetCamera()->GetPositionR();
 	m_apObjX = CObjectX::Create(MARKOBJ, mylib_const::DEFAULT_VECTOR3, mylib_const::DEFAULT_VECTOR3, false);	// オブジェクトX
-	m_apObjX->SetType(CObject::TYPE_BALLAST);
+	m_apObjX->SetType(CObject::TYPE_OBJECT3D);
 	return S_OK;
 }
 
@@ -136,41 +136,9 @@ void CEditEnemyBase::Update(void)
 	{
 		if (m_pEnemy[nCntEnemy] != NULL)
 		{// NULLじゃなかったら
-			D3DXVECTOR3 posOrigin = m_pEnemy[nCntEnemy]->GetOriginPosition();
-			m_pEnemy[nCntEnemy]->SetSpawnPosition(D3DXVECTOR3(posOrigin.x, m_pos.y, posOrigin.z));
+			m_pEnemy[nCntEnemy]->SetPosition(m_pos);
 		}
 	}
-
-
-	// 少し先の地点取得
-	float fMoveValue = m_fMoveValue + 50.0f;
-	D3DXVECTOR3 DestPoint = D3DXVECTOR3(100.0f, 100.0f, 100.0f);
-
-	// ベクトル
-	D3DXVECTOR3 vec = mylib_const::DEFAULT_VECTOR3;
-	D3DXVECTOR3 newvec = mylib_const::DEFAULT_VECTOR3;
-
-	// ベクトル
-	if (m_fMoveValue < fMoveValue)
-	{
-		vec = DestPoint - m_pos;
-	}
-	else
-	{
-		vec = m_pos - DestPoint;
-	}
-	D3DXVec3Normalize(&vec, &vec);
-
-	// 90度傾ける
-	newvec.x = vec.z;
-	newvec.z = -vec.x;
-
-	// 目標の視点の向き
-	m_rot.y = atan2f((0.0f - newvec.x), (0.0f - newvec.z));
-	m_apObjX->SetRotation(m_rot);
-
-
-
 
 	// 掴み処理
 	if (pInputKeyboard->GetPress(DIK_SPACE) == true)
@@ -188,7 +156,7 @@ void CEditEnemyBase::Update(void)
 			return;
 		}
 		// 生成
-		pEnemyBase->CreatePos(m_nEnemyType, m_nIdxMapPoint, m_fMoveValue, m_nRush, m_pos.y);
+		pEnemyBase->CreatePos(m_nEnemyType, m_pos, m_nRush);
 	}
 
 	if (pInputKeyboard->GetTrigger(DIK_DELETE) == true)
@@ -451,7 +419,7 @@ void CEditEnemyBase::Grab(void)
 
 	for (int i = 0; i < pEnemyBase->GetNumAll(); i++)
 	{
-		D3DXVECTOR3 TargetPoint = pEnemyBase->GetAxis(i);
+		D3DXVECTOR3 TargetPoint = pEnemyBase->GetSpawnPoint(i);
 		if (bAll == true || SphereRange(m_pos, TargetPoint, 50.0f, 50.0f))
 		{// 球に当たってたら
 
@@ -459,7 +427,7 @@ void CEditEnemyBase::Grab(void)
 			Control(TargetPoint);
 
 			// 位置設定
-			pEnemyBase->SetSpawnPoint(i, m_nIdxMapPoint, m_fMoveValue, TargetPoint.y);
+			pEnemyBase->SetSpawnPoint(i, TargetPoint);
 		}
 	}
 }
@@ -481,7 +449,7 @@ void CEditEnemyBase::Delete(void)
 
 	for (int i = 0; i < pEnemyBase->GetNumAll(); i++)
 	{
-		D3DXVECTOR3 TargetPoint = pEnemyBase->GetAxis(i);
+		D3DXVECTOR3 TargetPoint = pEnemyBase->GetSpawnPoint(i);
 		if (SphereRange(m_pos, TargetPoint, 50.0f, 50.0f))
 		{// 球に当たってたら
 			pEnemyBase->DeletePos(i);

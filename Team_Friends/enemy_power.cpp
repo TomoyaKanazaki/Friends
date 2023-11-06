@@ -136,7 +136,7 @@ void CEnemyPower::Update(void)
 		float fRotDest = GetRotDest();
 
 		// プレイヤー情報
-		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 
 		if (pPlayer == NULL)
 		{// NULLだったら
@@ -184,32 +184,38 @@ void CEnemyPower::ChangeToAttackState(void)
 	D3DXVECTOR3 pos = GetPosition();
 
 	// プレイヤー情報
-	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-
-	if (pPlayer == NULL)
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
-		return;
-	}
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 
-	// 親の位置取得
-	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+		if (pPlayer == NULL)
+		{
+			return;
+		}
 
-	// 右前
-	D3DXVECTOR3 posLeft;
-	D3DXVECTOR3 posRight;
+		// 親の位置取得
+		D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 
-	float fSearchCircle = 400.0f;
+		// 右前
+		D3DXVECTOR3 posLeft;
+		D3DXVECTOR3 posRight;
 
-	if (m_sMotionFrag.bATK == false &&
-		CircleRange3D(pos, posPlayer, fSearchCircle, pPlayer->GetRadius()) == true &&
-		m_sMotionFrag.bJump == false)
-	{// 一定距離間にプレイヤーが入ったら
+		float fSearchCircle = 400.0f;
 
-		// 攻撃状態にする
-		m_state = STATE_ATTACK;
-		m_sMotionFrag.bATK = true;
-		m_attackType = ATTACKTYPE_IMPACTWAVE;
-		return;
+		if (m_sMotionFrag.bATK == false &&
+			CircleRange3D(pos, posPlayer, fSearchCircle, pPlayer->GetRadius()) == true &&
+			m_sMotionFrag.bJump == false)
+		{// 一定距離間にプレイヤーが入ったら
+
+			// 攻撃状態にする
+			m_state = STATE_ATTACK;
+			m_sMotionFrag.bATK = true;
+			m_attackType = ATTACKTYPE_IMPACTWAVE;
+
+			// 追い掛けるプレイヤーの番号設定
+			m_nTargetPlayerIndex = nCntPlayer;
+			return;
+		}
 	}
 }
 

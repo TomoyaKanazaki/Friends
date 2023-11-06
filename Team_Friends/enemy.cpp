@@ -198,20 +198,20 @@ HRESULT CEnemy::Init(void)
 	// 生存時間
 	m_nSurvivalLifeOrigin = m_nSurvivalLife;
 
-	if (m_pListManager == NULL)
-	{
-		// リストマネージャの生成処理
-		m_pListManager = CListManager::Create();
-	}
+	//if (m_pListManager == NULL)
+	//{
+	//	// リストマネージャの生成処理
+	//	m_pListManager = CListManager::Create();
+	//}
 
-	// リストの生成
-	m_pList = CList::Create();
+	//// リストの生成
+	//m_pList = CList::Create();
 
-	// リストに追加
-	if (m_pListManager != NULL)
-	{
-		m_pListManager->Push(m_pList);
-	}
+	//// リストに追加
+	//if (m_pListManager != NULL)
+	//{
+	//	m_pListManager->Push(m_pList);
+	//}
 
 	return S_OK;
 }
@@ -332,11 +332,14 @@ void CEnemy::Uninit(void)
 		m_pShadow = NULL;
 	}
 
-	if (m_pList != NULL && m_pListManager != NULL)
-	{
-		// リストから取り出す
-		m_pListManager->Pop(m_pList);
-	}
+	//if (m_pList != NULL && m_pListManager != NULL)
+	//{
+	//	// リストから取り出す
+	//	m_pListManager->Pop(m_pList);
+	//	m_pList->Uninit();
+	//	delete m_pList;
+	//	m_pList = NULL;
+	//}
 
 	// 終了処理
 	CObjectChara::Uninit();

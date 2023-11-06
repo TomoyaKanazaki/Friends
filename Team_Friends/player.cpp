@@ -303,6 +303,12 @@ void CPlayer::Update(void)
 	// モーションの設定処理
 	MotionSet();
 
+	// モーション更新
+	if (m_pMotion != NULL)
+	{
+		m_pMotion->Update();
+	}
+
 	// 頂点情報設定
 	SetVtx();
 
@@ -586,10 +592,8 @@ void CPlayer::Controll(void)
 	if (CGame::GetGameManager()->IsControll())
 	{// 行動できるとき
 
-		if (m_sMotionFrag.bATK == false &&
-			(
-				pInputGamepad->GetStickPositionRatioR(0).y >= 0.5f || pInputGamepad->GetStickPositionRatioR(0).y <= -0.5f ||
-				pInputGamepad->GetStickPositionRatioR(0).x >= 0.5f || pInputGamepad->GetStickPositionRatioR(0).x <= -0.5f))
+		if (m_sMotionFrag.bATK == false && 
+			(pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) || pInputKeyboard->GetTrigger(DIK_RETURN)))
 		{// 攻撃
 
 			// 攻撃判定ON
@@ -703,22 +707,8 @@ void CPlayer::Atack(void)
 		if (m_pMotion->GetAllCount() == aInfo.AttackInfo[nCntAttack]->nInpactCnt)
 		{// 衝撃のカウントと同じとき
 
-			D3DXMATRIX mtxTrans;	// 計算用マトリックス宣言
-
-			if (GetObjectChara()->GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum] == NULL)
-			{// NULLだったら
-				return;
-			}
-
-			// 判定するパーツのマトリックス取得
-			D3DXMATRIX mtxWepon = GetObjectChara()->GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetWorldMtx();
-
-			// 位置を反映する
-			D3DXMatrixTranslation(&mtxTrans, aInfo.AttackInfo[nCntAttack]->Offset.x, aInfo.AttackInfo[nCntAttack]->Offset.y, aInfo.AttackInfo[nCntAttack]->Offset.z);
-			D3DXMatrixMultiply(&mtxWepon, &mtxTrans, &mtxWepon);
-
 			// 武器の位置
-			D3DXVECTOR3 weponpos = D3DXVECTOR3(mtxWepon._41, mtxWepon._42, mtxWepon._43);
+			D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetObjectChara()->GetModel(), *aInfo.AttackInfo[nCntAttack]);
 
 			// 種類別
 			switch (m_pMotion->GetType())
@@ -787,79 +777,50 @@ void CPlayer::Atack(void)
 		if (m_pMotion->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt && m_pMotion->GetAllCount() < aInfo.AttackInfo[nCntAttack]->nMaxCnt)
 		{// 攻撃判定中
 
-			// モデル情報取得
-			CModel **pModel = GetObjectChara()->GetModel();
-			D3DXMATRIX mtxTrans;	// 計算用マトリックス宣言
-
-			// 武器のマトリックス取得
-			D3DXMATRIX mtxWepon;
-			D3DXMatrixIdentity(&mtxWepon);
-
-			if (pModel[aInfo.AttackInfo[nCntAttack]->nCollisionNum] == NULL)
-			{// NULLだったら
-				return;
-			}
-
-			// 判定するパーツのマトリックス取得
-			mtxWepon = pModel[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetWorldMtx();
-
-			// 位置を反映する
-			D3DXMatrixTranslation(&mtxTrans, aInfo.AttackInfo[nCntAttack]->Offset.x, aInfo.AttackInfo[nCntAttack]->Offset.y, aInfo.AttackInfo[nCntAttack]->Offset.z);
-			D3DXMatrixMultiply(&mtxWepon, &mtxTrans, &mtxWepon);
-
 			// 武器の位置
-			D3DXVECTOR3 weponpos = D3DXVECTOR3(mtxWepon._41, mtxWepon._42, mtxWepon._43);
+			D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetObjectChara()->GetModel(), *aInfo.AttackInfo[nCntAttack]);
 
 			CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize * 0.5f, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 
-#if 0
+#if 1
+			// 敵取得
+			CEnemy **ppEnemy = CGame::GetEnemyManager()->GetEnemy();
 
-			// 先頭を保存
-			CObject *pObj = CObject::GetTop(mylib_const::ENEMY_PRIORITY);
+			// 総数取得
+			int nNumAll = CGame::GetEnemyManager()->GetNumAll();
+			int i = -1, nCntEnemy = 0;
 
-			while (pObj != NULL)
-			{// NULLが来るまで無限ループ
-
-				// 次のオブジェクトを一時保存
-				CObject *pObjNext = pObj->GetNext();
-
-				// 死亡の判定
-				if (pObj->IsDeath() == true)
-				{// 死亡フラグが立っていたら
-
-					// 次のオブジェクトを代入
-					pObj = pObjNext;
-					continue;
-				}
-
-				// 種類の取得
-				if (pObj->GetType() != CObject::TYPE_ENEMY)
-				{// 敵じゃなかったら
-
-					// 次のオブジェクトを代入
-					pObj = pObjNext;
+			while (1)
+			{
+				// インデックス加算
+				i++;
+				if (ppEnemy[i] == NULL)
+				{
 					continue;
 				}
 
 				// 敵の位置取得
-				D3DXMATRIX mtxOrigin = pObj->GetObjectChara()->GetModel()[0]->GetWorldMtx();
-				D3DXVECTOR3 TargetPos = D3DXVECTOR3(mtxOrigin._41, mtxOrigin._42, mtxOrigin._43);
+				D3DXVECTOR3 TargetPos = ppEnemy[i]->GetPosition();
 
 				// 判定サイズ取得
-				float fRadius = pObj->GetObjectChara()->GetRadius();
+				float fTargetRadius = ppEnemy[i]->GetRadius();
 
-				if (SphereRange(weponpos, TargetPos, aInfo.AttackInfo[nCntAttack]->fRangeSize, fRadius))
+				if (SphereRange(weponpos, TargetPos, aInfo.AttackInfo[nCntAttack]->fRangeSize, fTargetRadius))
 				{// 球の判定
 
-					if (pObj->Hit(aInfo.AttackInfo[nCntAttack]->nDamage) == true)
-					{// 死んでたら
+					if (ppEnemy[i]->Hit(aInfo.AttackInfo[nCntAttack]->nDamage) == true)
+					{// 当たってたら
 
-						my_particle::Create(TargetPos, my_particle::TYPE_OFFSETTING);
 					}
 				}
 
-				// 次のオブジェクトを代入
-				pObj = pObjNext;
+				// 敵の数加算
+				nCntEnemy++;
+
+				if (nCntEnemy >= nNumAll)
+				{// 総数超えたら終わり
+					break;
+				}
 			}
 #else
 

@@ -685,6 +685,28 @@ void CMotion::SubNumAttackInfo(int nType)
 }
 
 //==========================================================================
+// 攻撃の位置取得
+//==========================================================================
+D3DXVECTOR3 CMotion::GetAttackPosition(CModel **ppModel, AttackInfo attackInfo)
+{
+	D3DXMATRIX mtxTrans;	// 計算用マトリックス宣言
+
+	if (ppModel[attackInfo.nCollisionNum] == NULL)
+	{// NULLだったら
+		return mylib_const::DEFAULT_VECTOR3;
+	}
+
+	// 判定するパーツのマトリックス取得
+	D3DXMATRIX mtxWepon = ppModel[attackInfo.nCollisionNum]->GetWorldMtx();
+
+	// 位置を反映する
+	D3DXMatrixTranslation(&mtxTrans, attackInfo.Offset.x, attackInfo.Offset.y, attackInfo.Offset.z);
+	D3DXMatrixMultiply(&mtxWepon, &mtxTrans, &mtxWepon);
+
+	return D3DXVECTOR3(mtxWepon._41, mtxWepon._42, mtxWepon._43);
+}
+
+//==========================================================================
 // カウント取得
 //==========================================================================
 int CMotion::GetAllCount(void)

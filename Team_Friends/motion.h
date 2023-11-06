@@ -80,6 +80,7 @@ public:
 	void ToggleFinish(bool bFinish);	// 終了しているかの判定切り替え
 	void SetSlowFactor(float fFactor);	// 遅延係数の設定
 
+	D3DXVECTOR3 GetAttackPosition(CModel **ppModel, AttackInfo attackInfo);	// 攻撃の位置取得
 	int GetAllCount(void);	// 全てのカウント取得
 	int GetMaxAllCount(void) { return m_nMaxAllFrame; }
 	int GetMaxAllCount(int nType);	// 全てのカウント取得

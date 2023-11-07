@@ -12,6 +12,7 @@
 #include "fade.h"
 #include "elevation.h"
 #include "player.h"
+#include "camera.h"
 
 // 遷移先
 #include "game.h"
@@ -34,6 +35,7 @@ CScene::CScene()
 	// 変数のクリア
 	m_mode = MODE_TITLE;
 	memset(&m_pPlayer[0], 0, sizeof(m_pPlayer));
+	memset(&m_pMultiCamera[0], NULL, sizeof(m_pMultiCamera));	// カメラのオブジェクト
 }
 
 //==========================================================================
@@ -143,6 +145,54 @@ HRESULT CScene::Init(void)
 		m_pPlayer[nCntPlayer] = CPlayer::Create(nCntPlayer);
 	}
 
+	//**********************************
+	// マルチカメラ
+	//**********************************
+	int nNumPlayer = mylib_const::MAX_PLAYER;
+	D3DXVECTOR2 size = D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (nNumPlayer >= 2)
+	{
+		size.x *= 0.5f;
+	}
+	if (nNumPlayer >= 3)
+	{
+		size.y *= 0.5f;
+	}
+
+	for (int i = 0, nCntWidth = 0, nCntHeight = 0; i < nNumPlayer; i++)
+	{
+		if (m_pMultiCamera[i] != NULL)
+		{// 確保されていたら
+			return E_FAIL;
+		}
+
+		// メモリ確保
+		m_pMultiCamera[i] = DEBUG_NEW CCamera;
+
+		if (m_pMultiCamera[i] != NULL)
+		{// メモリの確保が出来ていたら
+
+			// 初期化処理
+			hr = m_pMultiCamera[i]->Init();
+			if (FAILED(hr))
+			{// 初期化処理が失敗した場合
+				return E_FAIL;
+			}
+
+			// ビューポートの設定
+			m_pMultiCamera[i]->SetViewPort(D3DXVECTOR3(nCntWidth * size.x, nCntHeight * size.y, 0.0f), size);
+			m_pMultiCamera[i]->SetPlayerChaseIndex(i);
+		}
+
+		// スクリーンの横加算
+		nCntWidth = (nCntWidth + 1) % 2;
+		if (nCntWidth == 0)
+		{
+			// スクリーンの縦加算
+			nCntHeight++;
+		}
+	}
+
 	return S_OK;
 }
 
@@ -174,6 +224,19 @@ void CScene::Uninit(void)
 		}
 	}
 
+	// カメラの破棄
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMultiCamera[i] != NULL)
+		{// メモリの確保が出来ていたら
+
+			// 終了処理
+			m_pMultiCamera[i]->Uninit();
+			delete m_pMultiCamera[i];
+			m_pMultiCamera[i] = NULL;
+		}
+	}
+
 }
 
 //==========================================================================
@@ -181,7 +244,16 @@ void CScene::Uninit(void)
 //==========================================================================
 void CScene::Update(void)
 {
-	
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMultiCamera[i] == NULL)
+		{
+			continue;
+		}
+
+		// カメラの設定
+		m_pMultiCamera[i]->Update();
+	}
 }
 
 //==========================================================================
@@ -239,6 +311,14 @@ CElevation *CScene::GetElevation(void)
 CPlayer *CScene::GetPlayer(int nIdx)
 {
 	return m_pPlayer[nIdx];
+}
+
+//==========================================================================
+// マルチカメラの取得
+//==========================================================================
+CCamera **CScene::GetMultiCamera(void)
+{
+	return &m_pMultiCamera[0];
 }
 
 //==========================================================================

@@ -187,11 +187,24 @@ void CRenderer::Draw(void)
 
 		D3DVIEWPORT9 viewportDef;	//ビューポート保存
 
-		//現在のビューポートを取得
+		// 現在のビューポートを取得
 		m_pD3DDevice->GetViewport(&viewportDef);
 
 		// カメラの設定
-		CManager::GetInstance()->GetCamera()->SetCamera();
+		//CManager::GetInstance()->GetCamera()->SetCamera();
+
+		// マルチカメラ取得
+		CCamera **ppCamera = CManager::GetInstance()->GetScene()->GetMultiCamera();
+		for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+		{
+			if (ppCamera[i] == NULL)
+			{
+				continue;
+			}
+
+			// カメラの設定
+			ppCamera[i]->SetCamera();
+		}
 
 		// 全ての描画
 		CObject::DrawAll();
@@ -217,7 +230,7 @@ void CRenderer::Draw(void)
 		// フェード描画処理
 		CManager::GetInstance()->GetFade()->Draw();
 
-		//ビューポートを元に戻す
+		// ビューポートを元に戻す
 		m_pD3DDevice->SetViewport(&viewportDef);
 
 		// 描画終了

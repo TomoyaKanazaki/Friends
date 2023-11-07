@@ -82,6 +82,7 @@ CCamera::CCamera()
 	m_nOriginCntDistance = 0;					// 元の距離カウンター
 	m_fDistanceCorrection = 0.0f;				// 距離の慣性補正係数
 	m_fDistanceDecrementValue = 0.0f;			// 距離の減少係数
+	m_nChasePlayerIndex = 0;					// 追従するプレイヤーのインデックス番号
 }
 
 //==========================================================================
@@ -97,40 +98,31 @@ CCamera::~CCamera()
 //==================================================================================
 HRESULT CCamera::Init(void)
 {
-	m_viewport.X = 0;										// 描画する画面の左上X座標
-	m_viewport.Y = 0;										// 描画する画面の左上Y座標
-	m_viewport.Width = SCREEN_WIDTH;						// 描画する画面の幅
-	m_viewport.Height = SCREEN_HEIGHT;						// 描画する画面の高さ
-	m_viewport.MinZ = 0.0f;
-	m_viewport.MaxZ = 1.0f;
-	m_posR = D3DXVECTOR3(0.0f, 200.0f, 0.0f);				// 注視点(見たい場所)
-	m_posV = D3DXVECTOR3(0.0f, 300.0f, m_posR.z + -400.0f);	// 視点(カメラの位置)
-	m_posVDest = m_posV;									// 目標の視点
-	m_posRDest = m_posR;									// 目標の注視点
-	m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);					// 上方向ベクトル
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 移動量
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, -0.20f);					// 向き
-	m_rotVDest = m_rot;										// 目標の視点の向き
-	m_TargetPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 目標の位置
-	m_fDistance = START_CAMERALEN;							// 距離
-	m_fDestDistance = START_CAMERALEN;						// 目標の距離
-	m_fOriginDistance = START_CAMERALEN;					// 元の距離
-	m_fDiffHeight = 0.0f;									// 高さの差分
-	m_fDiffHeightSave = 0.0f;								// 高さの差分保存用
-	m_fDiffHeightDest = 0.0f;								// 目標の高さの差分
-	m_bFollow = true;										// 追従するかどうか
-	m_state = CAMERASTATE_NONE;								// 状態
-	m_nCntState = 0;							// 状態カウンター
-	m_nCntDistance = 0;							// 距離カウンター
-	m_nOriginCntDistance = 0;					// 元の距離カウンター
-	m_fDistanceCorrection = 0;					// 距離の慣性補正係数
-	m_fDistanceDecrementValue = 0.0f;			// 距離の減少係数
-	m_fHeightMaxDest = 0.0f;					// カメラの最大高さの目標
+	
+	// ビューポートの設定
+	SetViewPort(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT));
+
+	// リセット
+	m_bFollow = true;	// 追従するかどうか
+	Reset(CScene::MODE_GAME);
 
 	// 視点の代入処理
 	SetCameraV();
 
 	return S_OK;
+}
+
+//==================================================================================
+// ビューポートの設定
+//==================================================================================
+void CCamera::SetViewPort(D3DXVECTOR3 pos, D3DXVECTOR2 size)
+{
+	m_viewport.X = (DWORD)pos.x;			// 描画する画面の左上X座標
+	m_viewport.Y = (DWORD)pos.y;			// 描画する画面の左上Y座標
+	m_viewport.Width = (DWORD)size.x;		// 描画する画面の幅
+	m_viewport.Height = (DWORD)size.y;		// 描画する画面の高さ
+	m_viewport.MinZ = 0.0f;
+	m_viewport.MaxZ = 1.0f;
 }
 
 //==================================================================================
@@ -635,8 +627,7 @@ void CCamera::SetCameraVGame(void)
 	{// 追従ON
 
 		// プレイヤーの情報取得
-		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(0);
-
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nChasePlayerIndex);
 		if (pPlayer == NULL)
 		{
 			return;
@@ -814,8 +805,7 @@ void CCamera::SetCameraRGame(void)
 	{// 追従ON
 
 		// プレイヤーの情報取得
-		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(0);
-
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nChasePlayerIndex);
 		if (pPlayer == NULL)
 		{
 			return;
@@ -1257,4 +1247,20 @@ D3DXVECTOR3 CCamera::GetDestRotation(void)
 float CCamera::GetOriginDistance(void)
 {
 	return m_fOriginDistance;
+}
+
+//==========================================================================
+// 追従するプレイヤーのインデックス番号設定
+//==========================================================================
+void CCamera::SetPlayerChaseIndex(int nIdx)
+{
+	m_nChasePlayerIndex = nIdx;
+}
+
+//==========================================================================
+// 追従するプレイヤーのインデックス番号取得
+//==========================================================================
+int CCamera::GetPlayerChaseIndex(void)
+{
+	return m_nChasePlayerIndex;
 }

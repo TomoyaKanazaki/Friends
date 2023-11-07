@@ -16,6 +16,7 @@
 //==========================================================================
 class CXLoad;
 class CPlayer;
+class CCamera;
 
 //==========================================================================
 // クラス定義
@@ -47,17 +48,19 @@ public:
 
 	void ResetScene(void);	// シーンのリセット
 	static CScene *Create(MODE mode);
-	static CXLoad *GetXLoad(void);				// Xファイルのデータ取得
+	static CXLoad *GetXLoad(void);			// Xファイルのデータ取得
 	static CElevation *GetElevation(void);	// オブジェクト3Dの取得
-	CPlayer *GetPlayer(int nIdx);
-	void UninitPlayer(int nIdx);// プレイヤーの情報取得
-	MODE GetMode(void);		// 現在のモード取得
+	CPlayer *GetPlayer(int nIdx);			// プレイヤーの取得
+	CCamera **GetMultiCamera(void);			// マルチカメラの取得
+	void UninitPlayer(int nIdx);			// プレイヤーの情報取得
+	MODE GetMode(void);						// 現在のモード取得
 private:
 
 	MODE m_mode;				// 現在のモード
-	CPlayer *m_pPlayer[mylib_const::MAX_PLAYER];			// プレイヤーのオブジェクト
-	static CXLoad *m_pXLoad;	// Xファイルのオブジェクト
-	static CElevation *m_pObject3DMesh;			// オブジェクト3Dメッシュのオブジェクト
+	CPlayer *m_pPlayer[mylib_const::MAX_PLAYER];		// プレイヤーのオブジェクト
+	CCamera *m_pMultiCamera[mylib_const::MAX_PLAYER];	// カメラのオブジェクト
+	static CXLoad *m_pXLoad;							// Xファイルのオブジェクト
+	static CElevation *m_pObject3DMesh;					// オブジェクト3Dメッシュのオブジェクト
 };
 
 

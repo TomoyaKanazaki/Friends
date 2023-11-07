@@ -132,7 +132,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		hr = m_pInputKeyboard->Init(hInstance, hWnd);
 		if (FAILED(hr))
 		{// ‰Šú‰»ˆ—‚ª¸”s‚µ‚½ê‡
-
 			return E_FAIL;
 		}
 	}
@@ -155,7 +154,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		hr = m_pInputGamepad->Init(hInstance, hWnd);
 		if (FAILED(hr))
 		{// ‰Šú‰»ˆ—‚ª¸”s‚µ‚½ê‡
-
 			return E_FAIL;
 		}
 	}
@@ -179,7 +177,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		hr = m_pInputMouse->Init(hInstance, hWnd);
 		if (FAILED(hr))
 		{// ‰Šú‰»ˆ—‚ª¸”s‚µ‚½ê‡
-
 			return E_FAIL;
 		}
 	}
@@ -204,7 +201,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		hr = m_pRenderer->Init(hWnd, TRUE);
 		if (FAILED(hr))
 		{// ‰Šú‰»ˆ—‚ª¸”s‚µ‚½ê‡
-
 			return E_FAIL;
 		}
 	}
@@ -228,7 +224,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		hr = m_pSound->Init(hWnd);
 		if (FAILED(hr))
 		{// ‰Šú‰»ˆ—‚ª¸”s‚µ‚½ê‡
-
 			return E_FAIL;
 		}
 	}
@@ -252,7 +247,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		hr = m_pDebugProc->Init(hInstance, hWnd);
 		if (FAILED(hr))
 		{// ‰Šú‰»ˆ—‚ª¸”s‚µ‚½ê‡
-
 			return E_FAIL;
 		}
 	}
@@ -276,7 +270,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		hr = m_pLight->Init();
 		if (FAILED(hr))
 		{// ‰Šú‰»ˆ—‚ª¸”s‚µ‚½ê‡
-
 			return E_FAIL;
 		}
 	}
@@ -300,10 +293,10 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		hr = m_pCamera->Init();
 		if (FAILED(hr))
 		{// ‰Šú‰»ˆ—‚ª¸”s‚µ‚½ê‡
-
 			return E_FAIL;
 		}
 	}
+
 
 	//**********************************
 	// ‘S‚Ä‚ÌƒeƒNƒXƒ`ƒƒ“Ç‚İ‚İ
@@ -323,7 +316,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		hr = m_pTexture->Load();
 		if (FAILED(hr))
 		{// ‰Šú‰»ˆ—‚ª¸”s‚µ‚½ê‡
-
 			return E_FAIL;
 		}
 
@@ -332,7 +324,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 		if (FAILED(hr))
 		{// ‰Šú‰»ˆ—‚ª¸”s‚µ‚½ê‡
-
 			return E_FAIL;
 		}
 	}

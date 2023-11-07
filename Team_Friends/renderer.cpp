@@ -205,7 +205,10 @@ void CRenderer::Draw(void)
 		}
 
 		// ‘S‚Ä‚Ì•`‰æ
-		//CObject::DrawAll();
+		if (CManager::GetInstance()->GetScene()->GetMode() != CScene::MODE_GAME)
+		{
+			CObject::DrawAll();
+		}
 
 		// ƒJƒƒ‰‚ÌÝ’è
 		CManager::GetInstance()->GetCamera()->SetCamera();

@@ -202,7 +202,7 @@ void CGameManager::SetEnemy(void)
 		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
 		if (pPlayer == NULL)
 		{
-			return;
+			continue;
 		}
 
 		// à íuê›íË

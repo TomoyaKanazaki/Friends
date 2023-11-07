@@ -72,6 +72,54 @@ HRESULT CGame::Init(void)
 	}
 
 	//**********************************
+	// マルチカメラ
+	//**********************************
+	int nNumPlayer = CManager::GetInstance()->GetNumPlayer();
+	D3DXVECTOR2 size = D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (nNumPlayer >= 2)
+	{
+		size.x *= 0.5f;
+	}
+	if (nNumPlayer >= 3)
+	{
+		size.y *= 0.5f;
+	}
+
+	for (int i = 0, nCntWidth = 0, nCntHeight = 0; i < nNumPlayer; i++)
+	{
+		if (m_pMultiCamera[i] != NULL)
+		{// 確保されていたら
+			return E_FAIL;
+		}
+
+		// メモリ確保
+		m_pMultiCamera[i] = DEBUG_NEW CCamera;
+
+		if (m_pMultiCamera[i] != NULL)
+		{// メモリの確保が出来ていたら
+
+			// 初期化処理
+			HRESULT hr = m_pMultiCamera[i]->Init();
+			if (FAILED(hr))
+			{// 初期化処理が失敗した場合
+				return E_FAIL;
+			}
+
+			// ビューポートの設定
+			m_pMultiCamera[i]->SetViewPort(D3DXVECTOR3(nCntWidth * size.x, nCntHeight * size.y, 0.0f), size);
+			m_pMultiCamera[i]->SetPlayerChaseIndex(i);
+		}
+
+		// スクリーンの横加算
+		nCntWidth = (nCntWidth + 1) % 2;
+		if (nCntWidth == 0)
+		{
+			// スクリーンの縦加算
+			nCntHeight++;
+		}
+	}
+
+	//**********************************
 	// ゲームマネージャ
 	//**********************************
 	m_pGameManager = CGameManager::Create();
@@ -98,12 +146,13 @@ HRESULT CGame::Init(void)
 	//**********************************
 	// プレイヤー
 	//**********************************
-	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	for (int nCntPlayer = 0; nCntPlayer < CManager::GetInstance()->GetNumPlayer(); nCntPlayer++)
 	{
-		if (CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer) != NULL)
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+		if (pPlayer != NULL)
 		{
-			CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer)->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 250.0f, 1000.0f, -1000.0f));
-			CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer)->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 250.0f, 1000.0f, -1000.0f));
+			pPlayer->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 		}
 	}
 

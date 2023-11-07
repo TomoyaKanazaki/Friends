@@ -1,16 +1,16 @@
 //=============================================================================
 // 
-//  タイトル処理 [title.cpp]
+//  プレイヤー決め処理 [decideplayer.cpp]
 //  Author : 相馬靜雅
 // 
 //=============================================================================
-#include "title.h"
+#include "decideplayer.h"
 #include "input.h"
 #include "fade.h"
 #include "renderer.h"
 #include "calculation.h"
 #include "debugproc.h"
-#include "title_screen.h"
+#include "decideplayer_screen.h"
 #include "sound.h"
 
 //==========================================================================
@@ -20,16 +20,16 @@
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CTitle::CTitle()
+CDecidePlayer::CDecidePlayer()
 {
 	// 値のクリア
-	m_nCntSwitch = 0;		// 切り替えのカウンター
+
 }
 
 //==========================================================================
 // デストラクタ
 //==========================================================================
-CTitle::~CTitle()
+CDecidePlayer::~CDecidePlayer()
 {
 
 }
@@ -37,7 +37,7 @@ CTitle::~CTitle()
 //==========================================================================
 // 初期化処理
 //==========================================================================
-HRESULT CTitle::Init(void)
+HRESULT CDecidePlayer::Init(void)
 {
 
 	// BGM再生
@@ -50,7 +50,7 @@ HRESULT CTitle::Init(void)
 	}
 
 	// タイトル画面
-	CTitleScreen::Create();
+	CDecidePlayerScreen::Create();
 
 	// 成功
 	return S_OK;
@@ -59,7 +59,7 @@ HRESULT CTitle::Init(void)
 //==========================================================================
 // 終了処理
 //==========================================================================
-void CTitle::Uninit(void)
+void CDecidePlayer::Uninit(void)
 {
 	// 終了処理
 	CScene::Uninit();
@@ -68,11 +68,10 @@ void CTitle::Uninit(void)
 //==========================================================================
 // 更新処理
 //==========================================================================
-void CTitle::Update(void)
+void CDecidePlayer::Update(void)
 {
 	CManager::GetInstance()->GetDebugProc()->Print(
-		"現在のモード：【タイトル】\n"
-		"切り替え：【 F 】\n\n");
+		"現在のモード：【人数決め】\n");
 
 	// キーボード情報取得
 	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
@@ -80,37 +79,16 @@ void CTitle::Update(void)
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
-	// 切り替えのカウンター加算
-	m_nCntSwitch++;
-
 	if (CManager::GetInstance()->GetFade()->GetState() != CFade::STATE_NONE)
 	{// フェード中は抜ける
 		return;
-	}
-
-	if (m_nCntSwitch <= 120)
-	{
-		return;
-	}
-
-	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
-	{
-		// モード設定
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDEPLAYER);
-	}
-
-	if (m_nCntSwitch >= 60 * 40)
-	{// 自動遷移
-
-		// モード設定
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
 	}
 }
 
 //==========================================================================
 // 描画処理
 //==========================================================================
-void CTitle::Draw(void)
+void CDecidePlayer::Draw(void)
 {
 
 }

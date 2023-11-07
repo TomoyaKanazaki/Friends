@@ -16,6 +16,7 @@
 
 // 遷移先
 #include "game.h"
+#include "decideplayer.h"
 #include "title.h"
 #include "tutorial.h"
 #include "result.h"
@@ -62,6 +63,10 @@ CScene *CScene::Create(CScene::MODE mode)
 		{
 		case CScene::MODE_TITLE:
 			pScene = DEBUG_NEW CTitle;
+			break;
+
+		case CScene::MODE_DECIDEPLAYER:
+			pScene = DEBUG_NEW CDecidePlayer;
 			break;
 
 		case CScene::MODE_TUTORIAL:
@@ -140,57 +145,9 @@ HRESULT CScene::Init(void)
 	}
 
 	// キャラ生成
-	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	for (int nCntPlayer = 0; nCntPlayer < CManager::GetInstance()->GetNumPlayer(); nCntPlayer++)
 	{
 		m_pPlayer[nCntPlayer] = CPlayer::Create(nCntPlayer);
-	}
-
-	//**********************************
-	// マルチカメラ
-	//**********************************
-	int nNumPlayer = mylib_const::MAX_PLAYER;
-	D3DXVECTOR2 size = D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT);
-	if (nNumPlayer >= 2)
-	{
-		size.x *= 0.5f;
-	}
-	if (nNumPlayer >= 3)
-	{
-		size.y *= 0.5f;
-	}
-
-	for (int i = 0, nCntWidth = 0, nCntHeight = 0; i < nNumPlayer; i++)
-	{
-		if (m_pMultiCamera[i] != NULL)
-		{// 確保されていたら
-			return E_FAIL;
-		}
-
-		// メモリ確保
-		m_pMultiCamera[i] = DEBUG_NEW CCamera;
-
-		if (m_pMultiCamera[i] != NULL)
-		{// メモリの確保が出来ていたら
-
-			// 初期化処理
-			hr = m_pMultiCamera[i]->Init();
-			if (FAILED(hr))
-			{// 初期化処理が失敗した場合
-				return E_FAIL;
-			}
-
-			// ビューポートの設定
-			m_pMultiCamera[i]->SetViewPort(D3DXVECTOR3(nCntWidth * size.x, nCntHeight * size.y, 0.0f), size);
-			m_pMultiCamera[i]->SetPlayerChaseIndex(i);
-		}
-
-		// スクリーンの横加算
-		nCntWidth = (nCntWidth + 1) % 2;
-		if (nCntWidth == 0)
-		{
-			// スクリーンの縦加算
-			nCntHeight++;
-		}
 	}
 
 	return S_OK;

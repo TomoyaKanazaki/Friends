@@ -533,6 +533,7 @@ void CCamera::SetCameraV(void)
 		break;
 
 	default:
+		SetCameraVResult();
 		break;
 	}
 
@@ -732,6 +733,7 @@ void CCamera::SetCameraR(void)
 		break;
 
 	default:
+		SetCameraRResult();
 		break;
 	}
 
@@ -1020,6 +1022,10 @@ void CCamera::Reset(CScene::MODE mode)
 
 	case CScene::MODE_TITLE:
 		ResetTitle();
+		break;
+
+	case CScene::MODE_DECIDEPLAYER:
+		ResetResult();
 		break;
 
 	case CScene::MODE_TUTORIAL:

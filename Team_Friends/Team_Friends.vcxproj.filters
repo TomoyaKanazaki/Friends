@@ -67,6 +67,12 @@
     <Filter Include="ヘッダー ファイル\mesh">
       <UniqueIdentifier>{2471248d-48e2-490e-9600-375b59026ff8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\mode\decideplayer">
+      <UniqueIdentifier>{191b5b29-56ac-4d8d-9f3d-2c1b752a83cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\mode\decideplayer">
+      <UniqueIdentifier>{990471d9-bb16-44df-86d8-b20d6d8b237a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="2D_effect.cpp">
@@ -335,6 +341,15 @@
     </ClCompile>
     <ClCompile Include="collision.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="item.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="decideplayer.cpp">
+      <Filter>ソース ファイル\mode\decideplayer</Filter>
+    </ClCompile>
+    <ClCompile Include="decideplayer_screen.cpp">
+      <Filter>ソース ファイル\mode\decideplayer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -607,6 +622,15 @@
     </ClInclude>
     <ClInclude Include="scene.h">
       <Filter>ヘッダー ファイル\mode</Filter>
+    </ClInclude>
+    <ClInclude Include="item.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="decideplayer.h">
+      <Filter>ヘッダー ファイル\mode\decideplayer</Filter>
+    </ClInclude>
+    <ClInclude Include="decideplayer_screen.h">
+      <Filter>ヘッダー ファイル\mode\decideplayer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

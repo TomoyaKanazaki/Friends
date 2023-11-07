@@ -28,12 +28,13 @@ public:
 	// モードの列挙型定義
 	enum MODE
 	{
-		MODE_NONE = 0,	// タイトル
-		MODE_TITLE,		// タイトル
-		MODE_TUTORIAL,	// チュートリアル
-		MODE_GAME,		// ゲーム
-		MODE_RESULT,	// リザルト
-		MODE_RANKING,	// ランキング
+		MODE_NONE = 0,		// なし
+		MODE_TITLE,			// タイトル
+		MODE_DECIDEPLAYER,	// プレイヤー決め
+		MODE_TUTORIAL,		// チュートリアル
+		MODE_GAME,			// ゲーム
+		MODE_RESULT,		// リザルト
+		MODE_RANKING,		// ランキング
 		MODE_MAX
 	};
 
@@ -55,11 +56,14 @@ public:
 	CCamera *GetMultiCamera(int nIdx);		// マルチカメラの取得
 	void UninitPlayer(int nIdx);			// プレイヤーの情報取得
 	MODE GetMode(void);						// 現在のモード取得
+
+protected:
+	CCamera *m_pMultiCamera[mylib_const::MAX_PLAYER];	// カメラのオブジェクト
+
 private:
 
 	MODE m_mode;				// 現在のモード
 	CPlayer *m_pPlayer[mylib_const::MAX_PLAYER];		// プレイヤーのオブジェクト
-	CCamera *m_pMultiCamera[mylib_const::MAX_PLAYER];	// カメラのオブジェクト
 	static CXLoad *m_pXLoad;							// Xファイルのオブジェクト
 	static CElevation *m_pObject3DMesh;					// オブジェクト3Dメッシュのオブジェクト
 };

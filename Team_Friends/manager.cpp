@@ -66,6 +66,7 @@ CManager::CManager()
 	m_CurrentTime = 0;				// 現在時間
 	m_OldTime = 0;					// 過去の時間
 	m_fDeltaTime = 0.0f;			// 経過時間
+	m_nNumPlayer = 0;				// プレイヤーの数
 }
 
 //==========================================================================
@@ -113,6 +114,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	HRESULT hr;
 	m_bHitStop = false;		// ヒットストップの判定
 	m_nCntHitStop = 0;		// ヒットストップのカウンター
+	m_nNumPlayer = 0;		// プレイヤーの数
 
 	//**********************************
 	// キーボード
@@ -803,6 +805,25 @@ void CManager::Draw(void)
 	m_pRenderer->Draw();
 
 	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);	// 埋めるモード
+}
+
+//==========================================================================
+// プレイヤーの数取得
+//==========================================================================
+int CManager::GetNumPlayer(void)
+{
+	return m_nNumPlayer;
+}
+
+//==========================================================================
+// プレイヤーの数設定
+//==========================================================================
+void CManager::SetNumPlayer(int nNum)
+{
+	// 値の正規化処理
+	ValueNormalize(nNum, mylib_const::MAX_PLAYER, 0);
+
+	m_nNumPlayer = nNum;
 }
 
 //==========================================================================

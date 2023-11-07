@@ -82,12 +82,14 @@ public:
 	CScene *GetScene(void);		// シーン取得
 	CEnemyFixedMoveManager *GetFixedManager(void);	// 一定の行動マネージャ取得
 
+	int GetNumPlayer(void);			// プレイヤーの数取得
+	void SetNumPlayer(int nNum);	// プレイヤーの数設定
 	float DeltaTime(void);								// 経過時間取得
 	void SetMode(CScene::MODE mode);					// 次のモード設定
 	CScene::MODE GetMode(void);							// 現在のモード取得
 	void SetEnableHitStop(int nCntHitStop);				// ヒットストップの設定
 	bool IsWireframe(void) { return m_bWireframe; }		// ワイヤーフレーム
-	bool IsHitStop(void) { return m_bHitStop; }		// ワイヤーフレーム
+	bool IsHitStop(void) { return m_bHitStop; }			// ワイヤーフレーム
 	CScene::MODE GetOldMode(void) { return m_OldMode; }	// 前回のモード取得
 private:
 
@@ -111,12 +113,13 @@ private:
 	CEnemyFixedMoveManager *m_pFixedMoveManager;	// 一定の行動マネージャのオブジェクト
 
 	bool m_bWireframe;					// ワイヤーフレーム
-	bool m_bHitStop;						// ヒットストップの判定
+	bool m_bHitStop;					// ヒットストップの判定
 	int m_nCntHitStop;					// ヒットストップのカウンター
 	CScene::MODE m_OldMode;				// 前回のモード
 	DWORD m_CurrentTime;				// 現在時間
 	DWORD m_OldTime;					// 過去の時間
 	float m_fDeltaTime;					// 経過時間
+	int m_nNumPlayer;					// プレイヤーの数
 
 	static CManager *m_pManager;	// マネージャのオブジェクト
 };

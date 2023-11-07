@@ -44,6 +44,7 @@ CEditEnemyBase::CEditEnemyBase()
 	m_fMoveValue = 0.0f;		// 移動量
 	memset(&m_pEnemy[0], NULL, sizeof(m_pEnemy));	// 敵へのポインタ
 	m_apObjX = NULL;			// オブジェクトX
+	m_nStage = 0;				// ステージ
 	m_nRush = 0;				// ラッシュ用かどうか
 }
 
@@ -156,7 +157,7 @@ void CEditEnemyBase::Update(void)
 			return;
 		}
 		// 生成
-		pEnemyBase->CreatePos(m_nEnemyType, m_pos, m_nRush);
+		pEnemyBase->CreatePos(m_nStage, m_nEnemyType, m_pos, m_nRush);
 	}
 
 	if (pInputKeyboard->GetTrigger(DIK_DELETE) == true)
@@ -184,11 +185,12 @@ void CEditEnemyBase::Update(void)
 		"<移動>         高速：[↑,↓,←,→]　低速：[W,A,S,D]\n"
 		"<上昇,下降>    [I,K]\n"
 		"<種類変更>     [1, 2][%d]\n"
-		"<影の使用状況> [3][%d]\n"
+		"<ステージ変更> [3, 4][%d]\n"
+		"<影の使用状況> [5][%d]\n"
 		"<掴み移動>     [SPACE]\n"
 		"<削除>         [DELETE]\n"
 		"<位置>         [X：%f Y：%f Z：%f]\n"
-		"\n", m_nEnemyType, m_nRush, m_pos.x, m_pos.y, m_pos.z);
+		"\n", m_nEnemyType, m_nStage, m_nRush, m_pos.x, m_pos.y, m_pos.z);
 }
 
 //==========================================================================
@@ -363,6 +365,19 @@ void CEditEnemyBase::ChangeType(void)
 	if (pInputKeyboard->GetTrigger(DIK_3) == true)
 	{// 3が押された
 
+		// 色の種類更新
+		m_nStage--;
+	}
+	else if (pInputKeyboard->GetTrigger(DIK_4) == true)
+	{// 4が押された
+
+		// 色の種類更新
+		m_nStage++;
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_5) == true)
+	{// 5が押された
+
 		// 影の使用状況切り替え
 		m_nRush = m_nRush ? 0 : 1;
 	}
@@ -417,9 +432,9 @@ void CEditEnemyBase::Grab(void)
 		bAll = true;
 	}
 
-	for (int i = 0; i < pEnemyBase->GetNumAll(); i++)
+	for (int i = 0; i < pEnemyBase->GetNumBase(m_nStage); i++)
 	{
-		D3DXVECTOR3 TargetPoint = pEnemyBase->GetSpawnPoint(i);
+		D3DXVECTOR3 TargetPoint = pEnemyBase->GetSpawnPoint(m_nStage, i);
 		if (bAll == true || SphereRange(m_pos, TargetPoint, 50.0f, 50.0f))
 		{// 球に当たってたら
 
@@ -427,7 +442,7 @@ void CEditEnemyBase::Grab(void)
 			Control(TargetPoint);
 
 			// 位置設定
-			pEnemyBase->SetSpawnPoint(i, TargetPoint);
+			pEnemyBase->SetSpawnPoint(m_nStage, i, TargetPoint);
 		}
 	}
 }
@@ -449,10 +464,10 @@ void CEditEnemyBase::Delete(void)
 
 	for (int i = 0; i < pEnemyBase->GetNumAll(); i++)
 	{
-		D3DXVECTOR3 TargetPoint = pEnemyBase->GetSpawnPoint(i);
+		D3DXVECTOR3 TargetPoint = pEnemyBase->GetSpawnPoint(m_nStage, i);
 		if (SphereRange(m_pos, TargetPoint, 50.0f, 50.0f))
 		{// 球に当たってたら
-			pEnemyBase->DeletePos(i);
+			pEnemyBase->DeletePos(m_nStage, i);
 		}
 	}
 }

@@ -14,6 +14,8 @@
 #include "camera.h"
 #include "sound.h"
 #include "blackframe.h"
+#include "enemybase.h"
+#include "enemymanager.h"
 
 //==========================================================================
 // マクロ定義
@@ -32,6 +34,9 @@ CGameManager::CGameManager()
 	m_SceneType = SCENE_MAIN;	// シーンの種類
 	m_bEndRush = false;			// ラッシュが終了したか
 	m_bControll = false;		// 操作できるか
+	m_bEndNormalStage = false;	// 通常ステージが終了したか
+	m_nNowStage = 0;			// 現在のステージ
+	m_nNumStage = 0;			// ステージの総数
 }
 
 //==========================================================================
@@ -80,6 +85,7 @@ CGameManager *CGameManager::Create(void)
 HRESULT CGameManager::Init(void)
 {
 	m_bControll = true;		// 操作できるか
+	m_bEndNormalStage = false;	// 通常ステージが終了したか
 	return S_OK;
 }
 
@@ -96,6 +102,34 @@ void CGameManager::Uninit(void)
 //==========================================================================
 void CGameManager::Update(void)
 {
+	// 操作状態
+	switch (m_SceneType)
+	{
+	case CGameManager::SCENE_MAIN:
+		m_bControll = true;
+		break;
+
+	case CGameManager::SCENE_RUSH:
+		m_bControll = true;
+		break;
+
+	case CGameManager::SCENE_BOSS:
+		m_bControll = true;
+		break;
+
+	case CGameManager::SCENE_TRANSITIONWAIT:
+		m_bControll = false;
+		break;
+
+	case CGameManager::SCENE_TRANSITION:
+		m_bControll = false;
+		break;
+
+	default:
+		break;
+	}
+
+
 	if (m_SceneType == SCENE_TRANSITION)
 	{// 遷移中
 
@@ -105,44 +139,114 @@ void CGameManager::Update(void)
 		if (fadestate == CInstantFade::STATE_FADECOMPLETION)
 		{// 完了した瞬間
 
-
-			// BGMストップ
-			CManager::GetInstance()->GetSound()->StopSound(CSound::LABEL_BGM_GAME);
-
-			// 追従の種類設定
-			m_SceneType = SCENE_BOSS;
-
-			// リセット処理
-			CGame::Reset();
-
-			// シーンのリセット
-			CManager::GetInstance()->GetScene()->ResetScene();
-
-			// プレイヤー情報
-			for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
-			{
-				CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
-				if (pPlayer == NULL)
-				{
-					return;
-				}
-
-				// 位置設定
-				pPlayer->SetPosition(mylib_const::DEFAULT_VECTOR3);
+			if (m_bEndNormalStage == false)
+			{// 通常ステージが終わっていなかったら
+				SetEnemy();
 			}
-
-			// カメラの情報取得
-			CCamera *pCamera = CManager::GetInstance()->GetCamera();
-			//pCamera->ResetBoss();
-
-			// 黒フレーム侵入
-			CManager::GetInstance()->GetBlackFrame()->SetState(CBlackFrame::STATE_IN);
-
-			// 操作不能状態にする
-			m_bControll = false;
+			else
+			{// ボスステージ
+				SetBoss();
+			}
+			
 		}
 	}
 
+}
+
+//==========================================================================
+// ボス設定
+//==========================================================================
+void CGameManager::SetBoss(void)
+{
+	// BGMストップ
+	CManager::GetInstance()->GetSound()->StopSound(CSound::LABEL_BGM_GAME);
+
+	// 種類設定
+	m_SceneType = SCENE_BOSS;
+
+	// リセット処理
+	CGame::Reset();
+
+	// シーンのリセット
+	CManager::GetInstance()->GetScene()->ResetScene();
+
+	// プレイヤー情報
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	{
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+		if (pPlayer == NULL)
+		{
+			return;
+		}
+
+		// 位置設定
+		pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 250.0f, 5000.0f, -1000.0f));
+	}
+
+	// カメラの情報取得
+	CCamera *pCamera = CManager::GetInstance()->GetCamera();
+	pCamera->ResetBoss();
+
+	// 黒フレーム侵入
+	CManager::GetInstance()->GetBlackFrame()->SetState(CBlackFrame::STATE_IN);
+}
+
+//==========================================================================
+// 敵設定
+//==========================================================================
+void CGameManager::SetEnemy(void)
+{
+	// プレイヤー情報
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	{
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+		if (pPlayer == NULL)
+		{
+			return;
+		}
+
+		// 位置設定
+		pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 250.0f, 0.0f, -1000.0f));
+	}
+
+	// カメラの情報取得
+	CCamera *pCamera = CManager::GetInstance()->GetCamera();
+	pCamera->Reset(CScene::MODE_GAME);
+
+	// 敵の再配置
+	CGame::GetEnemyManager()->SetStageEnemy();
+
+	// 変更中じゃなくする
+	CGame::GetEnemyManager()->SetEnableChangeStage(false);
+
+	// 種類設定
+	m_SceneType = SCENE_MAIN;
+}
+
+//==========================================================================
+// ステージの加算
+//==========================================================================
+void CGameManager::AddNowStage(void)
+{
+	// 加算
+	m_nNowStage++;
+
+	if (CGame::GetEnemyBase()->GetNumStage() <= m_nNowStage)
+	{// 総ステージ数を超えたら
+		m_nNowStage = CGame::GetEnemyBase()->GetNumStage();
+
+		// 通常ステージが終了判定
+		m_bEndNormalStage = true;
+	}
+
+}
+
+//==========================================================================
+// 現在のステージ取得
+//==========================================================================
+int CGameManager::GetNowStage(void)
+{
+	return m_nNowStage;
 }
 
 //==========================================================================

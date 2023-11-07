@@ -266,6 +266,11 @@ HRESULT CObjectX::Init(const char *pFileName)
 	// Xファイルのデータ割り当て
 	BindXData(m_nIdxXFile);
 
+	if (m_nIdxXFile < 0)
+	{
+		return S_OK;
+	}
+
 	// Xファイルのデータ取得
 	CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(m_nIdxXFile);
 
@@ -431,6 +436,10 @@ void CObjectX::Draw(void)
 	D3DMATERIAL9 matDef;			// 現在のマテリアル保存用
 	D3DXMATERIAL *pMat;				// マテリアルデータへのポインタ
 
+	// 情報取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
@@ -439,11 +448,11 @@ void CObjectX::Draw(void)
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
 
 	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	// ワールドマトリックスの設定
@@ -502,6 +511,10 @@ void CObjectX::Draw(D3DXCOLOR col)
 	D3DMATERIAL9 matDef;			// 現在のマテリアル保存用
 	D3DXMATERIAL *pMat;				// マテリアルデータへのポインタ
 
+	// 情報取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
 	D3DXMATERIAL matNow;			// 今回のマテリアル
 
 	// 他の情報クリア
@@ -517,11 +530,11 @@ void CObjectX::Draw(D3DXCOLOR col)
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
 
 	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	// ワールドマトリックスの設定
@@ -580,6 +593,10 @@ void CObjectX::Draw(float fAlpha)
 	D3DMATERIAL9 matDef;			// 現在のマテリアル保存用
 	D3DXMATERIAL *pMat;				// マテリアルデータへのポインタ
 
+	// 情報取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
 	D3DXMATERIAL matNow;			// 今回のマテリアル
 
 	// 他の情報クリア
@@ -593,11 +610,11 @@ void CObjectX::Draw(float fAlpha)
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
 
 	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	// ワールドマトリックスの設定
@@ -667,54 +684,6 @@ D3DXMATRIX CObjectX::GetWorldMtx(void) const
 }
 
 //==========================================================================
-// 位置設定
-//==========================================================================
-void CObjectX::SetPosition(const D3DXVECTOR3 pos)
-{
-	m_pos = pos;
-}
-
-//==========================================================================
-// 位置取得
-//==========================================================================
-D3DXVECTOR3 CObjectX::GetPosition(void) const
-{
-	return m_pos;
-}
-
-//==========================================================================
-// 位置設定
-//==========================================================================
-void CObjectX::SetOldPosition(const D3DXVECTOR3 posOld)
-{
-	m_posOld = posOld;
-}
-
-//==========================================================================
-// 位置取得
-//==========================================================================
-D3DXVECTOR3 CObjectX::GetOldPosition(void) const
-{
-	return m_posOld;
-}
-
-//==========================================================================
-// 移動量設定
-//==========================================================================
-void CObjectX::SetMove(const D3DXVECTOR3 move)
-{
-	m_move = move;
-}
-
-//==========================================================================
-// 移動量取得
-//==========================================================================
-D3DXVECTOR3 CObjectX::GetMove(void) const
-{
-	return m_move;
-}
-
-//==========================================================================
 // スケール設定
 //==========================================================================
 void CObjectX::SetScale(const D3DXVECTOR3 scale)
@@ -728,22 +697,6 @@ void CObjectX::SetScale(const D3DXVECTOR3 scale)
 D3DXVECTOR3 CObjectX::GetScale(void) const
 {
 	return m_scale;
-}
-
-//==========================================================================
-// 向き設定
-//==========================================================================
-void CObjectX::SetRotation(const D3DXVECTOR3 rot)
-{
-	m_rot = rot;
-}
-
-//==========================================================================
-// 向き取得
-//==========================================================================
-D3DXVECTOR3 CObjectX::GetRotation(void) const
-{
-	return m_rot;
 }
 
 //==========================================================================

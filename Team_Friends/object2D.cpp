@@ -36,10 +36,6 @@
 //==========================================================================
 CObject2D::CObject2D(int nPriority) : CObject(nPriority)
 {
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 位置
-	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 前回の位置
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 移動量
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 向き
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 色
 	m_fSize = D3DXVECTOR2(0.0f, 0.0f);			// サイズ
 	m_fLength = 0.0f;							// 対角線の長さ
@@ -70,6 +66,87 @@ void CObject2D::BindTexture(int nIdx)
 {
 	// 割り当てる
 	m_nTexIdx = nIdx;
+}
+
+//==========================================================================
+// 生成処理
+//==========================================================================
+CObject2D *CObject2D::Create(void)
+{
+	// 生成用のオブジェクト
+	CObject2D *pObject2D = NULL;
+
+	if (pObject2D == NULL)
+	{// NULLだったら
+
+		// メモリの確保
+		pObject2D = DEBUG_NEW CObject2D;
+
+		if (pObject2D != NULL)
+		{// メモリの確保が出来ていたら
+
+			// 初期化処理
+			pObject2D->Init();
+		}
+
+		return pObject2D;
+	}
+
+	return NULL;
+}
+
+//==========================================================================
+// 生成処理
+//==========================================================================
+CObject2D *CObject2D::Create(int nPriority)
+{
+	// 生成用のオブジェクト
+	CObject2D *pObject2D = NULL;
+
+	if (pObject2D == NULL)
+	{// NULLだったら
+
+		// メモリの確保
+		pObject2D = DEBUG_NEW CObject2D(nPriority);
+
+		if (pObject2D != NULL)
+		{// メモリの確保が出来ていたら
+
+			// 初期化処理
+			pObject2D->Init();
+		}
+
+		return pObject2D;
+	}
+
+	return NULL;
+}
+
+//==========================================================================
+// 生成処理
+//==========================================================================
+CObject2D *CObject2D::Create(int nPriority, int nNumVtx)
+{
+	// 生成用のオブジェクト
+	CObject2D *pObject2D = NULL;
+
+	if (pObject2D == NULL)
+	{// NULLだったら
+
+		// メモリの確保
+		pObject2D = DEBUG_NEW CObject2D(nPriority);
+
+		if (pObject2D != NULL)
+		{// メモリの確保が出来ていたら
+
+			// 初期化処理
+			pObject2D->Init(nNumVtx);
+		}
+
+		return pObject2D;
+	}
+
+	return NULL;
 }
 
 //==========================================================================
@@ -242,94 +319,6 @@ void CObject2D::Draw(int nNumVertex)
 }
 
 //==========================================================================
-// 生成処理
-//==========================================================================
-CObject2D *CObject2D::Create(void)
-{
-	// 生成用のオブジェクト
-	CObject2D *pObject2D = NULL;
-
-	if (pObject2D == NULL)
-	{// NULLだったら
-
-		// メモリの確保
-		pObject2D = DEBUG_NEW CObject2D;
-
-		//if (pObject2D->GetID() < 0)
-		//{// メモリ確保に失敗していたら
-
-		//	delete pObject2D;
-		//	return NULL;
-		//}
-
-		if (pObject2D != NULL)
-		{// メモリの確保が出来ていたら
-
-			// 初期化処理
-			pObject2D->Init();
-		}
-
-		return pObject2D;
-	}
-
-	return NULL;
-}
-
-//==========================================================================
-// 生成処理
-//==========================================================================
-CObject2D *CObject2D::Create(int nPriority)
-{
-	// 生成用のオブジェクト
-	CObject2D *pObject2D = NULL;
-
-	if (pObject2D == NULL)
-	{// NULLだったら
-
-		// メモリの確保
-		pObject2D = DEBUG_NEW CObject2D(nPriority);
-
-		if (pObject2D != NULL)
-		{// メモリの確保が出来ていたら
-
-			// 初期化処理
-			pObject2D->Init();
-		}
-
-		return pObject2D;
-	}
-
-	return NULL;
-}
-
-//==========================================================================
-// 生成処理
-//==========================================================================
-CObject2D *CObject2D::Create(int nPriority, int nNumVtx)
-{
-	// 生成用のオブジェクト
-	CObject2D *pObject2D = NULL;
-
-	if (pObject2D == NULL)
-	{// NULLだったら
-
-		// メモリの確保
-		pObject2D = DEBUG_NEW CObject2D(nPriority);
-
-		if (pObject2D != NULL)
-		{// メモリの確保が出来ていたら
-
-			// 初期化処理
-			pObject2D->Init(nNumVtx);
-		}
-
-		return pObject2D;
-	}
-
-	return NULL;
-}
-
-//==========================================================================
 // 頂点情報設定処理
 //==========================================================================
 void CObject2D::SetVtx(void)
@@ -421,70 +410,6 @@ void  CObject2D::SetVtx(int nNumVertex)
 
 	// 頂点バッファをアンロックロック
 	m_pVtxBuff->Unlock();
-}
-
-//==========================================================================
-// 位置設定
-//==========================================================================
-void CObject2D::SetPosition(const D3DXVECTOR3 pos)
-{
-	m_pos = pos;
-}
-
-//==========================================================================
-// 位置取得
-//==========================================================================
-D3DXVECTOR3 CObject2D::GetPosition(void) const
-{
-	return m_pos;
-}
-
-//==========================================================================
-// 位置設定
-//==========================================================================
-void CObject2D::SetOldPosition(const D3DXVECTOR3 posOld)
-{
-	m_posOld = posOld;
-}
-
-//==========================================================================
-// 位置取得
-//==========================================================================
-D3DXVECTOR3 CObject2D::GetOldPosition(void) const
-{
-	return m_posOld;
-}
-
-//==========================================================================
-// 移動量設定
-//==========================================================================
-void CObject2D::SetMove(const D3DXVECTOR3 move)
-{
-	m_move = move;
-}
-
-//==========================================================================
-// 移動量取得
-//==========================================================================
-D3DXVECTOR3 CObject2D::GetMove(void) const
-{
-	return m_move;
-}
-
-//==========================================================================
-// 向き設定
-//==========================================================================
-void CObject2D::SetRotation(const D3DXVECTOR3 rot)
-{
-	m_rot = rot;
-}
-
-//==========================================================================
-// 向き取得
-//==========================================================================
-D3DXVECTOR3 CObject2D::GetRotation(void) const
-{
-	return m_rot;
 }
 
 //==========================================================================

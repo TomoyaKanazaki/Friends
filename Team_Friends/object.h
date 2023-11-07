@@ -81,15 +81,15 @@ public:
 	virtual void Draw(void) = 0;
 
 	virtual void SetVtx(void);
-	virtual void SetPosition(const D3DXVECTOR3 pos);	// 位置設定
-	virtual D3DXVECTOR3 GetPosition(void) const;		// 位置取得
+	virtual void SetPosition(const D3DXVECTOR3 pos);		// 位置設定
+	virtual D3DXVECTOR3 GetPosition(void) const;			// 位置取得
 	virtual void SetOldPosition(const D3DXVECTOR3 posOld);	// 過去の位置設定
-	virtual D3DXVECTOR3 GetOldPosition(void) const;		// 過去の位置取得
-	virtual void SetMove(const D3DXVECTOR3 rot);	// 移動量設定
-	virtual D3DXVECTOR3 GetMove(void) const;		// 移動量取得
-	virtual void SetRotation(const D3DXVECTOR3 rot);	// 向き設定
-	virtual D3DXVECTOR3 GetRotation(void) const;		// 向き取得
-	virtual bool Hit(const int nValue);					// 嘆きのバーチャルヒット処理
+	virtual D3DXVECTOR3 GetOldPosition(void) const;			// 過去の位置取得
+	virtual void SetMove(const D3DXVECTOR3 move);			// 移動量設定
+	virtual D3DXVECTOR3 GetMove(void) const;				// 移動量取得
+	virtual void SetRotation(const D3DXVECTOR3 rot);		// 向き設定
+	virtual D3DXVECTOR3 GetRotation(void) const;			// 向き取得
+	virtual bool Hit(const int nValue);						// 嘆きのバーチャルヒット処理
 	virtual bool Hit(const int nValue, D3DXVECTOR3 move);
 
 	void SetEnableDisp(bool bDisp) { m_bDisp = bDisp; }		// 描画設定
@@ -124,8 +124,12 @@ protected:
 	void Release(void);	// 開放処理
 	void Death(void);	// 死亡処理
 
-	D3DXVECTOR3 m_pos;		// 位置
 private:
+
+	D3DXVECTOR3 m_pos;		// 位置
+	D3DXVECTOR3 m_posOld;	// 前回の位置
+	D3DXVECTOR3 m_rot;		// 向き
+	D3DXVECTOR3 m_move;		// 移動量
 
 	int m_nPriority;		// 優先順位
 	static int m_nNumAll;	// オブジェクトの総数

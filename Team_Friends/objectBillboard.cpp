@@ -23,13 +23,9 @@
 //==========================================================================
 CObjectBillboard::CObjectBillboard(int nPriority) : CObject(nPriority)
 {
-	D3DXMatrixIdentity(&m_mtxWorld);				// ワールドマトリックス
-	SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));		// 位置
-	SetOldPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 前回の位置
-	SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));			// 移動量
-	SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));		// 向き
-	SetSize(D3DXVECTOR2(0.0f, 0.0f));				// サイズ
-	SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));	// 色
+	D3DXMatrixIdentity(&m_mtxWorld);			// ワールドマトリックス
+	m_fSize = D3DXVECTOR2(0.0f, 0.0f);			// サイズ
+	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 色
 	m_nTexIdx = 0;	// テクスチャのインデックス番号
 	m_pVtxBuff = NULL;		// 頂点バッファ
 
@@ -193,6 +189,9 @@ void CObjectBillboard::Draw(void)
 	// 計算用マトリックス宣言
 	D3DXMATRIX mtxRot, mtxTrans;
 
+	// 情報取得
+	D3DXVECTOR3 pos = GetPosition();
+
 	// ビューマトリックス取得用
 	D3DXMATRIX mtxView;
 
@@ -227,7 +226,7 @@ void CObjectBillboard::Draw(void)
 	m_mtxWorld._43 = 0.0f;
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	// ワールドマトリックスの設定
@@ -303,70 +302,6 @@ void CObjectBillboard::SetWorldMtx(const D3DXMATRIX mtx)
 D3DXMATRIX CObjectBillboard::GetWorldMtx(void) const
 {
 	return m_mtxWorld;
-}
-
-//==========================================================================
-// 位置設定
-//==========================================================================
-void CObjectBillboard::SetPosition(const D3DXVECTOR3 pos)
-{
-	m_pos = pos;
-}
-
-//==========================================================================
-// 位置取得
-//==========================================================================
-D3DXVECTOR3 CObjectBillboard::GetPosition(void) const
-{
-	return m_pos;
-}
-
-//==========================================================================
-// 位置設定
-//==========================================================================
-void CObjectBillboard::SetOldPosition(const D3DXVECTOR3 posOld)
-{
-	m_posOld = posOld;
-}
-
-//==========================================================================
-// 位置取得
-//==========================================================================
-D3DXVECTOR3 CObjectBillboard::GetOldPosition(void) const
-{
-	return m_posOld;
-}
-
-//==========================================================================
-// 移動量設定
-//==========================================================================
-void CObjectBillboard::SetMove(const D3DXVECTOR3 move)
-{
-	m_move = move;
-}
-
-//==========================================================================
-// 移動量取得
-//==========================================================================
-D3DXVECTOR3 CObjectBillboard::GetMove(void) const
-{
-	return m_move;
-}
-
-//==========================================================================
-// 向き設定
-//==========================================================================
-void CObjectBillboard::SetRotation(const D3DXVECTOR3 rot)
-{
-	m_rot = rot;
-}
-
-//==========================================================================
-// 向き取得
-//==========================================================================
-D3DXVECTOR3 CObjectBillboard::GetRotation(void) const
-{
-	return m_rot;
 }
 
 //==========================================================================

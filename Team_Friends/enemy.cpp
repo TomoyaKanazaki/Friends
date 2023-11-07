@@ -29,6 +29,7 @@
 #include "stage.h"
 #include "objectX.h"
 #include "listmanager.h"
+#include "item.h"
 
 // 子クラス
 #include "enemy_boss.h"
@@ -562,7 +563,7 @@ void CEnemy::CollisionPlayer(void)
 		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
 		if (pPlayer == NULL)
 		{
-			return;
+			continue;
 		}
 
 		if (m_state == STATE_SPAWN || m_state == STATE_DEAD || m_state == STATE_FADEOUT)
@@ -664,6 +665,12 @@ bool CEnemy::Hit(const int nValue)
 
 			// 振動
 			CManager::GetInstance()->GetCamera()->SetShake(5, 10.0f, 0.0f);
+
+			// アイテムドロップ
+			for (int i = 0; i < 20; i++)
+			{
+				CItem::Create(D3DXVECTOR3(pos.x, pos.y + 100.0f, pos.z), D3DXVECTOR3(0.0f, Random(-31, 31) * 0.1f, 0.0f));
+			}
 
 			// 死亡状態にする
 			m_state = STATE_DEAD;
@@ -1418,6 +1425,10 @@ void CEnemy::StateAttack(void)
 	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
 		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+		if (pPlayer == NULL)
+		{
+			continue;
+		}
 
 		if (nType == MOTION_DEF && pPlayer != NULL)
 		{// ニュートラルに戻れば
@@ -1609,7 +1620,7 @@ void CEnemy::ChangeToAttackState(void)
 		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
 		if (pPlayer == NULL)
 		{
-			return;
+			continue;
 		}
 
 		// 親の位置取得
@@ -1695,8 +1706,8 @@ void CEnemy::Atack(void)
 			{
 				CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
 				if (pPlayer == NULL)
-				{// NULLだったら
-					return;
+				{
+					continue;
 				}
 
 				// 武器の位置
@@ -1821,7 +1832,9 @@ void CEnemy::SetOriginRotation(D3DXVECTOR3 rot)
 	m_rotOrigin = rot;
 }
 
+//==========================================================================
 // スポーン地点設定
+//==========================================================================
 void CEnemy::SetSpawnPosition(D3DXVECTOR3 pos)
 {
 	m_posOrigin = pos;

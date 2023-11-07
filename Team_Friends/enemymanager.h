@@ -55,9 +55,14 @@ public:
 
 	static CEnemyManager *Create(const std::string pTextFile);
 	HRESULT ReadText(const std::string pTextFile);	// 外部ファイル読み込み処理
+	void SetStageEnemy(void);	// ステージ毎の敵配置
 	CEnemy **SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nPattern);	// 敵配置
 	int GetPatternNum(void);
 	void Release(int nIdx);		// 破棄
+
+
+	bool IsChangeStage(void) { return m_bChangeStage; }	// ステージ変更中か
+	void SetEnableChangeStage(bool bChange) { m_bChangeStage = bChange; }	// ステージ変更の状態切り替え
 	STATE GetState(void) { return m_state; }	// 状態取得
 	int GetNumAll(void);		// 敵の総数取得
 	Pattern GetPattern(int nPattern);	// パターン取得
@@ -76,6 +81,7 @@ private:
 	int m_nPatternNum;		// 出現パターン数
 	int m_nNumChara;		// 敵の種類の総数
 	int m_nNumAll;			// 敵の総数
+	bool m_bChangeStage;	// ステージ変更中か
 };
 
 

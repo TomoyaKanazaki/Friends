@@ -35,11 +35,7 @@
 CObject3D::CObject3D(int nPriority) : CObject(nPriority)
 {
 	D3DXMatrixIdentity(&m_mtxWorld);				// ワールドマトリックス
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 位置
 	m_posOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 元の位置
-	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 前回の位置
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 移動量
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 向き
 	m_rotOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 元の向き
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);		// 色
 	m_fSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// サイズ
@@ -191,6 +187,10 @@ void CObject3D::Draw(void)
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
+	// 情報取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
 	// 計算用マトリックス宣言
 	D3DXMATRIX mtxRot, mtxTrans, mtxRotOrigin;
 	D3DXMatrixIdentity(&mtxRotOrigin);
@@ -203,11 +203,11 @@ void CObject3D::Draw(void)
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRotOrigin);
 
 	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	// ワールドマトリックスの設定
@@ -327,22 +327,6 @@ D3DXMATRIX CObject3D::GetWorldMtx(void) const
 }
 
 //==========================================================================
-// 位置設定
-//==========================================================================
-void CObject3D::SetPosition(const D3DXVECTOR3 pos)
-{
-	m_pos = pos;
-}
-
-//==========================================================================
-// 位置取得
-//==========================================================================
-D3DXVECTOR3 CObject3D::GetPosition(void) const
-{
-	return m_pos;
-}
-
-//==========================================================================
 //	元の位置設定
 //==========================================================================
 void CObject3D::SetOriginPosition(const D3DXVECTOR3 pos)
@@ -356,54 +340,6 @@ void CObject3D::SetOriginPosition(const D3DXVECTOR3 pos)
 D3DXVECTOR3 CObject3D::GetOriginPosition(void) const
 {
 	return m_posOrigin;
-}
-
-//==========================================================================
-// 位置設定
-//==========================================================================
-void CObject3D::SetOldPosition(const D3DXVECTOR3 posOld)
-{
-	m_posOld = posOld;
-}
-
-//==========================================================================
-// 位置取得
-//==========================================================================
-D3DXVECTOR3 CObject3D::GetOldPosition(void) const
-{
-	return m_posOld;
-}
-
-//==========================================================================
-// 移動量設定
-//==========================================================================
-void CObject3D::SetMove(const D3DXVECTOR3 move)
-{
-	m_move = move;
-}
-
-//==========================================================================
-// 移動量取得
-//==========================================================================
-D3DXVECTOR3 CObject3D::GetMove(void) const
-{
-	return m_move;
-}
-
-//==========================================================================
-// 向き設定
-//==========================================================================
-void CObject3D::SetRotation(const D3DXVECTOR3 rot)
-{
-	m_rot = rot;
-}
-
-//==========================================================================
-// 向き取得
-//==========================================================================
-D3DXVECTOR3 CObject3D::GetRotation(void) const
-{
-	return m_rot;
 }
 
 //==========================================================================

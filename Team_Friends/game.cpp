@@ -102,7 +102,7 @@ HRESULT CGame::Init(void)
 	{
 		if (CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer) != NULL)
 		{
-			CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer)->SetPosition(D3DXVECTOR3(-1000.0f + nCntPlayer * 500.0f, 1000.0f, -1000.0f));
+			CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer)->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 250.0f, 1000.0f, -1000.0f));
 			CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer)->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 		}
 	}

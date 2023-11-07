@@ -32,7 +32,11 @@ CObject::CObject(int nPriority)
 	}
 
 	// 値のクリア
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 位置
+	m_pos = mylib_const::DEFAULT_VECTOR3;		// 位置
+	m_posOld = mylib_const::DEFAULT_VECTOR3;	// 前回の位置
+	m_rot = mylib_const::DEFAULT_VECTOR3;		// 向き
+	m_move = mylib_const::DEFAULT_VECTOR3;		// 移動量
+
 	m_pPrev = NULL;	// 前のオブジェクトへのポインタ
 	m_pNext = NULL;	// 次のオブジェクトへのポインタ
 	m_nPriority = nPriority;	// 優先順位
@@ -459,13 +463,12 @@ D3DXVECTOR3 CObject::GetPosition(void) const
 	return m_pos;
 }
 
-
 //==========================================================================
 // 位置設定
 //==========================================================================
 void CObject::SetOldPosition(const D3DXVECTOR3 posOld)
 {
-
+	m_posOld = posOld;
 }
 
 //==========================================================================
@@ -473,15 +476,15 @@ void CObject::SetOldPosition(const D3DXVECTOR3 posOld)
 //==========================================================================
 D3DXVECTOR3 CObject::GetOldPosition(void) const
 {
-	return D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	return m_posOld;
 }
 
 //==========================================================================
 // 移動量設定
 //==========================================================================
-void CObject::SetMove(const D3DXVECTOR3 rot)
+void CObject::SetMove(const D3DXVECTOR3 move)
 {
-
+	m_move = move;
 }
 
 //==========================================================================
@@ -489,7 +492,7 @@ void CObject::SetMove(const D3DXVECTOR3 rot)
 //==========================================================================
 D3DXVECTOR3 CObject::GetMove(void) const
 {
-	return D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	return m_move;
 }
 
 //==========================================================================
@@ -497,7 +500,7 @@ D3DXVECTOR3 CObject::GetMove(void) const
 //==========================================================================
 void CObject::SetRotation(const D3DXVECTOR3 rot)
 {
-
+	m_rot = rot;
 }
 
 //==========================================================================
@@ -505,7 +508,7 @@ void CObject::SetRotation(const D3DXVECTOR3 rot)
 //==========================================================================
 D3DXVECTOR3 CObject::GetRotation(void) const
 {
-	return D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	return m_rot;
 }
 
 //==========================================================================

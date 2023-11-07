@@ -2,17 +2,48 @@
 #==============================================================================
 # 敵拠点の配置
 #==============================================================================
-BASESET
-	PATTERN = 0
-	POS = -350.00 1055.40 -1150.00
-	RUSH = 0
-END_BASESET
+#--------------------------------[Stage0]-----------------------------
+STAGESET
+	BASESET
+		PATTERN = 1
+		POS = -532.91 0.00 -12.23
+		RUSH = 0
+	END_BASESET
 
-BASESET
-	PATTERN = 0
-	POS = -750.00 1055.40 -1150.00
-	RUSH = 0
-END_BASESET
+	BASESET
+		PATTERN = 1
+		POS = -2718.81 0.14 185.86
+		RUSH = 0
+	END_BASESET
 
+	BASESET
+		PATTERN = 1
+		POS = -2959.35 0.14 461.17
+		RUSH = 0
+	END_BASESET
+
+	BASESET
+		PATTERN = 1
+		POS = -3472.80 0.14 154.47
+		RUSH = 0
+	END_BASESET
+
+END_STAGESET
+
+#--------------------------------[Stage1]-----------------------------
+STAGESET
+	BASESET
+		PATTERN = 1
+		POS = -3087.98 0.36 -363.43
+		RUSH = 0
+	END_BASESET
+
+	BASESET
+		PATTERN = 1
+		POS = -2332.51 0.14 -877.01
+		RUSH = 0
+	END_BASESET
+
+END_STAGESET
 
 END_SCRIPT		# この行は絶対消さないこと！

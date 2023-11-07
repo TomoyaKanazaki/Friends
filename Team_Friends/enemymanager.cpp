@@ -21,6 +21,7 @@
 #include "sound.h"
 #include "enemybase.h"
 #include "effect_enemyspawn.h"
+#include "instantfade.h"
 
 //==========================================================================
 // マクロ定義
@@ -45,6 +46,7 @@ CEnemyManager::CEnemyManager()
 	m_nPatternNum = 0;		// 出現パターン数
 	m_nNumChara = 0;		// 敵の種類の総数
 	m_nNumAll = 0;			// 敵の総数
+	m_bChangeStage = false;	// ステージ変更中か
 }
 
 //==========================================================================
@@ -154,14 +156,69 @@ void CEnemyManager::Kill(void)
 //==========================================================================
 void CEnemyManager::Update(void)
 {
+	if (m_nNumAll <= 0 && m_bChangeStage == false)
+	{// 全員倒されたら
 
-	// 敵の配置
-	//SetEnemy(敵拠点の位置, 敵拠点の向き, 敵拠点に設定されてる敵パターン);
+		// ステージ変更中にする
+		m_bChangeStage = true;
+
+		// 遷移なしフェード追加
+		CManager::GetInstance()->GetInstantFade()->SetFade();
+
+		// 遷移状態に変更
+		CGame::GetGameManager()->SetType(CGameManager::SCENE_TRANSITION);
+	}
+
+	
 
 	// テキストの描画
 	CManager::GetInstance()->GetDebugProc()->Print(
 		"---------------- 敵情報 ----------------\n"
 		"【残り人数】[%d]\n", m_nNumAll);
+}
+
+//==========================================================================
+// ステージ毎の敵配置
+//==========================================================================
+void CEnemyManager::SetStageEnemy(void)
+{
+	// ゲームマネージャ取得
+	CGameManager *pGameManager = CGame::GetGameManager();
+	if (pGameManager == NULL || pGameManager->IsEndNormalStage() == true)
+	{
+		return;
+	}
+
+	// ステージの総数取得
+	int nNumStage = pGameManager->GetNumStage();
+	int nNowStage = pGameManager->GetNowStage();
+
+	if (nNumStage <= nNowStage)
+	{
+		return;
+	}
+
+	// 敵拠点データ取得
+	CEnemyBase *pEnemyBase = CGame::GetEnemyBase();
+	if (pEnemyBase == NULL)
+	{
+		return;
+	}
+
+	// 拠点の数取得
+	int nNumBase = pEnemyBase->GetNumBase(nNowStage);
+
+	for (int i = 0; i < nNumBase; i++)
+	{
+		// 拠点ごとのデータ取得
+		CEnemyBase::sInfo sEnemyBaseInfo = pEnemyBase->GetEnemyBaseInfo(nNowStage, i);
+
+		// 敵の配置
+		SetEnemy(sEnemyBaseInfo.pos, sEnemyBaseInfo.rot, sEnemyBaseInfo.nPattern);
+	}
+
+	// ステージ加算
+	pGameManager->AddNowStage();
 }
 
 //==========================================================================

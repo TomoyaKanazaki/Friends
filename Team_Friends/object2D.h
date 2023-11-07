@@ -35,14 +35,6 @@ public:
 	virtual void SetVtx(int nNumVertex);
 	void BindTexture(int nIdx);
 
-	void SetPosition(const D3DXVECTOR3 pos);	// 位置設定
-	D3DXVECTOR3 GetPosition(void) const;		// 位置取得
-	void SetOldPosition(const D3DXVECTOR3 posOld);	// 前回の位置設定
-	D3DXVECTOR3 GetOldPosition(void) const;		// 前回の位置取得
-	void SetRotation(const D3DXVECTOR3 rot);	// 向き設定
-	D3DXVECTOR3 GetRotation(void) const;		// 向き取得
-	void SetMove(const D3DXVECTOR3 move);		// 移動量設定
-	D3DXVECTOR3 GetMove(void) const;			// 移動量取得
 	void SetColor(const D3DXCOLOR col);			// 色設定
 	D3DXCOLOR GetColor(void) const;				// 色取得
 	void SetSize(const D3DXVECTOR2 size);		// サイズの設定
@@ -66,9 +58,6 @@ public:
 protected:
 
 private:
-	D3DXVECTOR3 m_posOld;	// 前回の位置
-	D3DXVECTOR3 m_move;		// 移動量
-	D3DXVECTOR3 m_rot;		// 向き
 	D3DXCOLOR m_col;		// 色
 	D3DXVECTOR2 m_fSize;	// サイズ
 	D3DXVECTOR2 m_fTex[32];		// テクスチャ座標
@@ -78,17 +67,5 @@ private:
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファ
 	int m_nTexIdx;					// テクスチャのインデックス番号
 };
-
-//template<class T>
-//
-//T *GetTemplate(void);
-
-//template<class T> T *CObject2D::GetTemplate<T>(void)
-//{
-//	//T *pTemp = this;
-//	return this;
-//}
-
-
 
 #endif

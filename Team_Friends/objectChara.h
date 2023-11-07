@@ -64,17 +64,9 @@ public:
 
 	void SetmtxWorld(const D3DXMATRIX mtxWorld);
 	D3DXMATRIX GetmtxWorld(void) const;			// ワールドマトリックス取得
-	void SetPosition(const D3DXVECTOR3 pos);	// 位置設定
-	D3DXVECTOR3 GetPosition(void) const;		// 位置取得
 	D3DXVECTOR3 GetCenterPosition(void) const;		// 中心の位置取得
 	void SetOriginPosition(const D3DXVECTOR3 pos);	// 最初の位置設定
 	D3DXVECTOR3 GetOriginPosition(void) const;		// 最初の位置取得
-	void SetOldPosition(const D3DXVECTOR3 pos);	// 前回の位置設定
-	D3DXVECTOR3 GetOldPosition(void) const;		// 前回の位置取得
-	void SetRotation(const D3DXVECTOR3 rot);	// 向き設定
-	D3DXVECTOR3 GetRotation(void) const;		// 向き取得
-	void SetMove(const D3DXVECTOR3 move);		// 移動量設定
-	D3DXVECTOR3 GetMove(void) const;			// 移動量取得
 	void SetVelocity(const float fVelocity);	// 移動速度設定
 	float GetVelocity(void) const;				// 移動速度取得
 	void SetRadius(const float fRadius);		// 半径設定
@@ -110,10 +102,7 @@ public:
 private:
 
 	D3DXMATRIX	m_mtxWorld;		// ワールドマトリックス
-	D3DXVECTOR3 m_posOld;		// 前回の位置
 	D3DXVECTOR3 m_posOrigin;	// 最初の位置
-	D3DXVECTOR3 m_rot;			// 向き
-	D3DXVECTOR3 m_move;			// 移動量
 	float m_fVelocity;			// 移動速度
 	float m_fRadius;			// 半径
 	float m_fRotDest;			// 目標の向き

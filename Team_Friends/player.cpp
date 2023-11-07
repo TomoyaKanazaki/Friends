@@ -605,8 +605,6 @@ void CPlayer::Controll(void)
 			// 攻撃判定ON
 			m_sMotionFrag.bJump = false;
 			m_sMotionFrag.bATK = true;
-
-			CItem::Create(D3DXVECTOR3(pos.x, pos.y + 200.0f, pos.z), mylib_const::DEFAULT_VECTOR3);
 		}
 	}
 
@@ -805,7 +803,7 @@ void CPlayer::Atack(void)
 			// 武器の位置
 			D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetObjectChara()->GetModel(), *aInfo.AttackInfo[nCntAttack]);
 
-			CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize * 0.5f, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+			CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 
 #if 1
 			// 敵取得
@@ -1418,7 +1416,7 @@ void CPlayer::FadeOut(void)
 	{// 遷移カウンターが0になったら
 
 		// モード設定
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RESULT);
+		//CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RESULT);
 
 		// 死亡処理
 		Kill();

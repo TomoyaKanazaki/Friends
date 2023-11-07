@@ -432,7 +432,7 @@ void CEditEnemyBase::Grab(void)
 		bAll = true;
 	}
 
-	for (int i = 0; i < pEnemyBase->GetNumAll(); i++)
+	for (int i = 0; i < pEnemyBase->GetNumBase(m_nStage); i++)
 	{
 		D3DXVECTOR3 TargetPoint = pEnemyBase->GetSpawnPoint(m_nStage, i);
 		if (bAll == true || SphereRange(m_pos, TargetPoint, 50.0f, 50.0f))

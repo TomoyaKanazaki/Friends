@@ -29,6 +29,7 @@ public:
 	struct sInfo
 	{
 		D3DXVECTOR3 pos;		// 位置
+		D3DXVECTOR3 rot;		// 向き
 		int nPattern;			// 種類
 		int nRush;				// ラッシュ用かどうか
 	};
@@ -49,7 +50,10 @@ public:
 	int GetSpawnPointNum(void);			// 位置数取得
 	D3DXVECTOR3 GetSpawnPoint(int nStage, int nIdx);	// 位置取得
 	void SetSpawnPoint(int nStage, int nIdx, D3DXVECTOR3 pos);	// 位置設定
-	sInfo GetChaseChangeInfo(int nStage, int nIdx);	// 変更の情報取得
+	sInfo GetEnemyBaseInfo(int nStage, int nIdx);	// 変更の情報取得
+
+	int GetNumBase(int nStage) { return m_nBaseNum[nStage]; }	// ステージ毎の拠点の数取得
+	int GetNumStage(void) { return m_nNumStage; }	// ステージの総数取得
 	int GetNumAll(void) { return m_nNumAll; }	// 総数取得
 private:
 

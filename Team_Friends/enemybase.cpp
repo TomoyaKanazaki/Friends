@@ -179,26 +179,33 @@ void CEnemyBase::Update(void)
 {
 #if _DEBUG
 
+	int nCntObj = 0;
 	for (int nCntStage = 0; nCntStage < m_nNumStage; nCntStage++)
 	{
 		for (int i = 0; i < m_nBaseNum[nCntStage]; i++)
 		{
-			if (m_apObjX[i] == NULL)
+			if (m_apObjX[nCntObj] == NULL)
 			{
-				m_apObjX[i] = CObjectX::Create(MARKOBJ, mylib_const::DEFAULT_VECTOR3, mylib_const::DEFAULT_VECTOR3, false);	// オブジェクトX
-				m_apObjX[i]->SetType(CObject::TYPE_BALLAST);
+				m_apObjX[nCntObj] = CObjectX::Create(MARKOBJ, mylib_const::DEFAULT_VECTOR3, mylib_const::DEFAULT_VECTOR3, false);	// オブジェクトX
+				m_apObjX[nCntObj]->SetType(CObject::TYPE_BALLAST);
 				//m_apObjX[i]->SetPositionD3DXVECTOR3(pos.x, m_apObjX[i]->GetPosition().y, pos.z);
 			}
 
-			m_apObjX[i]->SetPosition(m_EnemyBaseInfo[nCntStage][i].pos);
+			m_apObjX[nCntObj]->SetPosition(m_EnemyBaseInfo[nCntStage][i].pos);
 
-			if (m_pMultiNumber[i] != NULL)
+			if (m_pMultiNumber[nCntObj] != NULL)
 			{
-				m_pMultiNumber[i]->SetPosition(m_EnemyBaseInfo[nCntStage][i].pos);
+				m_pMultiNumber[nCntObj]->SetPosition(m_EnemyBaseInfo[nCntStage][i].pos);
 			}
+
+			nCntObj++;
 		}
 	}
 #endif
+
+	// ステージの総数設定
+	CGame::GetGameManager()->SetNumStage(m_nNumStage);
+
 }
 
 //==========================================================================
@@ -272,6 +279,15 @@ HRESULT CEnemyBase::ReadText(const char *pFileName)
 							fscanf(pFile, "%f", &m_EnemyBaseInfo[m_nNumStage][nCntBase].pos.x);	// X座標
 							fscanf(pFile, "%f", &m_EnemyBaseInfo[m_nNumStage][nCntBase].pos.y);	// Y座標
 							fscanf(pFile, "%f", &m_EnemyBaseInfo[m_nNumStage][nCntBase].pos.z);	// Z座標
+						}
+
+						if (strcmp(aComment, "ROT") == 0)
+						{// ROTが来たら位置読み込み
+
+							fscanf(pFile, "%s", &aComment[0]);		// =の分
+							fscanf(pFile, "%f", &m_EnemyBaseInfo[m_nNumStage][nCntBase].rot.x);	// X
+							fscanf(pFile, "%f", &m_EnemyBaseInfo[m_nNumStage][nCntBase].rot.y);	// Y
+							fscanf(pFile, "%f", &m_EnemyBaseInfo[m_nNumStage][nCntBase].rot.z);	// Z
 						}
 
 						if (strcmp(aComment, "RUSH") == 0)
@@ -405,7 +421,7 @@ void CEnemyBase::SetSpawnPoint(int nStage, int nIdx, D3DXVECTOR3 pos)
 //==========================================================================
 // 変更の情報取得
 //==========================================================================
-CEnemyBase::sInfo CEnemyBase::GetChaseChangeInfo(int nStage, int nIdx)
+CEnemyBase::sInfo CEnemyBase::GetEnemyBaseInfo(int nStage, int nIdx)
 {
 	sInfo InitInfo;
 	memset(&InitInfo, NULL, sizeof(InitInfo));

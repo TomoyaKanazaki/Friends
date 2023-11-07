@@ -21,46 +21,36 @@
 //==========================================================================
 // マクロ定義
 //==========================================================================
-#define WIDTH			(30.0f)							// 横幅
-#define HEIGHT			(30.0f)							// 縦幅
-#define MOVE_SPEED		(15.0f)							// 移動速度
-#define ANIM_SPEED		(4)								// 読み込み間隔
-#define MAX_PATTERN_U	(1)								// Uの分割数
-#define MAX_PATTERN_V	(1)								// Vの分割数
-#define MAX_PATTERN		(MAX_PATTERN_U)					// アニメーションパターンの最大数
-#define MOVE_U			(1.0f / (float)MAX_PATTERN_U)	// U座標移動量
-#define MOVE_V			(1.0f / (float)MAX_PATTERN_V)	// V座標移動量
+#define TIME_FADEOUT	(40)	// フェードアウト時間
 
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
 const char *CItem::m_apModelFile[TYPE_MAX] =	// テクスチャのファイル
 {
-	"data\\MODEL\\item.x",
+	"data\\MODEL\\item_power.x",	// 火力
+	"data\\MODEL\\item_speed.x",	// 駆動性
+	"data\\MODEL\\item_life.x",	// 耐久力
 };
 int CItem::m_nNumAll = 0;		// アイテムの総数
 
 //==========================================================================
 // 関数ポインタ
 //==========================================================================
-CItem::STATE_FUNC CItem::m_FuncList[] =
+CItem::STATE_FUNC CItem::m_StateFuncList[] =
 {
 	&CItem::StateNone,
 	&CItem::StateDamage,
-};
-
-CItem::COLLISION_FUNC CItem::m_CollisionFuncList[] =	// 当たり判定のリスト
-{
-	&CItem::CollisionPlayer,	// プレイヤーとの判定
+	&CItem::StateFadeOut,
 };
 
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CItem::CItem(int nPriority) : CObjectX(nPriority), m_nLifeMax(1)
+CItem::CItem(int nPriority) : CObjectX(nPriority)
 {
 	// 値のクリア
-	m_type = TYPE_NONE;
+	m_type = TYPE_POWER;	// 種類
 	m_state = STATE_NONE;			// 状態
 	m_nCntState = 0;			// 状態遷移カウンター
 	m_nLife = 0;
@@ -126,6 +116,9 @@ HRESULT CItem::Init(void)
 	m_nLifeMax = 60 * 5;
 	m_nLife = m_nLifeMax;	// 寿命
 
+	// 種類
+	m_type = (TYPE)Random(0, (int)TYPE_MAX - 1);
+
 	// 初期化処理
 	hr = CObjectX::Init(m_apModelFile[m_type]);
 	if (FAILED(hr))
@@ -134,6 +127,9 @@ HRESULT CItem::Init(void)
 	}
 	// 種類の設定
 	CObject::SetType(TYPE_BULLET);
+
+	// ランダム移動量
+	SetMove(D3DXVECTOR3(Random(-50, 50) * 0.1f, 10.0f, Random(-50, 50) * 0.1f));
 
 	return S_OK;
 }
@@ -165,10 +161,10 @@ void CItem::Update(void)
 	UpdatePos();
 
 	// 状態別処理
-	(this->*(m_FuncList[m_state]))();
+	(this->*(m_StateFuncList[m_state]))();
 
 	// 当たり判定処理
-	(this->*(m_CollisionFuncList[m_type]))();
+	CollisionPlayer();
 
 	if (IsDeath() == true)
 	{// 死亡フラグが立っていたら
@@ -178,14 +174,12 @@ void CItem::Update(void)
 	// 寿命減算
 	m_nLife--;
 
-	if (m_nLife <= 0)
+	if (m_nLife <= 0 && m_state != STATE_FADEOUT)
 	{// 寿命が尽きたら
-
-		// 爆発の生成
-		CExplosion::Create(GetPosition());
 		
-		Uninit();
-		return;
+		// フェードアウト状態
+		m_state = STATE_FADEOUT;
+		m_nCntState = TIME_FADEOUT;
 	}
 
 	// 頂点情報設定
@@ -208,6 +202,19 @@ void CItem::UpdatePos(void)
 
 	// 位置更新
 	pos += move;
+
+	// 重力
+	move.y -= mylib_const::GRAVITY;
+
+	if (CManager::GetInstance()->GetScene()->GetElevation()->IsHit(pos))
+	{// 地面と接触していたら
+		move *= 0.8f;
+		move.y *= 0.6f;
+		move.y *= -1;
+	}
+
+	// 慣性補正
+	move += (mylib_const::DEFAULT_VECTOR3 - move) * 0.01f;
 
 	// 位置設定
 	SetPosition(pos);
@@ -248,6 +255,33 @@ void CItem::StateDamage(void)
 }
 
 //==========================================================================
+// フェードアウト処理
+//==========================================================================
+void CItem::StateFadeOut(void)
+{
+	// 色取得
+	D3DXCOLOR col = GetColor();
+
+	// 状態遷移カウンター減算
+	m_nCntState--;
+
+	// 不透明度更新
+	col.a = (float)m_nCntState / (float)TIME_FADEOUT;
+
+	// 色設定
+	SetColor(col);
+
+	if (m_nCntState <= 0)
+	{
+		m_nCntState = 0;
+
+		// 終了処理
+		Uninit();
+		return;
+	}
+}
+
+//==========================================================================
 // プレイヤーとの判定
 //==========================================================================
 void CItem::CollisionPlayer(void)
@@ -258,11 +292,12 @@ void CItem::CollisionPlayer(void)
 		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
 		if (pPlayer == NULL)
 		{// NULLだったら
-			return;
+			continue;
 		}
 
 		// プレイヤーの情報取得
-		D3DXVECTOR3 PlayerPosition = pPlayer->GetCenterPosition();
+		D3DXVECTOR3 PlayerPosition = pPlayer->GetPosition();
+		//D3DXVECTOR3 PlayerPosition = pPlayer->GetCenterPosition();
 		D3DXVECTOR3 PlayerRotation = pPlayer->GetRotation();
 		float fPlayerRadius = pPlayer->GetRadius();
 
@@ -272,6 +307,9 @@ void CItem::CollisionPlayer(void)
 
 		if (SphereRange(pos, PlayerPosition, fRadius, fPlayerRadius))
 		{// 当たっていたら
+
+			// パーティクル生成
+			my_particle::Create(pos, my_particle::TYPE_ENEMY_FADE);
 
 			// 終了処理
 			Uninit();
@@ -293,8 +331,8 @@ void CItem::UpdateTypePlayer(void)
 //==========================================================================
 void CItem::Draw(void)
 {
-	// ビルボードの描画
-	CObjectX::Draw();
+	// 描画
+	CObjectX::Draw(GetColor().a);
 }
 
 //==========================================================================

@@ -25,15 +25,18 @@ public:
 	// 列挙型定義
 	enum TYPE
 	{
-		TYPE_NONE = 0,	// なにもなし
-		TYPE_MAX		//フェードとスポーン時が必要
+		TYPE_POWER = 0,	// 火力
+		TYPE_SPEED,		// 駆動性
+		TYPE_LIFE,		// 耐久力
+		TYPE_MAX
 	};
 
 	enum STATE
 	{
 		STATE_NONE = 0,	// なにもなし
 		STATE_DMG,		// 跳ね返し
-		STATE_MAX		//フェードとスポーン時が必要
+		STATE_FADEOUT,	// フェードアウト状態
+		STATE_MAX		// メモ：フェードとスポーン時が必要
 	};
 
 	CItem(int nPriority = 6);
@@ -61,6 +64,7 @@ private:
 	
 	void StateNone(void);		// 何もない状態
 	void StateDamage(void);		// ダメージ状態処理
+	void StateFadeOut(void);		// フェードアウト処理
 
 
 	TYPE m_type;				// 種類
@@ -75,9 +79,7 @@ private:
 	int m_nCntEmission;	// 発生物のカウンター
 
 	typedef void(CItem::*STATE_FUNC)(void);
-	typedef void(CItem::*COLLISION_FUNC)(void);
-	static STATE_FUNC m_FuncList[];
-	static COLLISION_FUNC m_CollisionFuncList[];	// 当たり判定のリスト
+	static STATE_FUNC m_StateFuncList[];
 };
 
 

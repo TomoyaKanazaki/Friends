@@ -27,11 +27,7 @@ CObjectChara::CObjectChara(int nPriority) : CObject(nPriority)
 {
 	// 値のクリア
 	D3DXMatrixIdentity(&m_mtxWorld);			// ワールドマトリックス
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 位置
-	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 前回の位置
 	m_posOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 最初の位置
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 移動量
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 向き
 	m_fVelocity = 0.0f;			// 移動速度
 	m_fRadius = 0.0f;			// 半径
 	m_fRotDest = 0.0f;			// 目標の向き
@@ -318,16 +314,20 @@ void CObjectChara::Draw(void)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
 	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス宣言
+	
+	// 情報取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
 
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
 	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	// ワールドマトリックスの設定
@@ -355,15 +355,19 @@ void CObjectChara::Draw(D3DXCOLOR col)
 
 	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス宣言
 
+	// 情報取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
 	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	// ワールドマトリックスの設定
@@ -391,16 +395,20 @@ void CObjectChara::Draw(float fAlpha)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
 	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス宣言
+	
+	// 情報取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
 
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
 	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	// ワールドマトリックスの設定
@@ -646,22 +654,6 @@ D3DXMATRIX CObjectChara::GetmtxWorld(void) const
 }
 
 //==========================================================================
-// 位置設定
-//==========================================================================
-void CObjectChara::SetPosition(const D3DXVECTOR3 pos)
-{
-	m_pos = pos;
-}
-
-//==========================================================================
-// 位置取得
-//==========================================================================
-D3DXVECTOR3 CObjectChara::GetPosition(void) const
-{
-	return m_pos;
-}
-
-//==========================================================================
 // 中心の位置取得
 //==========================================================================
 D3DXVECTOR3 CObjectChara::GetCenterPosition(void) const
@@ -670,7 +662,7 @@ D3DXVECTOR3 CObjectChara::GetCenterPosition(void) const
 	{
 		return mylib_const::DEFAULT_VECTOR3;
 	}
-	return m_pos + m_apModel[0]->GetPosition();
+	return GetPosition() + m_apModel[0]->GetPosition();
 }
 
 //==========================================================================
@@ -690,39 +682,6 @@ D3DXVECTOR3 CObjectChara::GetOriginPosition(void) const
 }
 
 //==========================================================================
-// 位置設定
-//==========================================================================
-void CObjectChara::SetOldPosition(const D3DXVECTOR3 posOld)
-{
-	m_posOld = posOld;
-}
-
-//==========================================================================
-// 位置取得
-//==========================================================================
-D3DXVECTOR3 CObjectChara::GetOldPosition(void) const
-{
-	return m_posOld;
-}
-
-
-//==========================================================================
-// 移動量設定
-//==========================================================================
-void CObjectChara::SetMove(const D3DXVECTOR3 move)
-{
-	m_move = move;
-}
-
-//==========================================================================
-// 移動量取得
-//==========================================================================
-D3DXVECTOR3 CObjectChara::GetMove(void) const
-{
-	return m_move;
-}
-
-//==========================================================================
 // 移動速度設定
 //==========================================================================
 void CObjectChara::SetVelocity(const float fVelocity)
@@ -736,22 +695,6 @@ void CObjectChara::SetVelocity(const float fVelocity)
 float CObjectChara::GetVelocity(void) const
 {
 	return m_fVelocity;
-}
-
-//==========================================================================
-// 向き設定
-//==========================================================================
-void CObjectChara::SetRotation(const D3DXVECTOR3 rot)
-{
-	m_rot = rot;
-}
-
-//==========================================================================
-// 向き取得
-//==========================================================================
-D3DXVECTOR3 CObjectChara::GetRotation(void) const
-{
-	return m_rot;
 }
 
 //==========================================================================

@@ -369,7 +369,7 @@ void CPlayer::Controll(void)
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
 	// ƒJƒƒ‰‚Ìî•ñŽæ“¾
-	CCamera *pCamera = CManager::GetInstance()->GetCamera();
+	CCamera *pCamera = CManager::GetInstance()->GetScene()->GetMultiCamera(m_nMyPlayerIdx);
 
 	// ƒJƒƒ‰‚ÌŒü‚«Žæ“¾
 	D3DXVECTOR3 Camerarot = pCamera->GetRotation();

@@ -190,9 +190,6 @@ void CRenderer::Draw(void)
 		// 現在のビューポートを取得
 		m_pD3DDevice->GetViewport(&viewportDef);
 
-		// カメラの設定
-		//CManager::GetInstance()->GetCamera()->SetCamera();
-
 		// マルチカメラ取得
 		CCamera **ppCamera = CManager::GetInstance()->GetScene()->GetMultiCamera();
 		for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
@@ -204,10 +201,14 @@ void CRenderer::Draw(void)
 
 			// カメラの設定
 			ppCamera[i]->SetCamera();
+			CObject::DrawAll();
 		}
 
 		// 全ての描画
-		CObject::DrawAll();
+		//CObject::DrawAll();
+
+		// カメラの設定
+		CManager::GetInstance()->GetCamera()->SetCamera();
 
 		// デバッグ表示の描画処理
 		CManager::GetInstance()->GetDebugProc()->Draw();

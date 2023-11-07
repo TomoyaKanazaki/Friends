@@ -52,6 +52,7 @@ public:
 	static CElevation *GetElevation(void);	// オブジェクト3Dの取得
 	CPlayer *GetPlayer(int nIdx);			// プレイヤーの取得
 	CCamera **GetMultiCamera(void);			// マルチカメラの取得
+	CCamera *GetMultiCamera(int nIdx);		// マルチカメラの取得
 	void UninitPlayer(int nIdx);			// プレイヤーの情報取得
 	MODE GetMode(void);						// 現在のモード取得
 private:

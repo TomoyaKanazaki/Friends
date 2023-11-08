@@ -37,7 +37,8 @@
 CObject2D::CObject2D(int nPriority) : CObject(nPriority)
 {
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 色
-	m_fSize = D3DXVECTOR2(0.0f, 0.0f);			// サイズ
+	m_size = D3DXVECTOR2(0.0f, 0.0f);			// サイズ
+	m_sizeOrigin = D3DXVECTOR2(0.0f, 0.0f);		// 元のサイズ
 	m_fLength = 0.0f;							// 対角線の長さ
 	m_fAngle = 0.0f;							// 対角線の向き
 	m_pVtxBuff = NULL;							// 頂点バッファ
@@ -433,9 +434,25 @@ D3DXCOLOR CObject2D::GetColor(void) const
 //==========================================================================
 void CObject2D::SetSize(const D3DXVECTOR2 size)
 {
-	m_fSize = size;		// サイズ
-	SetLength(sqrtf(m_fSize.x * m_fSize.x + m_fSize.y * m_fSize.y));	// 対角線の長さ
-	SetAngle(atan2f(m_fSize.x, m_fSize.y));								// 対角線の向き
+	m_size = size;		// サイズ
+	SetLength(sqrtf(m_size.x * m_size.x + m_size.y * m_size.y));	// 対角線の長さ
+	SetAngle(atan2f(m_size.x, m_size.y));								// 対角線の向き
+}
+
+//==========================================================================
+// 元のサイズの設定
+//==========================================================================
+void CObject2D::SetSizeOrigin(const D3DXVECTOR2 size)
+{
+	m_sizeOrigin = size;
+}
+
+//==========================================================================
+// 元のサイズの取得
+//==========================================================================
+D3DXVECTOR2 CObject2D::GetSizeOrigin(void) const
+{
+	return m_sizeOrigin;
 }
 
 //==========================================================================
@@ -443,7 +460,7 @@ void CObject2D::SetSize(const D3DXVECTOR2 size)
 //==========================================================================
 D3DXVECTOR2 CObject2D::GetSize(void) const
 {
-	return m_fSize;
+	return m_size;
 }
 
 //==========================================================================

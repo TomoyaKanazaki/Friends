@@ -1,12 +1,12 @@
 //=============================================================================
 // 
-//  プレイヤー決め画面ヘッダー [decideplayer_screen.h]
+//  キャラクター決め画面ヘッダー [decidecharacter.h]
 //  Author : 相馬靜雅
 // 
 //=============================================================================
 
-#ifndef _DECIDEPLAYER_SCREEN_H_
-#define _DECIDEPLAYER_SCREEN_H_	// 二重インクルード防止
+#ifndef _DECIDECHARACTER_H_
+#define _DECIDECHARACTER_H_	// 二重インクルード防止
 
 #include "main.h"
 #include "object.h"
@@ -15,6 +15,7 @@
 // 前方宣言
 //==========================================================================
 class CObject2D;
+class CCursor;
 
 //==========================================================================
 // マクロ定義
@@ -23,15 +24,15 @@ class CObject2D;
 //==========================================================================
 // クラス定義
 //==========================================================================
-// プレイヤー決め画面クラス定義
-class CDecidePlayerScreen : public CObject
+// キャラクター決め画面クラス定義
+class CDecideCharacter : public CObject
 {
 public:
 
-	CDecidePlayerScreen(int nPriority = 8);
-	~CDecidePlayerScreen();
+	CDecideCharacter(int nPriority = 8);
+	~CDecideCharacter();
 
-	static CDecidePlayerScreen *Create(void);
+	static CDecideCharacter *Create(void);
 
 	// オーバーライドされた関数
 	HRESULT Init(void);
@@ -40,6 +41,7 @@ public:
 	void Draw(void);
 
 	void Delete(void);
+
 private:
 	// 列挙型定義
 	enum VTX
@@ -49,27 +51,28 @@ private:
 	};
 
 	// 列挙型定義
-	enum VTXSELECT
+	enum VTXCHARACTER
 	{
-		VTXSELECT_SELECT1P = 0,	// 1P
-		VTXSELECT_SELECT2P,		// 2P
-		VTXSELECT_SELECT3P,		// 3P
-		VTXSELECT_SELECT4P,		// 4P
-		VTXSELECT_MAX
+		VTXCHARACTER_1P = 0,	// 1P
+		VTXCHARACTER_2P,		// 2P
+		VTXCHARACTER_3P,		// 3P
+		VTXCHARACTER_4P,		// 4P
+		VTXCHARACTER_MAX
 	};
 
 	// メンバ関数
-	void UpdateSelect(int nCntSelect);	// 選択肢の更新処理
+	bool CollisionSelect(int nCntSelect);	// 選択肢の更新処理
 
 	// メンバ変数
-	int m_nCntAlpha;		// 不透明度のカウンター
-	int m_nNowSelect;		// 現在の選択肢
 	int m_nTexIdx[VTX_MAX];						// テクスチャのインデックス番号
-	int m_nTexIdx_Select[VTXSELECT_MAX];						// テクスチャのインデックス番号
+	int m_nTexIdx_Select[VTXCHARACTER_MAX];						// テクスチャのインデックス番号
 	CObject2D *m_pObj2D[VTX_MAX];					// オブジェクト2Dのオブジェクト
-	CObject2D *m_pSelect2D[VTXSELECT_MAX];				// 選択肢のオブジェクト
+	CObject2D *m_pSelect2D[VTXCHARACTER_MAX];				// 選択肢のオブジェクト
+	CCursor *m_apCursor[mylib_const::MAX_PLAYER];	// カーソルのオブジェクト
+	bool m_bDecide[mylib_const::MAX_PLAYER];		// 決定したか
+	bool m_bAllDecide;								// 全て決定したか
 	static const char *m_apTextureFile[VTX_MAX];	// テクスチャのファイル
-	static const char *m_apTextureFile_Select[VTXSELECT_MAX];	// テクスチャのファイル
+	static const char *m_apTextureFile_Select[VTXCHARACTER_MAX];	// テクスチャのファイル
 };
 
 

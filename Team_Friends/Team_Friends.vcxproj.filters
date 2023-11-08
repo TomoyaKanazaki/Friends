@@ -351,6 +351,12 @@
     <ClCompile Include="decideplayer_screen.cpp">
       <Filter>ソース ファイル\mode\decideplayer</Filter>
     </ClCompile>
+    <ClCompile Include="decidecharacter.cpp">
+      <Filter>ソース ファイル\mode\decideplayer</Filter>
+    </ClCompile>
+    <ClCompile Include="cursor.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -631,6 +637,12 @@
     </ClInclude>
     <ClInclude Include="decideplayer_screen.h">
       <Filter>ヘッダー ファイル\mode\decideplayer</Filter>
+    </ClInclude>
+    <ClInclude Include="decidecharacter.h">
+      <Filter>ヘッダー ファイル\mode\decideplayer</Filter>
+    </ClInclude>
+    <ClInclude Include="cursor.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

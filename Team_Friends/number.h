@@ -20,7 +20,7 @@ class CObjectBillboard;
 //==========================================================================
 // クラス定義
 //==========================================================================
-// 背景クラス定義
+// 数字クラス定義
 class CNumber
 {
 public:
@@ -39,19 +39,38 @@ public:
 	static CNumber *Create(EObjectType objtype);
 
 	// メンバ関数
-	HRESULT Init(void);
-	void Uninit(void);
-	void Update(void);
-	void Draw(void);
+	virtual HRESULT Init(void) = 0;
+	virtual void Uninit(void) = 0;
+	virtual void Update(void) = 0;
+	virtual void Draw(void) = 0;
+	virtual void Release(void) = 0;	// 開放処理
 
-	void Release(void);	// 開放処理
-	CObject2D *GetMyObject(void);
-	CObjectBillboard *GetMyObjectBillboard(void);
+
+	virtual void SetPosition(const D3DXVECTOR3 pos);	// 位置設定
+	virtual D3DXVECTOR3 GetPosition(void) const;		// 位置取得
+	virtual void SetMove(const D3DXVECTOR3 move);		// 移動量設定
+	virtual D3DXVECTOR3 GetMove(void) const;			// 移動量取得
+	virtual void SetRotation(const D3DXVECTOR3 rot);	// 向き設定
+	virtual D3DXVECTOR3 GetRotation(void) const;		// 向き取得
+
+	virtual void SetColor(const D3DXCOLOR col);			// 色設定
+	virtual D3DXCOLOR GetColor(void) const;				// 色取得
+	virtual void SetSize(const D3DXVECTOR2 size);		// サイズの設定
+	virtual D3DXVECTOR2 GetSize(void) const;			// サイズの取得
+	virtual void SetSizeOrigin(const D3DXVECTOR2 size);	// 元のサイズの設定
+	virtual D3DXVECTOR2 GetSizeOrigin(void) const;		// 元のサイズの取得
+	virtual void SetTex(D3DXVECTOR2 *tex);				// テクスチャ座標の設定
+	virtual D3DXVECTOR2 *GetTex(void);					// テクスチャ座標の取得
+
+	virtual void SetVtx(void) = 0;
+	virtual void BindTexture(int nIdx) = 0;
+	virtual void SetType(const CObject::TYPE type) = 0;
+
+	virtual CObject2D *GetObject2D(void);
+	virtual CObjectBillboard *GetObjectBillboard(void);
 
 private:
 	EObjectType m_objType;				// オブジェクトの種類
-	CObject2D *m_aObject2D;				// オブジェクト2Dのオブジェクト
-	CObjectBillboard *m_pObjBillboard;	// オブジェクトビルボードのオブジェクト
 };
 
 #endif

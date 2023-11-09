@@ -145,17 +145,17 @@ HRESULT CRankingScore::Init(void)
 			m_pScore[nCntRanking][nCntScore] = CNumber::Create(CNumber::OBJECTTYPE_2D);
 
 			// 各種変数の初期化
-			m_pScore[nCntRanking][nCntScore]->GetMyObject()->SetSize(D3DXVECTOR2(BASE_WIDTH, BASE_HEIGHT));	// サイズ
-			m_pScore[nCntRanking][nCntScore]->GetMyObject()->SetPosition(D3DXVECTOR3(INIT_POSX + nCntScore * BASE_DIS_X, nCntRanking * 120.0f + 170.0f, 0.0f));	// 位置
+			m_pScore[nCntRanking][nCntScore]->GetObject2D()->SetSize(D3DXVECTOR2(BASE_WIDTH, BASE_HEIGHT));	// サイズ
+			m_pScore[nCntRanking][nCntScore]->GetObject2D()->SetPosition(D3DXVECTOR3(INIT_POSX + nCntScore * BASE_DIS_X, nCntRanking * 120.0f + 170.0f, 0.0f));	// 位置
 
 			// 種類の設定
-			m_pScore[nCntRanking][nCntScore]->GetMyObject()->SetType(CObject::TYPE_SCORE);
+			m_pScore[nCntRanking][nCntScore]->GetObject2D()->SetType(CObject::TYPE_SCORE);
 
 			// テクスチャの割り当て
 			m_nTexIdxNumber = CManager::GetInstance()->GetTexture()->Regist(NUMBERTEXTURE);
 
 			// テクスチャの割り当て
-			m_pScore[nCntRanking][nCntScore]->GetMyObject()->BindTexture(m_nTexIdxNumber);
+			m_pScore[nCntRanking][nCntScore]->GetObject2D()->BindTexture(m_nTexIdxNumber);
 		}
 	}
 
@@ -249,7 +249,7 @@ void CRankingScore::Moving(int nCntRanking)
 	for (int nCntScore = 0; nCntScore < RANKINGSCORE_DIGIT; nCntScore++)
 	{
 		// 位置取得
-		D3DXVECTOR3 pos = m_pScore[nCntRanking][nCntScore]->GetMyObject()->GetPosition();
+		D3DXVECTOR3 pos = m_pScore[nCntRanking][nCntScore]->GetObject2D()->GetPosition();
 
 		if (pos.x == INIT_POSX)
 		{
@@ -258,7 +258,7 @@ void CRankingScore::Moving(int nCntRanking)
 		}
 
 		// 色取得
-		D3DXCOLOR col = m_pScore[nCntRanking][nCntScore]->GetMyObject()->GetColor();
+		D3DXCOLOR col = m_pScore[nCntRanking][nCntScore]->GetObject2D()->GetColor();
 
 		float fDest = m_fPosDestX[nCntRanking] + nCntScore * BASE_DIS_X;
 
@@ -283,10 +283,10 @@ void CRankingScore::Moving(int nCntRanking)
 		}
 
 		// 位置設定
-		m_pScore[nCntRanking][nCntScore]->GetMyObject()->SetPosition(pos);
+		m_pScore[nCntRanking][nCntScore]->GetObject2D()->SetPosition(pos);
 
 		// 色設定
-		m_pScore[nCntRanking][nCntScore]->GetMyObject()->SetColor(col);
+		m_pScore[nCntRanking][nCntScore]->GetObject2D()->SetColor(col);
 	}
 }
 
@@ -298,25 +298,25 @@ void CRankingScore::UpdateNewRecord(void)
 	for (int nCntScore = 0; nCntScore < RANKINGSCORE_DIGIT; nCntScore++)
 	{
 		// 位置取得
-		D3DXVECTOR3 pos = m_pScore[m_nIdxNewRecord][nCntScore]->GetMyObject()->GetPosition();
+		D3DXVECTOR3 pos = m_pScore[m_nIdxNewRecord][nCntScore]->GetObject2D()->GetPosition();
 
 		// サイズ取得
-		D3DXVECTOR2 size = m_pScore[m_nIdxNewRecord][nCntScore]->GetMyObject()->GetSize();
+		D3DXVECTOR2 size = m_pScore[m_nIdxNewRecord][nCntScore]->GetObject2D()->GetSize();
 
 		// 色取得
-		D3DXCOLOR col = m_pScore[m_nIdxNewRecord][nCntScore]->GetMyObject()->GetColor();
+		D3DXCOLOR col = m_pScore[m_nIdxNewRecord][nCntScore]->GetObject2D()->GetColor();
 
 		// 曲線補正
 		CuadricCurveComp(col.a, 180, 0.3f, 1.0f, m_nCntNewRecord);
 
 		// 位置設定
-		m_pScore[m_nIdxNewRecord][nCntScore]->GetMyObject()->SetPosition(pos);
+		m_pScore[m_nIdxNewRecord][nCntScore]->GetObject2D()->SetPosition(pos);
 
 		// サイズ設定
-		m_pScore[m_nIdxNewRecord][nCntScore]->GetMyObject()->SetSize(size);
+		m_pScore[m_nIdxNewRecord][nCntScore]->GetObject2D()->SetSize(size);
 
 		// 色設定
-		m_pScore[m_nIdxNewRecord][nCntScore]->GetMyObject()->SetColor(col);
+		m_pScore[m_nIdxNewRecord][nCntScore]->GetObject2D()->SetColor(col);
 	}
 }
 
@@ -336,7 +336,7 @@ void CRankingScore::SetAllArrival(void)
 		for (int nCntScore = 0; nCntScore < RANKINGSCORE_DIGIT; nCntScore++)
 		{
 			// 位置取得
-			D3DXVECTOR3 pos = m_pScore[nCntRanking][nCntScore]->GetMyObject()->GetPosition();
+			D3DXVECTOR3 pos = m_pScore[nCntRanking][nCntScore]->GetObject2D()->GetPosition();
 
 			if (pos.x == INIT_POSX)
 			{
@@ -345,7 +345,7 @@ void CRankingScore::SetAllArrival(void)
 			}
 
 			// 色取得
-			D3DXCOLOR col = m_pScore[nCntRanking][nCntScore]->GetMyObject()->GetColor();
+			D3DXCOLOR col = m_pScore[nCntRanking][nCntScore]->GetObject2D()->GetColor();
 
 			// 移動
 			float fDest = m_fPosDestX[nCntRanking] + nCntScore * BASE_DIS_X;
@@ -355,10 +355,10 @@ void CRankingScore::SetAllArrival(void)
 			col.a = 1.0f;
 
 			// 位置設定
-			m_pScore[nCntRanking][nCntScore]->GetMyObject()->SetPosition(pos);
+			m_pScore[nCntRanking][nCntScore]->GetObject2D()->SetPosition(pos);
 
 			// 色設定
-			m_pScore[nCntRanking][nCntScore]->GetMyObject()->SetColor(col);
+			m_pScore[nCntRanking][nCntScore]->GetObject2D()->SetColor(col);
 		}
 	}
 
@@ -391,7 +391,7 @@ void CRankingScore::SetValue(int nCntRanking)
 		if (m_pScore[nCntRanking][nCntScore] != NULL)
 		{// NULLじゃなかったら
 
-			D3DXVECTOR2 *pTex = m_pScore[nCntRanking][nCntScore]->GetMyObject()->GetTex();
+			D3DXVECTOR2 *pTex = m_pScore[nCntRanking][nCntScore]->GetObject2D()->GetTex();
 
 			// テクスチャ座標の設定
 			pTex[0] = D3DXVECTOR2(aTexU[nCntScore] * TEX_U, 0.0f);
@@ -400,7 +400,7 @@ void CRankingScore::SetValue(int nCntRanking)
 			pTex[3] = D3DXVECTOR2(aTexU[nCntScore] * TEX_U + TEX_U, 1.0f);
 
 			// 頂点設定
-			m_pScore[nCntRanking][nCntScore]->GetMyObject()->SetVtx();
+			m_pScore[nCntRanking][nCntScore]->GetObject2D()->SetVtx();
 		}
 	}
 }

@@ -154,7 +154,68 @@ float Lerp(float start, float end, float time)
 {
 	// 範囲外補正
 	ValueNormalize(time, 1.0f, 0.0f);
-	float fValue = start + time * (end - start);
+	float fValue = start + (end - start) * time;
+
+	return fValue;
+}
+
+//==================================================================================
+// 線形補正(等速)
+//==================================================================================
+float EasingLinear(float start, float end, float time)
+{
+	// 範囲外補正
+	ValueNormalize(time, 1.0f, 0.0f);
+	float fValue = start + (end - start) * time;
+
+	return fValue;
+}
+
+//==================================================================================
+// 線形補正(徐々に加速)
+//==================================================================================
+float EasingEaseIn(float start, float end, float time)
+{
+	// 範囲外補正
+	ValueNormalize(time, 1.0f, 0.0f);
+
+	float fValue = start + (end - start) * time * time;
+
+	return fValue;
+}
+
+//==================================================================================
+// 線形補正(徐々に減速)
+//==================================================================================
+float EasingEaseOut(float start, float end, float time)
+{
+	// 範囲外補正
+	ValueNormalize(time, 1.0f, 0.0f);
+
+	float fSquaredTime = time * time;
+	float fValue = start + (end - start) * (1.0f - (1.0f - fSquaredTime) * (1.0f - fSquaredTime));
+
+	return fValue;
+}
+
+//==================================================================================
+// 線形補正(加速して減速)
+//==================================================================================
+float EasingEaseInOut(float start, float end, float time)
+{
+	// 範囲外補正
+	ValueNormalize(time, 1.0f, 0.0f);
+	float fValue = 0.0f;
+
+	if (time < 0.5) {
+		time = 2.0f * time;
+		fValue = start + (end - start) * 0.5f * time * time;
+	}
+	else {
+		time = 2.0f * time - 1.0f;
+		float fSquaredTime = time * time;
+		fValue = start + (end - start) * (0.5f * (1.0f - (1.0f - fSquaredTime) * (1.0f - fSquaredTime)) + 0.5f);
+	}
 
 	return fValue;
 }

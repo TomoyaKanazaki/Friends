@@ -60,6 +60,8 @@ public:
 	int GetPlayerChaseIndex(void);					// 追従するプレイヤーのインデックス番号取得
 	void SetChaseType(CHASETYPE type);	// 追従の種類設定
 	CHASETYPE GetChaseType(void);		// 追従の種類取得
+	void SetEnableFollow(bool bFollow);	// 追従の判定設定
+	bool IsFollow(void);				// 追従状態取得
 	void SetViewPort(D3DXVECTOR3 pos, D3DXVECTOR2 size);		// ビューポートの設定
 	void Reset(CScene::MODE mode);	// リセット
 	void ResetBoss(void);	// リセット

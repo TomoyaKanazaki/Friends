@@ -22,6 +22,7 @@
 #include "enemybase.h"
 #include "effect_enemyspawn.h"
 #include "instantfade.h"
+#include "stagecleartext.h"
 
 //==========================================================================
 // マクロ定義
@@ -162,11 +163,13 @@ void CEnemyManager::Update(void)
 		// ステージ変更中にする
 		m_bChangeStage = true;
 
-		// 遷移なしフェード追加
-		CManager::GetInstance()->GetInstantFade()->SetFade();
+		// 通常クリア状態にする
+		CGame::GetGameManager()->SetType(CGameManager::SCENE_MAINCLEAR);
 
-		// 遷移状態に変更
-		CGame::GetGameManager()->SetType(CGameManager::SCENE_TRANSITION);
+		CStageClearText::Create(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
+
+		//// 遷移なしフェード追加
+		//CManager::GetInstance()->GetInstantFade()->SetFade();
 	}
 
 	

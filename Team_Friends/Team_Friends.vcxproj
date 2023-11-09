@@ -198,6 +198,7 @@
     <ClCompile Include="hp_gauge.cpp" />
     <ClCompile Include="hp_gauge_player.cpp" />
     <ClCompile Include="impactwave.cpp" />
+    <ClCompile Include="injectiontable.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="instantfade.cpp" />
     <ClCompile Include="item.cpp" />
@@ -216,6 +217,8 @@
     <ClCompile Include="motion.cpp" />
     <ClCompile Include="multinumber.cpp" />
     <ClCompile Include="number.cpp" />
+    <ClCompile Include="number_2D.cpp" />
+    <ClCompile Include="number_Billboard.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="object2D.cpp" />
     <ClCompile Include="object3D.cpp" />
@@ -242,6 +245,7 @@
     <ClCompile Include="shadow.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="stage.cpp" />
+    <ClCompile Include="stagecleartext.cpp" />
     <ClCompile Include="targetpoint.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="timer.cpp" />
@@ -298,6 +302,7 @@
     <ClInclude Include="hp_gauge.h" />
     <ClInclude Include="hp_gauge_player.h" />
     <ClInclude Include="impactwave.h" />
+    <ClInclude Include="injectiontable.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="instantfade.h" />
     <ClInclude Include="item.h" />
@@ -316,6 +321,8 @@
     <ClInclude Include="motion.h" />
     <ClInclude Include="multinumber.h" />
     <ClInclude Include="number.h" />
+    <ClInclude Include="number_2D.h" />
+    <ClInclude Include="number_Billboard.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="object2D.h" />
     <ClInclude Include="object3D.h" />
@@ -339,6 +346,7 @@
     <ClInclude Include="shadow.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="stage.h" />
+    <ClInclude Include="stagecleartext.h" />
     <ClInclude Include="targetpoint.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="timer.h" />

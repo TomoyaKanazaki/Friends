@@ -39,6 +39,8 @@ public:
 	D3DXCOLOR GetColor(void) const;				// 色取得
 	void SetSize(const D3DXVECTOR2 size);		// サイズの設定
 	D3DXVECTOR2 GetSize(void) const;			// サイズの取得
+	void SetSizeOrigin(const D3DXVECTOR2 size);	// 元のサイズの設定
+	D3DXVECTOR2 GetSizeOrigin(void) const;		// 元のサイズの取得
 	void SetTex(D3DXVECTOR2 *tex);				// テクスチャ座標の設定
 	D3DXVECTOR2 *GetTex(void);					// テクスチャ座標の取得
 	void SetLength(const float fLength);		// 対角線の長さ設定
@@ -58,11 +60,12 @@ public:
 protected:
 
 private:
-	D3DXCOLOR m_col;		// 色
-	D3DXVECTOR2 m_fSize;	// サイズ
+	D3DXCOLOR m_col;			// 色
+	D3DXVECTOR2 m_size;			// サイズ
+	D3DXVECTOR2 m_sizeOrigin;	// 元のサイズ
 	D3DXVECTOR2 m_fTex[32];		// テクスチャ座標
-	float m_fLength;		// 対角線の長さ
-	float m_fAngle;			// 対角線の向き
+	float m_fLength;			// 対角線の長さ
+	float m_fAngle;				// 対角線の向き
 	D3DXVECTOR3 m_VtxPos[32];		// 頂点座標
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファ
 	int m_nTexIdx;					// テクスチャのインデックス番号

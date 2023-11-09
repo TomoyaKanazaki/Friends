@@ -1,10 +1,10 @@
 //=============================================================================
 // 
-//  タイトル画面処理 [decideplayer_screen.cpp]
+//  キャラクター決め画面処理 [decidecharacter.cpp]
 //  Author : 相馬靜雅
 // 
 //=============================================================================
-#include "decideplayer_screen.h"
+#include "decidecharacter.h"
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
@@ -13,7 +13,7 @@
 #include "input.h"
 #include "sound.h"
 #include "fade.h"
-#include "decidecharacter.h"
+#include "cursor.h"
 
 //==========================================================================
 // マクロ定義
@@ -23,37 +23,38 @@
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
-const char *CDecidePlayerScreen::m_apTextureFile[VTX_MAX] =			// テクスチャのファイル
+const char *CDecideCharacter::m_apTextureFile[VTX_MAX] =			// テクスチャのファイル
 {
 	"data\\TEXTURE\\decideplayer_text.png",
 };
 
-const char *CDecidePlayerScreen::m_apTextureFile_Select[VTXSELECT_MAX] =	// テクスチャのファイル
+const char *CDecideCharacter::m_apTextureFile_Select[VTXCHARACTER_MAX] =	// テクスチャのファイル
 {
-	"data\\TEXTURE\\decideplayer_select01.png",
-	"data\\TEXTURE\\decideplayer_select02.png",
-	"data\\TEXTURE\\decideplayer_select03.png",
-	"data\\TEXTURE\\decideplayer_select04.png",
+	"data\\TEXTURE\\decidecharacter_01.png",
+	"data\\TEXTURE\\decidecharacter_02.png",
+	"data\\TEXTURE\\decidecharacter_03.png",
+	"data\\TEXTURE\\decidecharacter_04.png",
 };
 
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CDecidePlayerScreen::CDecidePlayerScreen(int nPriority) : CObject(nPriority)
+CDecideCharacter::CDecideCharacter(int nPriority) : CObject(nPriority)
 {
 	// 値のクリア
 	memset(&m_pObj2D[0], NULL, sizeof(m_pObj2D));				// オブジェクト2Dのオブジェクト
 	memset(&m_pSelect2D[0], NULL, sizeof(m_pSelect2D));			// 選択肢のオブジェクト
+	memset(&m_apCursor[0], NULL, sizeof(m_apCursor));			// カーソルのオブジェクト
+	memset(&m_bDecide[0], false, sizeof(m_bDecide));			// 決定したか
+	m_bAllDecide = false;										// 全て決定したか
 	memset(&m_nTexIdx[0], 0, sizeof(m_nTexIdx));				// テクスチャのインデックス番号
 	memset(&m_nTexIdx_Select[0], 0, sizeof(m_nTexIdx_Select));	// テクスチャのインデックス番号
-	m_nCntAlpha = 0;		// 不透明度のカウンター
-	m_nNowSelect = 0;		// 現在の選択肢
 }
 
 //==========================================================================
 // デストラクタ
 //==========================================================================
-CDecidePlayerScreen::~CDecidePlayerScreen()
+CDecideCharacter::~CDecideCharacter()
 {
 
 }
@@ -61,16 +62,16 @@ CDecidePlayerScreen::~CDecidePlayerScreen()
 //==========================================================================
 // 生成処理
 //==========================================================================
-CDecidePlayerScreen *CDecidePlayerScreen::Create(void)
+CDecideCharacter *CDecideCharacter::Create(void)
 {
 	// 生成用のオブジェクト
-	CDecidePlayerScreen *pTitleScreen = NULL;
+	CDecideCharacter *pTitleScreen = NULL;
 
 	if (pTitleScreen == NULL)
 	{// NULLだったら
 
 		// メモリの確保
-		pTitleScreen = DEBUG_NEW CDecidePlayerScreen;
+		pTitleScreen = DEBUG_NEW CDecideCharacter;
 
 		if (pTitleScreen != NULL)
 		{// メモリの確保が出来ていたら
@@ -88,7 +89,7 @@ CDecidePlayerScreen *CDecidePlayerScreen::Create(void)
 //==========================================================================
 // 初期化処理
 //==========================================================================
-HRESULT CDecidePlayerScreen::Init(void)
+HRESULT CDecideCharacter::Init(void)
 {
 	// 種類の設定
 	SetType(TYPE_OBJECT2D);
@@ -124,7 +125,7 @@ HRESULT CDecidePlayerScreen::Init(void)
 		}
 	}
 
-	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
+	for (int nCntSelect = 0; nCntSelect < VTXCHARACTER_MAX; nCntSelect++)
 	{
 		// 生成処理
 		m_pSelect2D[nCntSelect] = CObject2D::Create(8);
@@ -139,12 +140,24 @@ HRESULT CDecidePlayerScreen::Init(void)
 		m_pSelect2D[nCntSelect]->BindTexture(m_nTexIdx_Select[nCntSelect]);
 
 		// サイズ取得
-		D3DXVECTOR2 size = pTexture->GetImageSize(m_nTexIdx_Select[nCntSelect]) * 0.4f;
-		float fDistance = size.x * 2.0f;
+		D3DXVECTOR2 size = pTexture->GetImageSize(m_nTexIdx_Select[nCntSelect]) * 0.2f;
 
-		m_pSelect2D[nCntSelect]->SetSize(size);								// サイズ
-		m_pSelect2D[nCntSelect]->SetPosition(D3DXVECTOR3(640.0f - (fDistance * 2.0f) + nCntSelect * fDistance + size.x, 550.0f, 0.0f));	// 位置
+		m_pSelect2D[nCntSelect]->SetSize(size);			// サイズ
+		m_pSelect2D[nCntSelect]->SetSizeOrigin(size);	// 元のサイズ
+
+		size *= 1.5f;
+		float fDistance = size.x * 2.0f;
+		m_pSelect2D[nCntSelect]->SetPosition(D3DXVECTOR3(640.0f - (fDistance * 2.0f) + nCntSelect * fDistance + size.x, 600.0f, 0.0f));	// 位置
 		m_pObj2D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
+	}
+
+	for (int i = 0; i < CManager::GetInstance()->GetNumPlayer(); i++)
+	{
+		float fDistance = 100.0f;
+		D3DXVECTOR3 pos = D3DXVECTOR3(640.0f - (fDistance * 2.0f) + i * fDistance + (fDistance * 0.5f), 200.0f, 0.0f);
+
+		// カーソル生成
+		m_apCursor[i] = CCursor::Create(pos, i);
 	}
 
 	return S_OK;
@@ -153,7 +166,7 @@ HRESULT CDecidePlayerScreen::Init(void)
 //==========================================================================
 // 終了処理
 //==========================================================================
-void CDecidePlayerScreen::Uninit(void)
+void CDecideCharacter::Uninit(void)
 {
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
@@ -165,7 +178,7 @@ void CDecidePlayerScreen::Uninit(void)
 		}
 	}
 
-	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
+	for (int nCntSelect = 0; nCntSelect < VTXCHARACTER_MAX; nCntSelect++)
 	{
 		if (m_pSelect2D[nCntSelect] != NULL)
 		{// NULLじゃなかったら
@@ -182,7 +195,7 @@ void CDecidePlayerScreen::Uninit(void)
 //==========================================================================
 // 削除処理
 //==========================================================================
-void CDecidePlayerScreen::Delete(void)
+void CDecideCharacter::Delete(void)
 {
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
@@ -195,7 +208,7 @@ void CDecidePlayerScreen::Delete(void)
 		}
 	}
 
-	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
+	for (int nCntSelect = 0; nCntSelect < VTXCHARACTER_MAX; nCntSelect++)
 	{
 		if (m_pSelect2D[nCntSelect] != NULL)
 		{// NULLじゃなかったら
@@ -213,7 +226,7 @@ void CDecidePlayerScreen::Delete(void)
 //==========================================================================
 // 更新処理
 //==========================================================================
-void CDecidePlayerScreen::Update(void)
+void CDecideCharacter::Update(void)
 {
 
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
@@ -236,62 +249,28 @@ void CDecidePlayerScreen::Update(void)
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
-	// 現在の選択肢更新
-	if ((pInputGamepad->GetStickSelect(CInputGamepad::STICK_X) == false && pInputGamepad->GetStickMoveL(0).x < 0) ||
-		(pInputKeyboard->GetTrigger(DIK_A) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LEFT, 0)))
-	{// 左
 
-		// 左スティックの判定を渡す
-		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_X);
-
-		// パターンNo.を更新
-		m_nNowSelect = (m_nNowSelect + (VTXSELECT_MAX - 1)) % VTXSELECT_MAX;
-
-		// サウンド再生
-		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_CURSOR);
-
-		// カウンターリセット
-		m_nCntAlpha = 0;
-	}
-	else if (pInputGamepad->GetStickSelect(CInputGamepad::STICK_X) == false && pInputGamepad->GetStickMoveL(0).x > 0 ||
-		(pInputKeyboard->GetTrigger(DIK_D) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_RIGHT, 0)))
-	{// 右
-
-		// 左スティックの判定を渡す
-		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_X);
-
-		// パターンNo.を更新
-		m_nNowSelect = (m_nNowSelect + 1) % VTXSELECT_MAX;
-
-		// サウンド再生
-		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_CURSOR);
-
-		// カウンターリセット
-		m_nCntAlpha = 0;
-	}
-
-	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0))
+	if (m_bAllDecide == true &&
+		(pInputKeyboard->GetTrigger(DIK_RETURN) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_START, 0)))
 	{// 決定が押された
-		CManager::GetInstance()->SetNumPlayer(m_nNowSelect + 1);
-		//CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_GAME);
 
-		// キャラ決め画面生成
-		CDecideCharacter::Create();
-
-		Delete();
-		return;
+		// ゲームに遷移する
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_GAME);
 	}
 
 
-	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
+	for (int nCntSelect = 0; nCntSelect < VTXCHARACTER_MAX; nCntSelect++)
 	{
 		if (m_pSelect2D[nCntSelect] == NULL)
 		{// NULLだったら
 			continue;
 		}
 
-		// 選択肢の更新処理
-		UpdateSelect(nCntSelect);
+		// 選択肢との当たり判定
+		if (CollisionSelect(nCntSelect))
+		{
+			//break;
+		}
 
 		// 頂点情報設定
 		m_pSelect2D[nCntSelect]->SetVtx();
@@ -301,29 +280,103 @@ void CDecidePlayerScreen::Update(void)
 //==========================================================================
 // 選択肢の更新処理
 //==========================================================================
-void CDecidePlayerScreen::UpdateSelect(int nCntSelect)
+bool CDecideCharacter::CollisionSelect(int nCntSelect)
 {
-	// 色取得
-	D3DXCOLOR col = m_pSelect2D[nCntSelect]->GetColor();
+	// 情報取得
+	D3DXVECTOR3 pos = m_pSelect2D[nCntSelect]->GetPosition();
+	D3DXVECTOR2 size = m_pSelect2D[nCntSelect]->GetSize();
+	D3DXVECTOR2 sizeOrigin = m_pSelect2D[nCntSelect]->GetSizeOrigin();
 
-	// 不透明度更新
-	if (m_nNowSelect == nCntSelect)
+	// 四角と円の判定
+	bool bHit = false;
+	int nCursorIdx = -1;
+
+	// 全て決定状態
+	m_bAllDecide = true;
+
+	for (int i = 0; i < CManager::GetInstance()->GetNumPlayer(); i++)
 	{
-		CuadricCurveComp(col.a, ALPHATIME, 0.3f, 1.0f, m_nCntAlpha);
+		if (m_apCursor[i] == NULL)
+		{
+			continue;
+		}
+
+		// カーソルごとの選択肢のインデックス番号取得
+		int nDecideIdx = m_apCursor[i]->GetSelectIdx();
+
+		// 決定状態取得
+		m_bDecide[nDecideIdx] = m_apCursor[i]->IsDecide();
+		if (m_bDecide[nDecideIdx])
+		{
+			continue;
+		}
+		else
+		{
+			// 全て決定してないようにする
+			m_bAllDecide = false;
+		}
+
+		// 情報取得
+		D3DXVECTOR3 posCursor = m_apCursor[i]->GetPosition();
+		D3DXVECTOR2 sizeCursor = m_apCursor[i]->GetSize();
+
+		// 円と矩形の判定
+		bHit = CollisionCircleSquare2D(posCursor, pos, mylib_const::DEFAULT_VECTOR3, sizeCursor.x, size);
+
+		if (bHit == true)
+		{
+			// カーソルのインデックス番号保存
+			nCursorIdx = i;
+			break;
+		}
+	}
+
+	if (bHit && m_bDecide[nCntSelect] == false)
+	{
+		size.x += ((sizeOrigin.x * 1.2f) - size.x) * 0.25f;
+		size.y += ((sizeOrigin.y * 1.2f) - size.y) * 0.25f;
+
+		// キーボード情報取得
+		CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+		// ゲームパッド情報取得
+		CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+		if (pInputKeyboard->GetTrigger(DIK_RETURN) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nCursorIdx))
+		{
+			// 決定判定
+			m_bDecide[nCntSelect] = true;
+			m_apCursor[nCursorIdx]->SetEnbaleDicide(true);
+			m_apCursor[nCursorIdx]->SetSelectIdx(nCntSelect);
+		}
+
 	}
 	else
 	{
-		col.a = 1.0f;
+		size.x += (sizeOrigin.x - size.x) * 0.25f;
+		size.y += (sizeOrigin.y - size.y) * 0.25f;
 	}
 
-	// 色設定
-	m_pSelect2D[nCntSelect]->SetColor(col);
+	if (m_bDecide[nCntSelect] == true)
+	{
+		m_pSelect2D[nCntSelect]->SetColor(D3DXCOLOR(0.4f, 0.4f, 0.4f, 1.0f));
+	}
+	else
+	{
+		m_pSelect2D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
+	}
+
+	// 情報設定
+	m_pSelect2D[nCntSelect]->SetPosition(pos);
+	m_pSelect2D[nCntSelect]->SetSize(size);
+
+	return bHit;
 }
 
 //==========================================================================
 // 描画処理
 //==========================================================================
-void CDecidePlayerScreen::Draw(void)
+void CDecideCharacter::Draw(void)
 {
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();

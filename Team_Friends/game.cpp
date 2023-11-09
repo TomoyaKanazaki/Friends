@@ -323,7 +323,16 @@ void CGame::Update(void)
 	}
 
 	// 敵の拠点
-	m_pEnemyBase->Update();
+	if (m_pEnemyBase != NULL)
+	{
+		m_pEnemyBase->Update();
+	}
+
+	// ステージの更新
+	if (m_pStage != NULL)
+	{
+		m_pStage->Update();
+	}
 
 #if _DEBUG
 

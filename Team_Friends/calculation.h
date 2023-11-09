@@ -43,6 +43,10 @@ void RotNormalize(D3DXVECTOR3 &rot);										// Šp“x‚Ì³‹K‰»(-3.14 || 3.14’´‚¦‚
 template<class T> void ValueNormalize(T &Value, T MaxValue, T MinValue);	// ’l‚Ì³‹K‰»ˆ—
 void InertiaCorrection(float &fMain, float fTarget, float fCntCorrection);	// Šµ«•â³
 float Lerp(float start, float end, float time);								// üŒ`•â³
+float EasingLinear(float start, float end, float time);						// üŒ`•â³(“™‘¬)
+float EasingEaseIn(float start, float end, float time);						// üŒ`•â³(™X‚É‰Á‘¬)
+float EasingEaseOut(float start, float end, float time);					// üŒ`•â³(™X‚ÉŒ¸‘¬)
+float EasingEaseInOut(float start, float end, float time);					// üŒ`•â³(‰Á‘¬‚µ‚ÄŒ¸‘¬)
 template<class T> void CuadricCurveComp(T& Value, const int nRange, T RangeOrigin, T Max, int& nAlphaCnt);	// “ñŸ‹Èü•â³
 D3DXCOLOR HSVtoRGB(float H, float S, float V);								// HSV•ÏŠ·
 int Random(int nMinNum, int nMaxNum);										// ƒ‰ƒ“ƒ_ƒ€¶¬

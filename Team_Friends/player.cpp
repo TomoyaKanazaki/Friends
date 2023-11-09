@@ -37,6 +37,7 @@
 #include "fade.h"
 #include "listmanager.h"
 #include "item.h"
+#include "injectiontable.h"
 
 // ”h¶æ
 #include "tutorialplayer.h"
@@ -65,6 +66,9 @@ const char *CPlayer::m_apModelFile[mylib_const::MAX_PLAYER] =	// ƒ‚ƒfƒ‹‚Ìƒtƒ@ƒCƒ
 	"data\\TEXT\\motion_3p.txt",
 	"data\\TEXT\\motion_4p.txt",
 };
+
+bool CPlayer::m_bAllLandInjectionTable = false;	// ‘Sˆõ‚ÌËo‘ä’…’n”»’è
+bool CPlayer::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// Ëo‘ä‚Ì’…’n”»’è
 
 //==========================================================================
 // ƒRƒ“ƒXƒgƒ‰ƒNƒ^
@@ -163,6 +167,8 @@ HRESULT CPlayer::Init(void)
 	m_state = STATE_NONE;	// ó‘Ô
 	m_nCntState = 0;		// ó‘Ô‘JˆÚƒJƒEƒ“ƒ^[
 	m_bLandOld = true;		// ‘O‰ñ‚Ì’…’nó‘Ô
+	m_bAllLandInjectionTable = false;	// ‘Sˆõ‚ÌËo‘ä’…’n”»’è
+	memset(&m_bLandInjectionTable[0], false, sizeof(m_bLandInjectionTable));	// Ëo‘ä‚Ì’…’n”»’è
 
 	// ƒLƒƒƒ‰ì¬
 	HRESULT hr = SetCharacter(m_apModelFile[m_nMyPlayerIdx]);
@@ -503,6 +509,9 @@ void CPlayer::Controll(void)
 	newPosition.x += move.x;
 	newPosition.z += move.z;
 
+	sakiPos.x = newPosition.x + sinf(D3DX_PI + rot.y) * GetRadius();
+	sakiPos.z = newPosition.z + cosf(D3DX_PI + rot.y) * GetRadius();
+
 	// Šp“x‚Ì³‹K‰»
 	RotNormalize(fRotDest);
 
@@ -528,10 +537,13 @@ void CPlayer::Controll(void)
 		sakiPos.y = newPosition.y;
 	}
 
+	// Ëo‘ä‚Ì’…’n”»’è
+	m_bLandInjectionTable[m_nMyPlayerIdx] = false;
+
 	//**********************************
 	// “–‚½‚è”»’è
 	//**********************************
-	bool bLandStage = Collision(newPosition, move);
+	bool bLandStage = Collision(sakiPos, move);
 
 	bool bMove = false;
 	if (m_bLandOld == false && bLandStage == true)
@@ -914,7 +926,7 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 	m_bLandField = false;
 	m_bHitWall = false;			// •Ç‚Ì“–‚½‚è”»’è
 
-	// ‚‚³æ“¾
+								// ‚‚³æ“¾
 	if (m_state != STATE_KNOCKBACK && m_state != STATE_DMG && m_state != STATE_DEAD && m_state != STATE_FADEOUT)
 	{
 		fHeight = CManager::GetInstance()->GetScene()->GetElevation()->GetHeight(pos, bLand);
@@ -927,17 +939,17 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 	if (fHeight > pos.y)
 	{// ’n–Ê‚Ì•û‚ª©•ª‚æ‚è‚‚©‚Á‚½‚ç
 
-		// ’n–Ê‚Ì‚‚³‚É•â³
+	 // ’n–Ê‚Ì‚‚³‚É•â³
 		pos.y = fHeight;
 		m_bLandField = true;
 
 		if (bLand == true)
 		{// ’…’n‚µ‚Ä‚½‚ç
 
-			// ƒWƒƒƒ“ƒvg—p‰Â”\‚É‚·‚é
+		 // ƒWƒƒƒ“ƒvg—p‰Â”\‚É‚·‚é
 			m_bJump = false;
 			move.y = 0.0f;
-			m_bLandOld = false;
+			m_bLandOld = true;
 		}
 	}
 
@@ -970,7 +982,7 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 		if (bLand == true && fHeight > pos.y)
 		{// ’n–Ê‚Ì•û‚ª©•ª‚æ‚è‚‚©‚Á‚½‚ç
 
-			// ’n–Ê‚Ì‚‚³‚É•â³
+		 // ’n–Ê‚Ì‚‚³‚É•â³
 			if (pos.y + 50.0f <= fHeight)
 			{// ©•ª‚æ‚è•Ç‚ª‚‚·‚¬‚é
 				m_bHitWall = true;
@@ -986,7 +998,7 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 			if (bLand == true)
 			{// ’…’n‚µ‚Ä‚½‚ç
 
-				if ((m_sMotionFrag.bKnockBack || m_bJump == true) && GetPosition().y  >= fHeight)
+				if ((m_sMotionFrag.bKnockBack || m_bJump == true) && GetPosition().y >= fHeight)
 				{
 					m_bLandOld = true;
 				}
@@ -1005,8 +1017,95 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 		}
 	}
 
-	// ‰ß‹‚Ì’…’n”»’è•Û‘¶
-	//m_bLandOld = bNowLand;
+
+
+
+	// ƒIƒuƒWƒFƒNƒgæ“¾
+	CObjectX *pObjX = pStage->GetInjectionTable();
+
+	// ‚‚³æ“¾
+	bLand = false;
+	fHeight = pObjX->GetHeight(pos, bLand);
+
+	if (bLand == true && fHeight > pos.y)
+	{// ’n–Ê‚Ì•û‚ª©•ª‚æ‚è‚‚©‚Á‚½‚ç
+
+		// ’n–Ê‚Ì‚‚³‚É•â³
+		if (pos.y + 50.0f <= fHeight)
+		{// ©•ª‚æ‚è•Ç‚ª‚‚·‚¬‚é
+			m_bHitWall = true;
+		}
+		else
+		{
+			pos.y = fHeight;
+		}
+
+		m_bHitStage = true;
+		m_bLandField = false;
+
+		if (bLand == true)
+		{// ’…’n‚µ‚Ä‚½‚ç
+
+			if ((m_sMotionFrag.bKnockBack || m_bJump == true) && GetPosition().y >= fHeight)
+			{
+				m_bLandOld = true;
+			}
+
+			if (m_bJump == true)
+			{// ƒWƒƒƒ“ƒv’†‚¾‚Á‚½‚ç
+				m_pMotion->ToggleFinish(true);
+			}
+
+			// ƒWƒƒƒ“ƒvg—p‰Â”\‚É‚·‚é
+			m_bJump = false;
+			move.y = 0.0f;
+			bNowLand = true;
+			m_sMotionFrag.bJump = false;
+
+			// Ëo‘ä‚Ì’…’n”»’è
+			m_bLandInjectionTable[m_nMyPlayerIdx] = true;
+
+		}
+	}
+
+	int nLandNum = 0;
+	for (int i = 0; i < CManager::GetInstance()->GetNumPlayer(); i++)
+	{
+		// Ëo‘ä‚Ì’…’nŠm”F
+		if (m_bLandInjectionTable[i] == true)
+		{
+			nLandNum++;
+		}
+	}
+
+	// ‘Sˆõ’…’nó‘Ôİ’è
+	if (nLandNum >= CManager::GetInstance()->GetNumPlayer())
+	{
+		m_bAllLandInjectionTable = true;
+	}
+	else
+	{
+		m_bAllLandInjectionTable = false;
+	}
+
+	if (CGame::GetGameManager()->GetType() == CGameManager::SCENE_MAINCLEAR &&
+		pStage->GetInjectionTable()->GetState() != CInjectionTable::STATE_UP)
+	{// ’ÊíƒNƒŠƒA‚¾‚Á‚½‚ç
+
+		if (m_bAllLandInjectionTable == true)
+		{// ‘SˆõËo‘ä‚Éæ‚Á‚Ä‚¢‚é
+
+			// ƒ`ƒƒ[ƒWó‘Ô
+			pStage->GetInjectionTable()->SetState(CInjectionTable::STATE_CHARGE);
+		}
+		else
+		{
+			// ƒŠƒZƒbƒg
+			pStage->GetInjectionTable()->SetState(CInjectionTable::STATE_NONE, 0);
+		}
+	}
+
+
 
 
 
@@ -1024,9 +1123,6 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 
 	// Œü‚«İ’è
 	SetRotation(rot);
-
-	// ˆÊ’uİ’è
-	//SetPosition(pos);
 
 	return bNowLand;
 }

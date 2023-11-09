@@ -93,6 +93,8 @@ HRESULT CCursor::Init(void)
 		return E_FAIL;
 	}
 
+	m_nSelectIdx = -1;
+
 	// ОнЧёВћРЁТи
 	SetType(TYPE_OBJECT2D);
 

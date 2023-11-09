@@ -11,6 +11,9 @@
 #include "main.h"
 #include "object.h"
 
+// 前方宣言
+class CInjectionTable;
+
 //==========================================================================
 // クラス定義
 //==========================================================================
@@ -29,6 +32,7 @@ public:
 	void Draw(void);
 
 	CObjectX *GetObj(int nIdx);
+	CInjectionTable *GetInjectionTable(void);	// 射出台取得
 	int GetNumAll(void);		// 総数取得
 	static CStage *Create(const char *pTextFile);
 
@@ -43,6 +47,7 @@ private:
 	int m_nNumAll;
 	std::vector<std::string> ModelFile;		// モデルファイル名
 	CObjectX *m_pObjX[mylib_const::MAX_STAGE];	// オブジェクトXのポインタ
+	CInjectionTable *m_pInjectionTable;			// 射出台のオブジェクト
 
 };
 

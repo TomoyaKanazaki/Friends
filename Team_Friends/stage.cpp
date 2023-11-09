@@ -10,6 +10,8 @@
 #include "calculation.h"
 #include "objectX.h"
 #include "shadow.h"
+#include "input.h"
+#include "injectiontable.h"
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -23,6 +25,7 @@ CStage::CStage()
 	// ゼロクリア
 	m_nNumAll = 0;
 	memset(&m_pObjX[0], NULL, sizeof(m_pObjX));	// オブジェクトXのポインタ
+	m_pInjectionTable = NULL;			// 射出台のオブジェクト
 }
 
 //==========================================================================
@@ -80,6 +83,9 @@ HRESULT CStage::Init(void)
 	// 総数
 	m_nNumAll = 0;
 
+	// 射出台生成
+	m_pInjectionTable = CInjectionTable::Create(D3DXVECTOR3(0.0f, 0.0f, -2000.0f));
+
 	return S_OK;
 }
 
@@ -127,6 +133,33 @@ void CStage::Update(void)
 	//	}
 
 	//}
+
+	// キーボード情報取得
+	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+	// ゲームパッド情報取得
+	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+	for (int nCntObj = 0; nCntObj < mylib_const::MAX_STAGE; nCntObj++)
+	{
+		if (m_pObjX[nCntObj] == NULL)
+		{
+			continue;
+		}
+
+		D3DXVECTOR3 pos = m_pObjX[nCntObj]->GetPosition();
+
+		if (pInputKeyboard->GetPress(DIK_UP) == true || pInputGamepad->GetStickMoveR(0).y > 0)
+		{//←キーが押された,左移動
+			pos.y += 10.0f;
+		}
+		if (pInputKeyboard->GetPress(DIK_DOWN) == true || pInputGamepad->GetStickMoveR(0).y < 0)
+		{//←キーが押された,左移動
+			pos.y -= 10.0f;
+		}
+
+		m_pObjX[nCntObj]->SetPosition(pos);
+	}
 }
 
 //==========================================================================
@@ -432,6 +465,14 @@ HRESULT CStage::ReadText(const char *pTextFile)
 CObjectX *CStage::GetObj(int nIdx)
 {
 	return m_pObjX[nIdx];
+}
+
+//==========================================================================
+// 射出台取得
+//==========================================================================
+CInjectionTable *CStage::GetInjectionTable(void)
+{
+	return m_pInjectionTable;
 }
 
 //==========================================================================

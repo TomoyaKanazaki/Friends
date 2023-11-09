@@ -1,18 +1,20 @@
 //=============================================================================
 // 
-//  数字処理 [number.cpp]
+//  数字(2D)処理 [number_2D.cpp]
 //  Author : 相馬靜雅
 // 
 //=============================================================================
-#include "number.h"
-
-// 派生先
 #include "number_2D.h"
-#include "number_Billboard.h"
+#include "manager.h"
+#include "renderer.h"
+#include "object2D.h"
 
 //==========================================================================
 // マクロ定義
 //==========================================================================
+#define WIDTH			(640.0f)					// 横幅
+#define HEIGHT			(360.0f)					// 縦幅
+#define SCROLL_SPEED	(-0.005f)					// スクロール速度
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -21,185 +23,172 @@
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CNumber::CNumber(int nPriority)
+CNumber2D::CNumber2D(int nPriority) : CNumber(nPriority)
 {
 	// 値のクリア
-	m_objType = OBJECTTYPE_2D;	// オブジェクトの種類
+	m_aObject2D = NULL;			// オブジェクト2Dのオブジェクト
 }
 
 //==========================================================================
 // デストラクタ
 //==========================================================================
-CNumber::~CNumber()
+CNumber2D::~CNumber2D()
 {
 
 }
 
 //==========================================================================
-// 生成処理
+// 初期化処理
 //==========================================================================
-CNumber *CNumber::Create(EObjectType objtype)
+HRESULT CNumber2D::Init(void)
 {
-	// 生成用のオブジェクト
-	CNumber *pNumber = NULL;
+	// 生成処理
+	m_aObject2D = CObject2D::Create(7);
 
-	if (pNumber == NULL)
-	{// NULLだったら
+	return S_OK;
+}
 
-		// メモリの確保
-		switch (objtype)
-		{
-		case CNumber::OBJECTTYPE_2D:
-			pNumber = DEBUG_NEW CNumber2D;
-			break;
-
-		case CNumber::OBJECTTYPE_BILLBOARD:
-			pNumber = DEBUG_NEW CNumberBillboard;
-			break;
-
-		default:
-			return NULL;
-			break;
-		}
-
-		if (pNumber != NULL)
-		{// メモリの確保が出来ていたら
-
-			// オブジェクトの種類
-			pNumber->m_objType = objtype;
-
-			// 初期化処理
-			pNumber->Init();
-		}
-		else
-		{
-			delete pNumber;
-			pNumber = NULL;
-		}
-
-		return pNumber;
+//==========================================================================
+// 終了処理
+//==========================================================================
+void CNumber2D::Uninit(void)
+{
+	// 終了処理
+	if (m_aObject2D != NULL)
+	{// NULLじゃなかったら
+		m_aObject2D = NULL;
 	}
-
-	return NULL;
 }
 
 //==========================================================================
-// 位置設定
+// 解放処理
 //==========================================================================
-void CNumber::SetPosition(const D3DXVECTOR3 pos)
+void CNumber2D::Release(void)
 {
+	if (m_aObject2D != NULL)
+	{// NULLじゃなかったら
+		m_aObject2D->Uninit();
+		m_aObject2D = NULL;
+	}
 }
 
 //==========================================================================
-// 位置取得
+// 更新処理
 //==========================================================================
-D3DXVECTOR3 CNumber::GetPosition(void) const
+void CNumber2D::Update(void)
 {
-	return mylib_const::DEFAULT_VECTOR3;
+	// 更新処理
+	if (m_aObject2D != NULL)
+	{
+		m_aObject2D->Update();
+	}
 }
 
 //==========================================================================
-// 移動量設定
+// 描画処理
 //==========================================================================
-void CNumber::SetMove(const D3DXVECTOR3 move)
+void CNumber2D::Draw(void)
 {
+	// 描画処理
+	if (m_aObject2D != NULL)
+	{
+		m_aObject2D->Draw();
+	}
 }
 
 //==========================================================================
-// 移動量取得
+// 頂点情報設定処理
 //==========================================================================
-D3DXVECTOR3 CNumber::GetMove(void) const
+void CNumber2D::SetVtx(void)
 {
-	return mylib_const::DEFAULT_VECTOR3;
+	m_aObject2D->SetVtx();
 }
 
 //==========================================================================
-// 向き設定
+// テクスチャの割り当て
 //==========================================================================
-void CNumber::SetRotation(const D3DXVECTOR3 rot)
+void CNumber2D::BindTexture(int nIdx)
 {
+	// 割り当てる
+	m_aObject2D->BindTexture(nIdx);
 }
 
 //==========================================================================
-// 向き取得
+// 種類設定
 //==========================================================================
-D3DXVECTOR3 CNumber::GetRotation(void) const
+void CNumber2D::SetType(const CObject::TYPE type)
 {
-	return mylib_const::DEFAULT_VECTOR3;
+	m_aObject2D->SetType(type);
 }
 
 //==========================================================================
 // 色設定
 //==========================================================================
-void CNumber::SetColor(const D3DXCOLOR col)
+void CNumber2D::SetColor(const D3DXCOLOR col)
 {
+	m_aObject2D->SetColor(col);
 }
 
 //==========================================================================
 // 色取得
 //==========================================================================
-D3DXCOLOR CNumber::GetColor(void) const
+D3DXCOLOR CNumber2D::GetColor(void) const
 {
-	return mylib_const::DEFAULT_COLOR;
+	return m_aObject2D->GetColor();
 }
 
 //==========================================================================
 // サイズ設定
 //==========================================================================
-void CNumber::SetSize(const D3DXVECTOR2 size)
+void CNumber2D::SetSize(const D3DXVECTOR2 size)
 {
+	m_aObject2D->SetSize(size);		// サイズ
 }
 
 //==========================================================================
 // サイズ取得
 //==========================================================================
-D3DXVECTOR2 CNumber::GetSize(void) const
+D3DXVECTOR2 CNumber2D::GetSize(void) const
 {
-	return D3DXVECTOR2(0.0f, 0.0f);
+	return m_aObject2D->GetSize();
 }
 
 //==========================================================================
 // 元のサイズの設定
 //==========================================================================
-void CNumber::SetSizeOrigin(const D3DXVECTOR2 size)
+void CNumber2D::SetSizeOrigin(const D3DXVECTOR2 size)
 {
+	m_aObject2D->SetSizeOrigin(size);
 }
 
 //==========================================================================
 // 元のサイズの取得
 //==========================================================================
-D3DXVECTOR2 CNumber::GetSizeOrigin(void) const
+D3DXVECTOR2 CNumber2D::GetSizeOrigin(void) const
 {
-	return D3DXVECTOR2(0.0f, 0.0f);
+	return m_aObject2D->GetSizeOrigin();
 }
 
 //==========================================================================
 // テクスチャ座標設定
 //==========================================================================
-void CNumber::SetTex(D3DXVECTOR2 *tex)
+void CNumber2D::SetTex(D3DXVECTOR2 *tex)
 {
+	m_aObject2D->SetTex(tex);
 }
 
 //==========================================================================
 // テクスチャ座標取得
 //==========================================================================
-D3DXVECTOR2 *CNumber::GetTex(void)
+D3DXVECTOR2 *CNumber2D::GetTex(void)
 {
-	return NULL;
+	return m_aObject2D->GetTex();
 }
 
 //==========================================================================
 // オブジェクト2Dオブジェクトの取得
 //==========================================================================
-CObject2D *CNumber::GetObject2D(void)
+CObject2D *CNumber2D::GetObject2D(void)
 {
-	return NULL;
-}
-
-//==========================================================================
-// オブジェクトビルボードオブジェクトの取得
-//==========================================================================
-CObjectBillboard *CNumber::GetObjectBillboard(void)
-{
-	return NULL;
+	return m_aObject2D;
 }

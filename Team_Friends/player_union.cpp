@@ -1,11 +1,11 @@
 //=============================================================================
 // 
-//  プレイヤー処理 [player.cpp]
+//  プレイヤー処理 [player_union.cpp]
 //  Author : 相馬靜雅
 // 
 //=============================================================================
 #include "game.h"
-#include "player.h"
+#include "player_union.h"
 #include "camera.h"
 #include "manager.h"
 #include "debugproc.h"
@@ -55,25 +55,26 @@
 #define CONFUSIONTIME	(60 * 2)		// 混乱時間
 #define DEADTIME		(120)
 #define FADEOUTTIME		(60)
+#define RADIUS	(250.0f)
 
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
-const char *CPlayer::m_apModelFile[mylib_const::MAX_PLAYER] =	// モデルのファイル
+const char *CPlayerUnion::m_apModelFile[mylib_const::MAX_PLAYER] =	// モデルのファイル
 {
-	"data\\TEXT\\motion_set_player.txt",
-	"data\\TEXT\\motion_2p.txt",
-	"data\\TEXT\\motion_3p.txt",
-	"data\\TEXT\\motion_4p.txt",
+	"data\\TEXT\\player_union\\motion_body.txt",
+	"data\\TEXT\\player_union\\motion_leg.txt",
+	"data\\TEXT\\player_union\\motion_RArm.txt",
+	"data\\TEXT\\player_union\\motion_LArm.txt",
 };
 
-bool CPlayer::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
-bool CPlayer::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// 射出台の着地判定
+bool CPlayerUnion::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
+bool CPlayerUnion::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// 射出台の着地判定
 
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
+CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 {
 	// 値のクリア
 	// 共有変数
@@ -84,14 +85,14 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 	m_bHitWall = false;			// 壁の当たり判定
 	m_nCntWalk = 0;				// 歩行カウンター
 	m_state = STATE_NONE;			// 状態
-	m_pMotion = NULL;		// モーションの情報
-	m_sMotionFrag.bATK = false;		// モーションのフラグ
-	m_sMotionFrag.bJump = false;		// モーションのフラグ
-	m_sMotionFrag.bKnockBack = false;	// モーションのフラグ
-	m_sMotionFrag.bDead = false;		// モーションのフラグ
-	m_sMotionFrag.bMove = false;		// モーションのフラグ
+
+	memset(&m_pMotion[0], NULL, sizeof(m_pMotion));	// パーツ分のモーションポインタ
+	memset(&m_sMotionFrag[0], false, sizeof(m_sMotionFrag));	// モーションのフラグ
+	memset(&m_sAllCharaMotironFrag, false, sizeof(m_sAllCharaMotironFrag));	// モーションのフラグ
 
 	// プライベート変数
+	memset(&m_pObjChara[0], NULL, sizeof(m_pObjChara));	// パーツ分のオブジェクトキャラクターポインタ
+
 	m_Oldstate = STATE_NONE;			// 前回の状態
 	m_mMatcol = mylib_const::DEFAULT_COLOR;		// マテリアルの色
 	m_posKnokBack = mylib_const::DEFAULT_VECTOR3;	// ノックバックの位置
@@ -100,6 +101,7 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 	m_nTexIdx = 0;				// テクスチャのインデックス番号
 	m_nIdxXFile = 0;			// Xファイルのインデックス番号
 	m_nMyPlayerIdx = 0;			// プレイヤーインデックス番号
+	m_fRotDest = 0.0f;
 	m_pShadow = NULL;			// 影の情報
 	m_pTargetP = NULL;	// 目標の地点
 	m_pHPGauge = NULL;	// HPゲージの情報
@@ -108,7 +110,7 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 //==========================================================================
 // デストラクタ
 //==========================================================================
-CPlayer::~CPlayer()
+CPlayerUnion::~CPlayerUnion()
 {
 
 }
@@ -116,10 +118,10 @@ CPlayer::~CPlayer()
 //==========================================================================
 // 生成処理
 //==========================================================================
-CPlayer *CPlayer::Create(int nIdx)
+CPlayerUnion *CPlayerUnion::Create(void)
 {
 	// 生成用のオブジェクト
-	CPlayer *pPlayer = NULL;
+	CPlayerUnion *pPlayer = NULL;
 
 	if (pPlayer == NULL)
 	{// NULLだったら
@@ -128,11 +130,7 @@ CPlayer *CPlayer::Create(int nIdx)
 		switch (CManager::GetInstance()->GetMode())
 		{
 		case CScene::MODE_GAME:
-			pPlayer = DEBUG_NEW CPlayer;
-			break;
-
-		case CScene::MODE_TUTORIAL:
-			pPlayer = DEBUG_NEW CTutorialPlayer;
+			pPlayer = DEBUG_NEW CPlayerUnion;
 			break;
 
 		default:
@@ -144,7 +142,7 @@ CPlayer *CPlayer::Create(int nIdx)
 		{// メモリの確保が出来ていたら
 
 			// プレイヤーインデックス番号
-			pPlayer->m_nMyPlayerIdx = nIdx;
+			//pPlayer->m_nMyPlayerIdx = nIdx;
 
 			// 初期化処理
 			pPlayer->Init();
@@ -159,7 +157,7 @@ CPlayer *CPlayer::Create(int nIdx)
 //==========================================================================
 // 初期化処理
 //==========================================================================
-HRESULT CPlayer::Init(void)
+HRESULT CPlayerUnion::Init(void)
 {
 	// 種類の設定
 	SetType(TYPE_PLAYER);
@@ -171,46 +169,145 @@ HRESULT CPlayer::Init(void)
 	memset(&m_bLandInjectionTable[0], false, sizeof(m_bLandInjectionTable));	// 射出台の着地判定
 
 	// キャラ作成
-	HRESULT hr = SetCharacter(m_apModelFile[m_nMyPlayerIdx]);
 
-	if (FAILED(hr))
+	HRESULT hr;
+	CObjectChara *pObjChar = NULL;
+
+
+	//**********************************
+	// 胴体
+	//**********************************
+	m_pObjChara[PARTS_BODY] = CObjectChara::Create(m_apModelFile[PARTS_BODY]);
+	if (m_pObjChara[PARTS_BODY] == NULL)
 	{// 失敗していたら
 		return E_FAIL;
 	}
 
 	// モーションの生成処理
-	m_pMotion = CMotion::Create(m_apModelFile[m_nMyPlayerIdx]);
+	m_pMotion[PARTS_BODY] = CMotion::Create(m_apModelFile[PARTS_BODY]);
 
 	// オブジェクトキャラクターの情報取得
-	CObjectChara *pObjChar = GetObjectChara();
+	pObjChar = m_pObjChara[PARTS_BODY]->GetObjectChara();
 
 	// モーションの設定
-	m_pMotion->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), CObjectChara::GetObjectChara());
+	m_pMotion[PARTS_BODY]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
+
+	// ポーズのリセット
+	m_pMotion[PARTS_BODY]->ResetPose(MOTION_DEF);
+
+
+	//**********************************
+	// 脚
+	//**********************************
+	m_pObjChara[PARTS_LEG] = CObjectChara::Create(m_apModelFile[PARTS_LEG]);
+	if (m_pObjChara[PARTS_LEG] == NULL)
+	{// 失敗していたら
+		return E_FAIL;
+	}
+
+	// モーションの生成処理
+	m_pMotion[PARTS_LEG] = CMotion::Create(m_apModelFile[PARTS_LEG]);
+
+	// オブジェクトキャラクターの情報取得
+	pObjChar = m_pObjChara[PARTS_LEG]->GetObjectChara();
+
+	// モーションの設定
+	m_pMotion[PARTS_LEG]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
+
+	// ポーズのリセット
+	m_pMotion[PARTS_LEG]->ResetPose(MOTION_DEF);
+
+
+	//**********************************
+	// 右腕
+	//**********************************
+	m_pObjChara[PARTS_R_ARM] = CObjectChara::Create(m_apModelFile[PARTS_R_ARM]);
+	if (m_pObjChara[PARTS_R_ARM] == NULL)
+	{// 失敗していたら
+		return E_FAIL;
+	}
+
+	// モーションの生成処理
+	m_pMotion[PARTS_R_ARM] = CMotion::Create(m_apModelFile[PARTS_R_ARM]);
+
+	// オブジェクトキャラクターの情報取得
+	pObjChar = m_pObjChara[PARTS_R_ARM]->GetObjectChara();
+
+	// モーションの設定
+	m_pMotion[PARTS_R_ARM]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
+
+	// ポーズのリセット
+	m_pMotion[PARTS_R_ARM]->ResetPose(MOTION_DEF);
+
+
+	//**********************************
+	// 左腕
+	//**********************************
+	m_pObjChara[PARTS_L_ARM] = CObjectChara::Create(m_apModelFile[PARTS_L_ARM]);
+	if (m_pObjChara[PARTS_L_ARM] == NULL)
+	{// 失敗していたら
+		return E_FAIL;
+	}
+
+	// モーションの生成処理
+	m_pMotion[PARTS_L_ARM] = CMotion::Create(m_apModelFile[PARTS_L_ARM]);
+
+	// オブジェクトキャラクターの情報取得
+	pObjChar = m_pObjChara[PARTS_L_ARM]->GetObjectChara();
+
+	// モーションの設定
+	m_pMotion[PARTS_L_ARM]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
+
+	// ポーズのリセット
+	m_pMotion[PARTS_L_ARM]->ResetPose(MOTION_DEF);
+
+
+	// 左腕の原点を体にする
+	m_pObjChara[PARTS_L_ARM]->GetModel()[0]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[1]);
+	m_pObjChara[PARTS_R_ARM]->GetModel()[0]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[1]);
+	m_pObjChara[PARTS_LEG]->GetModel()[0]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[0]);
+	m_pObjChara[PARTS_LEG]->GetModel()[3]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[0]);
+
 
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
 
 	// 体力ゲージ
-	m_pHPGauge = CHP_GaugePlayer::Create(D3DXVECTOR3(250.0f, 600.0f, 0.0f), GetLifeOrigin());
+	m_pHPGauge = CHP_GaugePlayer::Create(D3DXVECTOR3(250.0f, 600.0f, 0.0f), 50);
 
 	// 影の生成
 	m_pShadow = CShadow::Create(pos, 50.0f);
-
-	// ポーズのリセット
-	m_pMotion->ResetPose(MOTION_DEF);
 	return S_OK;
 }
 
 //==========================================================================
 // 終了処理
 //==========================================================================
-void CPlayer::Uninit(void)
+void CPlayerUnion::Uninit(void)
 {
-	if (m_pMotion != NULL)
+	if (m_pMotion[PARTS_BODY] != NULL)
 	{
-		m_pMotion->Uninit();
-		delete m_pMotion;
-		m_pMotion = NULL;
+		m_pMotion[PARTS_BODY]->Uninit();
+		delete m_pMotion[PARTS_BODY];
+		m_pMotion[PARTS_BODY] = NULL;
+	}
+	if (m_pMotion[PARTS_LEG] != NULL)
+	{
+		m_pMotion[PARTS_LEG]->Uninit();
+		delete m_pMotion[PARTS_LEG];
+		m_pMotion[PARTS_LEG] = NULL;
+	}
+	if (m_pMotion[PARTS_R_ARM] != NULL)
+	{
+		m_pMotion[PARTS_R_ARM]->Uninit();
+		delete m_pMotion[PARTS_R_ARM];
+		m_pMotion[PARTS_R_ARM] = NULL;
+	}
+	if (m_pMotion[PARTS_L_ARM] != NULL)
+	{
+		m_pMotion[PARTS_L_ARM]->Uninit();
+		delete m_pMotion[PARTS_L_ARM];
+		m_pMotion[PARTS_L_ARM] = NULL;
 	}
 
 	// HPゲージを消す
@@ -228,7 +325,7 @@ void CPlayer::Uninit(void)
 	}
 
 	// 終了処理
-	CObjectChara::Uninit();
+	CObject::Release();
 
 	// モード別終了処理
 	UninitByMode();
@@ -237,7 +334,7 @@ void CPlayer::Uninit(void)
 //==========================================================================
 // モード別終了処理
 //==========================================================================
-void  CPlayer::UninitByMode(void)
+void  CPlayerUnion::UninitByMode(void)
 {
 	CScene *pScene = CManager::GetInstance()->GetScene();
 	if (pScene != NULL)
@@ -250,7 +347,7 @@ void  CPlayer::UninitByMode(void)
 //==========================================================================
 // 終了処理
 //==========================================================================
-void CPlayer::Kill(void)
+void CPlayerUnion::Kill(void)
 {
 
 	my_particle::Create(GetPosition(), my_particle::TYPE_ENEMY_FADE);
@@ -273,7 +370,7 @@ void CPlayer::Kill(void)
 //==========================================================================
 // 更新処理
 //==========================================================================
-void CPlayer::Update(void)
+void CPlayerUnion::Update(void)
 {
 	if (IsDeath() == true)
 	{
@@ -312,13 +409,32 @@ void CPlayer::Update(void)
 	// 操作
 	Controll();
 
-	// モーションの設定処理
-	MotionSet();
+	for (int i = 0; i < PARTS_MAX; i++)
+	{
+		m_sMotionFrag[i] = m_sAllCharaMotironFrag;
+
+		// モーションの設定処理
+		MotionSet(i);
+	}
+	memset(&m_sAllCharaMotironFrag, false, sizeof(m_sAllCharaMotironFrag));
+
 
 	// モーション更新
-	if (m_pMotion != NULL)
+	if (m_pMotion[PARTS_BODY] != NULL)
 	{
-		m_pMotion->Update();
+		m_pMotion[PARTS_BODY]->Update();
+	}
+	if (m_pMotion[PARTS_LEG] != NULL)
+	{
+		m_pMotion[PARTS_LEG]->Update();
+	}
+	if (m_pMotion[PARTS_R_ARM] != NULL)
+	{
+		m_pMotion[PARTS_R_ARM]->Update();
+	}
+	if (m_pMotion[PARTS_L_ARM] != NULL)
+	{
+		m_pMotion[PARTS_L_ARM]->Update();
 	}
 
 	// 頂点情報設定
@@ -332,13 +448,22 @@ void CPlayer::Update(void)
 
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 posCenter = GetCenterPosition();
 
 	// 移動量取得
 	D3DXVECTOR3 move = GetMove();
 
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
+
+	m_pObjChara[PARTS_BODY]->SetPosition(pos);		// 胴体
+	m_pObjChara[PARTS_LEG]->SetPosition(pos);		// 脚
+	m_pObjChara[PARTS_R_ARM]->SetPosition(pos);	// 右腕
+	m_pObjChara[PARTS_L_ARM]->SetPosition(pos);	// 左腕
+
+	m_pObjChara[PARTS_BODY]->SetRotation(rot);		// 胴体
+	m_pObjChara[PARTS_LEG]->SetRotation(rot);		// 脚
+	m_pObjChara[PARTS_R_ARM]->SetRotation(rot);	// 右腕
+	m_pObjChara[PARTS_L_ARM]->SetRotation(rot);	// 左腕
 
 	// 影の位置更新
 	if (m_pShadow != NULL)
@@ -350,22 +475,22 @@ void CPlayer::Update(void)
 	if (m_pHPGauge != NULL)
 	{
 		m_pHPGauge->Update();
-		m_pHPGauge->SetLife(GetLife());
+		m_pHPGauge->SetLife(50);
 	}
 
 	// デバッグ表示
 	CManager::GetInstance()->GetDebugProc()->Print(
 		"------------------[プレイヤーの操作]------------------\n"
-		"位置：【X：%f, Y：%f, Z：%f】【X：%f, Y：%f, Z：%f】 【W / A / S / D】\n"
+		"位置：【X：%f, Y：%f, Z：%f】 【W / A / S / D】\n"
 		"向き：【X：%f, Y：%f, Z：%f】 【Z / C】\n"
 		"移動量：【X：%f, Y：%f, Z：%f】\n"
-		"体力：【%d】\n", pos.x, pos.y, pos.z, posCenter.x, posCenter.y, posCenter.z, rot.x, rot.y, rot.y, move.x, move.y, move.z, GetLife());
+		"体力：【%d】\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.y, move.x, move.y, move.z, 50);
 }
 
 //==========================================================================
 // 操作処理
 //==========================================================================
-void CPlayer::Controll(void)
+void CPlayerUnion::Controll(void)
 {
 
 	// キーボード情報取得
@@ -391,14 +516,8 @@ void CPlayer::Controll(void)
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
 
-	// 目標の向き取得
-	float fRotDest = GetRotDest();
-
-	// 現在の種類取得
-	int nMotionType = m_pMotion->GetType();
-
 	// 移動量取得
-	float fMove = GetVelocity();
+	float fMove = 2.5f;
 
 	// 経過時間取得
 	float fCurrentTime = CManager::GetInstance()->DeltaTime();
@@ -406,8 +525,7 @@ void CPlayer::Controll(void)
 	if (CGame::GetGameManager()->IsControll())
 	{// 行動できるとき
 
-		if (m_pMotion->IsGetMove(nMotionType) == 1 &&
-			m_state != STATE_DEAD &&
+		if (m_state != STATE_DEAD &&
 			m_state != STATE_FADEOUT)
 		{// 移動可能モーションの時
 
@@ -415,80 +533,80 @@ void CPlayer::Controll(void)
 			{//←キーが押された,左移動
 
 				// 移動中にする
-				m_sMotionFrag.bMove = true;
+				m_sAllCharaMotironFrag.bMove = true;
 
 				if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
 				{//A+W,左上移動
 
 					move.x += sinf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
 					move.z += cosf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
-					fRotDest = D3DX_PI * 0.75f + Camerarot.y;
+					m_fRotDest = D3DX_PI * 0.75f + Camerarot.y;
 				}
 				else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y < 0)
 				{//A+S,左下移動
 
 					move.x += sinf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
 					move.z += cosf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
-					fRotDest = D3DX_PI * 0.25f + Camerarot.y;
+					m_fRotDest = D3DX_PI * 0.25f + Camerarot.y;
 				}
 				else
 				{//A,左移動
 
 					move.x += sinf(-D3DX_PI * 0.5f + Camerarot.y) * fMove;
 					move.z += cosf(-D3DX_PI * 0.5f + Camerarot.y) * fMove;
-					fRotDest = D3DX_PI * 0.5f + Camerarot.y;
+					m_fRotDest = D3DX_PI * 0.5f + Camerarot.y;
 				}
 			}
 			else if (pInputKeyboard->GetPress(DIK_D) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).x > 0)
 			{//Dキーが押された,右移動
 
 				// 移動中にする
-				m_sMotionFrag.bMove = true;
+				m_sAllCharaMotironFrag.bMove = true;
 
 				if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
 				{//D+W,右上移動
 
 					move.x += sinf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
 					move.z += cosf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
-					fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
+					m_fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
 				}
 				else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y < 0)
 				{//D+S,右下移動
 
 					move.x += sinf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
 					move.z += cosf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
-					fRotDest = -D3DX_PI * 0.25f + Camerarot.y;
+					m_fRotDest = -D3DX_PI * 0.25f + Camerarot.y;
 				}
 				else
 				{//D,右移動
 
 					move.x += sinf(D3DX_PI * 0.5f + Camerarot.y) * fMove;
 					move.z += cosf(D3DX_PI * 0.5f + Camerarot.y) * fMove;
-					fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
+					m_fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
 				}
 			}
 			else if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
 			{//Wが押された、上移動
 
 				// 移動中にする
-				m_sMotionFrag.bMove = true;
+				m_sAllCharaMotironFrag.bMove = true;
 				move.x += sinf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
 				move.z += cosf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
-				fRotDest = D3DX_PI * 1.0f + Camerarot.y;
+				m_fRotDest = D3DX_PI * 1.0f + Camerarot.y;
 			}
 			else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y < 0)
 			{//Sが押された、下移動
 
 				// 移動中にする
-				m_sMotionFrag.bMove = true;
+				m_sAllCharaMotironFrag.bMove = true;
 				move.x += sinf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
 				move.z += cosf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
-				fRotDest = D3DX_PI * 0.0f + Camerarot.y;
+				m_fRotDest = D3DX_PI * 0.0f + Camerarot.y;
 			}
 			else
 			{
 				// 移動中かどうか
-				m_sMotionFrag.bMove = false;
+				m_sAllCharaMotironFrag.bMove = false;
 			}
 
 			if (m_bJump == false &&
@@ -496,7 +614,7 @@ void CPlayer::Controll(void)
 			{//SPACEが押された,ジャンプ
 
 				m_bJump = true;
-				m_sMotionFrag.bJump = true;
+				m_sAllCharaMotironFrag.bJump = true;
 				move.y += 17.0f;
 
 				// サウンド再生
@@ -509,14 +627,14 @@ void CPlayer::Controll(void)
 	newPosition.x += move.x;
 	newPosition.z += move.z;
 
-	sakiPos.x = newPosition.x + sinf(D3DX_PI + rot.y) * GetRadius();
-	sakiPos.z = newPosition.z + cosf(D3DX_PI + rot.y) * GetRadius();
+	sakiPos.x = newPosition.x + sinf(D3DX_PI + rot.y) * RADIUS;
+	sakiPos.z = newPosition.z + cosf(D3DX_PI + rot.y) * RADIUS;
 
 	// 角度の正規化
-	RotNormalize(fRotDest);
+	RotNormalize(m_fRotDest);
 
 	// 現在と目標の差分を求める
-	float fRotDiff = fRotDest - rot.y;
+	float fRotDiff = m_fRotDest - rot.y;
 
 	// 角度の正規化
 	RotNormalize(fRotDiff);
@@ -558,7 +676,7 @@ void CPlayer::Controll(void)
 	}
 
 	if (m_bHitWall == false && 
-		(bLandStage == false || bMove == true || m_bLandField == true || m_bJump == true || m_sMotionFrag.bKnockBack == true || m_sMotionFrag.bDead == true))
+		(bLandStage == false || bMove == true || m_bLandField == true || m_bJump == true || m_sAllCharaMotironFrag.bKnockBack == true || m_sAllCharaMotironFrag.bDead == true))
 	{
 		pos.x = newPosition.x;
 		pos.z = newPosition.z;
@@ -605,101 +723,84 @@ void CPlayer::Controll(void)
 	SetRotation(rot);
 
 	// 目標の向き設定
-	SetRotDest(fRotDest);
+	//SetRotDest(m_fRotDest);
 
 	if (CGame::GetGameManager()->IsControll())
 	{// 行動できるとき
 
-		if (m_sMotionFrag.bATK == false && 
+		if (m_sAllCharaMotironFrag.bATK == false &&
 			(pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, m_nMyPlayerIdx) || pInputKeyboard->GetTrigger(DIK_RETURN)))
 		{// 攻撃
 
 			// 攻撃判定ON
-			m_sMotionFrag.bJump = false;
-			m_sMotionFrag.bATK = true;
+			m_sAllCharaMotironFrag.bJump = false;
+			m_sAllCharaMotironFrag.bATK = true;
 		}
 	}
 
-	if (pInputKeyboard->GetPress(DIK_1) == true)
-	{//SPACEが押された,ジャンプ
-
-		int nLife = GetLife();
-
-		// 体力減らす
-		nLife -= 1;
-
-		// 体力設定
-		SetLife(nLife);
-	}
-	if (pInputKeyboard->GetPress(DIK_2) == true)
-	{//SPACEが押された,ジャンプ
-
-		Hit(1);
-	}
 }
 
 //==========================================================================
 // モーションの設定
 //==========================================================================
-void CPlayer::MotionSet(void)
+void CPlayerUnion::MotionSet(int nIdx)
 {
-	if (m_pMotion == NULL)
+	if (m_pMotion[nIdx] == NULL)
 	{// モーションがNULLだったら
 		return;
 	}
 
-	if (m_pMotion->IsFinish() == true)
+	if (m_pMotion[nIdx]->IsFinish() == true)
 	{// 終了していたら
 
 		// 現在の種類取得
-		int nType = m_pMotion->GetType();
-		int nOldType = m_pMotion->GetOldType();
+		int nType = m_pMotion[nIdx]->GetType();
+		int nOldType = m_pMotion[nIdx]->GetOldType();
 
-		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bATK == false && m_sMotionFrag.bKnockBack == false && m_sMotionFrag.bDead == false && m_bJump == false)
+		if (m_sMotionFrag[nIdx].bMove == true && m_sMotionFrag[nIdx].bATK == false && m_sMotionFrag[nIdx].bKnockBack == false && m_sMotionFrag[nIdx].bDead == false && m_bJump == false)
 		{// 移動していたら
 
-			m_sMotionFrag.bMove = false;	// 移動判定OFF
 
 			// 移動モーション
-			m_pMotion->Set(MOTION_WALK);
+			m_pMotion[nIdx]->Set(MOTION_WALK);
 		}
-		else if (m_sMotionFrag.bJump == true && m_sMotionFrag.bATK == false && m_sMotionFrag.bKnockBack == false && m_sMotionFrag.bDead == false)
+		else if (m_sMotionFrag[nIdx].bJump == true && m_sMotionFrag[nIdx].bATK == false && m_sMotionFrag[nIdx].bKnockBack == false && m_sMotionFrag[nIdx].bDead == false)
 		{// ジャンプ中
 
 			// ジャンプのフラグOFF
-			m_sMotionFrag.bJump = false;
+			m_sMotionFrag[nIdx].bJump = false;
 
 			// ジャンプモーション
-			m_pMotion->Set(MOTION_JUMP);
+			m_pMotion[nIdx]->Set(MOTION_JUMP);
 		}
-		else if (m_bJump == true && m_sMotionFrag.bJump == false && m_sMotionFrag.bATK == false && m_sMotionFrag.bKnockBack == false && m_sMotionFrag.bDead == false)
+		else if (m_bJump == true && m_sMotionFrag[nIdx].bJump == false && m_sMotionFrag[nIdx].bATK == false && m_sMotionFrag[nIdx].bKnockBack == false && m_sMotionFrag[nIdx].bDead == false)
 		{// ジャンプ中&&ジャンプモーションが終わってる時
 
 			// 落下モーション
-			m_pMotion->Set(MOTION_FALL);
+			m_pMotion[nIdx]->Set(MOTION_FALL);
 		}
-		else if (m_sMotionFrag.bKnockBack == true)
+		else if (m_sMotionFrag[nIdx].bKnockBack == true)
 		{// やられ中だったら
 
 			// やられモーション
-			m_pMotion->Set(MOTION_KNOCKBACK);
+			m_pMotion[nIdx]->Set(MOTION_KNOCKBACK);
 		}
-		else if (m_sMotionFrag.bDead == true)
+		else if (m_sMotionFrag[nIdx].bDead == true)
 		{// 死亡中だったら
 
 			// やられモーション
-			m_pMotion->Set(MOTION_DEAD);
+			m_pMotion[nIdx]->Set(MOTION_DEAD);
 		}
-		else if (m_sMotionFrag.bATK == true)
+		else if (m_sMotionFrag[nIdx].bATK == true)
 		{// 攻撃していたら
 
-			m_sMotionFrag.bATK = false;		// 攻撃判定OFF
-			m_pMotion->Set(MOTION_ATK, true);
+			m_sMotionFrag[nIdx].bATK = false;		// 攻撃判定OFF
+			m_pMotion[nIdx]->Set(MOTION_ATK, true);
 		}
 		else
 		{
 			// ニュートラルモーション
-			m_pMotion->Set(MOTION_DEF);
+			m_pMotion[nIdx]->Set(MOTION_DEF);
 		}
 	}
 }
@@ -707,9 +808,9 @@ void CPlayer::MotionSet(void)
 //==========================================================================
 // 攻撃
 //==========================================================================
-void CPlayer::Atack(void)
+void CPlayerUnion::Atack(void)
 {
-	if (m_pMotion == NULL)
+	if (m_pMotion[PARTS_BODY] == NULL)
 	{// モーションがNULLだったら
 		return;
 	}
@@ -727,7 +828,7 @@ void CPlayer::Atack(void)
 	D3DXVECTOR3 Camerarot = pCamera->GetRotation();
 
 	// モーションの情報取得
-	CMotion::Info aInfo = m_pMotion->GetInfo(m_pMotion->GetType());
+	CMotion::Info aInfo = m_pMotion[PARTS_BODY]->GetInfo(m_pMotion[PARTS_BODY]->GetType());
 
 	// 攻撃情報の総数取得
 	int nNumAttackInfo = aInfo.nNumAttackInfo;
@@ -739,14 +840,14 @@ void CPlayer::Atack(void)
 			continue;
 		}
 
-		if (m_pMotion->GetAllCount() == aInfo.AttackInfo[nCntAttack]->nInpactCnt)
+		if (m_pMotion[PARTS_BODY]->GetAllCount() == aInfo.AttackInfo[nCntAttack]->nInpactCnt)
 		{// 衝撃のカウントと同じとき
 
 			// 武器の位置
-			D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetObjectChara()->GetModel(), *aInfo.AttackInfo[nCntAttack]);
+			D3DXVECTOR3 weponpos = m_pMotion[PARTS_BODY]->GetAttackPosition(m_pObjChara[PARTS_BODY]->GetModel(), *aInfo.AttackInfo[nCntAttack]);
 
 			// 種類別
-			switch (m_pMotion->GetType())
+			switch (m_pMotion[PARTS_BODY]->GetType())
 			{
 			case MOTION_ATK:
 			case MOTION_ATK2:
@@ -809,11 +910,11 @@ void CPlayer::Atack(void)
 		}
 
 		// モーションカウンター取得
-		if (m_pMotion->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt && m_pMotion->GetAllCount() < aInfo.AttackInfo[nCntAttack]->nMaxCnt)
+		if (m_pMotion[PARTS_BODY]->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt && m_pMotion[PARTS_BODY]->GetAllCount() < aInfo.AttackInfo[nCntAttack]->nMaxCnt)
 		{// 攻撃判定中
 
 			// 武器の位置
-			D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetObjectChara()->GetModel(), *aInfo.AttackInfo[nCntAttack]);
+			D3DXVECTOR3 weponpos = m_pMotion[PARTS_BODY]->GetAttackPosition(m_pObjChara[PARTS_BODY]->GetModel(), *aInfo.AttackInfo[nCntAttack]);
 
 			CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 
@@ -887,7 +988,7 @@ void CPlayer::Atack(void)
 				D3DXVECTOR3 TargetPos = D3DXVECTOR3(mtxOrigin._41, mtxOrigin._42, mtxOrigin._43);
 
 				// 判定サイズ取得
-				float fRadius = pList->GetObjectChara()->GetRadius();
+				float fRadius = pList->GetObjectChara()->RADIUS;
 
 				if (SphereRange(weponpos, TargetPos, aInfo.AttackInfo[nCntAttack]->fRangeSize, fRadius))
 				{// 球の判定
@@ -908,13 +1009,13 @@ void CPlayer::Atack(void)
 	}
 
 	CManager::GetInstance()->GetDebugProc()->Print(
-		"モーションカウンター：%d\n", m_pMotion->GetAllCount());
+		"モーションカウンター：%d\n", m_pMotion[PARTS_BODY]->GetAllCount());
 }
 
 //==========================================================================
 // 当たり判定
 //==========================================================================
-bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
+bool CPlayerUnion::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 {
 
 	// 向き取得
@@ -998,21 +1099,21 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 			if (bLand == true)
 			{// 着地してたら
 
-				if ((m_sMotionFrag.bKnockBack || m_bJump == true) && GetPosition().y >= fHeight)
+				if ((m_sAllCharaMotironFrag.bKnockBack || m_bJump == true) && GetPosition().y >= fHeight)
 				{
 					m_bLandOld = true;
 				}
 
 				if (m_bJump == true)
 				{// ジャンプ中だったら
-					m_pMotion->ToggleFinish(true);
+					m_pMotion[PARTS_BODY]->ToggleFinish(true);
 				}
 
 				// ジャンプ使用可能にする
 				m_bJump = false;
 				move.y = 0.0f;
 				bNowLand = true;
-				m_sMotionFrag.bJump = false;
+				m_sAllCharaMotironFrag.bJump = false;
 			}
 		}
 	}
@@ -1046,21 +1147,21 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 		if (bLand == true)
 		{// 着地してたら
 
-			if ((m_sMotionFrag.bKnockBack || m_bJump == true) && GetPosition().y >= fHeight)
+			if ((m_sAllCharaMotironFrag.bKnockBack || m_bJump == true) && GetPosition().y >= fHeight)
 			{
 				m_bLandOld = true;
 			}
 
 			if (m_bJump == true)
 			{// ジャンプ中だったら
-				m_pMotion->ToggleFinish(true);
+				m_pMotion[PARTS_BODY]->ToggleFinish(true);
 			}
 
 			// ジャンプ使用可能にする
 			m_bJump = false;
 			move.y = 0.0f;
 			bNowLand = true;
-			m_sMotionFrag.bJump = false;
+			m_sAllCharaMotironFrag.bJump = false;
 
 			// 射出台の着地判定
 			m_bLandInjectionTable[m_nMyPlayerIdx] = true;
@@ -1116,10 +1217,10 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 	float fLen = CGame::GetElevation()->GetWidthLen();
 	int nBlock = CGame::GetElevation()->GetWidthBlock();
 	nBlock /= 2;
-	if (pos.x + GetRadius() >= fLen * nBlock) { pos.x = fLen * nBlock - GetRadius(); }
-	if (pos.x - GetRadius() <= -fLen * nBlock) { pos.x = -fLen * nBlock + GetRadius(); }
-	if (pos.z + GetRadius() >= fLen * nBlock) { pos.z = fLen * nBlock - GetRadius(); }
-	if (pos.z - GetRadius() <= -fLen * nBlock) { pos.z = -fLen * nBlock + GetRadius(); }
+	if (pos.x + RADIUS >= fLen * nBlock) { pos.x = fLen * nBlock - RADIUS; }
+	if (pos.x - RADIUS <= -fLen * nBlock) { pos.x = -fLen * nBlock + RADIUS; }
+	if (pos.z + RADIUS >= fLen * nBlock) { pos.z = fLen * nBlock - RADIUS; }
+	if (pos.z - RADIUS <= -fLen * nBlock) { pos.z = -fLen * nBlock + RADIUS; }
 
 	// 向き設定
 	SetRotation(rot);
@@ -1130,10 +1231,10 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 //==========================================================================
 // ヒット処理
 //==========================================================================
-bool CPlayer::Hit(const int nValue)
+bool CPlayerUnion::Hit(const int nValue)
 {
 	// 体力取得
-	int nLife = GetLife();
+	int nLife = 50;
 
 	//if (nLife <= 0)
 	//{
@@ -1156,7 +1257,7 @@ bool CPlayer::Hit(const int nValue)
 		m_bHitStage = false;
 
 		// 体力設定
-		SetLife(nLife);
+		//SetLife(nLife);
 
 		if (nLife <= 0)
 		{// 体力がなくなったら
@@ -1170,13 +1271,13 @@ bool CPlayer::Hit(const int nValue)
 			m_nCntState = DEADTIME;
 
 			// 体力設定
-			SetLife(0);
+			//SetLife(0);
 
 			// ノックバック判定にする
-			m_sMotionFrag.bKnockBack = true;
+			m_sAllCharaMotironFrag.bKnockBack = true;
 
 			// やられモーション
-			m_pMotion->Set(MOTION_KNOCKBACK);
+			m_pMotion[PARTS_BODY]->Set(MOTION_KNOCKBACK);
 
 			// ノックバックの位置更新
 			D3DXVECTOR3 pos = GetPosition();
@@ -1225,10 +1326,10 @@ bool CPlayer::Hit(const int nValue)
 		m_posKnokBack = pos;
 
 		// ノックバック判定にする
-		m_sMotionFrag.bKnockBack = true;
+		m_sAllCharaMotironFrag.bKnockBack = true;
 
 		// やられモーション
-		m_pMotion->Set(MOTION_KNOCKBACK);
+		m_pMotion[PARTS_BODY]->Set(MOTION_KNOCKBACK);
 
 		// 衝撃波生成
 		CImpactWave::Create
@@ -1261,7 +1362,7 @@ bool CPlayer::Hit(const int nValue)
 //==========================================================================
 // 状態更新処理
 //==========================================================================
-void CPlayer::UpdateState(void)
+void CPlayerUnion::UpdateState(void)
 {
 	switch (m_state)
 	{
@@ -1295,7 +1396,7 @@ void CPlayer::UpdateState(void)
 //==========================================================================
 // 無敵
 //==========================================================================
-void CPlayer::Invincible(void)
+void CPlayerUnion::Invincible(void)
 {
 	// 状態遷移カウンター減算
 	m_nCntState--;
@@ -1330,7 +1431,7 @@ void CPlayer::Invincible(void)
 //==========================================================================
 // ダメージ
 //==========================================================================
-void CPlayer::Damage(void)
+void CPlayerUnion::Damage(void)
 {
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
@@ -1365,8 +1466,8 @@ void CPlayer::Damage(void)
 		m_mMatcol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 		// ノックバック判定消す
-		m_sMotionFrag.bKnockBack = false;
-		m_pMotion->ToggleFinish(true);
+		m_sAllCharaMotironFrag.bKnockBack = false;
+		m_pMotion[PARTS_BODY]->ToggleFinish(true);
 
 
 		// Xファイルとの判定
@@ -1415,7 +1516,7 @@ void CPlayer::Damage(void)
 //==========================================================================
 // 死亡
 //==========================================================================
-void CPlayer::Dead(void)
+void CPlayerUnion::Dead(void)
 {
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
@@ -1458,12 +1559,12 @@ void CPlayer::Dead(void)
 		m_mMatcol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 		// ノックバック判定消す
-		m_sMotionFrag.bKnockBack = false;
-		m_sMotionFrag.bDead = true;
+		m_sAllCharaMotironFrag.bKnockBack = false;
+		m_sAllCharaMotironFrag.bDead = true;
 		//m_pMotion->ToggleFinish(true);
 
 		// ぶっ倒れモーション
-		m_pMotion->Set(MOTION_DEAD);
+		m_pMotion[PARTS_BODY]->Set(MOTION_DEAD);
 
 		// Xファイルとの判定
 		CStage *pStage = CGame::GetStage();
@@ -1499,7 +1600,7 @@ void CPlayer::Dead(void)
 //==========================================================================
 // フェードアウト
 //==========================================================================
-void CPlayer::FadeOut(void)
+void CPlayerUnion::FadeOut(void)
 {
 
 	// 状態遷移カウンター減算
@@ -1526,7 +1627,7 @@ void CPlayer::FadeOut(void)
 //==========================================================================
 // ノックバック
 //==========================================================================
-void CPlayer::KnockBack(void)
+void CPlayerUnion::KnockBack(void)
 {
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
@@ -1536,12 +1637,6 @@ void CPlayer::KnockBack(void)
 
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
-
-	// 目標の向き取得
-	float fRotDest = GetRotDest();
-
-	// 移動量取得
-	float fMove = GetVelocity();
 
 	// 現在と目標の差分
 	float fRotDiff = 0.0f;
@@ -1571,8 +1666,8 @@ void CPlayer::KnockBack(void)
 		m_mMatcol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		// ノックバック判定消す
-		m_sMotionFrag.bKnockBack = false;
-		m_pMotion->ToggleFinish(true);
+		m_sAllCharaMotironFrag.bKnockBack = false;
+		m_pMotion[PARTS_BODY]->ToggleFinish(true);
 
 		// Xファイルとの判定
 		CStage *pStage = CGame::GetStage();
@@ -1607,18 +1702,15 @@ void CPlayer::KnockBack(void)
 
 	// 向き設定
 	SetRotation(rot);
-
-	// 目標の向き設定
-	SetRotDest(fRotDest);
 }
 
 //==========================================================================
 // 描画処理
 //==========================================================================
-void CPlayer::Draw(void)
+void CPlayerUnion::Draw(void)
 {
 
-	if (m_state == STATE_DMG)
+	/*if (m_state == STATE_DMG)
 	{
 		CObjectChara::Draw(m_mMatcol);
 	}
@@ -1629,7 +1721,12 @@ void CPlayer::Draw(void)
 	else
 	{
 		CObjectChara::Draw();
-	}
+	}*/
+
+	m_pObjChara[PARTS_BODY]->Draw();		// 胴体
+	m_pObjChara[PARTS_LEG]->Draw();		// 脚
+	m_pObjChara[PARTS_R_ARM]->Draw();	// 右腕
+	m_pObjChara[PARTS_L_ARM]->Draw();	// 左腕
 
 	// HPゲージ
 	if (m_pHPGauge != NULL)
@@ -1641,7 +1738,7 @@ void CPlayer::Draw(void)
 //==========================================================================
 // 状態取得
 //==========================================================================
-int CPlayer::GetState(void)
+int CPlayerUnion::GetState(void)
 {
 	return m_state;
 }

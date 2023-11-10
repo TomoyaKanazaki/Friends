@@ -18,6 +18,7 @@
 #include "enemymanager.h"
 #include "stage.h"
 #include "injectiontable.h"
+#include "player_union.h"
 
 //==========================================================================
 // マクロ定義
@@ -88,6 +89,9 @@ HRESULT CGameManager::Init(void)
 {
 	m_bControll = true;		// 操作できるか
 	m_bEndNormalStage = false;	// 通常ステージが終了したか
+
+	CPlayerUnion::Create();
+
 	return S_OK;
 }
 

@@ -1,200 +1,78 @@
 #==============================================================================
 #
-# 『階層モデル』スクリプトファイル [motion_set_buddy1.txt]
-# Author : 相馬 靜雅
+# �w�K�w���f���x�X�N���v�g�t�@�C�� [motion_set_buddy1.txt]
+# Author : ���n �Ή�
 #
 #==============================================================================
-SCRIPT			# この行は絶対消さないこと！
+SCRIPT			# ���̍s�͐�Ώ����Ȃ����ƁI
 
 #------------------------------------------------------------------------------
-# モデル数
+# ���f����
 #------------------------------------------------------------------------------
-NUM_MODEL = 16
+NUM_MODEL = 4
 
 #------------------------------------------------------------------------------
-# モデルファイル名
+# ���f���t�@�C����
 #------------------------------------------------------------------------------
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-MODEL_FILENAME = data/MODEL/1p/dou_000.x				# [0]腰
-
+MODEL_FILENAME = data/MODEL/tyuuni/00_waist.x		# [0]��
+MODEL_FILENAME = data/MODEL/tyuuni/01_body.x		# [1]��
+MODEL_FILENAME = data/MODEL/tyuuni/02_head.x		# [2]��
+MODEL_FILENAME = data/MODEL/tyuuni/03_hair.x		# [3]��
 
 #------------------------------------------------------------------------------
-# キャラクター情報
+# �L�����N�^�[���
 #------------------------------------------------------------------------------
 CHARACTERSET
-	VELOCITY = 2.5					# 移動量
-	JUMP = 8.65						# ジャンプ量
-	RADIUS = 60.0					# 半径
-	HEIGHT = 80.0					# 高さ
-	LIFE = 5						# 体力
-	NUM_PARTS = 16					# パーツ数
+	VELOCITY = 2.5					# �ړ���
+	JUMP = 8.65						# �W�����v��
+	RADIUS = 60.0					# ���a
+	HEIGHT = 80.0					# ����
+	LIFE = 28						# �̗�
 
-	PARTSSET						# [0]腰
+	PARTSSET						# [0]��
 		INDEX = 0
-		PARENT = -1					# (親)NULL
+		PARENT = -1					# (�e)NULL
 		POS = 0.0 88.5 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 
-	PARTSSET						# [1]体
+	PARTSSET						# [1]��
 		INDEX = 1
-		PARENT = 0					# (親)
+		PARENT = 0					# (�e)
 		POS = 0.0 7.0 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 
-	PARTSSET						# [2]頭
+	PARTSSET						# [2]��
 		INDEX = 2
-		PARENT = 1					# (親)体
+		PARENT = 1					# (�e)��
 		POS = 0.0 53.0 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
 
-	PARTSSET						# [3]髪
+	PARTSSET						# [3]��
 		INDEX = 3
-		PARENT = 2					# (親)体
+		PARENT = 2					# (�e)��
 		POS = 0.0 14.5 0.0
 		ROT = 0.0 0.0 0.0
 		START = 1
 	END_PARTSSET
-
-	PARTSSET						# [4]左上腕
-		INDEX = 4
-		PARENT = 1					# (親)体
-		POS = -17.0 40.0 0.0
-		ROT = 0.0 0.0 0.0
-		START = 1
-	END_PARTSSET
-
-	PARTSSET						# [5]左前腕
-		INDEX = 5
-		PARENT = 4					# (親)左上腕
-		POS = -27.5 0.0 0.0
-		ROT = 0.0 0.0 0.0
-		START = 1
-	END_PARTSSET
-
-	PARTSSET						# [6]左手
-		INDEX = 6
-		PARENT = 5					# (親)左前腕
-		POS = -26.75 0.0 0.0
-		ROT = 0.0 0.0 0.0
-		START = 1
-	END_PARTSSET
-
-	PARTSSET						# [7]右上腕
-		INDEX = 7
-		PARENT = 1					# (親)体
-		POS = 17.0 40.0 0.0
-		ROT = 0.0 0.0 0.0
-		START = 1
-	END_PARTSSET
 	
-	PARTSSET						# [8]右前腕
-		INDEX = 8
-		PARENT = 7					# (親)右上腕
-		POS = 27.5 0.0 0.0
-		ROT = 0.0 0.0 0.0
-		START = 1
-	END_PARTSSET
-	
-	PARTSSET						# [9]右手
-		INDEX = 9
-		PARENT = 8					# (親)右前腕
-		POS = 26.75 0.0 0.0
-		ROT = 0.0 0.0 0.0
-		START = 1
-	END_PARTSSET
-	
-	PARTSSET						# [10]左太もも
-		INDEX = 10
-		PARENT = 0					# (親)腰
-		POS = -10.0 -4.5 0.0
-		ROT = 0.0 0.0 0.0
-		START = 1
-	END_PARTSSET
-	
-	PARTSSET						# [11]左ふくらはぎ
-		INDEX = 11
-		PARENT = 10					# (親)左太もも
-		POS = 0.0 -39.0 0.0
-		ROT = 0.0 0.0 0.0
-		START = 1
-	END_PARTSSET
-	
-	PARTSSET						# [12]左足
-		INDEX = 12
-		PARENT = 11					# (親)左ふくらはぎ
-		POS = 0.0 -22.75 0.0
-		ROT = 0.0 0.0 0.0
-		START = 1
-	END_PARTSSET
-	
-	PARTSSET						# [13]右太もも
-		INDEX = 13
-		PARENT = 0					# (親)腰
-		POS = 13.5 -4.5 0.0
-		ROT = 0.0 0.0 0.0
-		START = 1
-	END_PARTSSET
-	
-	PARTSSET						# [14]右ふくらはぎ
-		INDEX = 14
-		PARENT = 13					# (親)右太もも
-		POS = 0.0 -39.0 0.0
-		ROT = 0.0 0.0 0.0
-		START = 1
-	END_PARTSSET
-	
-	PARTSSET						# [15]右足
-		INDEX = 15
-		PARENT = 14					# (親)左ふくらはぎ
-		POS = 0.0 -22.75 0.0
-		ROT = 0.0 0.0 0.0
-		START = 1
-	END_PARTSSET
-		
 END_CHARACTERSET
 
 #------------------------------------------------------------------------------
-# モーション情報
+# ���[�V�������
 #------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------
-# ニュートラルモーション
+# �j���[�g�������[�V����
 #-------------------------------------------------------------------------------------------------
 MOTIONSET
-	LOOP = 1		# ループするかどうか[0:ループしない / 1:ループする]
-	NUM_KEY = 2		# キー数
-	MOVE = 1		# 移動できるかどうか[0:移動できない / 1:移動できる]
-	
-	#===================
-	# 攻撃情報
-	#===================
-	ATTACKINFO
-		COLLISIONPARTS = 0
-		ATTACKRANGE = 0.00
-		OFFSET = 0.00 0.00 0.00
-		ATTACKCOUNT = 0 0
-		INPACTCOUNT = 0
-		DAMAGE = 0
-	END_ATTACKINFO
+	LOOP = 1		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
+	NUM_KEY = 2		# �L�[��
+	MOVE = 1		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
 
 	KEYSET			# --- << KEY : 0 / 2 >> ---
 		FRAME = 60
@@ -365,15 +243,15 @@ MOTIONSET
 END_MOTIONSET
 
 #-------------------------------------------------------------------------------------------------
-# 移動モーション
+# �ړ����[�V����
 #-------------------------------------------------------------------------------------------------
 MOTIONSET
-	LOOP = 1		# ループするかどうか[0:ループしない / 1:ループする]
-	NUM_KEY = 6		# キー数
-	MOVE = 1		# 移動できるかどうか[0:移動できない / 1:移動できる]
+	LOOP = 1		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
+	NUM_KEY = 6		# �L�[��
+	MOVE = 1		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
 
 	#===================
-	# 攻撃情報
+	# �U�����
 	#===================
 	ATTACKINFO
 		COLLISIONPARTS = 0
@@ -923,39 +801,39 @@ END_MOTIONSET
 
 
 #-------------------------------------------------------------------------------------------------
-# 攻撃モーション
+# �U�����[�V����
 #-------------------------------------------------------------------------------------------------
 MOTIONSET
-	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
-	NUM_KEY = 2		# キー数
-	MOVE = 0		# 移動できるかどうか[0:移動できない / 1:移動できる]
+	LOOP = 0		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
+	NUM_KEY = 2		# �L�[��
+	MOVE = 1		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
 
 	#===================
-	# 攻撃情報
+	# �U�����
 	#===================
 	ATTACKINFO
-		COLLISIONPARTS = 6
-		ATTACKRANGE = 400.00
+		COLLISIONPARTS = 16
+		ATTACKRANGE = 0.00
 		OFFSET = 0.00 0.00 0.00
-		ATTACKCOUNT = 0 23
-		INPACTCOUNT = 0
-		DAMAGE = 10
+		ATTACKCOUNT = 0 0
+		INPACTCOUNT = 4
+		DAMAGE = 0
 	END_ATTACKINFO
 
-	KEYSET			# --- << KEY : 0 / 2 >> ---
-		FRAME = 10
+	KEYSET			# --- << KEY : 1 / 4 >> ---
+		FRAME = 6
 		PARTS	# ----- [ 0 ] -----
-			ROT = 0.00 0.00 0.00
-			POS = 0.00 -31.23 0.00
+			ROT = -0.37 0.75 -0.31
+			POS = 0.00 -4.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
-			ROT = -0.31 0.50 0.00
+			ROT = -0.19 0.47 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 2 ] -----
-			ROT = 0.00 0.00 0.00
+			ROT = 0.19 -1.04 -0.13
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -965,12 +843,12 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 4 ] -----
-			ROT = 0.00 0.63 0.63
+			ROT = 0.00 0.82 0.03
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 5 ] -----
-			ROT = 0.00 -1.76 0.00
+			ROT = 0.00 -1.23 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -980,66 +858,71 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 7 ] -----
-			ROT = 0.00 0.22 -1.07
+			ROT = 0.00 1.26 0.28
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 8 ] -----
-			ROT = 0.00 2.14 0.00
+			ROT = 0.00 1.01 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 9 ] -----
-			ROT = 0.03 0.00 0.00
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 10 ] -----
-			ROT = -0.82 0.00 0.00
+			ROT = 0.03 0.13 -0.09
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 11 ] -----
-			ROT = -0.09 0.00 0.00
+			ROT = -0.84 0.00 -0.09
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 12 ] -----
-			ROT = 0.94 0.00 0.00
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 13 ] -----
-			ROT = 1.13 0.00 0.00
+			ROT = 1.13 -0.63 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 14 ] -----
-			ROT = -0.97 0.00 0.00
+			ROT = -1.32 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 15 ] -----
-			ROT = -0.16 0.00 0.00
+			ROT = 0.00 0.00 0.00
+			POS = 0.00 0.00 0.00
+		END_PARTS
+
+		PARTS	# ----- [ 16 ] -----
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 	END_KEYSET
 
-	KEYSET			# --- << KEY : 1 / 2 >> ---
-		FRAME = 13
+	KEYSET			# --- << KEY : 2 / 4 >> ---
+		FRAME = 2
 		PARTS	# ----- [ 0 ] -----
-			ROT = 0.00 0.00 0.00
-			POS = 0.00 -31.23 0.00
+			ROT = -0.72 -0.91 0.63
+			POS = 0.00 -4.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
-			ROT = -0.40 0.75 0.00
+			ROT = -0.19 0.47 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 2 ] -----
-			ROT = 0.00 0.00 0.00
+			ROT = 0.66 0.41 0.22
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1049,12 +932,12 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 4 ] -----
-			ROT = 0.00 0.69 0.63
+			ROT = 0.00 -1.70 -0.25
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 5 ] -----
-			ROT = 0.00 -1.85 0.00
+			ROT = 0.00 -1.04 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1064,47 +947,52 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 7 ] -----
-			ROT = 0.00 0.22 -1.07
+			ROT = 0.88 -0.44 -0.25
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 8 ] -----
-			ROT = 0.00 2.14 0.00
+			ROT = 0.00 0.25 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 9 ] -----
-			ROT = 0.03 0.00 0.00
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 10 ] -----
-			ROT = -0.82 0.00 0.00
+			ROT = 0.66 0.72 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 11 ] -----
-			ROT = -0.09 0.00 0.00
+			ROT = -1.00 0.00 -0.09
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 12 ] -----
-			ROT = 0.94 0.00 0.00
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 13 ] -----
-			ROT = 1.13 0.00 0.00
+			ROT = -0.00 0.63 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 14 ] -----
-			ROT = -0.97 0.00 0.00
+			ROT = -0.44 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 15 ] -----
-			ROT = -0.16 0.00 0.00
+			ROT = -0.63 0.00 0.00
+			POS = 0.00 0.00 0.00
+		END_PARTS
+
+		PARTS	# ----- [ 16 ] -----
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -1115,15 +1003,15 @@ END_MOTIONSET
 
 
 #-------------------------------------------------------------------------------------------------
-# 攻撃モーション(派生)
+# �U�����[�V����(�h��)
 #-------------------------------------------------------------------------------------------------
 MOTIONSET
-	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
-	NUM_KEY = 3		# キー数
-	MOVE = 0		# 移動できるかどうか[0:移動できない / 1:移動できる]
+	LOOP = 0		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
+	NUM_KEY = 3		# �L�[��
+	MOVE = 1		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
 
 	#===================
-	# 攻撃情報
+	# �U�����
 	#===================
 	ATTACKINFO
 		COLLISIONPARTS = 16
@@ -1404,15 +1292,15 @@ MOTIONSET
 END_MOTIONSET
 
 #-------------------------------------------------------------------------------------------------
-# やられモーション
+# ���ꃂ�[�V����
 #-------------------------------------------------------------------------------------------------
 MOTIONSET
-	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
-	NUM_KEY = 4		# キー数
-	MOVE = 0		# 移動できるかどうか[0:移動できない / 1:移動できる]
+	LOOP = 0		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
+	NUM_KEY = 4		# �L�[��
+	MOVE = 0		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
 
 	#===================
-	# 攻撃情報
+	# �U�����
 	#===================
 	ATTACKINFO
 		COLLISIONPARTS = 0
@@ -1782,15 +1670,15 @@ MOTIONSET
 END_MOTIONSET
 
 #-------------------------------------------------------------------------------------------------
-# 死亡モーション
+# ���S���[�V����
 #-------------------------------------------------------------------------------------------------
 MOTIONSET
-	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
-	NUM_KEY = 2		# キー数
-	MOVE = 0		# 移動できるかどうか[0:移動できない / 1:移動できる]
+	LOOP = 0		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
+	NUM_KEY = 2		# �L�[��
+	MOVE = 0		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
 
 	#===================
-	# 攻撃情報
+	# �U�����
 	#===================
 	ATTACKINFO
 		COLLISIONPARTS = 0
@@ -1981,17 +1869,16 @@ MOTIONSET
 
 END_MOTIONSET
 
-
 #-------------------------------------------------------------------------------------------------
-# ジャンプモーション
+# �W�����v���[�V����
 #-------------------------------------------------------------------------------------------------
 MOTIONSET
-	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
-	NUM_KEY = 2		# キー数
-	MOVE = 1		# 移動できるかどうか[0:移動できない / 1:移動できる]
+	LOOP = 0		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
+	NUM_KEY = 2		# �L�[��
+	MOVE = 1		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
 
 	#===================
-	# 攻撃情報
+	# �U�����
 	#===================
 	ATTACKINFO
 		COLLISIONPARTS = 0
@@ -2182,17 +2069,16 @@ MOTIONSET
 
 END_MOTIONSET
 
-
 #==============================================================================
-# 落下中
+# ������
 #==============================================================================
 MOTIONSET
-	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
-	NUM_KEY = 2		# キー数
-	MOVE = 1		# 移動できるかどうか[0:移動できない / 1:移動できる]
+	LOOP = 0		# ���[�v���邩�ǂ���[0:���[�v���Ȃ� / 1:���[�v����]
+	NUM_KEY = 2		# �L�[��
+	MOVE = 1		# �ړ��ł��邩�ǂ���[0:�ړ��ł��Ȃ� / 1:�ړ��ł���]
 
 	#===================
-	# 攻撃情報
+	# �U�����
 	#===================
 	ATTACKINFO
 		COLLISIONPARTS = 0
@@ -2202,16 +2088,16 @@ MOTIONSET
 		INPACTCOUNT = 0
 		DAMAGE = 0
 	END_ATTACKINFO
-
-	KEYSET			# --- << KEY : 0 / 2 >> ---
-		FRAME = 8
+	
+	KEYSET			# --- << KEY : 1 / 3 >> ---
+		FRAME = 13
 		PARTS	# ----- [ 0 ] -----
-			ROT = 0.35 0.00 0.00
+			ROT = 0.19 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
-			ROT = -0.59 0.00 0.00
+			ROT = -0.28 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -2226,12 +2112,12 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 4 ] -----
-			ROT = 0.13 0.44 0.35
+			ROT = 0.13 -0.22 0.66
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 5 ] -----
-			ROT = 0.00 -0.81 0.00
+			ROT = 0.00 -1.16 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -2241,12 +2127,12 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 7 ] -----
-			ROT = 0.13 -0.38 -0.35
+			ROT = 0.13 -0.22 -0.79
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 8 ] -----
-			ROT = 0.00 0.82 0.00
+			ROT = 0.00 1.10 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -2256,27 +2142,27 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 10 ] -----
-			ROT = 0.25 0.00 -0.03
+			ROT = 0.85 0.00 -0.03
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 11 ] -----
-			ROT = -0.72 0.00 0.00
+			ROT = -1.22 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 12 ] -----
-			ROT = -0.22 0.00 0.00
+			ROT = -0.13 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 13 ] -----
-			ROT = 0.98 0.00 0.06
+			ROT = 0.29 0.00 0.06
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 14 ] -----
-			ROT = -2.48 0.00 0.00
+			ROT = -1.10 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -2292,8 +2178,8 @@ MOTIONSET
 
 	END_KEYSET
 
-	KEYSET			# --- << KEY : 1 / 2 >> ---
-		FRAME = 8
+	KEYSET			# --- << KEY : 0 / 2 >> ---
+		FRAME = 10
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.35 0.00 0.00
 			POS = 0.00 0.00 0.00
@@ -2383,5 +2269,4 @@ MOTIONSET
 
 END_MOTIONSET
 
-
-END_SCRIPT		# この行は絶対消さないこと！
+END_SCRIPT		# ���̍s�͐�Ώ����Ȃ����ƁI

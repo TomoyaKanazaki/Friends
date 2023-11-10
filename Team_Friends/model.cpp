@@ -259,12 +259,8 @@ void CModel::Draw(D3DXCOLOR col)
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
-	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス宣言
-	D3DXMATRIX mtxRotOrigin;		// 計算用マトリックス宣言
 	D3DMATERIAL9 matDef;			// 現在のマテリアル保存用
 	D3DXMATERIAL *pMat;				// マテリアルデータへのポインタ
-	D3DXMATRIX mtxnParent;			// 親の計算用マトリックス
-
 	D3DXMATERIAL matNow;			// 今回のマテリアル
 
 	// 他の情報クリア

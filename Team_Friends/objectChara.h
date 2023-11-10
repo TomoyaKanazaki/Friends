@@ -98,6 +98,7 @@ public:
 	int GetIdxFile(void);		// ファイルのインデックス番号取得
 	Load GetLoadData(int nIdx);	// 読み込み情報取得
 	CModel **GetModel(void);
+	static CObjectChara *Create(const std::string pTextFile);
 
 private:
 

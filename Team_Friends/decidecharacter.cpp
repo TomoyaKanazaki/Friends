@@ -250,8 +250,7 @@ void CDecideCharacter::Update(void)
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
-	if (m_bAllDecide == false &&
-		m_bDecide[0] == false &&
+	if (m_bDecide[0] == false &&
 		(pInputKeyboard->GetTrigger(DIK_BACKSPACE) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_B, 0)))
 	{// キャンセル
 
@@ -332,16 +331,16 @@ bool CDecideCharacter::CollisionSelect(int nCntSelect)
 		{
 			// 決定状態取得
 			m_bDecide[nDecideIdx] = m_apCursor[i]->IsDecide();
-		}
 
-		if (m_bDecide[nDecideIdx])
-		{
-			continue;
-		}
-		else
-		{
-			// 全て決定してないようにする
-			m_bAllDecide = false;
+			if (m_bDecide[nDecideIdx] == true)
+			{
+				continue;
+			}
+			else
+			{
+				// 全て決定してないようにする
+				m_bAllDecide = false;
+			}
 		}
 
 		// 情報取得

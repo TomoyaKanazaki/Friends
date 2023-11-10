@@ -53,6 +53,37 @@ CObjectChara::~CObjectChara()
 }
 
 //==========================================================================
+// 生成処理
+//==========================================================================
+CObjectChara *CObjectChara::Create(const std::string pTextFile)
+{
+	// 生成用のオブジェクト
+	CObjectChara *pObjChara = NULL;
+
+	if (pObjChara == NULL)
+	{// NULLだったら
+
+		// メモリの確保
+		pObjChara = DEBUG_NEW CObjectChara;
+
+		if (pObjChara != NULL)
+		{// メモリの確保が出来ていたら
+
+			// 初期化処理
+			HRESULT hr = pObjChara->SetCharacter(pTextFile);
+			if (FAILED(hr))
+			{// 失敗していたら
+				return NULL;
+			}
+		}
+
+		return pObjChara;
+	}
+
+	return NULL;
+}
+
+//==========================================================================
 // キャラ作成
 //==========================================================================
 HRESULT CObjectChara::SetCharacter(const std::string pTextFile)

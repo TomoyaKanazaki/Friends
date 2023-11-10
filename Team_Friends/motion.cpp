@@ -404,13 +404,13 @@ void CMotion::Update(void)
 			D3DXVECTOR3 posPartsOld = m_ppModel[nCntParts]->GetPosition();
 
 			// 目標の位置との差分を求める
-			float posDiffX = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.x + posOrigin.x -
+			float posDiffX = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.x/* + posOrigin.x*/ -
 				aPartsOld[nCntParts].pos.x;
 
-			float posDiffY = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.y + posOrigin.y -
+			float posDiffY = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.y/* + posOrigin.y*/ -
 				aPartsOld[nCntParts].pos.y;
 
-			float posDiffZ = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.z + posOrigin.z -
+			float posDiffZ = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.z/* + posOrigin.z*/ -
 				aPartsOld[nCntParts].pos.z;
 
 			// 親のYを補正
@@ -419,10 +419,24 @@ void CMotion::Update(void)
 				posDiffY *
 				(
 				(float)m_nCntFrame /
-					(float)nFrame);
+				(float)nFrame);
+
+			posParts.x =
+				aPartsOld[nCntParts].pos.x +
+				posDiffX *
+				(
+				(float)m_nCntFrame /
+				(float)nFrame);
+
+			posParts.z =
+				aPartsOld[nCntParts].pos.z +
+				posDiffZ *
+				(
+				(float)m_nCntFrame /
+				(float)nFrame);
 
 			// 位置設定
-			m_ppModel[nCntParts]->SetPosition(posParts);
+			m_ppModel[nCntParts]->SetPosition(posParts + posOrigin);
 
 			// 動いた長さを求める
 			float fMoveDiff =
@@ -466,7 +480,7 @@ void CMotion::Update(void)
 		for (int nCntParts = 0; nCntParts < m_nNumModel; nCntParts++)
 		{// 全パーツ分繰り返す
 			aPartsOld[nCntParts].rot = m_aInfo[m_nType].aKey[m_nPatternKey].aParts[nCntParts].rot;
-			aPartsOld[nCntParts].pos = m_aInfo[m_nType].aKey[m_nPatternKey].aParts[nCntParts].pos + m_pObjChara->GetOriginPosition();
+			aPartsOld[nCntParts].pos = m_aInfo[m_nType].aKey[m_nPatternKey].aParts[nCntParts].pos /*+ m_pObjChara->GetOriginPosition()*/;
 		}
 
 		if (m_nPatternKey == 0)
@@ -535,7 +549,7 @@ void CMotion::Set(int nType, bool bBlend)
 			if (bBlend == true)
 			{
 				aPartsOld[nCntParts].rot = m_ppModel[nCntParts]->GetRotation();
-				aPartsOld[nCntParts].pos = m_ppModel[nCntParts]->GetPosition();
+				aPartsOld[nCntParts].pos = m_ppModel[nCntParts]->GetPosition() - m_pObjChara->GetOriginPosition();
 			}
 			else
 			{

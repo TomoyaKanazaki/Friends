@@ -5,6 +5,7 @@
 // 
 //=============================================================================
 #include "decidecharacter.h"
+#include "decideplayer_screen.h"
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
@@ -248,6 +249,29 @@ void CDecideCharacter::Update(void)
 
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+	if (m_bAllDecide == false &&
+		m_bDecide[0] == false &&
+		(pInputKeyboard->GetTrigger(DIK_BACKSPACE) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_B, 0)))
+	{// キャンセル
+
+		for (int i = 0; i < CManager::GetInstance()->GetNumPlayer(); i++)
+		{
+			if (m_apCursor[i] == NULL)
+			{
+				continue;
+			}
+			m_apCursor[i]->Uninit();
+			m_apCursor[i] = NULL;
+		}
+
+		// 削除
+		Delete();
+
+		// プレイヤー人数選択画面生成
+		CDecidePlayerScreen::Create();
+		return;
+	}
 
 
 	if (m_bAllDecide == true &&

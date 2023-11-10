@@ -1,18 +1,19 @@
 //=============================================================================
 // 
-//  数字処理 [number.cpp]
+//  数字(ビルボード)処理 [number_Billboard.cpp]
 //  Author : 相馬靜雅
 // 
 //=============================================================================
-#include "number.h"
-
-// 派生先
-#include "number_2D.h"
 #include "number_Billboard.h"
+#include "manager.h"
+#include "renderer.h"
 
 //==========================================================================
 // マクロ定義
 //==========================================================================
+#define WIDTH			(640.0f)					// 横幅
+#define HEIGHT			(360.0f)					// 縦幅
+#define SCROLL_SPEED	(-0.005f)					// スクロール速度
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -21,185 +22,191 @@
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CNumber::CNumber(int nPriority)
+CNumberBillboard::CNumberBillboard(int nPriority) : CNumber(nPriority)
 {
 	// 値のクリア
-	m_objType = OBJECTTYPE_2D;	// オブジェクトの種類
+	m_pObjBillboard = NULL;		// オブジェクトビルボードのオブジェクト
 }
 
 //==========================================================================
 // デストラクタ
 //==========================================================================
-CNumber::~CNumber()
+CNumberBillboard::~CNumberBillboard()
 {
 
 }
 
 //==========================================================================
-// 生成処理
+// 初期化処理
 //==========================================================================
-CNumber *CNumber::Create(EObjectType objtype)
+HRESULT CNumberBillboard::Init(void)
 {
-	// 生成用のオブジェクト
-	CNumber *pNumber = NULL;
+	// 生成処理
+	m_pObjBillboard = CObjectBillboard::Create();
 
-	if (pNumber == NULL)
-	{// NULLだったら
+	return S_OK;
+}
 
-		// メモリの確保
-		switch (objtype)
-		{
-		case CNumber::OBJECTTYPE_2D:
-			pNumber = DEBUG_NEW CNumber2D;
-			break;
+//==========================================================================
+// 終了処理
+//==========================================================================
+void CNumberBillboard::Uninit(void)
+{
+	// 終了処理
+	if (m_pObjBillboard != NULL)
+	{// NULLじゃなかったら
+		m_pObjBillboard = NULL;
+	}
+}
 
-		case CNumber::OBJECTTYPE_BILLBOARD:
-			pNumber = DEBUG_NEW CNumberBillboard;
-			break;
+//==========================================================================
+// 解放処理
+//==========================================================================
+void CNumberBillboard::Release(void)
+{
+	if (m_pObjBillboard != NULL)
+	{// NULLじゃなかったら
+		m_pObjBillboard->Uninit();
+		m_pObjBillboard = NULL;
+	}
+}
 
-		default:
-			return NULL;
-			break;
-		}
+//==========================================================================
+// 更新処理
+//==========================================================================
+void CNumberBillboard::Update(void)
+{
+	// 更新処理
+	if (m_pObjBillboard != NULL)
+	{
+		m_pObjBillboard->Update();
+	}
+}
 
-		if (pNumber != NULL)
-		{// メモリの確保が出来ていたら
+//==========================================================================
+// 描画処理
+//==========================================================================
+void CNumberBillboard::Draw(void)
+{
+	// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
-			// オブジェクトの種類
-			pNumber->m_objType = objtype;
+	// ライティングを無効にする
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
-			// 初期化処理
-			pNumber->Init();
-		}
-		else
-		{
-			delete pNumber;
-			pNumber = NULL;
-		}
+	// アルファテストを有効にする
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 
-		return pNumber;
+	// 描画処理
+	if (m_pObjBillboard != NULL)
+	{// NULLじゃなかったら
+		m_pObjBillboard->Draw();
 	}
 
-	return NULL;
+	// アルファテストを無効にする
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+
+	// ライティングを有効にする
+	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 }
 
 //==========================================================================
-// 位置設定
+// 頂点情報設定処理
 //==========================================================================
-void CNumber::SetPosition(const D3DXVECTOR3 pos)
+void CNumberBillboard::SetVtx(void)
 {
+	m_pObjBillboard->SetVtx();
 }
 
 //==========================================================================
-// 位置取得
+// テクスチャの割り当て
 //==========================================================================
-D3DXVECTOR3 CNumber::GetPosition(void) const
+void CNumberBillboard::BindTexture(int nIdx)
 {
-	return mylib_const::DEFAULT_VECTOR3;
+	// 割り当てる
+	m_pObjBillboard->BindTexture(nIdx);
 }
 
 //==========================================================================
-// 移動量設定
+// 種類設定
 //==========================================================================
-void CNumber::SetMove(const D3DXVECTOR3 move)
+void CNumberBillboard::SetType(const CObject::TYPE type)
 {
-}
-
-//==========================================================================
-// 移動量取得
-//==========================================================================
-D3DXVECTOR3 CNumber::GetMove(void) const
-{
-	return mylib_const::DEFAULT_VECTOR3;
-}
-
-//==========================================================================
-// 向き設定
-//==========================================================================
-void CNumber::SetRotation(const D3DXVECTOR3 rot)
-{
-}
-
-//==========================================================================
-// 向き取得
-//==========================================================================
-D3DXVECTOR3 CNumber::GetRotation(void) const
-{
-	return mylib_const::DEFAULT_VECTOR3;
+	m_pObjBillboard->SetType(type);
 }
 
 //==========================================================================
 // 色設定
 //==========================================================================
-void CNumber::SetColor(const D3DXCOLOR col)
+void CNumberBillboard::SetColor(const D3DXCOLOR col)
 {
+	m_pObjBillboard->SetColor(col);
 }
 
 //==========================================================================
 // 色取得
 //==========================================================================
-D3DXCOLOR CNumber::GetColor(void) const
+D3DXCOLOR CNumberBillboard::GetColor(void) const
 {
-	return mylib_const::DEFAULT_COLOR;
+	return m_pObjBillboard->GetColor();
 }
 
 //==========================================================================
 // サイズ設定
 //==========================================================================
-void CNumber::SetSize(const D3DXVECTOR2 size)
+void CNumberBillboard::SetSize(const D3DXVECTOR2 size)
 {
+	m_pObjBillboard->SetSize(size);		// サイズ
 }
 
 //==========================================================================
 // サイズ取得
 //==========================================================================
-D3DXVECTOR2 CNumber::GetSize(void) const
+D3DXVECTOR2 CNumberBillboard::GetSize(void) const
 {
-	return D3DXVECTOR2(0.0f, 0.0f);
+	return m_pObjBillboard->GetSize();
 }
 
 //==========================================================================
 // 元のサイズの設定
 //==========================================================================
-void CNumber::SetSizeOrigin(const D3DXVECTOR2 size)
+void CNumberBillboard::SetSizeOrigin(const D3DXVECTOR2 size)
 {
+	m_pObjBillboard->SetSizeOrigin(size);
 }
 
 //==========================================================================
 // 元のサイズの取得
 //==========================================================================
-D3DXVECTOR2 CNumber::GetSizeOrigin(void) const
+D3DXVECTOR2 CNumberBillboard::GetSizeOrigin(void) const
 {
-	return D3DXVECTOR2(0.0f, 0.0f);
+	return m_pObjBillboard->GetSizeOrigin();
 }
 
 //==========================================================================
 // テクスチャ座標設定
 //==========================================================================
-void CNumber::SetTex(D3DXVECTOR2 *tex)
+void CNumberBillboard::SetTex(D3DXVECTOR2 *tex)
 {
+	m_pObjBillboard->SetTex(tex);
 }
 
 //==========================================================================
 // テクスチャ座標取得
 //==========================================================================
-D3DXVECTOR2 *CNumber::GetTex(void)
+D3DXVECTOR2 *CNumberBillboard::GetTex(void)
 {
-	return NULL;
-}
-
-//==========================================================================
-// オブジェクト2Dオブジェクトの取得
-//==========================================================================
-CObject2D *CNumber::GetObject2D(void)
-{
-	return NULL;
+	return m_pObjBillboard->GetTex();
 }
 
 //==========================================================================
 // オブジェクトビルボードオブジェクトの取得
 //==========================================================================
-CObjectBillboard *CNumber::GetObjectBillboard(void)
+CObjectBillboard *CNumberBillboard::GetObjectBillboard(void)
 {
-	return NULL;
+	return m_pObjBillboard;
 }

@@ -27,6 +27,7 @@ public:
 	enum SceneType
 	{
 		SCENE_MAIN = 0,			// メイン
+		SCENE_MAINCLEAR,		// メインクリア
 		SCENE_RUSH,				// ラッシュ
 		SCENE_BOSS,				// ボス
 		SCENE_TRANSITIONWAIT,	// 遷移待機

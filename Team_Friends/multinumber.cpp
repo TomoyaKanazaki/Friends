@@ -166,33 +166,14 @@ HRESULT CMultiNumber::Init(void)
 		m_ppMultiNumber[nCntNum] = CNumber::Create(m_objType);
 
 		// 各種変数の初期化
-		switch (m_objType)
-		{
-		case CNumber::OBJECTTYPE_2D:
-			m_ppMultiNumber[nCntNum]->GetMyObject()->SetSize(size);	// サイズ
-			m_ppMultiNumber[nCntNum]->GetMyObject()->SetPosition(D3DXVECTOR3(m_pos.x + size.y * nCntNum, m_pos.y, m_pos.z));	// 位置
+		m_ppMultiNumber[nCntNum]->SetSize(size);	// サイズ
+		m_ppMultiNumber[nCntNum]->SetPosition(D3DXVECTOR3(m_pos.x + size.y * nCntNum, m_pos.y, m_pos.z));	// 位置
 
-			// 種類の設定
-			m_ppMultiNumber[nCntNum]->GetMyObject()->SetType(CObject::TYPE_SCORE);
+		// 種類の設定
+		m_ppMultiNumber[nCntNum]->SetType(CObject::TYPE_SCORE);
 
-			// テクスチャの割り当て
-			m_ppMultiNumber[nCntNum]->GetMyObject()->BindTexture(m_nTexIdx);
-			break;
-
-		case CNumber::OBJECTTYPE_BILLBOARD:
-			m_ppMultiNumber[nCntNum]->GetMyObjectBillboard()->SetSize(size);	// サイズ
-			m_ppMultiNumber[nCntNum]->GetMyObjectBillboard()->SetPosition(D3DXVECTOR3(m_pos.x + size.y * nCntNum, m_pos.y, m_pos.z));	// 位置
-
-			// 種類の設定
-			m_ppMultiNumber[nCntNum]->GetMyObjectBillboard()->SetType(CObject::TYPE_SCORE);
-
-			// テクスチャの割り当て
-			m_ppMultiNumber[nCntNum]->GetMyObjectBillboard()->BindTexture(m_nTexIdx);
-			break;
-
-		default:
-			break;
-		}
+		// テクスチャの割り当て
+		m_ppMultiNumber[nCntNum]->BindTexture(m_nTexIdx);
 	}
 
 	return S_OK;
@@ -271,22 +252,22 @@ void CMultiNumber::Update(void)
 		case CNumber::OBJECTTYPE_2D:
 			if (m_nNumNumber - nNumberDigit <= nCntNum)
 			{// 桁数
-				m_ppMultiNumber[nCntNum]->GetMyObject()->SetEnableDisp(true);
+				m_ppMultiNumber[nCntNum]->GetObject2D()->SetEnableDisp(true);
 			}
 			else
 			{
-				m_ppMultiNumber[nCntNum]->GetMyObject()->SetEnableDisp(false);
+				m_ppMultiNumber[nCntNum]->GetObject2D()->SetEnableDisp(false);
 			}
 			break;
 
 		case CNumber::OBJECTTYPE_BILLBOARD:
 			if (m_nNumNumber - nNumberDigit <= nCntNum)
 			{// 桁数
-				m_ppMultiNumber[nCntNum]->GetMyObjectBillboard()->SetEnableDisp(true);
+				m_ppMultiNumber[nCntNum]->GetObjectBillboard()->SetEnableDisp(true);
 			}
 			else
 			{
-				m_ppMultiNumber[nCntNum]->GetMyObjectBillboard()->SetEnableDisp(false);
+				m_ppMultiNumber[nCntNum]->GetObjectBillboard()->SetEnableDisp(false);
 			}
 			break;
 		}
@@ -364,37 +345,16 @@ void CMultiNumber::SetValue(void)
 		}
 
 		// テクスチャポインタ取得
-		D3DXVECTOR2 *pTex;
-		switch (m_objType)
-		{
-		case CNumber::OBJECTTYPE_2D:
-			// テクスチャポインタ取得
-			pTex = m_ppMultiNumber[nCntNum]->GetMyObject()->GetTex();
+		D3DXVECTOR2 *pTex = m_ppMultiNumber[nCntNum]->GetTex();
 
-			// テクスチャ座標の設定
-			pTex[0] = D3DXVECTOR2(aTexU * TEX_U, 0.0f);
-			pTex[1] = D3DXVECTOR2(aTexU * TEX_U + TEX_U, 0.0f);
-			pTex[2] = D3DXVECTOR2(aTexU * TEX_U, 1.0f);
-			pTex[3] = D3DXVECTOR2(aTexU * TEX_U + TEX_U, 1.0f);
+		// テクスチャ座標の設定
+		pTex[0] = D3DXVECTOR2(aTexU * TEX_U, 0.0f);
+		pTex[1] = D3DXVECTOR2(aTexU * TEX_U + TEX_U, 0.0f);
+		pTex[2] = D3DXVECTOR2(aTexU * TEX_U, 1.0f);
+		pTex[3] = D3DXVECTOR2(aTexU * TEX_U + TEX_U, 1.0f);
 
-			// 頂点設定
-			m_ppMultiNumber[nCntNum]->GetMyObject()->SetVtx();
-			break;
-
-		case CNumber::OBJECTTYPE_BILLBOARD:
-			// テクスチャポインタ取得
-			pTex = m_ppMultiNumber[nCntNum]->GetMyObjectBillboard()->GetTex();
-
-			// テクスチャ座標の設定
-			pTex[0] = D3DXVECTOR2(aTexU * TEX_U, 0.0f);
-			pTex[1] = D3DXVECTOR2(aTexU * TEX_U + TEX_U, 0.0f);
-			pTex[2] = D3DXVECTOR2(aTexU * TEX_U, 1.0f);
-			pTex[3] = D3DXVECTOR2(aTexU * TEX_U + TEX_U, 1.0f);
-
-			// 頂点設定
-			m_ppMultiNumber[nCntNum]->GetMyObjectBillboard()->SetVtx();
-			break;
-		}
+		// 頂点設定
+		m_ppMultiNumber[nCntNum]->SetVtx();
 	}
 }
 
@@ -406,27 +366,12 @@ void CMultiNumber::SetPosition(const D3DXVECTOR3 pos)
 	// 位置設定
 	m_pos = pos;
 
-	switch (m_objType)
+	for (int nCntNum = 0; nCntNum < m_nNumNumber; nCntNum++)
 	{
-	case CNumber::OBJECTTYPE_2D:
-		for (int nCntNum = 0; nCntNum < m_nNumNumber; nCntNum++)
+		if (m_ppMultiNumber[nCntNum] != NULL)
 		{
-			if (m_ppMultiNumber[nCntNum] != NULL)
-			{
-				m_ppMultiNumber[nCntNum]->GetMyObject()->SetPosition(D3DXVECTOR3(m_pos.x + size.y * nCntNum, m_pos.y, m_pos.z));	// 位置
-			}
+			m_ppMultiNumber[nCntNum]->SetPosition(D3DXVECTOR3(m_pos.x + size.y * nCntNum, m_pos.y, m_pos.z));	// 位置
 		}
-		break;
-
-	case CNumber::OBJECTTYPE_BILLBOARD:
-		for (int nCntNum = 0; nCntNum < m_nNumNumber; nCntNum++)
-		{
-			if (m_ppMultiNumber[nCntNum] != NULL)
-			{
-				m_ppMultiNumber[nCntNum]->GetMyObjectBillboard()->SetPosition(D3DXVECTOR3(m_pos.x + size.y * nCntNum, m_pos.y, m_pos.z));	// 位置
-			}
-		}
-		break;
 	}
 }
 
@@ -445,27 +390,12 @@ void CMultiNumber::SetColor(const D3DXCOLOR col)
 {
 	m_col = col;
 
-	switch (m_objType)
+	for (int nCntNum = 0; nCntNum < m_nNumNumber; nCntNum++)
 	{
-	case CNumber::OBJECTTYPE_2D:
-		for (int nCntNum = 0; nCntNum < m_nNumNumber; nCntNum++)
+		if (m_ppMultiNumber[nCntNum] != NULL)
 		{
-			if (m_ppMultiNumber[nCntNum] != NULL)
-			{
-				m_ppMultiNumber[nCntNum]->GetMyObject()->SetColor(m_col);	// 色
-			}
+			m_ppMultiNumber[nCntNum]->SetColor(m_col);	// 色
 		}
-		break;
-
-	case CNumber::OBJECTTYPE_BILLBOARD:
-		for (int nCntNum = 0; nCntNum < m_nNumNumber; nCntNum++)
-		{
-			if (m_ppMultiNumber[nCntNum] != NULL)
-			{
-				m_ppMultiNumber[nCntNum]->GetMyObjectBillboard()->SetColor(m_col);	// 色
-			}
-		}
-		break;
 	}
 }
 

@@ -35,20 +35,16 @@ public:
 	virtual void SetVtx(int nNumVertex);
 	void BindTexture(int nIdx);
 
-	void SetColor(const D3DXCOLOR col);			// 色設定
-	D3DXCOLOR GetColor(void) const;				// 色取得
-	void SetSize(const D3DXVECTOR2 size);		// サイズの設定
-	D3DXVECTOR2 GetSize(void) const;			// サイズの取得
-	void SetSizeOrigin(const D3DXVECTOR2 size);	// 元のサイズの設定
-	D3DXVECTOR2 GetSizeOrigin(void) const;		// 元のサイズの取得
-	void SetTex(D3DXVECTOR2 *tex);				// テクスチャ座標の設定
-	D3DXVECTOR2 *GetTex(void);					// テクスチャ座標の取得
-	void SetLength(const float fLength);		// 対角線の長さ設定
-	float GetLength(void) const;				// 対角線の長さ取得
-	void SetAngle(const float fAngle);			// 対角線の向き設定
-	float GetAngle(void) const;					// 対角線の向き取得
-	D3DXVECTOR3 *GetVtxPos(void);				// 頂点座標取得
-	void SetVtxPos(D3DXVECTOR3 *pos);			// 頂点座標取得
+	virtual void SetColor(const D3DXCOLOR col);			// 色設定
+	virtual D3DXCOLOR GetColor(void) const;				// 色取得
+	virtual void SetSize(const D3DXVECTOR2 size);		// サイズの設定
+	virtual D3DXVECTOR2 GetSize(void) const;			// サイズの取得
+	virtual void SetSizeOrigin(const D3DXVECTOR2 size);	// 元のサイズの設定
+	virtual D3DXVECTOR2 GetSizeOrigin(void) const;		// 元のサイズの取得
+	virtual void SetTex(D3DXVECTOR2 *tex);				// テクスチャ座標の設定
+	virtual D3DXVECTOR2 *GetTex(void);					// テクスチャ座標の取得
+	virtual D3DXVECTOR3 *GetVtxPos(void);				// 頂点座標取得
+	virtual void SetVtxPos(D3DXVECTOR3 *pos);			// 頂点座標取得
 	
 	template<class T>T *GetTemplate(void);
 
@@ -60,6 +56,12 @@ public:
 protected:
 
 private:
+
+	void SetLength(const float fLength);		// 対角線の長さ設定
+	float GetLength(void) const;				// 対角線の長さ取得
+	void SetAngle(const float fAngle);			// 対角線の向き設定
+	float GetAngle(void) const;					// 対角線の向き取得
+
 	D3DXCOLOR m_col;			// 色
 	D3DXVECTOR2 m_size;			// サイズ
 	D3DXVECTOR2 m_sizeOrigin;	// 元のサイズ

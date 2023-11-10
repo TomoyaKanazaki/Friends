@@ -304,8 +304,12 @@ bool CDecideCharacter::CollisionSelect(int nCntSelect)
 		// カーソルごとの選択肢のインデックス番号取得
 		int nDecideIdx = m_apCursor[i]->GetSelectIdx();
 
-		// 決定状態取得
-		m_bDecide[nDecideIdx] = m_apCursor[i]->IsDecide();
+		if (nDecideIdx >= 0)
+		{
+			// 決定状態取得
+			m_bDecide[nDecideIdx] = m_apCursor[i]->IsDecide();
+		}
+
 		if (m_bDecide[nDecideIdx])
 		{
 			continue;

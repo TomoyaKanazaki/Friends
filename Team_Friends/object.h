@@ -85,6 +85,8 @@ public:
 	virtual D3DXVECTOR3 GetPosition(void) const;			// 位置取得
 	virtual void SetOldPosition(const D3DXVECTOR3 posOld);	// 過去の位置設定
 	virtual D3DXVECTOR3 GetOldPosition(void) const;			// 過去の位置取得
+	virtual void SetOriginPosition(const D3DXVECTOR3 pos);	// 元の位置設定
+	virtual D3DXVECTOR3 GetOriginPosition(void) const;		// 元の位置取得
 	virtual void SetMove(const D3DXVECTOR3 move);			// 移動量設定
 	virtual D3DXVECTOR3 GetMove(void) const;				// 移動量取得
 	virtual void SetRotation(const D3DXVECTOR3 rot);		// 向き設定
@@ -126,10 +128,11 @@ protected:
 
 private:
 
-	D3DXVECTOR3 m_pos;		// 位置
-	D3DXVECTOR3 m_posOld;	// 前回の位置
-	D3DXVECTOR3 m_rot;		// 向き
-	D3DXVECTOR3 m_move;		// 移動量
+	D3DXVECTOR3 m_pos;			// 位置
+	D3DXVECTOR3 m_posOld;		// 前回の位置
+	D3DXVECTOR3 m_posOrigin;	// 元の位置
+	D3DXVECTOR3 m_rot;			// 向き
+	D3DXVECTOR3 m_move;			// 移動量
 
 	int m_nPriority;		// 優先順位
 	static int m_nNumAll;	// オブジェクトの総数

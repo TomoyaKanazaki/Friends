@@ -25,6 +25,7 @@ CObjectBillboard::CObjectBillboard(int nPriority) : CObject(nPriority)
 {
 	D3DXMatrixIdentity(&m_mtxWorld);			// ワールドマトリックス
 	m_fSize = D3DXVECTOR2(0.0f, 0.0f);			// サイズ
+	m_sizeOrigin = D3DXVECTOR2(0.0f, 0.0f);		// 元のサイズ
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 色
 	m_nTexIdx = 0;	// テクスチャのインデックス番号
 	m_pVtxBuff = NULL;		// 頂点バッファ
@@ -334,6 +335,22 @@ void CObjectBillboard::SetSize(const D3DXVECTOR2 size)
 D3DXVECTOR2 CObjectBillboard::GetSize(void) const
 {
 	return m_fSize;
+}
+
+//==========================================================================
+// 元のサイズの設定
+//==========================================================================
+void CObjectBillboard::SetSizeOrigin(const D3DXVECTOR2 size)
+{
+	m_sizeOrigin = size;
+}
+
+//==========================================================================
+// 元のサイズの取得
+//==========================================================================
+D3DXVECTOR2 CObjectBillboard::GetSizeOrigin(void) const
+{
+	return m_sizeOrigin;
 }
 
 //==========================================================================

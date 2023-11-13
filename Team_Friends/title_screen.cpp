@@ -36,8 +36,8 @@ const char *CTitleScreen::m_apTextureFile[VTX_LOGO_MAX] =			// ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒ
 	"data\\TEXTURE\\titlelogo_03.png",
 	"data\\TEXTURE\\titlelogo_02.png",
 	"data\\TEXTURE\\titlelogo_02.png",
-	"data\\TEXTURE\\titlelogo_01.png",
-	"data\\TEXTURE\\titlelogo_01.png",
+	"data\\TEXTURE\\mechanion.png",
+	"data\\TEXTURE\\mechanion.png",
 };
 
 const char *CTitleScreen::m_apTextureFile_Select[VTXSELECT_MAX] =	// ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹

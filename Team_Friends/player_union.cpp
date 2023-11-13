@@ -55,7 +55,7 @@
 #define CONFUSIONTIME	(60 * 2)		// 混乱時間
 #define DEADTIME		(120)
 #define FADEOUTTIME		(60)
-#define RADIUS	(250.0f)
+#define RADIUS			(250.0f)
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -279,6 +279,8 @@ HRESULT CPlayerUnion::Init(void)
 
 	// 影の生成
 	m_pShadow = CShadow::Create(pos, 50.0f);
+
+	SetPosition(D3DXVECTOR3(-600.0f, 0.0f, -1000.0f));
 	return S_OK;
 }
 
@@ -287,29 +289,23 @@ HRESULT CPlayerUnion::Init(void)
 //==========================================================================
 void CPlayerUnion::Uninit(void)
 {
-	if (m_pMotion[PARTS_BODY] != NULL)
+	for (int i = 0; i < PARTS_MAX; i++)
 	{
-		m_pMotion[PARTS_BODY]->Uninit();
-		delete m_pMotion[PARTS_BODY];
-		m_pMotion[PARTS_BODY] = NULL;
+		if (m_pMotion[i] != NULL)
+		{
+			m_pMotion[i]->Uninit();
+			delete m_pMotion[i];
+			m_pMotion[i] = NULL;
+		}
 	}
-	if (m_pMotion[PARTS_LEG] != NULL)
+
+	for (int i = 0; i < PARTS_MAX; i++)
 	{
-		m_pMotion[PARTS_LEG]->Uninit();
-		delete m_pMotion[PARTS_LEG];
-		m_pMotion[PARTS_LEG] = NULL;
-	}
-	if (m_pMotion[PARTS_R_ARM] != NULL)
-	{
-		m_pMotion[PARTS_R_ARM]->Uninit();
-		delete m_pMotion[PARTS_R_ARM];
-		m_pMotion[PARTS_R_ARM] = NULL;
-	}
-	if (m_pMotion[PARTS_L_ARM] != NULL)
-	{
-		m_pMotion[PARTS_L_ARM]->Uninit();
-		delete m_pMotion[PARTS_L_ARM];
-		m_pMotion[PARTS_L_ARM] = NULL;
+		if (m_pObjChara[i] != NULL)
+		{
+			m_pObjChara[i]->Uninit();
+			m_pObjChara[i] = NULL;
+		}
 	}
 
 	// HPゲージを消す
@@ -419,21 +415,13 @@ void CPlayerUnion::Update(void)
 
 
 	// モーション更新
-	if (m_pMotion[PARTS_BODY] != NULL)
+	for (int i = 0; i < PARTS_MAX; i++)
 	{
-		m_pMotion[PARTS_BODY]->Update();
-	}
-	if (m_pMotion[PARTS_LEG] != NULL)
-	{
-		m_pMotion[PARTS_LEG]->Update();
-	}
-	if (m_pMotion[PARTS_R_ARM] != NULL)
-	{
-		m_pMotion[PARTS_R_ARM]->Update();
-	}
-	if (m_pMotion[PARTS_L_ARM] != NULL)
-	{
-		m_pMotion[PARTS_L_ARM]->Update();
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+		m_pMotion[i]->Update();
 	}
 
 	// 頂点情報設定
@@ -454,15 +442,17 @@ void CPlayerUnion::Update(void)
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
 
-	m_pObjChara[PARTS_BODY]->SetPosition(pos);		// 胴体
-	m_pObjChara[PARTS_LEG]->SetPosition(pos);		// 脚
-	m_pObjChara[PARTS_R_ARM]->SetPosition(pos);	// 右腕
-	m_pObjChara[PARTS_L_ARM]->SetPosition(pos);	// 左腕
+	// 位置・向き設定
+	for (int i = 0; i < PARTS_MAX; i++)
+	{
+		if (m_pObjChara[i] == NULL)
+		{
+			continue;
+		}
 
-	m_pObjChara[PARTS_BODY]->SetRotation(rot);		// 胴体
-	m_pObjChara[PARTS_LEG]->SetRotation(rot);		// 脚
-	m_pObjChara[PARTS_R_ARM]->SetRotation(rot);	// 右腕
-	m_pObjChara[PARTS_L_ARM]->SetRotation(rot);	// 左腕
+		m_pObjChara[i]->SetPosition(pos);
+		m_pObjChara[i]->SetRotation(rot);
+	}
 
 	// 影の位置更新
 	if (m_pShadow != NULL)
@@ -498,19 +488,10 @@ void CPlayerUnion::Controll(void)
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
-	// カメラの情報取得
-	CCamera *pCamera = CManager::GetInstance()->GetScene()->GetMultiCamera(m_nMyPlayerIdx);
-
-	// カメラの向き取得
-	D3DXVECTOR3 Camerarot = pCamera->GetRotation();
-
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 newPosition = GetPosition();
 	D3DXVECTOR3 sakiPos = GetPosition();
-
-	// 移動量取得
-	D3DXVECTOR3 move = GetMove();
 
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
@@ -524,165 +505,35 @@ void CPlayerUnion::Controll(void)
 	if (CGame::GetGameManager()->IsControll())
 	{// 行動できるとき
 
-		if (m_state != STATE_DEAD &&
-			m_state != STATE_FADEOUT)
-		{// 移動可能モーションの時
-
-			if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).x < 0)
-			{//←キーが押された,左移動
-
-				// 移動中にする
-				for (int i = 0; i < PARTS_MAX; i++)
-				{
-					m_sMotionFrag[i].bMove = true;
-					if (m_sMotionFrag[PARTS_R_ARM].bCharge == true)
-					{
-						m_sMotionFrag[PARTS_R_ARM].bMove = false;
-					}
-					if (m_sMotionFrag[PARTS_L_ARM].bCharge == true)
-					{
-						m_sMotionFrag[PARTS_L_ARM].bMove = false;
-					}
-				}
-
-				if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
-				{//A+W,左上移動
-
-					move.x += sinf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
-					move.z += cosf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
-					m_fRotDest = D3DX_PI * 0.75f + Camerarot.y;
-				}
-				else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y < 0)
-				{//A+S,左下移動
-
-					move.x += sinf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
-					move.z += cosf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
-					m_fRotDest = D3DX_PI * 0.25f + Camerarot.y;
-				}
-				else
-				{//A,左移動
-
-					move.x += sinf(-D3DX_PI * 0.5f + Camerarot.y) * fMove;
-					move.z += cosf(-D3DX_PI * 0.5f + Camerarot.y) * fMove;
-					m_fRotDest = D3DX_PI * 0.5f + Camerarot.y;
-				}
-			}
-			else if (pInputKeyboard->GetPress(DIK_D) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).x > 0)
-			{//Dキーが押された,右移動
-
-				// 移動中にする
-				for (int i = 0; i < PARTS_MAX; i++)
-				{
-					m_sMotionFrag[i].bMove = true;
-					if (m_sMotionFrag[PARTS_R_ARM].bCharge == true)
-					{
-						m_sMotionFrag[PARTS_R_ARM].bMove = false;
-					}
-					if (m_sMotionFrag[PARTS_L_ARM].bCharge == true)
-					{
-						m_sMotionFrag[PARTS_L_ARM].bMove = false;
-					}
-				}
-
-				if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
-				{//D+W,右上移動
-
-					move.x += sinf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
-					move.z += cosf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
-					m_fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
-				}
-				else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y < 0)
-				{//D+S,右下移動
-
-					move.x += sinf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
-					move.z += cosf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
-					m_fRotDest = -D3DX_PI * 0.25f + Camerarot.y;
-				}
-				else
-				{//D,右移動
-
-					move.x += sinf(D3DX_PI * 0.5f + Camerarot.y) * fMove;
-					move.z += cosf(D3DX_PI * 0.5f + Camerarot.y) * fMove;
-					m_fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
-				}
-			}
-			else if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
-			{//Wが押された、上移動
-
-				// 移動中にする
-				for (int i = 0; i < PARTS_MAX; i++)
-				{
-					m_sMotionFrag[i].bMove = true;
-					if (m_sMotionFrag[PARTS_R_ARM].bCharge == true)
-					{
-						m_sMotionFrag[PARTS_R_ARM].bMove = false;
-					}
-					if (m_sMotionFrag[PARTS_L_ARM].bCharge == true)
-					{
-						m_sMotionFrag[PARTS_L_ARM].bMove = false;
-					}
-				}
-
-				move.x += sinf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
-				move.z += cosf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
-				m_fRotDest = D3DX_PI * 1.0f + Camerarot.y;
-			}
-			else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y < 0)
-			{//Sが押された、下移動
-
-				// 移動中にする
-				for (int i = 0; i < PARTS_MAX; i++)
-				{
-					m_sMotionFrag[i].bMove = true;
-					if (m_sMotionFrag[PARTS_R_ARM].bCharge == true)
-					{
-						m_sMotionFrag[PARTS_R_ARM].bMove = false;
-					}
-					if (m_sMotionFrag[PARTS_L_ARM].bCharge == true)
-					{
-						m_sMotionFrag[PARTS_L_ARM].bMove = false;
-					}
-				}
-
-				move.x += sinf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
-				move.z += cosf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
-				m_fRotDest = D3DX_PI * 0.0f + Camerarot.y;
-			}
-			else
+		// 各部位の操作	
+		for (int i = 0; i < PARTS_MAX; i++)
+		{
+			int nPartsIdx = CManager::GetInstance()->GetByPlayerPartsType(i);
+			switch (nPartsIdx)
 			{
-				// 移動やめる
-				for (int i = 0; i < PARTS_MAX; i++)
-				{
-					m_sMotionFrag[i].bMove = false;
-				}
-			}
+			case PARTS_BODY:
+				ControllBody(nPartsIdx);
+				break;
 
-			if (m_bJump == false &&
-				(pInputKeyboard->GetTrigger(DIK_SPACE) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LB, m_nMyPlayerIdx)))
-			{//SPACEが押された,ジャンプ
+			case PARTS_LEG:
+				ControllLeg(nPartsIdx);
+				break;
 
-				m_bJump = true;
-				move.y += 17.0f;
+			case PARTS_L_ARM:
+				ControllLeftArm(nPartsIdx);
+				break;
 
-				// ジャンプ中にする
-				for (int i = 0; i < PARTS_MAX; i++)
-				{
-					m_sMotionFrag[i].bJump = true;
-					if (m_sMotionFrag[PARTS_R_ARM].bCharge == true)
-					{
-						m_sMotionFrag[PARTS_R_ARM].bJump = false;
-					}
-					if (m_sMotionFrag[PARTS_L_ARM].bCharge == true)
-					{
-						m_sMotionFrag[PARTS_L_ARM].bJump = false;
-					}
-				}
-
-				// サウンド再生
-				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
+			case PARTS_R_ARM:
+				ControllRightArm(nPartsIdx);
+				break;
 			}
 		}
+		
 	}
+
+
+	// 移動量取得
+	D3DXVECTOR3 move = GetMove();
 
 	// 移動量加算
 	newPosition.x += move.x;
@@ -783,48 +634,260 @@ void CPlayerUnion::Controll(void)
 	// 向き設定
 	SetRotation(rot);
 
+
+	// カメラの情報取得
+	CCamera *pCamera = CManager::GetInstance()->GetScene()->GetMultiCamera(0);
+	pCamera->SetTargetPosition(pos);
+	pCamera->SetTargetRotation(rot);
+
 	// 目標の向き設定
 	//SetRotDest(m_fRotDest);
 
-	for (int i = 0; i < PARTS_MAX; i++)
-	{
-		ByPartsControll(i);
+}
+
+//==========================================================================
+// 胴操作
+//==========================================================================
+void CPlayerUnion::ControllBody(int nIdx)
+{
+	// ゲームパッド情報取得
+	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+}
+
+//==========================================================================
+// 脚操作
+//==========================================================================
+void CPlayerUnion::ControllLeg(int nIdx)
+{
+	// ゲームパッド情報取得
+	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+	// 移動量取得
+	D3DXVECTOR3 move = GetMove();
+
+	// カメラの情報取得
+	CCamera *pCamera = CManager::GetInstance()->GetScene()->GetMultiCamera(0);
+
+	// カメラの向き取得
+	D3DXVECTOR3 Camerarot = pCamera->GetRotation();
+
+	// 移動量取得
+	float fMove = 2.5f;
+
+	int nLeftArmIdx = CManager::GetInstance()->GetByPlayerPartsType(PARTS_L_ARM);
+	int nRightArmIdx = CManager::GetInstance()->GetByPlayerPartsType(PARTS_R_ARM);
+
+	if (m_state != STATE_DEAD &&
+		m_state != STATE_FADEOUT)
+	{// 移動可能モーションの時
+
+		if (pInputGamepad->GetStickMoveL(nIdx).x < 0)
+		{//←キーが押された,左移動
+
+			// 移動中にする
+			for (int i = 0; i < PARTS_MAX; i++)
+			{
+				m_sMotionFrag[i].bMove = true;
+				if (m_sMotionFrag[nRightArmIdx].bCharge == true)
+				{
+					m_sMotionFrag[nRightArmIdx].bMove = false;
+				}
+				if (m_sMotionFrag[nLeftArmIdx].bCharge == true)
+				{
+					m_sMotionFrag[nLeftArmIdx].bMove = false;
+				}
+			}
+
+			if (pInputGamepad->GetStickMoveL(nIdx).y > 0)
+			{//A+W,左上移動
+
+				move.x += sinf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
+				move.z += cosf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
+				m_fRotDest = D3DX_PI * 0.75f + Camerarot.y;
+			}
+			else if (pInputGamepad->GetStickMoveL(nIdx).y < 0)
+			{//A+S,左下移動
+
+				move.x += sinf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
+				move.z += cosf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
+				m_fRotDest = D3DX_PI * 0.25f + Camerarot.y;
+			}
+			else
+			{//A,左移動
+
+				move.x += sinf(-D3DX_PI * 0.5f + Camerarot.y) * fMove;
+				move.z += cosf(-D3DX_PI * 0.5f + Camerarot.y) * fMove;
+				m_fRotDest = D3DX_PI * 0.5f + Camerarot.y;
+			}
+		}
+		else if (pInputGamepad->GetStickMoveL(nIdx).x > 0)
+		{//Dキーが押された,右移動
+
+			// 移動中にする
+			for (int i = 0; i < PARTS_MAX; i++)
+			{
+				m_sMotionFrag[i].bMove = true;
+				if (m_sMotionFrag[nRightArmIdx].bCharge == true)
+				{
+					m_sMotionFrag[nRightArmIdx].bMove = false;
+				}
+				if (m_sMotionFrag[nLeftArmIdx].bCharge == true)
+				{
+					m_sMotionFrag[nLeftArmIdx].bMove = false;
+				}
+			}
+
+			if (pInputGamepad->GetStickMoveL(nIdx).y > 0)
+			{//D+W,右上移動
+
+				move.x += sinf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
+				move.z += cosf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
+				m_fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
+			}
+			else if (pInputGamepad->GetStickMoveL(nIdx).y < 0)
+			{//D+S,右下移動
+
+				move.x += sinf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
+				move.z += cosf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
+				m_fRotDest = -D3DX_PI * 0.25f + Camerarot.y;
+			}
+			else
+			{//D,右移動
+
+				move.x += sinf(D3DX_PI * 0.5f + Camerarot.y) * fMove;
+				move.z += cosf(D3DX_PI * 0.5f + Camerarot.y) * fMove;
+				m_fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
+			}
+		}
+		else if (pInputGamepad->GetStickMoveL(nIdx).y > 0)
+		{//Wが押された、上移動
+
+			// 移動中にする
+			for (int i = 0; i < PARTS_MAX; i++)
+			{
+				m_sMotionFrag[i].bMove = true;
+				if (m_sMotionFrag[nRightArmIdx].bCharge == true)
+				{
+					m_sMotionFrag[nRightArmIdx].bMove = false;
+				}
+				if (m_sMotionFrag[nLeftArmIdx].bCharge == true)
+				{
+					m_sMotionFrag[nLeftArmIdx].bMove = false;
+				}
+			}
+
+			move.x += sinf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
+			move.z += cosf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
+			m_fRotDest = D3DX_PI * 1.0f + Camerarot.y;
+		}
+		else if (pInputGamepad->GetStickMoveL(nIdx).y < 0)
+		{//Sが押された、下移動
+
+			// 移動中にする
+			for (int i = 0; i < PARTS_MAX; i++)
+			{
+				m_sMotionFrag[i].bMove = true;
+				if (m_sMotionFrag[nRightArmIdx].bCharge == true)
+				{
+					m_sMotionFrag[nRightArmIdx].bMove = false;
+				}
+				if (m_sMotionFrag[nLeftArmIdx].bCharge == true)
+				{
+					m_sMotionFrag[nLeftArmIdx].bMove = false;
+				}
+			}
+
+			move.x += sinf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
+			move.z += cosf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
+			m_fRotDest = D3DX_PI * 0.0f + Camerarot.y;
+		}
+		else
+		{
+			// 移動やめる
+			for (int i = 0; i < PARTS_MAX; i++)
+			{
+				m_sMotionFrag[i].bMove = false;
+			}
+		}
+
+		if (m_bJump == false &&
+			pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LB, nIdx))
+		{//SPACEが押された,ジャンプ
+
+			m_bJump = true;
+			move.y += 17.0f;
+
+			// ジャンプ中にする
+			for (int i = 0; i < PARTS_MAX; i++)
+			{
+				m_sMotionFrag[i].bJump = true;
+				if (m_sMotionFrag[nRightArmIdx].bCharge == true)
+				{
+					m_sMotionFrag[nRightArmIdx].bJump = false;
+				}
+				if (m_sMotionFrag[nLeftArmIdx].bCharge == true)
+				{
+					m_sMotionFrag[nLeftArmIdx].bJump = false;
+				}
+			}
+
+			// サウンド再生
+			CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
+		}
+	}
+
+	// 移動量設定
+	SetMove(move);
+}
+
+//==========================================================================
+// 右腕操作
+//==========================================================================
+void CPlayerUnion::ControllRightArm(int nIdx)
+{
+	// ゲームパッド情報取得
+	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+	
+	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nIdx)))
+	{// 攻撃
+
+		// チャージ判定
+		m_sMotionFrag[nIdx].bCharge = true;
+	}
+
+	if (m_sMotionFrag[nIdx].bCharge == true &&
+		pInputGamepad->GetRelease(CInputGamepad::BUTTON_A, nIdx))
+	{// チャージ中に攻撃ボタンを離したら
+
+		// 攻撃中
+		m_sMotionFrag[nIdx].bCharge = false;
+		m_sMotionFrag[nIdx].bATK = true;
 	}
 }
 
 //==========================================================================
-// パーツ別操作
+// 左腕操作
 //==========================================================================
-void CPlayerUnion::ByPartsControll(int nIdx)
+void CPlayerUnion::ControllLeftArm(int nIdx)
 {
-	if (CGame::GetGameManager()->IsControll() == false)
-	{// 行動できないとき
-		return;
-	}
-
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+	
+	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nIdx)))
+	{// 攻撃
 
-	if (nIdx == PARTS_L_ARM ||
-		nIdx == PARTS_R_ARM)
-	{// 腕パーツ
+		// チャージ判定
+		m_sMotionFrag[nIdx].bCharge = true;
+	}
 
-		if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0)))
-		{// 攻撃
+	if (m_sMotionFrag[nIdx].bCharge == true &&
+		pInputGamepad->GetRelease(CInputGamepad::BUTTON_A, nIdx))
+	{// チャージ中に攻撃ボタンを離したら
 
-			// チャージ判定
-			m_sMotionFrag[nIdx].bCharge = true;
-		}
-
-		if (m_sMotionFrag[nIdx].bCharge == true &&
-			pInputGamepad->GetRelease(CInputGamepad::BUTTON_A, 0))
-		{// チャージ中に攻撃ボタンを離したら
-
-			// 攻撃中
-			m_sMotionFrag[nIdx].bCharge = false;
-			m_sMotionFrag[nIdx].bATK = true;
-		}
-
+		// 攻撃中
+		m_sMotionFrag[nIdx].bCharge = false;
+		m_sMotionFrag[nIdx].bATK = true;
 	}
 }
 

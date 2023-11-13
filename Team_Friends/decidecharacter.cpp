@@ -342,6 +342,11 @@ bool CDecideCharacter::CollisionSelect(int nCntSelect)
 				m_bAllDecide = false;
 			}
 		}
+		else
+		{
+			// ‘S‚ÄŒˆ’è‚µ‚Ä‚È‚¢‚æ‚¤‚É‚·‚é
+			m_bAllDecide = false;
+		}
 
 		// î•ñŽæ“¾
 		D3DXVECTOR3 posCursor = m_apCursor[i]->GetPosition();
@@ -375,6 +380,7 @@ bool CDecideCharacter::CollisionSelect(int nCntSelect)
 			m_bDecide[nCntSelect] = true;
 			m_apCursor[nCursorIdx]->SetEnbaleDicide(true);
 			m_apCursor[nCursorIdx]->SetSelectIdx(nCntSelect);
+			CManager::GetInstance()->SetByPlayerPartsType(nCursorIdx, nCntSelect);
 		}
 
 	}

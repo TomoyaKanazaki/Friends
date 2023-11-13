@@ -67,6 +67,7 @@ CManager::CManager()
 	m_OldTime = 0;					// 過去の時間
 	m_fDeltaTime = 0.0f;			// 経過時間
 	m_nNumPlayer = 0;				// プレイヤーの数
+	memset(&m_nByPlayerPartsType[0], 0, sizeof(m_nByPlayerPartsType));	// プレイヤー毎の担当パーツ種類
 }
 
 //==========================================================================
@@ -115,6 +116,12 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_bHitStop = false;		// ヒットストップの判定
 	m_nCntHitStop = 0;		// ヒットストップのカウンター
 	m_nNumPlayer = 0;		// プレイヤーの数
+
+	// プレイヤー毎の担当パーツ種類
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		m_nByPlayerPartsType[i] = i;
+	}
 
 	//**********************************
 	// キーボード
@@ -824,6 +831,22 @@ void CManager::SetNumPlayer(int nNum)
 	ValueNormalize(nNum, mylib_const::MAX_PLAYER, 0);
 
 	m_nNumPlayer = nNum;
+}
+
+//==========================================================================
+// プレイヤー毎の担当パーツ種類取得
+//==========================================================================
+int CManager::GetByPlayerPartsType(int nIdx)
+{
+	return m_nByPlayerPartsType[nIdx];
+}
+
+//==========================================================================
+// プレイヤー毎の担当パーツ種類設定
+//==========================================================================
+void CManager::SetByPlayerPartsType(int nIdx, int nType)
+{
+	m_nByPlayerPartsType[nIdx] = nType;
 }
 
 //==========================================================================

@@ -679,10 +679,10 @@ void CollisionLimitLine(D3DXVECTOR3 pos0, D3DXVECTOR3 pos1, D3DXVECTOR3 &pPos, D
 		if ((vecLinePlayer.z * vecToPosPlayer.x) - (vecLinePlayer.x * vecToPosPlayer.z) > 0)
 		{// 壁に当たったら
 
-			// 交点からはみ出た分
-			D3DXVECTOR3 CollisionPointPlayer = D3DXVECTOR3(0.0f, pPos.y, 0.0f);
-			CollisionPointPlayer.x = (pPos.x + (vecLinePlayer.x * (fRatePlayer - 1.0f)));
-			CollisionPointPlayer.z = (pPos.z + (vecLinePlayer.z * (fRatePlayer - 1.0f)));
+			//// 交点からはみ出た分
+			//D3DXVECTOR3 CollisionPointPlayer = D3DXVECTOR3(0.0f, pPos.y, 0.0f);
+			//CollisionPointPlayer.x = (pPos.x + (vecLinePlayer.x * (fRatePlayer - 1.0f)));
+			//CollisionPointPlayer.z = (pPos.z + (vecLinePlayer.z * (fRatePlayer - 1.0f)));
 
 			// 法線ベクトル(境界線ベクトルのXとZ反転)
 			D3DXVECTOR3 vecNor = D3DXVECTOR3(vecLine.z, 0.0f, -vecLine.x);
@@ -692,8 +692,8 @@ void CollisionLimitLine(D3DXVECTOR3 pos0, D3DXVECTOR3 pos1, D3DXVECTOR3 &pPos, D
 
 			// プレイヤーの逆移動量
 			D3DXVECTOR3 PlayerInverceMove;
-			PlayerInverceMove.z = vecLinePlayer.z * (fRatePlayer - 1.0f);
 			PlayerInverceMove.x = vecLinePlayer.x * (fRatePlayer - 1.0f);
+			PlayerInverceMove.z = vecLinePlayer.z * (fRatePlayer - 1.0f);
 
 			// 内積(壁の法線とプレイヤーの逆移動量)
 			float fDot = (PlayerInverceMove.x * vecNor.x) + (PlayerInverceMove.z * vecNor.z);
@@ -701,8 +701,8 @@ void CollisionLimitLine(D3DXVECTOR3 pos0, D3DXVECTOR3 pos1, D3DXVECTOR3 &pPos, D
 			// 壁ずり移動量
 			D3DXVECTOR3 MoveWall = vecNor * fDot;
 
-			D3DXVECTOR3 ppp = (CollisionPointPlayer - pPos);
-			D3DXVECTOR3 pppp = ppp + MoveWall;
+			/*D3DXVECTOR3 ppp = (CollisionPointPlayer - pPos);
+			D3DXVECTOR3 pppp = ppp + MoveWall;*/
 
 			// ぶつかった点に補正
 			pPos += MoveWall + (vecNor * 0.1f);

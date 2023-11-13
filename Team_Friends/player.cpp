@@ -61,7 +61,7 @@
 //==========================================================================
 const char *CPlayer::m_apModelFile[mylib_const::MAX_PLAYER] =	// モデルのファイル
 {
-	"data\\TEXT\\motion_set_player.txt",
+	"data\\TEXT\\motion_1p.txt",
 	"data\\TEXT\\motion_2p.txt",
 	"data\\TEXT\\motion_3p.txt",
 	"data\\TEXT\\motion_4p.txt",
@@ -330,6 +330,10 @@ void CPlayer::Update(void)
 	// 状態更新
 	UpdateState();
 
+
+	// カメラの情報取得
+	CCamera *pCamera = CManager::GetInstance()->GetScene()->GetMultiCamera(m_nMyPlayerIdx);
+
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 posCenter = GetCenterPosition();
@@ -339,6 +343,10 @@ void CPlayer::Update(void)
 
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
+
+	// 追従目標の情報設定
+	pCamera->SetTargetPosition(pos);
+	pCamera->SetTargetRotation(rot);
 
 	// 影の位置更新
 	if (m_pShadow != NULL)

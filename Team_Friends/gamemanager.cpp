@@ -90,7 +90,7 @@ HRESULT CGameManager::Init(void)
 	m_bControll = true;		// 操作できるか
 	m_bEndNormalStage = false;	// 通常ステージが終了したか
 
-	CPlayerUnion::Create();
+	//CPlayerUnion::Create();
 
 	return S_OK;
 }
@@ -148,6 +148,7 @@ void CGameManager::Update(void)
 
 		if (fadestate == CInstantFade::STATE_FADECOMPLETION)
 		{// 完了した瞬間
+
 
 
 			// カメラ取得

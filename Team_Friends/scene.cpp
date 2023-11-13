@@ -12,6 +12,7 @@
 #include "fade.h"
 #include "elevation.h"
 #include "player.h"
+#include "player_union.h"
 #include "camera.h"
 
 // 遷移先
@@ -148,6 +149,10 @@ HRESULT CScene::Init(void)
 	for (int nCntPlayer = 0; nCntPlayer < CManager::GetInstance()->GetNumPlayer(); nCntPlayer++)
 	{
 		m_pPlayer[nCntPlayer] = CPlayer::Create(nCntPlayer);
+		if (m_pPlayer[nCntPlayer] == NULL)
+		{
+			return E_FAIL;
+		}
 	}
 
 	return S_OK;
@@ -226,16 +231,67 @@ void CScene::Draw(void)
 //==========================================================================
 void CScene::ResetScene(void)
 {
+	//**********************************
+	// 破棄フェーズ
+	//**********************************
+	// プレイヤーの破棄
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	{
+		if (m_pPlayer[nCntPlayer] != NULL)
+		{// メモリの確保が出来ていたら
+
+			m_pPlayer[nCntPlayer]->Uninit();
+			m_pPlayer[nCntPlayer] = NULL;
+		}
+	}
+
+	// カメラの破棄
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMultiCamera[i] != NULL)
+		{// メモリの確保が出来ていたら
+
+			// 終了処理
+			m_pMultiCamera[i]->Uninit();
+			delete m_pMultiCamera[i];
+			m_pMultiCamera[i] = NULL;
+		}
+	}
+
 	// マップ
 	map::Release();
 
 	//**********************************
-	// マップの生成
+	// 生成フェーズ
 	//**********************************
+	// マップ
 	if (FAILED(map::Create("data\\TEXT\\edit_info_boss.txt")))
 	{// 失敗した場合
 		return;
 	}
+
+	// カメラ
+	if (m_pMultiCamera[0] == NULL)
+	{
+		m_pMultiCamera[0] = DEBUG_NEW CCamera;
+		if (m_pMultiCamera[0] != NULL)
+		{// メモリの確保が出来ていたら
+
+			// 初期化処理
+			HRESULT hr = m_pMultiCamera[0]->Init();
+			if (FAILED(hr))
+			{// 初期化処理が失敗した場合
+				return;
+			}
+
+			// ビューポートの設定
+			m_pMultiCamera[0]->SetViewPort(mylib_const::DEFAULT_VECTOR3, D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT));
+		}
+	}
+
+
+	// 合体後プレイヤー生成
+	CPlayerUnion::Create();
 }
 
 //==========================================================================

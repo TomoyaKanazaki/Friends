@@ -84,6 +84,8 @@ public:
 
 	int GetNumPlayer(void);			// プレイヤーの数取得
 	void SetNumPlayer(int nNum);	// プレイヤーの数設定
+	int GetByPlayerPartsType(int nIdx);				// プレイヤー毎の担当パーツ種類取得
+	void SetByPlayerPartsType(int nIdx, int nType);	// プレイヤー毎の担当パーツ種類設定
 	float DeltaTime(void);								// 経過時間取得
 	void SetMode(CScene::MODE mode);					// 次のモード設定
 	CScene::MODE GetMode(void);							// 現在のモード取得
@@ -120,6 +122,7 @@ private:
 	DWORD m_OldTime;					// 過去の時間
 	float m_fDeltaTime;					// 経過時間
 	int m_nNumPlayer;					// プレイヤーの数
+	int m_nByPlayerPartsType[mylib_const::MAX_PLAYER];	// プレイヤー毎の担当パーツ種類
 
 	static CManager *m_pManager;	// マネージャのオブジェクト
 };

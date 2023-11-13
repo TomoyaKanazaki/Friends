@@ -54,15 +54,16 @@ CCamera::CCamera()
 	m_viewport.Height = 0;						// 描画する画面の高さ
 	m_viewport.MinZ = 0.0f;
 	m_viewport.MaxZ = 0.0f;
-	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 注視点(見たい場所)
-	m_posV = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 視点(カメラの位置)
-	m_posVDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 目標の視点
-	m_posRDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 目標の注視点
+	m_posR = mylib_const::DEFAULT_VECTOR3;		// 注視点(見たい場所)
+	m_posV = mylib_const::DEFAULT_VECTOR3;		// 視点(カメラの位置)
+	m_posVDest = mylib_const::DEFAULT_VECTOR3;	// 目標の視点
+	m_posRDest = mylib_const::DEFAULT_VECTOR3;	// 目標の注視点
 	m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);		// 上方向ベクトル
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 移動量
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 向き
-	m_rotVDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 目標の視点の向き
-	m_TargetPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);// 目標の位置
+	m_move = mylib_const::DEFAULT_VECTOR3;		// 移動量
+	m_rot = mylib_const::DEFAULT_VECTOR3;		// 向き
+	m_rotVDest = mylib_const::DEFAULT_VECTOR3;	// 目標の視点の向き
+	m_TargetPos = mylib_const::DEFAULT_VECTOR3;	// 追従目標の位置
+	m_TargetRot = mylib_const::DEFAULT_VECTOR3;	// 追従目標の位置
 	m_fDistance = 0.0f;							// 距離
 	m_fDestDistance = 0.0f;						// 目標の距離
 	m_fOriginDistance = 0.0f;					// 元の距離
@@ -627,15 +628,6 @@ void CCamera::SetCameraVGame(void)
 	else if (m_bFollow == true)
 	{// 追従ON
 
-		// プレイヤーの情報取得
-		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nChasePlayerIndex);
-		if (pPlayer == NULL)
-		{
-			return;
-		}
-
-		D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
-		D3DXVECTOR3 PlayerRot = pPlayer->GetRotation();
 
 		float fYcamera = 100.0f;
 
@@ -651,11 +643,9 @@ void CCamera::SetCameraVGame(void)
 		while (1)
 		{
 
-			D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
-
 			// 仮想の弾の位置
-			float fPosBulletX = PlayerPos.x + cosf(m_rot.z) * sinf(m_rot.y) * -fDistance;
-			float fPosBulletZ = PlayerPos.z + cosf(m_rot.z) * cosf(m_rot.y) * -fDistance;
+			float fPosBulletX = m_TargetPos.x + cosf(m_rot.z) * sinf(m_rot.y) * -fDistance;
+			float fPosBulletZ = m_TargetPos.z + cosf(m_rot.z) * cosf(m_rot.y) * -fDistance;
 
 			// 高さ取得
 			bool bLand = false;
@@ -806,28 +796,18 @@ void CCamera::SetCameraRGame(void)
 	else
 	{// 追従ON
 
-		// プレイヤーの情報取得
-		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nChasePlayerIndex);
-		if (pPlayer == NULL)
-		{
-			return;
-		}
-
-		D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
-		D3DXVECTOR3 PlayerRot = pPlayer->GetRotation();
 		float fYcamera = 100.0f;
 
-		if (PlayerPos.y >= 50.0f)
+		if (m_TargetPos.y >= 50.0f)
 		{
-			fYcamera = (PlayerPos.y - 50.0f) + 100.0f;
+			fYcamera = (m_TargetPos.y - 50.0f) + 100.0f;
 		}
-		else if (PlayerPos.y <= -50.0f)
+		else if (m_TargetPos.y <= -50.0f)
 		{
-			fYcamera = (PlayerPos.y + 50.0f) + 100.0f;
-			//fYcamera = (PlayerPos.y + 20.0f) + 100.0f;
+			fYcamera = (m_TargetPos.y + 50.0f) + 100.0f;
 		}
 
-		fYcamera = PlayerPos.y + 100.0f;
+		fYcamera = m_TargetPos.y + 100.0f;
 
 		if (fYcamera <= 0.0f)
 		{
@@ -840,10 +820,9 @@ void CCamera::SetCameraRGame(void)
 		// 高さの差分を補正する
 		m_fDiffHeight += (m_fDiffHeightDest - m_fDiffHeight) * 0.001f;
 
-
 		// 注視点の代入処理
-		m_posRDest.x = (PlayerPos.x + sinf(D3DX_PI + PlayerRot.y) * 150.0f);
-		m_posRDest.z = (PlayerPos.z + cosf(D3DX_PI + PlayerRot.y) * 150.0f);
+		m_posRDest.x = (m_TargetPos.x + sinf(D3DX_PI + m_TargetRot.y) * 150.0f);
+		m_posRDest.z = (m_TargetPos.z + cosf(D3DX_PI + m_TargetRot.y) * 150.0f);
 		m_posRDest.y = fYcamera - m_fDiffHeight;
 
 		// 補正する
@@ -1245,6 +1224,48 @@ void CCamera::SetDestRotation(const D3DXVECTOR3 rot)
 D3DXVECTOR3 CCamera::GetDestRotation(void)
 {
 	return m_rotVDest;
+}
+
+//==================================================================================
+// 目標の位置設定
+//==================================================================================
+void CCamera::SetTargetPosition(const D3DXVECTOR3 pos)
+{
+	// 目標の位置
+	m_TargetPos = pos;
+}
+
+//==================================================================================
+// 目標の位置取得
+//==================================================================================
+D3DXVECTOR3 CCamera::GetTargetPosition(void)
+{
+	return m_TargetPos;
+}
+
+//==================================================================================
+// 追従目標の向き設定
+//==================================================================================
+void CCamera::SetTargetRotation(const D3DXVECTOR3 rot)
+{
+	// 目標の向き
+	m_TargetRot = rot;
+}
+
+//==================================================================================
+// 追従目標の向き取得
+//==================================================================================
+D3DXVECTOR3 CCamera::GetTargetRotation(void)
+{
+	return m_TargetRot;
+}
+
+//==========================================================================
+// 元になるカメラの距離設定
+//==========================================================================
+void CCamera::SetOriginDistance(float fDistance)
+{
+	m_fOriginDistance = fDistance;
 }
 
 //==========================================================================

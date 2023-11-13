@@ -52,14 +52,15 @@ public:
 	float GetOriginDistance(void);				// 元になるカメラの距離取得
 	void SetDestRotation(const D3DXVECTOR3 rot);	// 目標の向き設定
 	D3DXVECTOR3 GetDestRotation(void);				// 目標の向き取得
+	void SetTargetPosition(const D3DXVECTOR3 pos);	// 追従目標の位置設定
+	D3DXVECTOR3 GetTargetPosition(void);			// 追従目標の位置取得
+	void SetTargetRotation(const D3DXVECTOR3 rot);	// 追従目標の向き設定
+	D3DXVECTOR3 GetTargetRotation(void);			// 追従目標の向き取得
+
 	void SetShake(int nTime, float fLength, float fLengthY);	// 振動設定
 	void SetLenDest(float fLength, int nCntTime = 120, float DecrementValue = 2.0f, float fCorrection = 0.1f);	// 目標の長さ設定
-	void SetTargetPosition(const D3DXVECTOR3 pos);	// 目標の位置設定
-	D3DXVECTOR3 GetTargetPosition(void);			// 目標の位置取得
 	void SetPlayerChaseIndex(int nIdx);				// 追従するプレイヤーのインデックス番号設定
 	int GetPlayerChaseIndex(void);					// 追従するプレイヤーのインデックス番号取得
-	void SetChaseType(CHASETYPE type);	// 追従の種類設定
-	CHASETYPE GetChaseType(void);		// 追従の種類取得
 	void SetEnableFollow(bool bFollow);	// 追従の判定設定
 	bool IsFollow(void);				// 追従状態取得
 	void SetViewPort(D3DXVECTOR3 pos, D3DXVECTOR2 size);		// ビューポートの設定
@@ -89,16 +90,11 @@ private:
 	void UpdateState(void);
 	void UpdateSpotLightVec(void);
 
-	// 追従関数
-	void ChaseNormal(void);	// 通常の追従
-	void ChaseMap(void);	// マップに沿った追従
-	void ChaseNone(void);	// 追従なし
-
-
-	void ResetGame(void);	// リセット
-	void ResetTitle(void);	// リセット
-	void ResetResult(void);	// リセット
-	void ResetRanking(void);	// リセット
+	// リセット
+	void ResetGame(void);
+	void ResetTitle(void);
+	void ResetResult(void);
+	void ResetRanking(void);
 
 	D3DXMATRIX	m_mtxProjection;	// プロジェクションマトリックス
 	D3DXMATRIX	m_mtxView;			// ビューマトリックス
@@ -111,7 +107,8 @@ private:
 	D3DXVECTOR3 m_move;				// 移動量
 	D3DXVECTOR3 m_rot;				// 向き
 	D3DXVECTOR3 m_rotVDest;			// 目標の視点の向き
-	D3DXVECTOR3 m_TargetPos;		// 目標の位置
+	D3DXVECTOR3 m_TargetPos;		// 追従目標の位置
+	D3DXVECTOR3 m_TargetRot;		// 追従目標の向き
 	float m_fDistance;				// 距離
 	float m_fDestDistance;			// 目標の距離
 	float m_fOriginDistance;		// 元の距離

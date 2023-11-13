@@ -102,6 +102,7 @@ protected:
 	bool m_bKnockBack;			// ノックバック中かどうか
 	bool m_bDead;			// 死亡中かどうか
 
+	int m_nPartsIdx[mylib_const::MAX_PLAYER];	// プレイヤー毎のパーツインデックス番号
 	int m_nMyPlayerIdx;			// プレイヤーインデックス番号
 	int m_nCntWalk;				// 歩行カウンター
 	STATE m_state;			// 状態
@@ -116,8 +117,12 @@ private:
 	void Dead(void);		// 死亡
 	void FadeOut(void);		// フェードアウト
 	void Invincible(void);	// 無敵
-	virtual void Controll(void);	// 操作
-	void ByPartsControll(int nIdx);
+	virtual void Controll(void);		// 操作
+	void ControllBody(int nIdx);		// 胴操作
+	void ControllLeg(int nIdx);			// 脚操作
+	void ControllRightArm(int nIdx);	// 右腕操作
+	void ControllLeftArm(int nIdx);		// 左腕操作
+
 	void MotionSet(int nIdx);	// モーションの設定
 	void Atack(void);		// 攻撃
 

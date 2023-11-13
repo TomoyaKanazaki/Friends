@@ -63,6 +63,7 @@ CSound::SOUNDINFO CSound::m_aSoundInfo[LABEL_MAX] =
 	{ "data/SE/boss_bullet.wav", 0 },	// ボスの弾攻撃
 	{ "data/SE/boss_bulletcharge.wav", 0 },	// ボスの弾チャージ
 	{ "data/SE/boss_talk.wav", 0 },		// ボストーク
+	{ "data/SE/ranking_00.wav", 0 },		// ボストーク
 
 };	// サウンドの情報
 

@@ -61,6 +61,7 @@ public:
 		LABEL_SE_BOSSBULLET,	// ボスの弾攻撃
 		LABEL_SE_BOSSBULLET_CHARGE,	// ボスの弾チャージ
 		LABEL_SE_BOSSTALK,		// ボストーク
+		LABEL_SE_RANKINGSCORE,		// ランキングスコア
 		LABEL_MAX,
 	} LABEL;
 

@@ -27,7 +27,7 @@
 #define DIS_X				(50.0f)				// 間隔
 #define POSY_BASE			(330.0f)			// Y位置
 #define BASETEXT_POSX		(180.0f)			// X位置
-#define TEXT_MOVETIME		(20)				// 移動時間
+#define TEXT_MOVETIME		(50)				// 移動時間
 #define INIT_POSX			(1600.0f)			// 初期位置
 
 //==========================================================================
@@ -36,7 +36,7 @@
 const char *CRankingScore::m_apTextureFile[VTX_MAX] =		// テクスチャのファイル
 {
 	"data\\TEXTURE\\rankingnum_01.png",
-	"data\\TEXTURE\\rankinglogo_01.png",
+	"data\\TEXTURE\\rankinglogo_02.png",
 };
 
 //==========================================================================
@@ -118,7 +118,7 @@ HRESULT CRankingScore::Init(void)
 		{
 		case VTX_LOGO:
 			m_pObj2D[nCntVtx]->GetObject2D()->SetSize(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx[nCntVtx]) * 0.3f);	// サイズ
-			m_pObj2D[nCntVtx]->GetObject2D()->SetPosition(D3DXVECTOR3(280.0f, 60.0f, 0.0f));	// 位置
+			m_pObj2D[nCntVtx]->GetObject2D()->SetPosition(D3DXVECTOR3(m_pObj2D[nCntVtx]->GetSize().x, 60.0f, 0.0f));	// 位置
 			break;
 
 		case VTX_NUM:
@@ -137,7 +137,7 @@ HRESULT CRankingScore::Init(void)
 	for (int nCntRanking = 0; nCntRanking < RANKINGNUM; nCntRanking++)
 	{
 		// 目標の位置
-		m_fPosDestX[nCntRanking] = m_pObj2D[VTX_LOGO]->GetSize().x;
+		m_fPosDestX[nCntRanking] = m_pObj2D[VTX_LOGO]->GetSize().x + 400.0f;
 
 		for (int nCntScore = 0; nCntScore < RANKINGSCORE_DIGIT; nCntScore++)
 		{
@@ -253,8 +253,7 @@ void CRankingScore::Moving(int nCntRanking)
 
 		if (pos.x == INIT_POSX)
 		{
-			// サウンド再生
-			CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_NUMBERMOVE);
+			
 		}
 
 		// 色取得
@@ -280,6 +279,9 @@ void CRankingScore::Moving(int nCntRanking)
 			{
 				CRanking::SetEnableArrival();
 			}
+
+			// サウンド再生
+			CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_RANKINGSCORE);
 		}
 
 		// 位置設定

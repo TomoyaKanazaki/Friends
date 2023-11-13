@@ -66,7 +66,7 @@ protected:
 		MOTION_DEF = 0,			// ニュートラルモーション
 		MOTION_WALK,			// 移動モーション
 		MOTION_ATK,				// 攻撃
-		MOTION_ATK2,			// 攻撃(派生)
+		MOTION_CHARGE,			// チャージ
 		MOTION_KNOCKBACK,		// やられモーション
 		MOTION_DEAD,			// 死亡モーション
 		MOTION_JUMP,			// ジャンプ
@@ -88,8 +88,7 @@ protected:
 	{
 		bool bJump;			// ジャンプ中かどうか
 		bool bATK;			// 攻撃中かどうか
-		bool bKnockBack;	// ノックバック中かどうか
-		bool bDead;			// 死亡中かどうか
+		bool bCharge;		// チャージ中かどうか
 		bool bMove;			// 移動中かどうか
 	};
 
@@ -100,11 +99,13 @@ protected:
 	bool m_bHitStage;			// ステージの当たり判定
 	bool m_bLandField;			// フィールドの着地判定
 	bool m_bHitWall;			// 壁の当たり判定
+	bool m_bKnockBack;			// ノックバック中かどうか
+	bool m_bDead;			// 死亡中かどうか
+
 	int m_nMyPlayerIdx;			// プレイヤーインデックス番号
 	int m_nCntWalk;				// 歩行カウンター
 	STATE m_state;			// 状態
 	CMotion *m_pMotion[PARTS_MAX];			// パーツ分のモーションポインタ
-	SMotionFrag m_sAllCharaMotironFrag;		// モーションのフラグ
 	SMotionFrag m_sMotionFrag[PARTS_MAX];		// モーションのフラグ
 private:
 
@@ -116,6 +117,7 @@ private:
 	void FadeOut(void);		// フェードアウト
 	void Invincible(void);	// 無敵
 	virtual void Controll(void);	// 操作
+	void ByPartsControll(int nIdx);
 	void MotionSet(int nIdx);	// モーションの設定
 	void Atack(void);		// 攻撃
 

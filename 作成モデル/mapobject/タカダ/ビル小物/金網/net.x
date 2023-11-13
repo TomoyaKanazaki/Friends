@@ -177,7 +177,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Documents\\Visual Studio 2015\\Projects\\03_DirectX_cpp\\C++制作02_チーム\\Friends\\作成モデル\\mapobject\\タカダ\\ビル小物\\24106675.png";
+    "24106675.png";
    }
   }
  }

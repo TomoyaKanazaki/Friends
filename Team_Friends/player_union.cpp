@@ -83,12 +83,14 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_bHitStage = false;			// ステージの当たり判定
 	m_bLandField = false;			// フィールドの着地判定
 	m_bHitWall = false;			// 壁の当たり判定
+	m_bKnockBack = false;			// ノックバック中かどうか
+	m_bDead = false;			// 死亡中かどうか
+
 	m_nCntWalk = 0;				// 歩行カウンター
 	m_state = STATE_NONE;			// 状態
 
 	memset(&m_pMotion[0], NULL, sizeof(m_pMotion));	// パーツ分のモーションポインタ
 	memset(&m_sMotionFrag[0], false, sizeof(m_sMotionFrag));	// モーションのフラグ
-	memset(&m_sAllCharaMotironFrag, false, sizeof(m_sAllCharaMotironFrag));	// モーションのフラグ
 
 	// プライベート変数
 	memset(&m_pObjChara[0], NULL, sizeof(m_pObjChara));	// パーツ分のオブジェクトキャラクターポインタ
@@ -411,12 +413,9 @@ void CPlayerUnion::Update(void)
 
 	for (int i = 0; i < PARTS_MAX; i++)
 	{
-		m_sMotionFrag[i] = m_sAllCharaMotironFrag;
-
 		// モーションの設定処理
 		MotionSet(i);
 	}
-	memset(&m_sAllCharaMotironFrag, false, sizeof(m_sAllCharaMotironFrag));
 
 
 	// モーション更新
@@ -533,7 +532,18 @@ void CPlayerUnion::Controll(void)
 			{//←キーが押された,左移動
 
 				// 移動中にする
-				m_sAllCharaMotironFrag.bMove = true;
+				for (int i = 0; i < PARTS_MAX; i++)
+				{
+					m_sMotionFrag[i].bMove = true;
+					if (m_sMotionFrag[PARTS_R_ARM].bCharge == true)
+					{
+						m_sMotionFrag[PARTS_R_ARM].bMove = false;
+					}
+					if (m_sMotionFrag[PARTS_L_ARM].bCharge == true)
+					{
+						m_sMotionFrag[PARTS_L_ARM].bMove = false;
+					}
+				}
 
 				if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
 				{//A+W,左上移動
@@ -561,7 +571,18 @@ void CPlayerUnion::Controll(void)
 			{//Dキーが押された,右移動
 
 				// 移動中にする
-				m_sAllCharaMotironFrag.bMove = true;
+				for (int i = 0; i < PARTS_MAX; i++)
+				{
+					m_sMotionFrag[i].bMove = true;
+					if (m_sMotionFrag[PARTS_R_ARM].bCharge == true)
+					{
+						m_sMotionFrag[PARTS_R_ARM].bMove = false;
+					}
+					if (m_sMotionFrag[PARTS_L_ARM].bCharge == true)
+					{
+						m_sMotionFrag[PARTS_L_ARM].bMove = false;
+					}
+				}
 
 				if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
 				{//D+W,右上移動
@@ -589,7 +610,19 @@ void CPlayerUnion::Controll(void)
 			{//Wが押された、上移動
 
 				// 移動中にする
-				m_sAllCharaMotironFrag.bMove = true;
+				for (int i = 0; i < PARTS_MAX; i++)
+				{
+					m_sMotionFrag[i].bMove = true;
+					if (m_sMotionFrag[PARTS_R_ARM].bCharge == true)
+					{
+						m_sMotionFrag[PARTS_R_ARM].bMove = false;
+					}
+					if (m_sMotionFrag[PARTS_L_ARM].bCharge == true)
+					{
+						m_sMotionFrag[PARTS_L_ARM].bMove = false;
+					}
+				}
+
 				move.x += sinf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
 				move.z += cosf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
 				m_fRotDest = D3DX_PI * 1.0f + Camerarot.y;
@@ -598,15 +631,30 @@ void CPlayerUnion::Controll(void)
 			{//Sが押された、下移動
 
 				// 移動中にする
-				m_sAllCharaMotironFrag.bMove = true;
+				for (int i = 0; i < PARTS_MAX; i++)
+				{
+					m_sMotionFrag[i].bMove = true;
+					if (m_sMotionFrag[PARTS_R_ARM].bCharge == true)
+					{
+						m_sMotionFrag[PARTS_R_ARM].bMove = false;
+					}
+					if (m_sMotionFrag[PARTS_L_ARM].bCharge == true)
+					{
+						m_sMotionFrag[PARTS_L_ARM].bMove = false;
+					}
+				}
+
 				move.x += sinf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
 				move.z += cosf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
 				m_fRotDest = D3DX_PI * 0.0f + Camerarot.y;
 			}
 			else
 			{
-				// 移動中かどうか
-				m_sAllCharaMotironFrag.bMove = false;
+				// 移動やめる
+				for (int i = 0; i < PARTS_MAX; i++)
+				{
+					m_sMotionFrag[i].bMove = false;
+				}
 			}
 
 			if (m_bJump == false &&
@@ -614,8 +662,21 @@ void CPlayerUnion::Controll(void)
 			{//SPACEが押された,ジャンプ
 
 				m_bJump = true;
-				m_sAllCharaMotironFrag.bJump = true;
 				move.y += 17.0f;
+
+				// ジャンプ中にする
+				for (int i = 0; i < PARTS_MAX; i++)
+				{
+					m_sMotionFrag[i].bJump = true;
+					if (m_sMotionFrag[PARTS_R_ARM].bCharge == true)
+					{
+						m_sMotionFrag[PARTS_R_ARM].bJump = false;
+					}
+					if (m_sMotionFrag[PARTS_L_ARM].bCharge == true)
+					{
+						m_sMotionFrag[PARTS_L_ARM].bJump = false;
+					}
+				}
 
 				// サウンド再生
 				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
@@ -676,7 +737,7 @@ void CPlayerUnion::Controll(void)
 	}
 
 	if (m_bHitWall == false && 
-		(bLandStage == false || bMove == true || m_bLandField == true || m_bJump == true || m_sAllCharaMotironFrag.bKnockBack == true || m_sAllCharaMotironFrag.bDead == true))
+		(bLandStage == false || bMove == true || m_bLandField == true || m_bJump == true || m_bKnockBack == true || m_bDead == true))
 	{
 		pos.x = newPosition.x;
 		pos.z = newPosition.z;
@@ -725,19 +786,46 @@ void CPlayerUnion::Controll(void)
 	// 目標の向き設定
 	//SetRotDest(m_fRotDest);
 
-	if (CGame::GetGameManager()->IsControll())
-	{// 行動できるとき
+	for (int i = 0; i < PARTS_MAX; i++)
+	{
+		ByPartsControll(i);
+	}
+}
 
-		if (m_sAllCharaMotironFrag.bATK == false &&
-			(pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, m_nMyPlayerIdx) || pInputKeyboard->GetTrigger(DIK_RETURN)))
-		{// 攻撃
-
-			// 攻撃判定ON
-			m_sAllCharaMotironFrag.bJump = false;
-			m_sAllCharaMotironFrag.bATK = true;
-		}
+//==========================================================================
+// パーツ別操作
+//==========================================================================
+void CPlayerUnion::ByPartsControll(int nIdx)
+{
+	if (CGame::GetGameManager()->IsControll() == false)
+	{// 行動できないとき
+		return;
 	}
 
+	// ゲームパッド情報取得
+	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+	if (nIdx == PARTS_L_ARM ||
+		nIdx == PARTS_R_ARM)
+	{// 腕パーツ
+
+		if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0)))
+		{// 攻撃
+
+			// チャージ判定
+			m_sMotionFrag[nIdx].bCharge = true;
+		}
+
+		if (m_sMotionFrag[nIdx].bCharge == true &&
+			pInputGamepad->GetRelease(CInputGamepad::BUTTON_A, 0))
+		{// チャージ中に攻撃ボタンを離したら
+
+			// 攻撃中
+			m_sMotionFrag[nIdx].bCharge = false;
+			m_sMotionFrag[nIdx].bATK = true;
+		}
+
+	}
 }
 
 //==========================================================================
@@ -757,14 +845,23 @@ void CPlayerUnion::MotionSet(int nIdx)
 		int nType = m_pMotion[nIdx]->GetType();
 		int nOldType = m_pMotion[nIdx]->GetOldType();
 
-		if (m_sMotionFrag[nIdx].bMove == true && m_sMotionFrag[nIdx].bATK == false && m_sMotionFrag[nIdx].bKnockBack == false && m_sMotionFrag[nIdx].bDead == false && m_bJump == false)
+		if (m_sMotionFrag[nIdx].bMove == true &&
+			m_sMotionFrag[nIdx].bATK == false &&
+			m_bKnockBack == false &&
+			m_bDead == false &&
+			m_sMotionFrag[nIdx].bCharge == false &&
+			m_bJump == false)
 		{// 移動していたら
 
 
 			// 移動モーション
 			m_pMotion[nIdx]->Set(MOTION_WALK);
 		}
-		else if (m_sMotionFrag[nIdx].bJump == true && m_sMotionFrag[nIdx].bATK == false && m_sMotionFrag[nIdx].bKnockBack == false && m_sMotionFrag[nIdx].bDead == false)
+		else if (m_sMotionFrag[nIdx].bJump == true &&
+			m_sMotionFrag[nIdx].bATK == false &&
+			m_sMotionFrag[nIdx].bCharge == false &&
+			m_bKnockBack == false &&
+			m_bDead == false)
 		{// ジャンプ中
 
 			// ジャンプのフラグOFF
@@ -773,19 +870,30 @@ void CPlayerUnion::MotionSet(int nIdx)
 			// ジャンプモーション
 			m_pMotion[nIdx]->Set(MOTION_JUMP);
 		}
-		else if (m_bJump == true && m_sMotionFrag[nIdx].bJump == false && m_sMotionFrag[nIdx].bATK == false && m_sMotionFrag[nIdx].bKnockBack == false && m_sMotionFrag[nIdx].bDead == false)
+		else if (m_bJump == true &&
+			m_sMotionFrag[nIdx].bJump == false &&
+			m_sMotionFrag[nIdx].bATK == false &&
+			m_sMotionFrag[nIdx].bCharge == false &&
+			m_bKnockBack == false &&
+			m_bDead == false)
 		{// ジャンプ中&&ジャンプモーションが終わってる時
 
 			// 落下モーション
 			m_pMotion[nIdx]->Set(MOTION_FALL);
 		}
-		else if (m_sMotionFrag[nIdx].bKnockBack == true)
+		else if (m_sMotionFrag[nIdx].bCharge == true)
+		{// チャージ中だったら
+
+			// チャージモーション
+			m_pMotion[nIdx]->Set(MOTION_CHARGE);
+		}
+		else if (m_bKnockBack == true)
 		{// やられ中だったら
 
 			// やられモーション
 			m_pMotion[nIdx]->Set(MOTION_KNOCKBACK);
 		}
-		else if (m_sMotionFrag[nIdx].bDead == true)
+		else if (m_bDead == true)
 		{// 死亡中だったら
 
 			// やられモーション
@@ -850,7 +958,6 @@ void CPlayerUnion::Atack(void)
 			switch (m_pMotion[PARTS_BODY]->GetType())
 			{
 			case MOTION_ATK:
-			case MOTION_ATK2:
 				//// パーティクル生成
 				//my_particle::Create(weponpos, my_particle::TYPE_SUPERATTACK);
 
@@ -1099,7 +1206,7 @@ bool CPlayerUnion::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 			if (bLand == true)
 			{// 着地してたら
 
-				if ((m_sAllCharaMotironFrag.bKnockBack || m_bJump == true) && GetPosition().y >= fHeight)
+				if ((m_bKnockBack == true || m_bJump == true) && GetPosition().y >= fHeight)
 				{
 					m_bLandOld = true;
 				}
@@ -1113,7 +1220,11 @@ bool CPlayerUnion::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 				m_bJump = false;
 				move.y = 0.0f;
 				bNowLand = true;
-				m_sAllCharaMotironFrag.bJump = false;
+
+				for (int i = 0; i < PARTS_MAX; i++)
+				{
+					m_sMotionFrag[i].bJump = false;
+				}
 			}
 		}
 	}
@@ -1147,7 +1258,7 @@ bool CPlayerUnion::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 		if (bLand == true)
 		{// 着地してたら
 
-			if ((m_sAllCharaMotironFrag.bKnockBack || m_bJump == true) && GetPosition().y >= fHeight)
+			if ((m_bKnockBack || m_bJump == true) && GetPosition().y >= fHeight)
 			{
 				m_bLandOld = true;
 			}
@@ -1161,7 +1272,11 @@ bool CPlayerUnion::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 			m_bJump = false;
 			move.y = 0.0f;
 			bNowLand = true;
-			m_sAllCharaMotironFrag.bJump = false;
+			
+			for (int i = 0; i < PARTS_MAX; i++)
+			{
+				m_sMotionFrag[i].bJump = false;
+			}
 
 			// 射出台の着地判定
 			m_bLandInjectionTable[m_nMyPlayerIdx] = true;
@@ -1274,7 +1389,7 @@ bool CPlayerUnion::Hit(const int nValue)
 			//SetLife(0);
 
 			// ノックバック判定にする
-			m_sAllCharaMotironFrag.bKnockBack = true;
+			m_bKnockBack = true;
 
 			// やられモーション
 			m_pMotion[PARTS_BODY]->Set(MOTION_KNOCKBACK);
@@ -1326,7 +1441,7 @@ bool CPlayerUnion::Hit(const int nValue)
 		m_posKnokBack = pos;
 
 		// ノックバック判定にする
-		m_sAllCharaMotironFrag.bKnockBack = true;
+		m_bKnockBack = true;
 
 		// やられモーション
 		m_pMotion[PARTS_BODY]->Set(MOTION_KNOCKBACK);
@@ -1466,7 +1581,7 @@ void CPlayerUnion::Damage(void)
 		m_mMatcol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 		// ノックバック判定消す
-		m_sAllCharaMotironFrag.bKnockBack = false;
+		m_bKnockBack = false;
 		m_pMotion[PARTS_BODY]->ToggleFinish(true);
 
 
@@ -1559,8 +1674,8 @@ void CPlayerUnion::Dead(void)
 		m_mMatcol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 		// ノックバック判定消す
-		m_sAllCharaMotironFrag.bKnockBack = false;
-		m_sAllCharaMotironFrag.bDead = true;
+		m_bKnockBack = false;
+		m_bDead = true;
 		//m_pMotion->ToggleFinish(true);
 
 		// ぶっ倒れモーション
@@ -1666,8 +1781,8 @@ void CPlayerUnion::KnockBack(void)
 		m_mMatcol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		// ノックバック判定消す
-		m_sAllCharaMotironFrag.bKnockBack = false;
-		m_pMotion[PARTS_BODY]->ToggleFinish(true);
+		m_bKnockBack = false;
+		//m_pMotion[PARTS_BODY]->ToggleFinish(true);
 
 		// Xファイルとの判定
 		CStage *pStage = CGame::GetStage();

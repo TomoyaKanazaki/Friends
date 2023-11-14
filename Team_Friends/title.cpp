@@ -10,8 +10,8 @@
 #include "renderer.h"
 #include "calculation.h"
 #include "debugproc.h"
-#include "title_screen.h"
 #include "sound.h"
+#include "fog.h"
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -39,7 +39,6 @@ CTitle::~CTitle()
 //==========================================================================
 HRESULT CTitle::Init(void)
 {
-
 	// BGM再生
 	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_TITLE);
 
@@ -49,8 +48,8 @@ HRESULT CTitle::Init(void)
 		return E_FAIL;
 	}
 
-	// タイトル画面
-	CTitleScreen::Create();
+	//煙をかける
+	Fog::Set(true);
 
 	// 成功
 	return S_OK;
@@ -61,6 +60,9 @@ HRESULT CTitle::Init(void)
 //==========================================================================
 void CTitle::Uninit(void)
 {
+	//煙を払う
+	Fog::Set(false);
+
 	// 終了処理
 	CScene::Uninit();
 }
@@ -105,6 +107,17 @@ void CTitle::Update(void)
 		// モード設定
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
 	}
+
+#ifdef _DEBUG
+	if (pInputKeyboard->GetTrigger(DIK_UP))
+	{
+		Fog::Set(true);
+	}
+	if (pInputKeyboard->GetTrigger(DIK_DOWN))
+	{
+		Fog::Set(false);
+	}
+#endif
 }
 
 //==========================================================================

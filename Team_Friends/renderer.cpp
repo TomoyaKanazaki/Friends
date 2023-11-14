@@ -194,25 +194,8 @@ void CRenderer::Draw(void)
 		// 現在のビューポートを取得
 		m_pD3DDevice->GetViewport(&viewportDef);
 
-		// マルチカメラ取得
-		CCamera **ppCamera = CManager::GetInstance()->GetScene()->GetMultiCamera();
-		for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
-		{
-			if (ppCamera[i] == NULL)
-			{
-				continue;
-			}
-
-			// カメラの設定
-			ppCamera[i]->SetCamera();
-			CObject::DrawAll();
-		}
-
 		// 全ての描画
-		if (CManager::GetInstance()->GetScene()->GetMode() != CScene::MODE_GAME)
-		{
-			CObject::DrawAll();
-		}
+		CObject::DrawAll();
 
 		// カメラの設定
 		CManager::GetInstance()->GetCamera()->SetCamera();

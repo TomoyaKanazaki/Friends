@@ -363,9 +363,6 @@
     <ClCompile Include="player_union.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="player_smallunion.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="title.cpp">
       <Filter>金崎の作業部分</Filter>
     </ClCompile>
@@ -373,6 +370,12 @@
       <Filter>金崎の作業部分</Filter>
     </ClCompile>
     <ClCompile Include="fog.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="union_bodytoleg.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="compactcore.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -665,9 +668,6 @@
     <ClInclude Include="player_union.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="player_smallunion.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="title.h">
       <Filter>金崎の作業部分</Filter>
     </ClInclude>
@@ -675,6 +675,12 @@
       <Filter>金崎の作業部分</Filter>
     </ClInclude>
     <ClInclude Include="fog.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="union_bodytoleg.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="compactcore.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

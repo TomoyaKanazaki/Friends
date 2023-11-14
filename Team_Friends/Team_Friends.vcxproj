@@ -172,6 +172,7 @@
     <ClCompile Include="calculation.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collision.cpp" />
+    <ClCompile Include="compactcore.cpp" />
     <ClCompile Include="cursor.cpp" />
     <ClCompile Include="debugpointnumber.cpp" />
     <ClCompile Include="debugproc.cpp" />
@@ -233,7 +234,6 @@
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="pause.cpp" />
     <ClCompile Include="player.cpp" />
-    <ClCompile Include="player_smallunion.cpp" />
     <ClCompile Include="player_union.cpp" />
     <ClCompile Include="precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -261,6 +261,7 @@
     <ClCompile Include="tutorialplayer.cpp" />
     <ClCompile Include="tutorialstep.cpp" />
     <ClCompile Include="tutorialwindow.cpp" />
+    <ClCompile Include="union_bodytoleg.cpp" />
     <ClCompile Include="Xload.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -276,6 +277,7 @@
     <ClInclude Include="calculation.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision.h" />
+    <ClInclude Include="compactcore.h" />
     <ClInclude Include="constans.h" />
     <ClInclude Include="cursor.h" />
     <ClInclude Include="debugpointnumber.h" />
@@ -338,7 +340,6 @@
     <ClInclude Include="particle.h" />
     <ClInclude Include="pause.h" />
     <ClInclude Include="player.h" />
-    <ClInclude Include="player_smallunion.h" />
     <ClInclude Include="player_union.h" />
     <ClInclude Include="precompile.h" />
     <ClInclude Include="ranking.h" />
@@ -363,6 +364,7 @@
     <ClInclude Include="tutorialplayer.h" />
     <ClInclude Include="tutorialstep.h" />
     <ClInclude Include="tutorialwindow.h" />
+    <ClInclude Include="union_bodytoleg.h" />
     <ClInclude Include="Xload.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

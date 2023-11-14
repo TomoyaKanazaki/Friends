@@ -40,7 +40,7 @@
 #include "injectiontable.h"
 
 // 派生先
-#include "player_smallunion.h"
+#include "union_bodytoleg.h"
 
 //==========================================================================
 // マクロ定義
@@ -103,6 +103,7 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_nTexIdx = 0;				// テクスチャのインデックス番号
 	m_nIdxXFile = 0;			// Xファイルのインデックス番号
 	m_nMyPlayerIdx = 0;			// プレイヤーインデックス番号
+	m_nControllMoveIdx = 0;		// 移動操作するやつのインデックス番号
 	m_fRotDest = 0.0f;
 	m_pShadow = NULL;			// 影の情報
 	m_pTargetP = NULL;	// 目標の地点
@@ -136,7 +137,7 @@ CPlayerUnion *CPlayerUnion::Create(eType type)
 			break;
 
 		case TYPE_BODYtoLEG:
-			pPlayer = DEBUG_NEW CPlayerSmallUnion;
+			pPlayer = DEBUG_NEW CUnion_BodytoLeg;
 			break;
 
 		default:
@@ -1941,6 +1942,14 @@ void CPlayerUnion::Draw(void)
 	{
 		m_pHPGauge->Draw();
 	}
+}
+
+//==========================================================================
+// 移動の操作するインデックス番号設定
+//==========================================================================
+void CPlayerUnion::SetControllMoveIdx(int nIdx)
+{
+	m_nControllMoveIdx = nIdx;
 }
 
 //==========================================================================

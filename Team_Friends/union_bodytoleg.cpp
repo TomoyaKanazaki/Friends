@@ -1,43 +1,27 @@
 //=============================================================================
 // 
-//  ƒvƒŒƒCƒ„[ˆ— [player_smallunion.cpp]
+//  ƒvƒŒƒCƒ„[ˆ— [union_bodytoleg.cpp]
 //  Author : ‘Š”nèÎ‰ë
 // 
 //=============================================================================
+#include "union_bodytoleg.h"
+#include "player_union.h"
 #include "game.h"
-#include "player_smallunion.h"
 #include "camera.h"
 #include "manager.h"
 #include "debugproc.h"
 #include "renderer.h"
 #include "input.h"
+#include "sound.h"
 #include "enemy.h"
 #include "calculation.h"
-#include "score.h"
-#include "texture.h"
-#include "Xload.h"
 #include "model.h"
 #include "motion.h"
-#include "hp_gauge.h"
 #include "objectChara.h"
-#include "elevation.h"
 #include "shadow.h"
 #include "particle.h"
 #include "3D_Effect.h"
-#include "ballast.h"
 #include "impactwave.h"
-#include "sound.h"
-#include "enemymanager.h"
-#include "bullet.h"
-#include "stage.h"
-#include "objectX.h"
-#include "gamemanager.h"
-#include "instantfade.h"
-#include "hp_gauge_player.h"
-#include "fade.h"
-#include "listmanager.h"
-#include "item.h"
-#include "player_union.h"
 
 
 //==========================================================================
@@ -58,7 +42,7 @@
 //==========================================================================
 // Ã“Iƒƒ“ƒo•Ï”éŒ¾
 //==========================================================================
-const char *CPlayerSmallUnion::m_apModelFile[mylib_const::MAX_PLAYER] =	// ƒ‚ƒfƒ‹‚Ìƒtƒ@ƒCƒ‹
+const char *CUnion_BodytoLeg::m_apModelFile[mylib_const::MAX_PLAYER] =	// ƒ‚ƒfƒ‹‚Ìƒtƒ@ƒCƒ‹
 {
 	"data\\TEXT\\player_union\\motion_body.txt",
 	"data\\TEXT\\player_union\\motion_leg.txt",
@@ -67,7 +51,7 @@ const char *CPlayerSmallUnion::m_apModelFile[mylib_const::MAX_PLAYER] =	// ƒ‚ƒfƒ
 //==========================================================================
 // ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 //==========================================================================
-CPlayerSmallUnion::CPlayerSmallUnion(int nPriority) : CPlayerUnion(nPriority)
+CUnion_BodytoLeg::CUnion_BodytoLeg(int nPriority) : CPlayerUnion(nPriority)
 {
 	
 }
@@ -75,7 +59,7 @@ CPlayerSmallUnion::CPlayerSmallUnion(int nPriority) : CPlayerUnion(nPriority)
 //==========================================================================
 // ƒfƒXƒgƒ‰ƒNƒ^
 //==========================================================================
-CPlayerSmallUnion::~CPlayerSmallUnion()
+CUnion_BodytoLeg::~CUnion_BodytoLeg()
 {
 
 }
@@ -83,7 +67,7 @@ CPlayerSmallUnion::~CPlayerSmallUnion()
 //==========================================================================
 // ‰Šú‰»ˆ—
 //==========================================================================
-HRESULT CPlayerSmallUnion::Init(void)
+HRESULT CUnion_BodytoLeg::Init(void)
 {
 	// ‰Šú‰»
 	CPlayerUnion::Init();
@@ -101,7 +85,7 @@ HRESULT CPlayerSmallUnion::Init(void)
 //==========================================================================
 // ƒp[ƒc‚Ìİ’è
 //==========================================================================
-HRESULT CPlayerSmallUnion::CreateParts(void)
+HRESULT CUnion_BodytoLeg::CreateParts(void)
 {
 	HRESULT hr;
 	CObjectChara *pObjChar = NULL;
@@ -159,7 +143,7 @@ HRESULT CPlayerSmallUnion::CreateParts(void)
 //==========================================================================
 // I—¹ˆ—
 //==========================================================================
-void CPlayerSmallUnion::Uninit(void)
+void CUnion_BodytoLeg::Uninit(void)
 {
 	// I—¹ˆ—
 	CPlayerUnion::Uninit();
@@ -168,7 +152,7 @@ void CPlayerSmallUnion::Uninit(void)
 //==========================================================================
 // XVˆ—
 //==========================================================================
-void CPlayerSmallUnion::Update(void)
+void CUnion_BodytoLeg::Update(void)
 {
 	CPlayerUnion::Update();
 }
@@ -176,47 +160,26 @@ void CPlayerSmallUnion::Update(void)
 //==========================================================================
 // ƒp[ƒc‚ÌƒRƒ“ƒgƒ[ƒ‹ˆ—
 //==========================================================================
-void CPlayerSmallUnion::ControllParts(void)
+void CUnion_BodytoLeg::ControllParts(void)
 {
 	// Še•”ˆÊ‚Ì‘€ì	
 	for (int i = 0; i < PARTS_MAX; i++)
 	{
 		int nPartsIdx = CManager::GetInstance()->GetByPlayerPartsType(i);
-		switch (nPartsIdx)
+		
+		if (i == m_nControllMoveIdx)
 		{
-		case PARTS_BODY:
-			ControllBody(nPartsIdx);
-			break;
-
-		case PARTS_LEG:
-			ControllLeg(nPartsIdx);
-			break;
-
-		case PARTS_L_ARM:
-			ControllLeftArm(nPartsIdx);
-			break;
-
-		case PARTS_R_ARM:
-			ControllRightArm(nPartsIdx);
-			break;
+			// ‹rˆÚ“®‘€ì
+			ControllLeg(i);
 		}
+		ControllATK(i);
 	}
-}
-
-//==========================================================================
-// “·‘€ì
-//==========================================================================
-void CPlayerSmallUnion::ControllBody(int nIdx)
-{
-	// ƒQ[ƒ€ƒpƒbƒhî•ñæ“¾
-	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
-
 }
 
 //==========================================================================
 // ‹r‘€ì
 //==========================================================================
-void CPlayerSmallUnion::ControllLeg(int nIdx)
+void CUnion_BodytoLeg::ControllLeg(int nIdx)
 {
 	// ƒQ[ƒ€ƒpƒbƒhî•ñæ“¾
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
@@ -244,13 +207,12 @@ void CPlayerSmallUnion::ControllLeg(int nIdx)
 			for (int i = 0; i < PARTS_MAX; i++)
 			{
 				m_sMotionFrag[i].bMove = true;
-				if (m_sMotionFrag[nRightArmIdx].bCharge == true)
-				{
-					m_sMotionFrag[nRightArmIdx].bMove = false;
-				}
-				if (m_sMotionFrag[nLeftArmIdx].bCharge == true)
-				{
-					m_sMotionFrag[nLeftArmIdx].bMove = false;
+
+				if (m_nControllMoveIdx != i &&
+					m_pMotion[i]->GetType() != MOTION_WALK &&
+					m_pMotion[i]->GetType() != MOTION_DEF)
+				{// ˆÚ“®‚ğ’S‚Á‚Ä‚éƒp[ƒcˆÈŠO && ˆÚ“®‚µ‚Ä‚È‚¢ && ‘Ò‹@‚Å‚à‚È‚¢
+					m_sMotionFrag[i].bMove = false;
 				}
 			}
 		}
@@ -298,34 +260,9 @@ void CPlayerSmallUnion::ControllLeg(int nIdx)
 }
 
 //==========================================================================
-// ‰E˜r‘€ì
+// UŒ‚‘€ì
 //==========================================================================
-void CPlayerSmallUnion::ControllRightArm(int nIdx)
-{
-	// ƒQ[ƒ€ƒpƒbƒhî•ñæ“¾
-	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
-	
-	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nIdx)))
-	{// UŒ‚
-
-		// ƒ`ƒƒ[ƒW”»’è
-		m_sMotionFrag[nIdx].bCharge = true;
-	}
-
-	if (m_sMotionFrag[nIdx].bCharge == true &&
-		pInputGamepad->GetRelease(CInputGamepad::BUTTON_A, nIdx))
-	{// ƒ`ƒƒ[ƒW’†‚ÉUŒ‚ƒ{ƒ^ƒ“‚ğ—£‚µ‚½‚ç
-
-		// UŒ‚’†
-		m_sMotionFrag[nIdx].bCharge = false;
-		m_sMotionFrag[nIdx].bATK = true;
-	}
-}
-
-//==========================================================================
-// ¶˜r‘€ì
-//==========================================================================
-void CPlayerSmallUnion::ControllLeftArm(int nIdx)
+void CUnion_BodytoLeg::ControllATK(int nIdx)
 {
 	// ƒQ[ƒ€ƒpƒbƒhî•ñæ“¾
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
@@ -350,7 +287,7 @@ void CPlayerSmallUnion::ControllLeftArm(int nIdx)
 //==========================================================================
 // ƒ‚[ƒVƒ‡ƒ“‚Ìİ’è
 //==========================================================================
-void CPlayerSmallUnion::MotionSet(int nIdx)
+void CUnion_BodytoLeg::MotionSet(int nIdx)
 {
 	if (m_pMotion[nIdx] == NULL)
 	{// ƒ‚[ƒVƒ‡ƒ“‚ªNULL‚¾‚Á‚½‚ç
@@ -435,7 +372,7 @@ void CPlayerSmallUnion::MotionSet(int nIdx)
 //==========================================================================
 // UŒ‚ˆ—
 //==========================================================================
-void CPlayerSmallUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo)
+void CUnion_BodytoLeg::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo)
 {
 
 	// •Ší‚ÌˆÊ’u
@@ -453,7 +390,7 @@ void CPlayerSmallUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInf
 //==========================================================================
 // ƒqƒbƒgˆ—
 //==========================================================================
-bool CPlayerSmallUnion::Hit(const int nValue)
+bool CUnion_BodytoLeg::Hit(const int nValue)
 {
 	// ‘Ì—Íæ“¾
 	int nLife = 50;
@@ -584,7 +521,7 @@ bool CPlayerSmallUnion::Hit(const int nValue)
 //==========================================================================
 // •`‰æˆ—
 //==========================================================================
-void CPlayerSmallUnion::Draw(void)
+void CUnion_BodytoLeg::Draw(void)
 {
 	// •`‰æˆ—
 	CPlayerUnion::Draw();

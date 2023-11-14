@@ -14,6 +14,7 @@
 #include "blackframe.h"
 #include "pause.h"
 #include "input.h"
+#include "fog.h"
 
 //==========================================================================
 // マクロ定義
@@ -184,6 +185,9 @@ void CRenderer::Draw(void)
 	// 描画開始
 	if (SUCCEEDED(m_pD3DDevice->BeginScene()))
 	{// 描画が成功したとき
+
+		//フォグの描画
+		Fog::Draw();
 
 		D3DVIEWPORT9 viewportDef;	//ビューポート保存
 

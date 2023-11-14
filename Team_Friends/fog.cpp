@@ -13,7 +13,7 @@
 //==========================================
 namespace
 {
-	bool m_bUse = true;
+	bool m_bUse = false;
 	float m_fStart;
 	float m_fEnd;
 	D3DXCOLOR m_col;
@@ -54,7 +54,7 @@ void Fog::Draw()
 	else
 	{
 		//–¶‚ð–³Œø‰»
-		pDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
+		pDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
 	}
 }
 

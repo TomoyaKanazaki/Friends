@@ -11,6 +11,7 @@
 #include "calculation.h"
 #include "debugproc.h"
 #include "sound.h"
+#include "fog.h"
 
 //==========================================================================
 // Ã“Iƒƒ“ƒo•Ï”éŒ¾
@@ -38,7 +39,6 @@ CTitle::~CTitle()
 //==========================================================================
 HRESULT CTitle::Init(void)
 {
-
 	// BGMÄ¶
 	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_TITLE);
 
@@ -47,6 +47,9 @@ HRESULT CTitle::Init(void)
 	{// ¸”s‚µ‚½ê‡
 		return E_FAIL;
 	}
+
+	//‰Œ‚ğ‚©‚¯‚é
+	Fog::Set(true);
 
 	// ¬Œ÷
 	return S_OK;
@@ -57,6 +60,9 @@ HRESULT CTitle::Init(void)
 //==========================================================================
 void CTitle::Uninit(void)
 {
+	//‰Œ‚ğ•¥‚¤
+	Fog::Set(false);
+
 	// I—¹ˆ—
 	CScene::Uninit();
 }

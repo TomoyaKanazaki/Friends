@@ -107,6 +107,17 @@ void CTitle::Update(void)
 		// ƒ‚[ƒhÝ’è
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
 	}
+
+#ifdef _DEBUG
+	if (pInputKeyboard->GetTrigger(DIK_UP))
+	{
+		Fog::Set(true);
+	}
+	if (pInputKeyboard->GetTrigger(DIK_DOWN))
+	{
+		Fog::Set(false);
+	}
+#endif
 }
 
 //==========================================================================

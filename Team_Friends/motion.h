@@ -84,9 +84,11 @@ public:
 	int GetAllCount(void);	// 全てのカウント取得
 	int GetMaxAllCount(void) { return m_nMaxAllFrame; }
 	int GetMaxAllCount(int nType);	// 全てのカウント取得
+	void SetFrameCount(int nCnt);					// フレームカウント設定
 	int GetFrameCount(void) { return m_nCntFrame; }	// フレームカウント取得
 	int GetNumAll(void) { return m_nNumModel; }		// パーツ数取得
 	int GetNumMotion(void) { return m_nNumMotion; }	// モーションの総数取得
+	void SetNowPattern(int nPattern) { m_nPatternKey = nPattern; }		// 現在のパターン設定
 	int GetNowPattern(void) { return m_nPatternKey; }	// 現在のパターン取得
 	void AddNumAttackInfo(int nType);	// 攻撃情報の総数加算
 	void SubNumAttackInfo(int nType);	// 攻撃情報の総数減算

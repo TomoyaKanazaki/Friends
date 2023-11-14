@@ -10,7 +10,6 @@
 #include "renderer.h"
 #include "calculation.h"
 #include "debugproc.h"
-#include "title_screen.h"
 #include "sound.h"
 
 //==========================================================================
@@ -48,9 +47,6 @@ HRESULT CTitle::Init(void)
 	{// ¸”s‚µ‚½ê‡
 		return E_FAIL;
 	}
-
-	// ƒ^ƒCƒgƒ‹‰æ–Ê
-	CTitleScreen::Create();
 
 	// ¬Œ÷
 	return S_OK;

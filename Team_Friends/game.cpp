@@ -23,6 +23,7 @@
 #include "bulletmanager.h"
 #include "stage.h"
 #include "gamemanager.h"
+#include "compactcore.h"
 
 #include "enemymanager.h"
 #include "player.h"
@@ -126,7 +127,9 @@ HRESULT CGame::Init(void)
 	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_GAME);
 
 	// ‡‘ÌŒãƒvƒŒƒCƒ„[¶¬
-	CPlayerUnion::Create(CPlayerUnion::TYPE_BODYtoLEG);
+	CPlayerUnion::Create(CPlayerUnion::TYPE_ALL);
+
+	CCompactCore::Create(D3DXVECTOR3(500.0f, 200.0f, 0.0f));
 
 	// ¬Œ÷
 	return S_OK;

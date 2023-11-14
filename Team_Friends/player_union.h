@@ -65,7 +65,7 @@ public:
 	static CPlayerUnion *Create(eType type);	// 生成
 	void UninitByMode(void);
 	void Kill(void);	// 死亡処理
-
+	void SetControllMoveIdx(int nIdx);	// 移動の操作するインデックス番号設定
 protected:
 	// 列挙型定義
 	enum MOTION
@@ -116,6 +116,7 @@ protected:
 
 	int m_nPartsIdx[mylib_const::MAX_PLAYER];	// プレイヤー毎のパーツインデックス番号
 	int m_nMyPlayerIdx;			// プレイヤーインデックス番号
+	int m_nControllMoveIdx;		// 移動操作するやつのインデックス番号
 	int m_nCntWalk;				// 歩行カウンター
 	D3DXCOLOR m_mMatcol;		// マテリアルの色
 	STATE m_Oldstate;			// 前回の状態
@@ -127,6 +128,12 @@ protected:
 	SMotionFrag m_sMotionFrag[PARTS_MAX];	// モーションのフラグ
 	CObjectChara *m_pObjChara[PARTS_MAX];	// パーツ分のオブジェクトキャラクターポインタ
 private:
+
+	// コンボ時ワザの種類
+	enum eSPSkill
+	{
+		SKILL_MAX
+	};
 
 	// メンバ関数
 	void UpdateState(void);	// 状態更新処理

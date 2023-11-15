@@ -29,7 +29,7 @@ CTitleLogo::~CTitleLogo()
 HRESULT CTitleLogo::Init(void)
 {
 	//完成したロゴを表示
-	CLogo_Comp::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	CLogo_Comp::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	//タイプの設定
 	SetType(TYPE_OBJECT3D);

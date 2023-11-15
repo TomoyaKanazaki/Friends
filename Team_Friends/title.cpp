@@ -53,6 +53,11 @@ HRESULT CTitle::Init(void)
 	//煙をかける
 	Fog::Set(true);
 
+	//フォグの値を設定する
+	Fog::SetStart(100.0f);
+	Fog::SetEnd(100.0f);
+	Fog::SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+
 	//タイトルロゴの表示
 	CTitleLogo::Create();
 
@@ -121,6 +126,14 @@ void CTitle::Update(void)
 	if (pInputKeyboard->GetTrigger(DIK_DOWN))
 	{
 		Fog::Set(false);
+	}
+	if (pInputKeyboard->GetTrigger(DIK_LEFT))
+	{
+		Fog::SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+	}
+	if (pInputKeyboard->GetTrigger(DIK_RIGHT))
+	{
+		Fog::SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 #endif
 }

@@ -6,6 +6,7 @@
 //=============================================================================
 #include "union_bodytoleg.h"
 #include "player_union.h"
+#include "player.h"
 #include "game.h"
 #include "camera.h"
 #include "manager.h"
@@ -27,17 +28,8 @@
 //==========================================================================
 // マクロ定義
 //==========================================================================
-#define CHARAFILE		"data\\TEXT\\motion_set_player.txt"
-#define JUMP			(20.0f * 1.5f)	// ジャンプ力初期値
-#define MAX_LIFE		(100)			// 体力
-#define TARGET_LEN		(400.0f)		// 目標までの距離
-#define WALK_INT		(30)			// 歩行の時間
-#define INVINCIBLE_INT	(2)				// 無敵の間隔
-#define INVINCIBLE_TIME	(90)			// 無敵の時間
-#define CONFUSIONTIME	(60 * 2)		// 混乱時間
-#define DEADTIME		(120)
-#define FADEOUTTIME		(60)
-#define RADIUS			(250.0f)
+#define LIFE_UNION	(60 * 5)	// 合体寿命
+#define DEADTIME	(120)		// 死亡時の時間
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -75,12 +67,12 @@ HRESULT CUnion_BodytoLeg::Init(void)
 	// 種類の設定
 	SetType(TYPE_PLAYER);
 
-	m_state = STATE_NONE;	// 状態
+	m_state = STATE_NONE;		// 状態
+	m_nUnionLife = LIFE_UNION;	// 合体時間
 
 	SetPosition(D3DXVECTOR3(-600.0f, 0.0f, -1000.0f));
 	return S_OK;
 }
-
 
 //==========================================================================
 // パーツの設定
@@ -98,6 +90,7 @@ HRESULT CUnion_BodytoLeg::CreateParts(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_BODY]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_BODY] = CMotion::Create(m_apModelFile[PARTS_BODY]);
@@ -120,6 +113,7 @@ HRESULT CUnion_BodytoLeg::CreateParts(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_LEG]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_LEG] = CMotion::Create(m_apModelFile[PARTS_LEG]);
@@ -145,6 +139,7 @@ HRESULT CUnion_BodytoLeg::CreateParts(void)
 //==========================================================================
 void CUnion_BodytoLeg::Uninit(void)
 {
+	
 	// 終了処理
 	CPlayerUnion::Uninit();
 }
@@ -154,7 +149,39 @@ void CUnion_BodytoLeg::Uninit(void)
 //==========================================================================
 void CUnion_BodytoLeg::Update(void)
 {
+	// 更新処理
 	CPlayerUnion::Update();
+
+	// 死亡判定取得
+	if (IsDeath())
+	{
+		return;
+	}
+
+	// 合体寿命減算
+	m_nUnionLife--;
+
+	if (m_nUnionLife <= 0)
+	{// 合体終了
+
+		// プレイヤー取得
+		CPlayer **ppPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+
+		// 位置取得
+		D3DXVECTOR3 pos = GetPosition();
+
+		// 合体解除
+		ppPlayer[m_nPartsIdx[0]]->SetState(CPlayer::STATE_RELEASEUNION);
+		ppPlayer[m_nPartsIdx[0]]->SetPosition(pos);
+		ppPlayer[m_nPartsIdx[1]]->SetState(CPlayer::STATE_RELEASEUNION);
+		ppPlayer[m_nPartsIdx[1]]->SetPosition(pos);
+
+		// 終了処理
+		Kill();
+		Uninit();
+		return;
+	}
+
 }
 
 //==========================================================================

@@ -12,6 +12,8 @@
 //  ‘O•ûéŒ¾
 //==========================================
 class CLogo_Mech;
+class CLogo_Meka;
+class CLogo_Sqou;
 class CLogo_Comp;
 
 //==========================================
@@ -37,6 +39,8 @@ private:
 
 	//ƒƒ“ƒo•Ï”
 	CLogo_Mech* m_pMech;
+	CLogo_Meka* m_pMeka;
+	CLogo_Sqou* m_pSqou;
 	CLogo_Comp* m_pComp;
 
 };

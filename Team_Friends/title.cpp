@@ -122,12 +122,12 @@ void CTitle::Update(void)
 	if (pInputKeyboard->GetPress(DIK_UP))
 	{
 		float fLength = Fog::GetEnd();
-		Fog::SetEnd(fLength + 3.0f);
+		Fog::SetEnd(fLength + 30.0f);
 	}
 	if (pInputKeyboard->GetPress(DIK_DOWN))
 	{
 		float fLength = Fog::GetEnd();
-		Fog::SetEnd(fLength - 3.0f);
+		Fog::SetEnd(fLength - 30.0f);
 	}
 	if (pInputKeyboard->GetTrigger(DIK_LEFT))
 	{

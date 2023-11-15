@@ -34,15 +34,23 @@ void Fog::Set(bool bUse)
 void Fog::Draw()
 {
 	//デバッグ表示
-	CManager::GetInstance()->GetDebugProc()->Print
-	(
-		"フォグ手前 : %f\n"
-		"フォグの奥 : %f\n"
-		"フォグの色 : %f, %f, %f, %f\n",
-		m_fStart,
-		m_fEnd,
-		m_col.r, m_col.g, m_col.b, m_col.a
-	);
+	if (m_bUse)
+	{
+		CManager::GetInstance()->GetDebugProc()->Print("フォグ 【 ON 】\n");
+		CManager::GetInstance()->GetDebugProc()->Print
+		(
+			"フォグ手前 : %f\n"
+			"フォグの奥 : %f\n"
+			"フォグの色 : %f, %f, %f, %f\n",
+			m_fStart,
+			m_fEnd,
+			m_col.r, m_col.g, m_col.b, m_col.a
+		);
+	}
+	else
+	{
+		CManager::GetInstance()->GetDebugProc()->Print("フォグ 【 OFF 】\n");
+	}
 
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();

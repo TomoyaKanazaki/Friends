@@ -1,29 +1,23 @@
 //==========================================
 //
-//  タイトルロゴ管理クラス(title_logo.h)
+//  MECHANIONのロゴ(logo_mechanion.h)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
-#ifndef _TITLE_LOGO_H_
-#define _TITLE_LOGO_H_
-#include "object.h"
-
-//==========================================
-//  前方宣言
-//==========================================
-class CLogo_Mech;
-class CLogo_Comp;
+#ifndef _MECHANION_H_
+#define _MECHANION_H_
+#include "object3D.h"
 
 //==========================================
 //  クラス定義
 //==========================================
-class CTitleLogo : public CObject
+class CLogo_Mech : public CObject3D
 {
 public:
 
 	//メンバ関数
-	CTitleLogo();
-	~CTitleLogo();
+	CLogo_Mech();
+	~CLogo_Mech();
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;
@@ -31,14 +25,12 @@ public:
 	void Draw(void) override;
 
 	//静的メンバ関数
-	static CTitleLogo* Create();
+	static CLogo_Mech* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 
 private:
 
-	//メンバ変数
-	CLogo_Mech* m_pMech;
-	CLogo_Comp* m_pComp;
-
+	//静的メンバ変数
+	static const char* m_pTextureFile; //テクスチャのファイル
 };
 
 #endif

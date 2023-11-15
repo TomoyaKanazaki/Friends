@@ -119,13 +119,15 @@ void CTitle::Update(void)
 	}
 
 #ifdef _DEBUG
-	if (pInputKeyboard->GetTrigger(DIK_UP))
+	if (pInputKeyboard->GetPress(DIK_UP))
 	{
-		Fog::Set(true);
+		float fLength = Fog::GetEnd();
+		Fog::SetEnd(fLength + 3.0f);
 	}
-	if (pInputKeyboard->GetTrigger(DIK_DOWN))
+	if (pInputKeyboard->GetPress(DIK_DOWN))
 	{
-		Fog::Set(false);
+		float fLength = Fog::GetEnd();
+		Fog::SetEnd(fLength - 3.0f);
 	}
 	if (pInputKeyboard->GetTrigger(DIK_LEFT))
 	{

@@ -265,7 +265,10 @@
     <ClCompile Include="tutorialplayer.cpp" />
     <ClCompile Include="tutorialstep.cpp" />
     <ClCompile Include="tutorialwindow.cpp" />
+    <ClCompile Include="union_armtoarm.cpp" />
+    <ClCompile Include="union_bodytoarm.cpp" />
     <ClCompile Include="union_bodytoleg.cpp" />
+    <ClCompile Include="union_legtoarm.cpp" />
     <ClCompile Include="Xload.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -372,7 +375,10 @@
     <ClInclude Include="tutorialplayer.h" />
     <ClInclude Include="tutorialstep.h" />
     <ClInclude Include="tutorialwindow.h" />
+    <ClInclude Include="union_armtoarm.h" />
+    <ClInclude Include="union_bodytoarm.h" />
     <ClInclude Include="union_bodytoleg.h" />
+    <ClInclude Include="union_legtoarm.h" />
     <ClInclude Include="Xload.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

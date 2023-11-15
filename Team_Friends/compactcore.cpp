@@ -309,13 +309,60 @@ void CCompactCore::CollisionPlayer(void)
 				ppPlayer[nParent]->SetState(CPlayer::STATE_COMPACTUNION);
 				ppPlayer[nExcept]->SetState(CPlayer::STATE_COMPACTUNION);
 				
-				// Ží—ÞŽæ“¾‚µ‚Ä‚»‚ÌŽí—Þ‚ÉŠY“–‚·‚é‚â‚Â¶¬‚·‚é
-				CPlayerUnion *pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_BODYtoLEG);
+
+				// ŠeƒCƒ“ƒfƒbƒNƒX‚ÌŽí—ÞŽæ“¾
+				int nParentType = CManager::GetInstance()->GetByPlayerPartsType(nParent);
+				int nExceptType = CManager::GetInstance()->GetByPlayerPartsType(nExcept);
+
+				CPlayerUnion *pPlayerUnion = NULL;
+
+				// Ží—ÞŽæ“¾‚µ‚Ä‚»‚ÌŽí—Þ‚ÉŠY“–‚·‚é‡‘Ìæ‚ð¶¬‚·‚é
+				if (nParentType == CPlayerUnion::PARTS_LEG ||
+					nExceptType == CPlayerUnion::PARTS_LEG)
+				{// ‹r‚ª‚ ‚é‚â‚Â
+
+					if ((nParentType == CPlayerUnion::PARTS_LEG && nExceptType == CPlayerUnion::PARTS_BODY) ||
+						(nParentType == CPlayerUnion::PARTS_BODY && nExceptType == CPlayerUnion::PARTS_LEG))
+					{
+						// ‘Ì‚Æ‹r
+						pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_BODYtoLEG);
+					}
+					else if ((nParentType == CPlayerUnion::PARTS_LEG && (nExceptType == CPlayerUnion::PARTS_L_ARM || nExceptType == CPlayerUnion::PARTS_R_ARM)) ||
+						((nParentType == CPlayerUnion::PARTS_L_ARM || nParentType == CPlayerUnion::PARTS_R_ARM) && nExceptType == CPlayerUnion::PARTS_LEG))
+					{
+						// ˜r‚Æ‹r
+						pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_LEGtoARM);
+					}
+
+					int nControllIdx = nParentType;
+					if (nExceptType == CPlayerUnion::PARTS_LEG)
+					{
+						nControllIdx = nExceptType;
+					}
+					pPlayerUnion->SetControllMoveIdx(nParent);
+				}
+				else
+				{// ‹r‚È‚µ‚Å‚Ì‡‘Ì
+
+					if ((nParentType == CPlayerUnion::PARTS_BODY && (nExceptType == CPlayerUnion::PARTS_L_ARM || nExceptType == CPlayerUnion::PARTS_R_ARM)) ||
+						((nParentType == CPlayerUnion::PARTS_L_ARM || nParentType == CPlayerUnion::PARTS_R_ARM) && nExceptType == CPlayerUnion::PARTS_BODY))
+					{
+						// ‘Ì‚Æ˜r
+						pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_BODYtoARM);
+					}
+					else if (
+						((nParentType == CPlayerUnion::PARTS_L_ARM || nParentType == CPlayerUnion::PARTS_R_ARM) && (nExceptType == CPlayerUnion::PARTS_L_ARM || nExceptType == CPlayerUnion::PARTS_R_ARM)) ||
+						((nParentType == CPlayerUnion::PARTS_L_ARM || nParentType == CPlayerUnion::PARTS_R_ARM) && (nExceptType == CPlayerUnion::PARTS_L_ARM || nExceptType == CPlayerUnion::PARTS_R_ARM)))
+					{
+						// ˜r‚Æ˜r
+						pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_ARMtoARM);
+					}
+					pPlayerUnion->SetControllMoveIdx(nParent);
+				}
 
 				// ƒvƒŒƒCƒ„[–ˆ‚Ìƒp[ƒcƒCƒ“ƒfƒbƒNƒX”Ô†
 				pPlayerUnion->SetPlayerByPartsIdx(0, nParent);
 				pPlayerUnion->SetPlayerByPartsIdx(1, nExcept);
-				pPlayerUnion->SetControllMoveIdx(nParent);
 				pPlayerUnion->SetPosition(pos);
 				return;
 			}

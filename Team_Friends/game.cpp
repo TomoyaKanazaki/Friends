@@ -300,6 +300,11 @@ void CGame::Update(void)
 		// モード設定
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RESULT);
 	}
+
+	if (pInputKeyboard->GetTrigger(DIK_I))
+	{
+		CCompactCore::Create(D3DXVECTOR3(500.0f, 200.0f, 0.0f));
+	}
 #endif
 
 	// シーンの更新

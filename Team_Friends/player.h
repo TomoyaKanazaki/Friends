@@ -96,6 +96,8 @@ protected:
 	bool m_bHitWall;			// 壁の当たり判定
 	int m_nMyPlayerIdx;			// プレイヤーインデックス番号
 	int m_nCntWalk;				// 歩行カウンター
+	int m_nCntInputAtk;			// 攻撃の入力カウンター
+	int m_nAtkLevel;			// 攻撃の段階
 	STATE m_state;			// 状態
 	CMotion *m_pMotion;		// モーションの情報
 	SMotionFrag m_sMotionFrag;		// モーションのフラグ

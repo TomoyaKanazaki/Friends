@@ -55,6 +55,8 @@
 #define CONFUSIONTIME	(60 * 2)		// 混乱時間
 #define DEADTIME		(120)
 #define FADEOUTTIME		(60)
+#define MAX_ATKCOMBO	(2)				// 攻撃コンボの最大数
+#define INTERVAL_ATK	(60)			// 攻撃の猶予
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -84,6 +86,8 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 	m_bLandField = false;			// フィールドの着地判定
 	m_bHitWall = false;			// 壁の当たり判定
 	m_nCntWalk = 0;				// 歩行カウンター
+	m_nCntInputAtk = 0;			// 攻撃の入力カウンター
+	m_nAtkLevel = 0;			// 攻撃の段階
 	m_state = STATE_NONE;			// 状態
 	m_pMotion = NULL;		// モーションの情報
 	m_sMotionFrag.bATK = false;		// モーションのフラグ
@@ -622,6 +626,14 @@ void CPlayer::Controll(void)
 	// 目標の向き設定
 	SetRotDest(fRotDest);
 
+	// 攻撃の入力カウンター減算
+	m_nCntInputAtk--;
+	if (m_nCntInputAtk <= 0)
+	{
+		m_nCntInputAtk = 0;
+		m_nAtkLevel = 0;
+	}
+
 	if (CGame::GetGameManager()->IsControll() &&
 		m_state != STATE_DEAD &&
 		m_state != STATE_FADEOUT &&
@@ -635,6 +647,17 @@ void CPlayer::Controll(void)
 			// 攻撃判定ON
 			m_sMotionFrag.bJump = false;
 			m_sMotionFrag.bATK = true;
+
+			if (m_nCntInputAtk >= 0)
+			{// まだ猶予があったら
+
+				// 攻撃の段階加算
+				m_nAtkLevel++;
+				ValueNormalize(m_nAtkLevel, MAX_ATKCOMBO, 0);
+			}
+
+			// 攻撃の入力カウンターリセット
+			m_nCntInputAtk = INTERVAL_ATK;
 		}
 	}
 
@@ -712,7 +735,10 @@ void CPlayer::MotionSet(void)
 		{// 攻撃していたら
 
 			m_sMotionFrag.bATK = false;		// 攻撃判定OFF
-			m_pMotion->Set(MOTION_ATK, true);
+
+			//(MAX_ATKCOMBO - m_nCntInputAtk) - 1;
+			m_pMotion->Set(MOTION_ATK + m_nAtkLevel, true);
+
 		}
 		else
 		{
@@ -1313,6 +1339,7 @@ void CPlayer::UpdateState(void)
 		break;
 
 	case STATE_RELEASEUNION:
+		StateReleaseUnion();
 		break;
 	}
 }

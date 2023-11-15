@@ -41,6 +41,9 @@
 
 // 派生先
 #include "union_bodytoleg.h"
+#include "union_bodytoarm.h"
+#include "union_armtoarm.h"
+#include "union_legtoarm.h"
 
 //==========================================================================
 // マクロ定義
@@ -60,14 +63,6 @@
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
-const char *CPlayerUnion::m_apModelFile[mylib_const::MAX_PLAYER] =	// モデルのファイル
-{
-	"data\\TEXT\\player_union\\motion_body.txt",
-	"data\\TEXT\\player_union\\motion_leg.txt",
-	"data\\TEXT\\player_union\\motion_RArm.txt",
-	"data\\TEXT\\player_union\\motion_LArm.txt",
-};
-
 bool CPlayerUnion::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
 bool CPlayerUnion::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// 射出台の着地判定
 
@@ -138,6 +133,18 @@ CPlayerUnion *CPlayerUnion::Create(eType type)
 
 		case TYPE_BODYtoLEG:
 			pPlayer = DEBUG_NEW CUnion_BodytoLeg;
+			break;
+
+		case TYPE_BODYtoARM:
+			pPlayer = DEBUG_NEW CUnion_BodytoArm;
+			break;
+
+		case TYPE_LEGtoARM:
+			pPlayer = DEBUG_NEW CUnion_LegtoArm;
+			break;
+
+		case TYPE_ARMtoARM:
+			pPlayer = DEBUG_NEW CUnion_ArntoArm;
 			break;
 
 		default:

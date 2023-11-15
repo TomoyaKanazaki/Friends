@@ -30,7 +30,7 @@ public:
 private:
 
 	//静的メンバ変数
-	static const char* m_pTextureFile; //テクスチャのファイル
+	static const char* m_pTextureFile[2]; //テクスチャのファイル
 };
 
 #endif

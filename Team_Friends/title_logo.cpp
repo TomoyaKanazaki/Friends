@@ -89,6 +89,7 @@ void CTitleLogo::Update(void)
 	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 
 #ifdef _DEBUG
+
 	if (pInputKeyboard->GetTrigger(DIK_1))
 	{
 		//MECHANIONÉçÉSÇï\é¶
@@ -155,6 +156,7 @@ void CTitleLogo::Update(void)
 			m_pComp = nullptr;
 		}
 	}
+
 #endif
 }
 

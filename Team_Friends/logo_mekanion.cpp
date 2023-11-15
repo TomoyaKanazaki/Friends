@@ -8,11 +8,16 @@
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
+#include "input.h"
 
 //==========================================
 // 静的メンバ変数宣言
 //==========================================
-const char* CLogo_Meka::m_pTextureFile = "data\\TEXTURE\\title\\title_01.png";
+const char* CLogo_Meka::m_pTextureFile[] = 
+{
+	"data\\TEXTURE\\title\\title_01.png",
+	"data\\TEXTURE\\title\\title_11.png",
+};
 
 //==========================================
 //  コンストラクタ
@@ -45,7 +50,7 @@ HRESULT CLogo_Meka::Init(void)
 	SetSize(D3DXVECTOR3(24.0f, 6.0f, 0.0f));
 
 	//テクスチャの割り当て
-	this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_pTextureFile));
+	this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_pTextureFile[0]));
 
 	return hr;
 }
@@ -64,6 +69,20 @@ void CLogo_Meka::Uninit(void)
 //==========================================
 void CLogo_Meka::Update(void)
 {
+	// キーボード情報取得
+	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+	if (pInputKeyboard->GetTrigger(DIK_6))
+	{
+		//テクスチャの割り当て
+		this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_pTextureFile[0]));
+	}
+	if (pInputKeyboard->GetTrigger(DIK_7))
+	{
+		//テクスチャの割り当て
+		this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_pTextureFile[1]));
+	}
+
 	//更新
 	CObject3D::Update();
 }

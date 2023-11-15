@@ -510,6 +510,7 @@ void CElevation::UPVtxField(D3DXVECTOR3 pos)
 	float m_fWidthLen = GetWidthLen();
 	float m_fHeightLen = GetHeightLen();
 	D3DXVECTOR3 *pVtxPos = GetVtxPos();
+	D3DXVECTOR3 posField = GetPosition();
 
 	// デバッグ表示
 	CManager::GetInstance()->GetDebugProc()->Print(
@@ -530,26 +531,32 @@ void CElevation::UPVtxField(D3DXVECTOR3 pos)
 		Save();
 	}
 
+	float fBuff = 1.0f;
+	if (pInputKeyboard->GetPress(DIK_LSHIFT) == true)
+	{// シフト加速
+		fBuff = 2.5f;
+	}
+
 	// ブラシのサイズ
 	if (pInputKeyboard->GetPress(DIK_1))
 	{// 1で下げる
-		m_fBrushRange -= 2.0f;
+		m_fBrushRange -= 2.0f * fBuff;
 	}
 
 	if (pInputKeyboard->GetPress(DIK_2))
 	{// 2で上げる
-		m_fBrushRange += 2.0f;
+		m_fBrushRange += 2.0f * fBuff;
 	}
 
 	// ブラシの強さ
 	if (pInputKeyboard->GetPress(DIK_3))
 	{// 3で下げる
-		m_fBrushStrength -= 0.025f;
+		m_fBrushStrength -= 0.025f * fBuff;
 	}
 
 	if (pInputKeyboard->GetPress(DIK_4))
 	{// 4で上げる
-		m_fBrushStrength += 0.025f;
+		m_fBrushStrength += 0.025f * fBuff;
 	}
 
 	// フィールドの幅
@@ -586,8 +593,8 @@ void CElevation::UPVtxField(D3DXVECTOR3 pos)
 			}
 
 			float fNowLength =
-				sqrtf((pos.x - pVtxPos[nCntWidth + (nCntHeight * (m_aInfo.nWidthBlock + 1))].x) * (pos.x - pVtxPos[nCntWidth + (nCntHeight * (m_aInfo.nWidthBlock + 1))].x)
-					+ (pos.z - pVtxPos[nCntWidth + (nCntHeight * (m_aInfo.nWidthBlock + 1))].z) * (pos.z - pVtxPos[nCntWidth + (nCntHeight * (m_aInfo.nWidthBlock + 1))].z));
+				sqrtf((pos.x - (posField.x + pVtxPos[nCntWidth + (nCntHeight * (m_aInfo.nWidthBlock + 1))].x)) * (pos.x - (posField.x + pVtxPos[nCntWidth + (nCntHeight * (m_aInfo.nWidthBlock + 1))].x))
+					+ (pos.z - (posField.z + pVtxPos[nCntWidth + (nCntHeight * (m_aInfo.nWidthBlock + 1))].z)) * (pos.z - (posField.z + pVtxPos[nCntWidth + (nCntHeight * (m_aInfo.nWidthBlock + 1))].z)));
 
 			float Wariai = fNowLength / m_fBrushRange;
 

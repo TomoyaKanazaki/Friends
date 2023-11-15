@@ -7,6 +7,7 @@
 #include "title_logo.h"
 #include "logo_complete.h"
 #include "logo_mechanion.h"
+#include "logo_mekanion.h"
 
 #include "manager.h"
 #include "input.h"
@@ -17,6 +18,7 @@
 CTitleLogo::CTitleLogo()
 {
 	m_pMech = nullptr;
+	m_pMeka = nullptr;
 	m_pComp = nullptr;
 }
 
@@ -39,6 +41,12 @@ HRESULT CTitleLogo::Init(void)
 		m_pMech = CLogo_Mech::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	}
 
+	//メカニオンロゴを表示
+	if (m_pMeka == nullptr)
+	{
+		m_pMeka = CLogo_Meka::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	}
+
 	//タイプの設定
 	SetType(TYPE_OBJECT3D);
 
@@ -55,6 +63,13 @@ void CTitleLogo::Uninit(void)
 	{
 		m_pMech->Uninit();
 		m_pMech = nullptr;
+	}
+
+	//メカニオンロゴを破棄
+	if (m_pMeka != nullptr)
+	{
+		m_pMeka->Uninit();
+		m_pMeka = nullptr;
 	}
 
 	//完成したロゴを破棄
@@ -93,6 +108,13 @@ void CTitleLogo::Update(void)
 		{
 			m_pMech->Uninit();
 			m_pMech = nullptr;
+		}
+
+		//メカニオンロゴを破棄
+		if (m_pMeka != nullptr)
+		{
+			m_pMeka->Uninit();
+			m_pMeka = nullptr;
 		}
 
 		//完成したロゴを破棄

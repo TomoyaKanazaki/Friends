@@ -78,17 +78,16 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 {
 	// 値のクリア
 	// 共有変数
-	m_bJump = false;				// ジャンプ中かどうか
+	m_bJump = false;			// ジャンプ中かどうか
 	m_bLandOld = false;			// 過去の着地情報
-	m_bHitStage = false;			// ステージの当たり判定
-	m_bLandField = false;			// フィールドの着地判定
+	m_bHitStage = false;		// ステージの当たり判定
+	m_bLandField = false;		// フィールドの着地判定
 	m_bHitWall = false;			// 壁の当たり判定
-	m_bKnockBack = false;			// ノックバック中かどうか
+	m_bKnockBack = false;		// ノックバック中かどうか
 	m_bDead = false;			// 死亡中かどうか
-
+	m_nUnionLife = 0;			// 合体時間
 	m_nCntWalk = 0;				// 歩行カウンター
-	m_state = STATE_NONE;			// 状態
-
+	m_state = STATE_NONE;		// 状態
 	memset(&m_pMotion[0], NULL, sizeof(m_pMotion));	// パーツ分のモーションポインタ
 	memset(&m_sMotionFrag[0], false, sizeof(m_sMotionFrag));	// モーションのフラグ
 
@@ -102,6 +101,7 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_nCntState = 0;			// 状態遷移カウンター
 	m_nTexIdx = 0;				// テクスチャのインデックス番号
 	m_nIdxXFile = 0;			// Xファイルのインデックス番号
+	memset(&m_nPartsIdx[0], 0, sizeof(m_nPartsIdx));	// プレイヤー毎のパーツインデックス番号
 	m_nMyPlayerIdx = 0;			// プレイヤーインデックス番号
 	m_nControllMoveIdx = 0;		// 移動操作するやつのインデックス番号
 	m_fRotDest = 0.0f;
@@ -174,6 +174,7 @@ HRESULT CPlayerUnion::Init(void)
 	m_bLandOld = true;		// 前回の着地状態
 	m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
 	memset(&m_bLandInjectionTable[0], false, sizeof(m_bLandInjectionTable));	// 射出台の着地判定
+	m_nUnionLife = 0;		// 合体時間
 
 	// キャラ作成
 	CreateParts();
@@ -208,6 +209,7 @@ HRESULT CPlayerUnion::CreateParts(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_BODY]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_BODY] = CMotion::Create(m_apModelFile[PARTS_BODY]);
@@ -230,6 +232,7 @@ HRESULT CPlayerUnion::CreateParts(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_LEG]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_LEG] = CMotion::Create(m_apModelFile[PARTS_LEG]);
@@ -252,6 +255,7 @@ HRESULT CPlayerUnion::CreateParts(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_R_ARM]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_R_ARM] = CMotion::Create(m_apModelFile[PARTS_R_ARM]);
@@ -274,6 +278,7 @@ HRESULT CPlayerUnion::CreateParts(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_L_ARM]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_L_ARM] = CMotion::Create(m_apModelFile[PARTS_L_ARM]);
@@ -315,7 +320,6 @@ void CPlayerUnion::Uninit(void)
 	{
 		if (m_pObjChara[i] != NULL)
 		{
-			m_pObjChara[i]->Uninit();
 			m_pObjChara[i] = NULL;
 		}
 	}
@@ -346,12 +350,12 @@ void CPlayerUnion::Uninit(void)
 //==========================================================================
 void  CPlayerUnion::UninitByMode(void)
 {
-	CScene *pScene = CManager::GetInstance()->GetScene();
-	if (pScene != NULL)
-	{
-		// プレイヤーをNULL
-		CManager::GetInstance()->GetScene()->UninitPlayer(m_nMyPlayerIdx);
-	}
+	//CScene *pScene = CManager::GetInstance()->GetScene();
+	//if (pScene != NULL)
+	//{
+	//	// プレイヤーをNULL
+	//	CManager::GetInstance()->GetScene()->UninitPlayer(m_nMyPlayerIdx);
+	//}
 }
 
 //==========================================================================
@@ -374,6 +378,15 @@ void CPlayerUnion::Kill(void)
 	{
 		m_pShadow->Uninit();
 		m_pShadow = NULL;
+	}
+
+	for (int i = 0; i < PARTS_MAX; i++)
+	{
+		if (m_pObjChara[i] != NULL)
+		{
+			m_pObjChara[i]->Uninit();
+			m_pObjChara[i] = NULL;
+		}
 	}
 }
 
@@ -1934,7 +1947,7 @@ void CPlayerUnion::Draw(void)
 		}
 
 		// 攻撃処理
-		m_pObjChara[i]->Draw();		// 胴体
+		//m_pObjChara[i]->Draw();		// 胴体
 	}
 
 	// HPゲージ
@@ -1942,6 +1955,14 @@ void CPlayerUnion::Draw(void)
 	{
 		m_pHPGauge->Draw();
 	}
+}
+
+//==========================================================================
+// プレイヤー毎のパーツインデックス番号設定
+//==========================================================================
+void CPlayerUnion::SetPlayerByPartsIdx(int nPartsIdx, int nPlayerIdx)
+{
+	m_nPartsIdx[nPartsIdx] = nPlayerIdx;
 }
 
 //==========================================================================

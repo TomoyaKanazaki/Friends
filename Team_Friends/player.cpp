@@ -1639,7 +1639,12 @@ void CPlayer::KnockBack(void)
 //==========================================================================
 void CPlayer::StateCompactUnion(void)
 {
-	return;
+	// âeÇè¡Ç∑
+	if (m_pShadow != NULL)
+	{
+		m_pShadow->Uninit();
+		m_pShadow = NULL;
+	}
 }
 
 //==========================================================================
@@ -1655,6 +1660,12 @@ void CPlayer::StateReleaseUnion(void)
 
 		m_nCntState = 0;
 		m_state = STATE_NONE;
+
+		// âeÇÃê∂ê¨
+		if (m_pShadow == NULL)
+		{
+			m_pShadow = CShadow::Create(GetPosition(), 50.0f);
+		}
 		return;
 	}
 }

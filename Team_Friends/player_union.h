@@ -53,7 +53,6 @@ public:
 	CPlayerUnion(int nPriority = mylib_const::DEF2D_PRIORITY);
 	~CPlayerUnion();
 
-
 	// オーバーライドされた関数
 	virtual HRESULT Init(void);
 	virtual void Uninit(void);
@@ -65,8 +64,11 @@ public:
 	static CPlayerUnion *Create(eType type);	// 生成
 	void UninitByMode(void);
 	void Kill(void);	// 死亡処理
+	void SetPlayerByPartsIdx(int nPartsIdx, int nPlayerIdx);	// プレイヤー毎のパーツインデックス番号設定
 	void SetControllMoveIdx(int nIdx);	// 移動の操作するインデックス番号設定
+
 protected:
+
 	// 列挙型定義
 	enum MOTION
 	{
@@ -99,6 +101,7 @@ protected:
 		bool bMove;			// 移動中かどうか
 	};
 
+	void ReadMultiCharacter(const char *pTextFile);			// 複数キャラクター読み込み
 	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
 	virtual void AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo);	// 攻撃時処理
 	virtual void ControllParts(void);	// パーツのコントロール処理
@@ -118,6 +121,7 @@ protected:
 	int m_nMyPlayerIdx;			// プレイヤーインデックス番号
 	int m_nControllMoveIdx;		// 移動操作するやつのインデックス番号
 	int m_nCntWalk;				// 歩行カウンター
+	int m_nUnionLife;			// 合体時間
 	D3DXCOLOR m_mMatcol;		// マテリアルの色
 	STATE m_Oldstate;			// 前回の状態
 	STATE m_state;			// 状態
@@ -153,7 +157,7 @@ private:
 
 	int m_nTexIdx;				// テクスチャのインデックス番号
 	int m_nIdxXFile;			// Xファイルのインデックス番号
-	float m_fRotDest;
+	float m_fRotDest;			// 目標の向き
 	CShadow *m_pShadow;			// 影の情報
 	CTargetPoint *m_pTargetP;	// 目標の地点
 	CHP_GaugePlayer *m_pHPGauge;	// HPゲージの情報

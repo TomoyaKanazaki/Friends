@@ -304,11 +304,19 @@ void CCompactCore::CollisionPlayer(void)
 				// プレイヤーを簡易合体状態に設定
 				int nParent = nGetPlayerIdx[0];
 				int nExcept = nGetPlayerIdx[1];
-				pPlayer[nParent].SetState(CPlayer::STATE_COMPACTUNION);
-				pPlayer[nExcept].SetState(CPlayer::STATE_COMPACTUNION);
+
+				CPlayer **ppPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
+				ppPlayer[nParent]->SetState(CPlayer::STATE_COMPACTUNION);
+				ppPlayer[nExcept]->SetState(CPlayer::STATE_COMPACTUNION);
 				
 				// 種類取得してその種類に該当するやつ生成する
-				CPlayerUnion::Create(CPlayerUnion::TYPE_BODYtoLEG);
+				CPlayerUnion *pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_BODYtoLEG);
+
+				// プレイヤー毎のパーツインデックス番号
+				pPlayerUnion->SetPlayerByPartsIdx(0, nParent);
+				pPlayerUnion->SetPlayerByPartsIdx(1, nExcept);
+				pPlayerUnion->SetControllMoveIdx(nParent);
+				pPlayerUnion->SetPosition(pos);
 				return;
 			}
 			continue;

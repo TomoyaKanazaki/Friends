@@ -78,17 +78,16 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 {
 	// 値のクリア
 	// 共有変数
-	m_bJump = false;				// ジャンプ中かどうか
+	m_bJump = false;			// ジャンプ中かどうか
 	m_bLandOld = false;			// 過去の着地情報
-	m_bHitStage = false;			// ステージの当たり判定
-	m_bLandField = false;			// フィールドの着地判定
+	m_bHitStage = false;		// ステージの当たり判定
+	m_bLandField = false;		// フィールドの着地判定
 	m_bHitWall = false;			// 壁の当たり判定
-	m_bKnockBack = false;			// ノックバック中かどうか
+	m_bKnockBack = false;		// ノックバック中かどうか
 	m_bDead = false;			// 死亡中かどうか
-
+	m_nUnionLife = 0;			// 合体時間
 	m_nCntWalk = 0;				// 歩行カウンター
-	m_state = STATE_NONE;			// 状態
-
+	m_state = STATE_NONE;		// 状態
 	memset(&m_pMotion[0], NULL, sizeof(m_pMotion));	// パーツ分のモーションポインタ
 	memset(&m_sMotionFrag[0], false, sizeof(m_sMotionFrag));	// モーションのフラグ
 
@@ -102,6 +101,7 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_nCntState = 0;			// 状態遷移カウンター
 	m_nTexIdx = 0;				// テクスチャのインデックス番号
 	m_nIdxXFile = 0;			// Xファイルのインデックス番号
+	memset(&m_nPartsIdx[0], 0, sizeof(m_nPartsIdx));	// プレイヤー毎のパーツインデックス番号
 	m_nMyPlayerIdx = 0;			// プレイヤーインデックス番号
 	m_nControllMoveIdx = 0;		// 移動操作するやつのインデックス番号
 	m_fRotDest = 0.0f;
@@ -174,6 +174,7 @@ HRESULT CPlayerUnion::Init(void)
 	m_bLandOld = true;		// 前回の着地状態
 	m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
 	memset(&m_bLandInjectionTable[0], false, sizeof(m_bLandInjectionTable));	// 射出台の着地判定
+	m_nUnionLife = 0;		// 合体時間
 
 	// キャラ作成
 	CreateParts();
@@ -198,8 +199,12 @@ HRESULT CPlayerUnion::Init(void)
 HRESULT CPlayerUnion::CreateParts(void)
 {
 	HRESULT hr;
-	CObjectChara *pObjChar = NULL;
 
+
+	// 複数キャラ読み込み
+	ReadMultiCharacter("data\\TEXT\\multicharacter_SuperUnion.txt");
+
+#if 0
 	//**********************************
 	// 胴体
 	//**********************************
@@ -208,6 +213,7 @@ HRESULT CPlayerUnion::CreateParts(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_BODY]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_BODY] = CMotion::Create(m_apModelFile[PARTS_BODY]);
@@ -230,6 +236,7 @@ HRESULT CPlayerUnion::CreateParts(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_LEG]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_LEG] = CMotion::Create(m_apModelFile[PARTS_LEG]);
@@ -252,6 +259,7 @@ HRESULT CPlayerUnion::CreateParts(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_R_ARM]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_R_ARM] = CMotion::Create(m_apModelFile[PARTS_R_ARM]);
@@ -274,6 +282,7 @@ HRESULT CPlayerUnion::CreateParts(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_L_ARM]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_L_ARM] = CMotion::Create(m_apModelFile[PARTS_L_ARM]);
@@ -293,6 +302,7 @@ HRESULT CPlayerUnion::CreateParts(void)
 	m_pObjChara[PARTS_R_ARM]->GetModel()[0]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[1]);
 	m_pObjChara[PARTS_LEG]->GetModel()[0]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[0]);
 	m_pObjChara[PARTS_LEG]->GetModel()[3]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[0]);
+#endif
 	return S_OK;
 }
 
@@ -315,7 +325,6 @@ void CPlayerUnion::Uninit(void)
 	{
 		if (m_pObjChara[i] != NULL)
 		{
-			m_pObjChara[i]->Uninit();
 			m_pObjChara[i] = NULL;
 		}
 	}
@@ -346,12 +355,12 @@ void CPlayerUnion::Uninit(void)
 //==========================================================================
 void  CPlayerUnion::UninitByMode(void)
 {
-	CScene *pScene = CManager::GetInstance()->GetScene();
-	if (pScene != NULL)
-	{
-		// プレイヤーをNULL
-		CManager::GetInstance()->GetScene()->UninitPlayer(m_nMyPlayerIdx);
-	}
+	//CScene *pScene = CManager::GetInstance()->GetScene();
+	//if (pScene != NULL)
+	//{
+	//	// プレイヤーをNULL
+	//	CManager::GetInstance()->GetScene()->UninitPlayer(m_nMyPlayerIdx);
+	//}
 }
 
 //==========================================================================
@@ -374,6 +383,15 @@ void CPlayerUnion::Kill(void)
 	{
 		m_pShadow->Uninit();
 		m_pShadow = NULL;
+	}
+
+	for (int i = 0; i < PARTS_MAX; i++)
+	{
+		if (m_pObjChara[i] != NULL)
+		{
+			m_pObjChara[i]->Uninit();
+			m_pObjChara[i] = NULL;
+		}
 	}
 }
 
@@ -1934,7 +1952,7 @@ void CPlayerUnion::Draw(void)
 		}
 
 		// 攻撃処理
-		m_pObjChara[i]->Draw();		// 胴体
+		//m_pObjChara[i]->Draw();		// 胴体
 	}
 
 	// HPゲージ
@@ -1942,6 +1960,148 @@ void CPlayerUnion::Draw(void)
 	{
 		m_pHPGauge->Draw();
 	}
+}
+
+//==========================================================================
+// 複数キャラクター読み込み
+//==========================================================================
+void CPlayerUnion::ReadMultiCharacter(const char *pTextFile)
+{
+	FILE *pFile = NULL;	// ファイルポインタを宣言
+
+	// ファイルを開く
+	pFile = fopen(pTextFile, "r");
+
+	if (pFile == NULL)
+	{//ファイルが開けた場合
+		return;
+	}
+
+	char aComment[MAX_COMMENT];	// コメント
+
+	std::string CharacterFile[mylib_const::MAX_PLAYER];
+	int nCntFileName = 0;
+	int nNumModel = 0;
+
+	while (1)
+	{// END_SCRIPTが来るまで繰り返す
+
+		// 文字列の読み込み
+		fscanf(pFile, "%s", &aComment[0]);
+
+		// モデル数の設定
+		if (strcmp(aComment, "NUM_MODEL") == 0)
+		{// NUM_MODELがきたら
+
+			fscanf(pFile, "%s", &aComment[0]);	// =の分
+			fscanf(pFile, "%d", &nNumModel);	// モデル数
+		}
+
+		while (nCntFileName != nNumModel)
+		{// モデルの数分読み込むまで繰り返し
+
+			// 文字列の読み込み
+			fscanf(pFile, "%s", &aComment[0]);
+
+			// モデル名の設定
+			if (strcmp(aComment, "MOTION_FILENAME") == 0)
+			{// NUM_MODELがきたら
+
+				fscanf(pFile, "%s", &aComment[0]);	// =の分
+				fscanf(pFile, "%s", &aComment[0]);	// ファイル名
+
+				// ファイル名保存
+				CharacterFile[nCntFileName] = aComment;
+
+
+				//**********************************
+				// キャラクター生成
+				//**********************************
+				m_pObjChara[nCntFileName] = CObjectChara::Create(CharacterFile[nCntFileName]);
+				if (m_pObjChara[nCntFileName] == NULL)
+				{// 失敗していたら
+					return;
+				}
+				m_pObjChara[nCntFileName]->SetType(CObject::TYPE_OBJECTX);
+
+				// モーションの生成処理
+				m_pMotion[nCntFileName] = CMotion::Create(CharacterFile[nCntFileName]);
+
+				// オブジェクトキャラクターの情報取得
+				CObjectChara *pObjChar = m_pObjChara[nCntFileName]->GetObjectChara();
+
+				// モーションの設定
+				m_pMotion[nCntFileName]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
+
+				// ポーズのリセット
+				m_pMotion[nCntFileName]->ResetPose(MOTION_DEF);
+
+
+				nCntFileName++;	// ファイル数加算
+			}
+		}
+
+		// 各パーツの設定
+		if (strcmp(aComment, "PARENTSET") == 0)
+		{// 親設定の読み込みを開始
+
+			int nFileNumber = -1, nModelIdx = -1, nParentFileNumber = -1, nParentModelIdx = -1;
+
+			while (strcmp(aComment, "END_PARENTSET") != 0)
+			{// END_PARENTSETが来るまで繰り返し
+
+				fscanf(pFile, "%s", &aComment[0]);	//確認する
+
+				if (strcmp(aComment, "FILENUMBER") == 0)
+				{// FILENUMBERで設定するキャラクターファイル番号読み込み
+
+					fscanf(pFile, "%s", &aComment[0]);	// =の分
+					fscanf(pFile, "%d", &nFileNumber);	// キャラクターファイル番号
+				}
+
+				if (strcmp(aComment, "MODELINDEX") == 0)
+				{// MODELINDEXで設定するモデル番号読み込み
+
+					fscanf(pFile, "%s", &aComment[0]);	// =の分
+					fscanf(pFile, "%d", &nModelIdx);	// 設定するモデル番号
+				}
+
+				if (strcmp(aComment, "PARENT_FILENUMBER") == 0)
+				{// PARENT_FILENUMBERで親にするキャラクターファイル番号読み込み
+
+					fscanf(pFile, "%s", &aComment[0]);	// =の分
+					fscanf(pFile, "%d", &nParentFileNumber);	// キャラクターファイル番号
+				}
+
+				if (strcmp(aComment, "PARENT_MODELINDEX") == 0)
+				{// PARENT_MODELINDEXで親にするモデル番号読み込み
+
+					fscanf(pFile, "%s", &aComment[0]);	// =の分
+					fscanf(pFile, "%d", &nParentModelIdx);	// 設定するモデル番号
+				}
+			}// END_PARENTSETのかっこ
+
+			// 原点設定
+			m_pObjChara[nFileNumber]->GetModel()[nModelIdx]->SetParent(m_pObjChara[nParentFileNumber]->GetModel()[nParentModelIdx]);
+		}
+
+		if (strcmp(aComment, "END_SCRIPT") == 0)
+		{// 終了文字でループを抜ける
+			break;
+		}
+	}
+
+	// ファイルを閉じる
+	fclose(pFile);
+
+}
+
+//==========================================================================
+// プレイヤー毎のパーツインデックス番号設定
+//==========================================================================
+void CPlayerUnion::SetPlayerByPartsIdx(int nPartsIdx, int nPlayerIdx)
+{
+	m_nPartsIdx[nPartsIdx] = nPlayerIdx;
 }
 
 //==========================================================================

@@ -622,7 +622,10 @@ void CPlayer::Controll(void)
 	// ñ⁄ïWÇÃå¸Ç´ê›íË
 	SetRotDest(fRotDest);
 
-	if (CGame::GetGameManager()->IsControll())
+	if (CGame::GetGameManager()->IsControll() &&
+		m_state != STATE_DEAD &&
+		m_state != STATE_FADEOUT &&
+		m_state != STATE_COMPACTUNION)
 	{// çsìÆÇ≈Ç´ÇÈÇ∆Ç´
 
 		if (m_sMotionFrag.bATK == false && 
@@ -1639,7 +1642,12 @@ void CPlayer::KnockBack(void)
 //==========================================================================
 void CPlayer::StateCompactUnion(void)
 {
-	return;
+	// âeÇè¡Ç∑
+	if (m_pShadow != NULL)
+	{
+		m_pShadow->Uninit();
+		m_pShadow = NULL;
+	}
 }
 
 //==========================================================================
@@ -1655,6 +1663,12 @@ void CPlayer::StateReleaseUnion(void)
 
 		m_nCntState = 0;
 		m_state = STATE_NONE;
+
+		// âeÇÃê∂ê¨
+		if (m_pShadow == NULL)
+		{
+			m_pShadow = CShadow::Create(GetPosition(), 50.0f);
+		}
 		return;
 	}
 }

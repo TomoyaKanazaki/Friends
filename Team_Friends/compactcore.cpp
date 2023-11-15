@@ -14,6 +14,7 @@
 #include "calculation.h"
 #include "game.h"
 #include "player.h"
+#include "player_union.h"
 #include "impactwave.h"
 #include "scene.h"
 
@@ -259,11 +260,15 @@ void CCompactCore::CollisionPlayer(void)
 	// 取得してるプレイヤーの数リセット
 	m_nNumGetPlayer = 0;
 
+	// 取得したプレイヤーのインデックス
+	int nGetPlayerIdx[mylib_const::MAX_PLAYER];
+
 	// プレイヤー情報取得
 	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
 		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
-		if (pPlayer == NULL)
+		if (pPlayer == NULL || 
+			pPlayer->GetState() == CPlayer::STATE_COMPACTUNION || pPlayer->GetState() == CPlayer::STATE_RELEASEUNION)
 		{// NULLだったら
 			continue;
 		}
@@ -284,6 +289,9 @@ void CCompactCore::CollisionPlayer(void)
 			// パーティクル生成
 			my_particle::Create(pos, my_particle::TYPE_ENEMY_FADE);
 
+			// インデックス保存
+			nGetPlayerIdx[m_nNumGetPlayer] = nCntPlayer;
+
 			// 取得人数加算
 			m_nNumGetPlayer++;
 
@@ -292,6 +300,16 @@ void CCompactCore::CollisionPlayer(void)
 				// 取得状態にする
 				m_state = STATE_GET;
 				m_nCntState = TIME_GET;
+
+				// プレイヤーを簡易合体状態に設定
+				int nParent = nGetPlayerIdx[0];
+				int nExcept = nGetPlayerIdx[1];
+				pPlayer[nParent].SetState(CPlayer::STATE_COMPACTUNION);
+				pPlayer[nExcept].SetState(CPlayer::STATE_COMPACTUNION);
+				
+				// 種類取得してその種類に該当するやつ生成する
+				CPlayerUnion::Create(CPlayerUnion::TYPE_BODYtoLEG);
+				return;
 			}
 			continue;
 		}

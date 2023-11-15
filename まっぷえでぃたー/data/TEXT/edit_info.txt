@@ -25,7 +25,7 @@ TEXTURE_FILENAME = data/TEXTURE/glass.jpg		# [14]
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 30
+NUM_MODEL = 31
 
 #------------------------------------------------------------------------------
 # モデルファイル名
@@ -60,6 +60,7 @@ MODEL_FILENAME = data\MODEL\bill\bill003.x		# [26]
 MODEL_FILENAME = data\MODEL\bill\bill004.x		# [27]
 MODEL_FILENAME = data\MODEL\bill\bill005.x		# [28]
 MODEL_FILENAME = data\MODEL\bill\bill006.x		# [29]
+MODEL_FILENAME = data\MODEL\character\robot_init.x		# [30]
 
 #==============================================================================
 # 空情報
@@ -435,6 +436,13 @@ END_MODELSET
 MODELSET
 	TYPE = 29
 	POS = 4182.09 0.00 2502.13
+	ROT = 0.00 0.00 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 30
+	POS = 236.02 20.00 -17.99
 	ROT = 0.00 0.00 0.00
 	SHADOW = 1
 END_MODELSET

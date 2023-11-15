@@ -8,6 +8,7 @@
 #include "logo_complete.h"
 #include "logo_mechanion.h"
 #include "logo_mekanion.h"
+#include "logo_squadron.h"
 
 #include "manager.h"
 #include "input.h"
@@ -19,6 +20,7 @@ CTitleLogo::CTitleLogo()
 {
 	m_pMech = nullptr;
 	m_pMeka = nullptr;
+	m_pSqou = nullptr;
 	m_pComp = nullptr;
 }
 
@@ -35,18 +37,6 @@ CTitleLogo::~CTitleLogo()
 //==========================================
 HRESULT CTitleLogo::Init(void)
 {
-	//MECHANIONロゴを表示
-	if (m_pMech == nullptr)
-	{
-		m_pMech = CLogo_Mech::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	}
-
-	//メカニオンロゴを表示
-	if (m_pMeka == nullptr)
-	{
-		m_pMeka = CLogo_Meka::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	}
-
 	//タイプの設定
 	SetType(TYPE_OBJECT3D);
 
@@ -72,6 +62,13 @@ void CTitleLogo::Uninit(void)
 		m_pMeka = nullptr;
 	}
 
+	//戦隊ロゴを破棄
+	if (m_pSqou != nullptr)
+	{
+		m_pSqou->Uninit();
+		m_pSqou = nullptr;
+	}
+
 	//完成したロゴを破棄
 	if (m_pComp != nullptr)
 	{
@@ -92,7 +89,34 @@ void CTitleLogo::Update(void)
 	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 
 #ifdef _DEBUG
-	if (pInputKeyboard->GetTrigger(DIK_SPACE))
+	if (pInputKeyboard->GetTrigger(DIK_1))
+	{
+		//MECHANIONロゴを表示
+		if (m_pMech == nullptr)
+		{
+			m_pMech = CLogo_Mech::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		}
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_2))
+	{
+		//メカニオンロゴを表示
+		if (m_pMeka == nullptr)
+		{
+			m_pMeka = CLogo_Meka::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		}
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_3))
+	{
+		//戦隊ロゴを表示
+		if (m_pSqou == nullptr)
+		{
+			m_pSqou = CLogo_Sqou::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		}
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_4))
 	{
 		//完成したロゴを表示
 		if (m_pComp == nullptr)
@@ -101,7 +125,7 @@ void CTitleLogo::Update(void)
 		}
 	}
 
-	if (pInputKeyboard->GetTrigger(DIK_1))
+	if (pInputKeyboard->GetTrigger(DIK_5))
 	{
 		//MECHANIONロゴを破棄
 		if (m_pMech != nullptr)
@@ -115,6 +139,13 @@ void CTitleLogo::Update(void)
 		{
 			m_pMeka->Uninit();
 			m_pMeka = nullptr;
+		}
+
+		//戦隊ロゴを破棄
+		if (m_pSqou != nullptr)
+		{
+			m_pSqou->Uninit();
+			m_pSqou = nullptr;
 		}
 
 		//完成したロゴを破棄

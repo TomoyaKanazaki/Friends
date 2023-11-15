@@ -208,6 +208,11 @@ void CUnion_BodytoLeg::ControllLeg(int nIdx)
 			{
 				m_sMotionFrag[i].bMove = true;
 
+				if (m_pMotion[i] == NULL)
+				{
+					continue;
+				}
+
 				if (m_nControllMoveIdx != i &&
 					m_pMotion[i]->GetType() != MOTION_WALK &&
 					m_pMotion[i]->GetType() != MOTION_DEF)

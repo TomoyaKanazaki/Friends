@@ -323,9 +323,6 @@ void CPlayer::Update(void)
 		m_pMotion->Update();
 	}
 
-	// 頂点情報設定
-	SetVtx();
-
 	// 攻撃処理
 	Atack();
 
@@ -425,7 +422,8 @@ void CPlayer::Controll(void)
 
 		if (m_pMotion->IsGetMove(nMotionType) == 1 &&
 			m_state != STATE_DEAD &&
-			m_state != STATE_FADEOUT)
+			m_state != STATE_FADEOUT &&
+			m_state != STATE_COMPACTUNION)
 		{// 移動可能モーションの時
 
 			if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).x < 0)
@@ -545,7 +543,7 @@ void CPlayer::Controll(void)
 	RotNormalize(rot.y);
 
 	// 重力処理
-	if (m_state != STATE_KNOCKBACK && m_state != STATE_DMG && m_state != STATE_DEAD && m_state != STATE_FADEOUT)
+	if (m_state != STATE_KNOCKBACK && m_state != STATE_DMG && m_state != STATE_DEAD && m_state != STATE_FADEOUT && m_state != STATE_COMPACTUNION)
 	{
 		move.y -= mylib_const::GRAVITY;
 
@@ -1306,6 +1304,13 @@ void CPlayer::UpdateState(void)
 	case STATE_KNOCKBACK:
 		KnockBack();
 		break;
+
+	case STATE_COMPACTUNION:
+		StateCompactUnion();
+		break;
+
+	case STATE_RELEASEUNION:
+		break;
 	}
 }
 
@@ -1630,11 +1635,37 @@ void CPlayer::KnockBack(void)
 }
 
 //==========================================================================
+// 簡易合体
+//==========================================================================
+void CPlayer::StateCompactUnion(void)
+{
+	return;
+}
+
+//==========================================================================
+// 合体解除
+//==========================================================================
+void CPlayer::StateReleaseUnion(void)
+{
+	// 状態遷移カウンター減算
+	m_nCntState--;
+
+	if (m_nCntState <= 0)
+	{// 遷移カウンターが0になったら
+
+		m_nCntState = 0;
+		m_state = STATE_NONE;
+		return;
+	}
+}
+
+//==========================================================================
 // 描画処理
 //==========================================================================
 void CPlayer::Draw(void)
 {
 
+	// 描画処理
 	if (m_state == STATE_DMG)
 	{
 		CObjectChara::Draw(m_mMatcol);
@@ -1643,7 +1674,7 @@ void CPlayer::Draw(void)
 	{
 		CObjectChara::Draw(m_mMatcol.a);
 	}
-	else
+	else if(m_state != STATE_COMPACTUNION)
 	{
 		CObjectChara::Draw();
 	}
@@ -1653,6 +1684,15 @@ void CPlayer::Draw(void)
 	{
 		m_pHPGauge->Draw();
 	}
+}
+
+//==========================================================================
+// 状態設定
+//==========================================================================
+void CPlayer::SetState(STATE state, int nCntState)
+{
+	m_state = state;
+	m_nCntState = nCntState;
 }
 
 //==========================================================================

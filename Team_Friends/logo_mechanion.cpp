@@ -1,10 +1,10 @@
 //==========================================
 //
-//  完成ロゴ(logo_complete.cpp)
+//  MECHANIONのロゴ(logo_mechanion.cpp)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
-#include "logo_complete.h"
+#include "logo_mechanion.h"
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
@@ -12,12 +12,12 @@
 //==========================================
 // 静的メンバ変数宣言
 //==========================================
-const char* CLogo_Comp::m_pTextureFile = "data\\TEXTURE\\title\\title_03.png";
+const char* CLogo_Mech::m_pTextureFile = "data\\TEXTURE\\title\\title_00.png";
 
 //==========================================
 //  コンストラクタ
 //==========================================
-CLogo_Comp::CLogo_Comp()
+CLogo_Mech::CLogo_Mech()
 {
 
 }
@@ -25,7 +25,7 @@ CLogo_Comp::CLogo_Comp()
 //==========================================
 //  デストラクタ
 //==========================================
-CLogo_Comp::~CLogo_Comp()
+CLogo_Mech::~CLogo_Mech()
 {
 
 }
@@ -33,7 +33,7 @@ CLogo_Comp::~CLogo_Comp()
 //==========================================
 //  初期化処理
 //==========================================
-HRESULT CLogo_Comp::Init(void)
+HRESULT CLogo_Mech::Init(void)
 {
 	//初期化処理
 	HRESULT hr = CObject3D::Init();
@@ -53,7 +53,7 @@ HRESULT CLogo_Comp::Init(void)
 //==========================================
 //  終了処理
 //==========================================
-void CLogo_Comp::Uninit(void)
+void CLogo_Mech::Uninit(void)
 {
 	//終了
 	CObject3D::Uninit();
@@ -62,7 +62,7 @@ void CLogo_Comp::Uninit(void)
 //==========================================
 //  更新処理
 //==========================================
-void CLogo_Comp::Update(void)
+void CLogo_Mech::Update(void)
 {
 	//更新
 	CObject3D::Update();
@@ -71,8 +71,8 @@ void CLogo_Comp::Update(void)
 //==========================================
 //  描画処理
 //==========================================
-void CLogo_Comp::Draw(void)
-{	
+void CLogo_Mech::Draw(void)
+{
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
@@ -89,10 +89,10 @@ void CLogo_Comp::Draw(void)
 //==========================================
 //  生成処理
 //==========================================
-CLogo_Comp* CLogo_Comp::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+CLogo_Mech* CLogo_Mech::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	//インスタンス生成
-	CLogo_Comp *pLogo = DEBUG_NEW CLogo_Comp;
+	CLogo_Mech* pLogo = DEBUG_NEW CLogo_Mech;
 
 	//初期化処理
 	pLogo->Init();

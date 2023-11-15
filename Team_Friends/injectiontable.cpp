@@ -159,16 +159,8 @@ void CInjectionTable::StateCharge(void)
 		m_state = STATE_UP;
 
 		// ƒJƒƒ‰Žæ“¾
-		CCamera **ppCamera = CManager::GetInstance()->GetScene()->GetMultiCamera();
-
-		for (int i = 0; i < CManager::GetInstance()->GetNumPlayer(); i++)
-		{
-			if (ppCamera[i] == NULL)
-			{
-				continue;
-			}
-			ppCamera[i]->SetEnableFollow(false);
-		}
+		CCamera *pCamera = CManager::GetInstance()->GetCamera();
+		pCamera->SetEnableFollow(false);
 	}
 }
 

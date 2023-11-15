@@ -149,18 +149,9 @@ void CGameManager::Update(void)
 		if (fadestate == CInstantFade::STATE_FADECOMPLETION)
 		{// 完了した瞬間
 
-
-
 			// カメラ取得
-			CCamera **ppCamera = CManager::GetInstance()->GetScene()->GetMultiCamera();
-			for (int i = 0; i < CManager::GetInstance()->GetNumPlayer(); i++)
-			{
-				if (ppCamera[i] == NULL)
-				{
-					continue;
-				}
-				ppCamera[i]->SetEnableFollow(true);
-			}
+			CCamera *pCamera = CManager::GetInstance()->GetCamera();
+			pCamera->SetEnableFollow(true);
 
 			// 射出台の位置リセット
 			CGame::GetStage()->GetInjectionTable()->SetPosition(CGame::GetStage()->GetInjectionTable()->GetOriginPosition());

@@ -372,8 +372,14 @@
     <ClCompile Include="fog.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="logo_complete.cpp">
+    <ClCompile Include="union_bodytoleg.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="compactcore.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="logo_complete.cpp">
+      <Filter>金崎の作業部分</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -672,6 +678,12 @@
       <Filter>金崎の作業部分</Filter>
     </ClInclude>
     <ClInclude Include="fog.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="union_bodytoleg.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="compactcore.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="logo_complete.h">

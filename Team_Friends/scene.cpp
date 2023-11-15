@@ -37,7 +37,6 @@ CScene::CScene()
 	// 変数のクリア
 	m_mode = MODE_TITLE;
 	memset(&m_pPlayer[0], 0, sizeof(m_pPlayer));
-	memset(&m_pMultiCamera[0], NULL, sizeof(m_pMultiCamera));	// カメラのオブジェクト
 }
 
 //==========================================================================
@@ -186,19 +185,6 @@ void CScene::Uninit(void)
 		}
 	}
 
-	// カメラの破棄
-	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
-	{
-		if (m_pMultiCamera[i] != NULL)
-		{// メモリの確保が出来ていたら
-
-			// 終了処理
-			m_pMultiCamera[i]->Uninit();
-			delete m_pMultiCamera[i];
-			m_pMultiCamera[i] = NULL;
-		}
-	}
-
 }
 
 //==========================================================================
@@ -206,16 +192,7 @@ void CScene::Uninit(void)
 //==========================================================================
 void CScene::Update(void)
 {
-	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
-	{
-		if (m_pMultiCamera[i] == NULL)
-		{
-			continue;
-		}
-
-		// カメラの設定
-		m_pMultiCamera[i]->Update();
-	}
+	
 }
 
 //==========================================================================
@@ -245,19 +222,6 @@ void CScene::ResetScene(void)
 		}
 	}
 
-	// カメラの破棄
-	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
-	{
-		if (m_pMultiCamera[i] != NULL)
-		{// メモリの確保が出来ていたら
-
-			// 終了処理
-			m_pMultiCamera[i]->Uninit();
-			delete m_pMultiCamera[i];
-			m_pMultiCamera[i] = NULL;
-		}
-	}
-
 	// マップ
 	map::Release();
 
@@ -270,28 +234,9 @@ void CScene::ResetScene(void)
 		return;
 	}
 
-	// カメラ
-	if (m_pMultiCamera[0] == NULL)
-	{
-		m_pMultiCamera[0] = DEBUG_NEW CCamera;
-		if (m_pMultiCamera[0] != NULL)
-		{// メモリの確保が出来ていたら
-
-			// 初期化処理
-			HRESULT hr = m_pMultiCamera[0]->Init();
-			if (FAILED(hr))
-			{// 初期化処理が失敗した場合
-				return;
-			}
-
-			// ビューポートの設定
-			m_pMultiCamera[0]->SetViewPort(mylib_const::DEFAULT_VECTOR3, D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT));
-		}
-	}
-
 
 	// 合体後プレイヤー生成
-	CPlayerUnion::Create();
+	CPlayerUnion::Create(CPlayerUnion::TYPE_ALL);
 }
 
 //==========================================================================
@@ -324,22 +269,6 @@ CElevation *CScene::GetElevation(void)
 CPlayer *CScene::GetPlayer(int nIdx)
 {
 	return m_pPlayer[nIdx];
-}
-
-//==========================================================================
-// マルチカメラの取得
-//==========================================================================
-CCamera **CScene::GetMultiCamera(void)
-{
-	return &m_pMultiCamera[0];
-}
-
-//==========================================================================
-// マルチカメラの取得
-//==========================================================================
-CCamera *CScene::GetMultiCamera(int nIdx)
-{
-	return m_pMultiCamera[nIdx];
 }
 
 //==========================================================================

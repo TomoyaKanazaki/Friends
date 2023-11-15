@@ -69,6 +69,7 @@ const char *CPlayer::m_apModelFile[mylib_const::MAX_PLAYER] =	// ƒ‚ƒfƒ‹‚Ìƒtƒ@ƒCƒ
 
 bool CPlayer::m_bAllLandInjectionTable = false;	// ‘Sˆõ‚ÌŽËo‘ä’…’n”»’è
 bool CPlayer::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// ŽËo‘ä‚Ì’…’n”»’è
+int CPlayer::m_nChaseTopIdx = 0;	// ’Ç]‚Ìæ“ªƒCƒ“ƒfƒbƒNƒX”Ô†
 
 //==========================================================================
 // ƒRƒ“ƒXƒgƒ‰ƒNƒ^
@@ -169,6 +170,7 @@ HRESULT CPlayer::Init(void)
 	m_bLandOld = true;		// ‘O‰ñ‚Ì’…’nó‘Ô
 	m_bAllLandInjectionTable = false;	// ‘Sˆõ‚ÌŽËo‘ä’…’n”»’è
 	memset(&m_bLandInjectionTable[0], false, sizeof(m_bLandInjectionTable));	// ŽËo‘ä‚Ì’…’n”»’è
+	m_nChaseTopIdx = 0;		// ’Ç]‚Ìæ“ªƒCƒ“ƒfƒbƒNƒX”Ô†
 
 	// ƒLƒƒƒ‰ì¬
 	HRESULT hr = SetCharacter(m_apModelFile[m_nMyPlayerIdx]);
@@ -331,9 +333,6 @@ void CPlayer::Update(void)
 	UpdateState();
 
 
-	// ƒJƒƒ‰‚Ìî•ñŽæ“¾
-	CCamera *pCamera = CManager::GetInstance()->GetScene()->GetMultiCamera(m_nMyPlayerIdx);
-
 	// ˆÊ’uŽæ“¾
 	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 posCenter = GetCenterPosition();
@@ -344,9 +343,16 @@ void CPlayer::Update(void)
 	// Œü‚«Žæ“¾
 	D3DXVECTOR3 rot = GetRotation();
 
+
+
 	// ’Ç]–Ú•W‚Ìî•ñÝ’è
-	pCamera->SetTargetPosition(pos);
-	pCamera->SetTargetRotation(rot);
+	if (m_nChaseTopIdx == m_nMyPlayerIdx)
+	{
+		// ƒJƒƒ‰‚Ìî•ñŽæ“¾
+		CCamera *pCamera = CManager::GetInstance()->GetCamera();
+		pCamera->SetTargetPosition(pos);
+		pCamera->SetTargetRotation(rot);
+	}
 
 	// ‰e‚ÌˆÊ’uXV
 	if (m_pShadow != NULL)
@@ -361,6 +367,7 @@ void CPlayer::Update(void)
 		m_pHPGauge->SetLife(GetLife());
 	}
 
+#if 0
 	// ƒfƒoƒbƒO•\Ž¦
 	CManager::GetInstance()->GetDebugProc()->Print(
 		"------------------[ƒvƒŒƒCƒ„[‚Ì‘€ì]------------------\n"
@@ -368,6 +375,8 @@ void CPlayer::Update(void)
 		"Œü‚«FyXF%f, YF%f, ZF%fz yZ / Cz\n"
 		"ˆÚ“®—ÊFyXF%f, YF%f, ZF%fz\n"
 		"‘Ì—ÍFy%dz\n", pos.x, pos.y, pos.z, posCenter.x, posCenter.y, posCenter.z, rot.x, rot.y, rot.y, move.x, move.y, move.z, GetLife());
+#endif
+
 }
 
 //==========================================================================
@@ -383,7 +392,7 @@ void CPlayer::Controll(void)
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
 	// ƒJƒƒ‰‚Ìî•ñŽæ“¾
-	CCamera *pCamera = CManager::GetInstance()->GetScene()->GetMultiCamera(m_nMyPlayerIdx);
+	CCamera *pCamera = CManager::GetInstance()->GetCamera();
 
 	// ƒJƒƒ‰‚ÌŒü‚«Žæ“¾
 	D3DXVECTOR3 Camerarot = pCamera->GetRotation();

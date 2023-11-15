@@ -399,15 +399,8 @@ void CEnemyBee::AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo)
 		return;
 	}
 
-	// 判定するパーツのマトリックス取得
-	D3DXMATRIX mtxWepon = GetObjectChara()->GetModel()[nModelNum]->GetWorldMtx();
-
-	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, ATKInfo.Offset.x, ATKInfo.Offset.y, ATKInfo.Offset.z);
-	D3DXMatrixMultiply(&mtxWepon, &mtxTrans, &mtxWepon);
-
 	// 武器の位置
-	D3DXVECTOR3 weponpos = D3DXVECTOR3(mtxWepon._41, mtxWepon._42, mtxWepon._43);
+	D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), ATKInfo);
 
 	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 

@@ -211,6 +211,9 @@
     <ClCompile Include="list.cpp" />
     <ClCompile Include="listmanager.cpp" />
     <ClCompile Include="logo_complete.cpp" />
+    <ClCompile Include="logo_mechanion.cpp" />
+    <ClCompile Include="logo_mekanion.cpp" />
+    <ClCompile Include="logo_squadron.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="map.cpp" />
@@ -318,6 +321,9 @@
     <ClInclude Include="list.h" />
     <ClInclude Include="listmanager.h" />
     <ClInclude Include="logo_complete.h" />
+    <ClInclude Include="logo_mechanion.h" />
+    <ClInclude Include="logo_mekanion.h" />
+    <ClInclude Include="logo_squadron.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="map.h" />

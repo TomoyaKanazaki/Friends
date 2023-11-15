@@ -381,6 +381,15 @@
     <ClCompile Include="logo_complete.cpp">
       <Filter>金崎の作業部分</Filter>
     </ClCompile>
+    <ClCompile Include="logo_mechanion.cpp">
+      <Filter>金崎の作業部分</Filter>
+    </ClCompile>
+    <ClCompile Include="logo_mekanion.cpp">
+      <Filter>金崎の作業部分</Filter>
+    </ClCompile>
+    <ClCompile Include="logo_squadron.cpp">
+      <Filter>金崎の作業部分</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -687,6 +696,15 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="logo_complete.h">
+      <Filter>金崎の作業部分</Filter>
+    </ClInclude>
+    <ClInclude Include="logo_mechanion.h">
+      <Filter>金崎の作業部分</Filter>
+    </ClInclude>
+    <ClInclude Include="logo_mekanion.h">
+      <Filter>金崎の作業部分</Filter>
+    </ClInclude>
+    <ClInclude Include="logo_squadron.h">
       <Filter>金崎の作業部分</Filter>
     </ClInclude>
   </ItemGroup>

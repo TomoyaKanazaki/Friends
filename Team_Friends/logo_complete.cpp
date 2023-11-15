@@ -6,6 +6,7 @@
 //==========================================
 #include "logo_complete.h"
 #include "manager.h"
+#include "renderer.h"
 #include "texture.h"
 
 //==========================================
@@ -71,9 +72,18 @@ void CLogo_Comp::Update(void)
 //  描画処理
 //==========================================
 void CLogo_Comp::Draw(void)
-{
+{	
+	// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
+
+	// ライティングを無効にする
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
 	//描画
 	CObject3D::Draw();
+
+	// ライティングを無効にする
+	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 }
 
 //==========================================

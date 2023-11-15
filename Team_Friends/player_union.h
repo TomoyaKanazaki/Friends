@@ -101,6 +101,7 @@ protected:
 		bool bMove;			// 移動中かどうか
 	};
 
+	void ReadMultiCharacter(const char *pTextFile);			// 複数キャラクター読み込み
 	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
 	virtual void AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo);	// 攻撃時処理
 	virtual void ControllParts(void);	// パーツのコントロール処理

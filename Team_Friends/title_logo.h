@@ -9,6 +9,14 @@
 #include "object.h"
 
 //==========================================
+//  前方宣言
+//==========================================
+class CLogo_Mech;
+class CLogo_Meka;
+class CLogo_Sqou;
+class CLogo_Comp;
+
+//==========================================
 //  クラス定義
 //==========================================
 class CTitleLogo : public CObject
@@ -28,6 +36,12 @@ public:
 	static CTitleLogo* Create();
 
 private:
+
+	//メンバ変数
+	CLogo_Mech* m_pMech;
+	CLogo_Meka* m_pMeka;
+	CLogo_Sqou* m_pSqou;
+	CLogo_Comp* m_pComp;
 
 };
 

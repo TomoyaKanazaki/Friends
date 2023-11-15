@@ -622,7 +622,10 @@ void CPlayer::Controll(void)
 	// –Ú•W‚ÌŒü‚«İ’è
 	SetRotDest(fRotDest);
 
-	if (CGame::GetGameManager()->IsControll())
+	if (CGame::GetGameManager()->IsControll() &&
+		m_state != STATE_DEAD &&
+		m_state != STATE_FADEOUT &&
+		m_state != STATE_COMPACTUNION)
 	{// s“®‚Å‚«‚é‚Æ‚«
 
 		if (m_sMotionFrag.bATK == false && 

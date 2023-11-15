@@ -301,7 +301,6 @@ void CCompactCore::CollisionPlayer(void)
 				m_state = STATE_GET;
 				m_nCntState = TIME_GET;
 
-
 				// ƒvƒŒƒCƒ„[‚ğŠÈˆÕ‡‘Ìó‘Ô‚Éİ’è
 				int nParent = nGetPlayerIdx[0];
 				int nExcept = nGetPlayerIdx[1];

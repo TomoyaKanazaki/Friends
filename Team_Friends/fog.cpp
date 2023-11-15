@@ -7,6 +7,7 @@
 #include "fog.h"
 #include "manager.h"
 #include "renderer.h"
+#include "debugproc.h"
 
 //==========================================
 //  変数宣言
@@ -32,6 +33,25 @@ void Fog::Set(bool bUse)
 //==========================================
 void Fog::Draw()
 {
+	//デバッグ表示
+	if (m_bUse)
+	{
+		CManager::GetInstance()->GetDebugProc()->Print("フォグ 【 ON 】\n");
+		CManager::GetInstance()->GetDebugProc()->Print
+		(
+			"フォグ手前 : %f\n"
+			"フォグの奥 : %f\n"
+			"フォグの色 : %f, %f, %f, %f\n",
+			m_fStart,
+			m_fEnd,
+			m_col.r, m_col.g, m_col.b, m_col.a
+		);
+	}
+	else
+	{
+		CManager::GetInstance()->GetDebugProc()->Print("フォグ 【 OFF 】\n");
+	}
+
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 

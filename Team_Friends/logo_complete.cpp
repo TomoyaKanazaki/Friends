@@ -41,7 +41,7 @@ HRESULT CLogo_Comp::Init(void)
 	SetType(TYPE_OBJECT3D);
 
 	//サイズを設定
-	SetSize(D3DXVECTOR3(3200.0f, 800.0f, 0.0f));
+	SetSize(D3DXVECTOR3(24.0f, 6.0f, 0.0f));
 
 	//テクスチャの割り当て
 	this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_pTextureFile));
@@ -63,15 +63,6 @@ void CLogo_Comp::Uninit(void)
 //==========================================
 void CLogo_Comp::Update(void)
 {
-	//角度を取得
-	D3DXVECTOR3 rot = GetRotation();
-	rot.x += 0.02f;
-	rot.y += 0.02f;
-	rot.z += 0.02f;
-
-	//角度を更新
-	SetRotation(rot);
-
 	//更新
 	CObject3D::Update();
 }

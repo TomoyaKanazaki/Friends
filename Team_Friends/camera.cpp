@@ -32,7 +32,7 @@
 #define BACKFOLLOW_TIME	(20)				// 背面補正までの時間
 #define TITLE_POSR_DEST	(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
 #define TITLE_LEN_DEST	(3660.0f)
-#define TITLECAMERAROT_NONE		(D3DXVECTOR3(0.0f, -0.79f, -0.40f))
+#define TITLECAMERAROT_NONE		(D3DXVECTOR3(0.0f, 0.0f, D3DX_PI * 0.01f))
 #define TITLECAMERAROT_ENEMY	(D3DXVECTOR3(0.0f, -0.79f, -0.12f))
 #define TITLESTATE_CHANGE	(60 * 14)
 #define TITLESTATE_CHASE	(60 * 20)
@@ -154,7 +154,7 @@ void CCamera::Update(void)
 		MoveCameraV();
 		MoveCameraDistance();
 		MoveCameraDistance();
-		UpdateByMode();
+		//UpdateByMode();
 
 		if (m_state == CAMERASTATE_SHAKE)
 		{
@@ -212,10 +212,6 @@ void CCamera::UpdateByMode(void)
 	switch (CManager::GetInstance()->GetMode())
 	{
 	case CScene::MODE_TITLE:
-		
-		// 回転させる
-		m_rot.y += D3DX_PI * 0.001f;
-		RotNormalize(m_rot.y);
 		break;
 
 	case CScene::MODE_GAME:
@@ -1075,10 +1071,8 @@ void CCamera::ResetBoss(void)
 //==========================================================================
 void CCamera::ResetTitle(void)
 {
-	//m_posR = D3DXVECTOR3(1650.82f, 528.53f, -1663.43f);	// 注視点(見たい場所)
-	//m_posV = D3DXVECTOR3(2620.44f, 893.82f, -2481.46f);	// 視点(カメラの位置)
-	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 注視点(見たい場所)
-	m_posV = D3DXVECTOR3(2401.44f, 1542.82f, -2355.46f);	// 視点(カメラの位置)
+	m_posR = D3DXVECTOR3(0.0f, 300.0f, 0.0f);	// 注視点(見たい場所)
+	m_posV = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 視点(カメラの位置)
 	m_posVDest = m_posV;								// 目標の視点
 	m_posRDest = m_posR;								// 目標の注視点
 	m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);				// 上方向ベクトル
@@ -1099,6 +1093,7 @@ void CCamera::ResetTitle(void)
 	m_fDistanceCorrection = 0;							// 距離の慣性補正係数
 	m_fDistanceDecrementValue = 0.0f;					// 距離の減少係数
 	m_fHeightMaxDest = 0.0f;							// カメラの最大高さの目標
+	m_bFollow = false; // 追従しないでね
 }
 
 //==========================================================================

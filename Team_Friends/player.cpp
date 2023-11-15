@@ -1313,6 +1313,7 @@ void CPlayer::UpdateState(void)
 		break;
 
 	case STATE_RELEASEUNION:
+		StateReleaseUnion();
 		break;
 	}
 }

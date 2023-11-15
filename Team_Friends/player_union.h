@@ -47,7 +47,19 @@ public:
 	{
 		TYPE_ALL = 0,	// 全員合体
 		TYPE_BODYtoLEG,	// 胴×脚
+		TYPE_BODYtoARM,	// 胴×腕
+		TYPE_LEGtoARM,	// 脚×腕
+		TYPE_ARMtoARM,	// 腕×腕
 		TYPE_MAX
+	};
+
+	enum eParts
+	{
+		PARTS_BODY = 0,
+		PARTS_LEG,
+		PARTS_R_ARM,
+		PARTS_L_ARM,
+		PARTS_MAX
 	};
 
 	CPlayerUnion(int nPriority = mylib_const::DEF2D_PRIORITY);
@@ -81,15 +93,6 @@ protected:
 		MOTION_JUMP,			// ジャンプ
 		MOTION_FALL,			// 落下中
 		MOTION_MAX
-	};
-
-	enum eParts
-	{
-		PARTS_BODY = 0,
-		PARTS_LEG,
-		PARTS_R_ARM,
-		PARTS_L_ARM,
-		PARTS_MAX
 	};
 
 	// モーションの判定
@@ -163,7 +166,6 @@ private:
 	CHP_GaugePlayer *m_pHPGauge;	// HPゲージの情報
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定
-	static const char *m_apModelFile[mylib_const::MAX_PLAYER];	// モデルのファイル
 };
 
 

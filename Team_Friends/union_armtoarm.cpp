@@ -1,10 +1,10 @@
 //=============================================================================
 // 
-//  プレイヤー処理 [union_bodytoleg.cpp]
+//  プレイヤー処理 [union_armtoarm.cpp]
 //  Author : 相馬靜雅
 // 
 //=============================================================================
-#include "union_bodytoleg.h"
+#include "union_armtoarm.h"
 #include "player_union.h"
 #include "player.h"
 #include "game.h"
@@ -24,7 +24,6 @@
 #include "3D_Effect.h"
 #include "impactwave.h"
 
-
 //==========================================================================
 // マクロ定義
 //==========================================================================
@@ -34,16 +33,11 @@
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
-const char *CUnion_BodytoLeg::m_apModelFile[mylib_const::MAX_PLAYER] =	// モデルのファイル
-{
-	"data\\TEXT\\player_union\\motion_body.txt",
-	"data\\TEXT\\player_union\\motion_leg.txt",
-};
 
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CUnion_BodytoLeg::CUnion_BodytoLeg(int nPriority) : CPlayerUnion(nPriority)
+CUnion_ArntoArm::CUnion_ArntoArm(int nPriority) : CPlayerUnion(nPriority)
 {
 	
 }
@@ -51,7 +45,7 @@ CUnion_BodytoLeg::CUnion_BodytoLeg(int nPriority) : CPlayerUnion(nPriority)
 //==========================================================================
 // デストラクタ
 //==========================================================================
-CUnion_BodytoLeg::~CUnion_BodytoLeg()
+CUnion_ArntoArm::~CUnion_ArntoArm()
 {
 
 }
@@ -59,7 +53,7 @@ CUnion_BodytoLeg::~CUnion_BodytoLeg()
 //==========================================================================
 // 初期化処理
 //==========================================================================
-HRESULT CUnion_BodytoLeg::Init(void)
+HRESULT CUnion_ArntoArm::Init(void)
 {
 	// 初期化
 	CPlayerUnion::Init();
@@ -77,12 +71,12 @@ HRESULT CUnion_BodytoLeg::Init(void)
 //==========================================================================
 // パーツの設定
 //==========================================================================
-HRESULT CUnion_BodytoLeg::CreateParts(void)
+HRESULT CUnion_ArntoArm::CreateParts(void)
 {
 	CObjectChara *pObjChar = NULL;
 
 	// 複数キャラ読み込み
-	ReadMultiCharacter("data\\TEXT\\multicharacter_BodytoLeg.txt");
+	ReadMultiCharacter("data\\TEXT\\multicharacter_ArmtoArm.txt");
 
 #if 0
 	////**********************************
@@ -141,7 +135,7 @@ HRESULT CUnion_BodytoLeg::CreateParts(void)
 //==========================================================================
 // 終了処理
 //==========================================================================
-void CUnion_BodytoLeg::Uninit(void)
+void CUnion_ArntoArm::Uninit(void)
 {
 	
 	// 終了処理
@@ -151,7 +145,7 @@ void CUnion_BodytoLeg::Uninit(void)
 //==========================================================================
 // 更新処理
 //==========================================================================
-void CUnion_BodytoLeg::Update(void)
+void CUnion_ArntoArm::Update(void)
 {
 	// 更新処理
 	CPlayerUnion::Update();
@@ -191,7 +185,7 @@ void CUnion_BodytoLeg::Update(void)
 //==========================================================================
 // パーツのコントロール処理
 //==========================================================================
-void CUnion_BodytoLeg::ControllParts(void)
+void CUnion_ArntoArm::ControllParts(void)
 {
 	// 各部位の操作	
 	for (int i = 0; i < PARTS_MAX; i++)
@@ -210,7 +204,7 @@ void CUnion_BodytoLeg::ControllParts(void)
 //==========================================================================
 // 脚操作
 //==========================================================================
-void CUnion_BodytoLeg::ControllLeg(int nIdx)
+void CUnion_ArntoArm::ControllLeg(int nIdx)
 {
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
@@ -298,7 +292,7 @@ void CUnion_BodytoLeg::ControllLeg(int nIdx)
 //==========================================================================
 // 攻撃操作
 //==========================================================================
-void CUnion_BodytoLeg::ControllATK(int nIdx)
+void CUnion_ArntoArm::ControllATK(int nIdx)
 {
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
@@ -323,7 +317,7 @@ void CUnion_BodytoLeg::ControllATK(int nIdx)
 //==========================================================================
 // モーションの設定
 //==========================================================================
-void CUnion_BodytoLeg::MotionSet(int nIdx)
+void CUnion_ArntoArm::MotionSet(int nIdx)
 {
 	if (m_pMotion[nIdx] == NULL)
 	{// モーションがNULLだったら
@@ -408,7 +402,7 @@ void CUnion_BodytoLeg::MotionSet(int nIdx)
 //==========================================================================
 // 攻撃時処理
 //==========================================================================
-void CUnion_BodytoLeg::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo)
+void CUnion_ArntoArm::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo)
 {
 
 	// 武器の位置
@@ -426,7 +420,7 @@ void CUnion_BodytoLeg::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo
 //==========================================================================
 // ヒット処理
 //==========================================================================
-bool CUnion_BodytoLeg::Hit(const int nValue)
+bool CUnion_ArntoArm::Hit(const int nValue)
 {
 	// 体力取得
 	int nLife = 50;
@@ -557,7 +551,7 @@ bool CUnion_BodytoLeg::Hit(const int nValue)
 //==========================================================================
 // 描画処理
 //==========================================================================
-void CUnion_BodytoLeg::Draw(void)
+void CUnion_ArntoArm::Draw(void)
 {
 	// 描画処理
 	CPlayerUnion::Draw();

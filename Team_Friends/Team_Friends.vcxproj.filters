@@ -372,6 +372,9 @@
     <ClCompile Include="fog.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="logo_complete.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -670,6 +673,9 @@
     </ClInclude>
     <ClInclude Include="fog.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="logo_complete.h">
+      <Filter>金崎の作業部分</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

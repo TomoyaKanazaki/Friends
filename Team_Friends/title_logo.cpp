@@ -5,13 +5,14 @@
 //
 //==========================================
 #include "title_logo.h"
+#include "logo_complete.h"
 
 //==========================================
 //  コンストラクタ
 //==========================================
 CTitleLogo::CTitleLogo()
 {
-
+	
 }
 
 //==========================================
@@ -27,15 +28,22 @@ CTitleLogo::~CTitleLogo()
 //==========================================
 HRESULT CTitleLogo::Init(void)
 {
-	return E_NOTIMPL;
+	//完成したロゴを表示
+	CLogo_Comp::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+
+	//タイプの設定
+	SetType(TYPE_OBJECT3D);
+
+	return S_OK;
 }
 
 //==========================================
 //  終了処理
 //==========================================
 void CTitleLogo::Uninit(void)
-{
-
+{	 
+	//オブジェクトの破棄
+	Release();
 }
 
 //==========================================
@@ -59,5 +67,11 @@ void CTitleLogo::Draw(void)
 //==========================================
 CTitleLogo* CTitleLogo::Create()
 {
-	return nullptr;
+	//インスタンス生成
+	CTitleLogo* pLogo = DEBUG_NEW CTitleLogo;
+
+	//初期化処理
+	pLogo->Init();
+
+	return pLogo;
 }

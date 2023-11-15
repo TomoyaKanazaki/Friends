@@ -2,6 +2,7 @@
 // 
 //  タイトル処理 [title.cpp]
 //  Author : 相馬靜雅
+//  Added by 金崎朋弥
 // 
 //=============================================================================
 #include "title.h"
@@ -12,6 +13,7 @@
 #include "debugproc.h"
 #include "sound.h"
 #include "fog.h"
+#include "title_logo.h"
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -50,6 +52,9 @@ HRESULT CTitle::Init(void)
 
 	//煙をかける
 	Fog::Set(true);
+
+	//タイトルロゴの表示
+	CTitleLogo::Create();
 
 	// 成功
 	return S_OK;

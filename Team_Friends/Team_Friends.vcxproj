@@ -198,6 +198,7 @@
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="fog.cpp" />
+    <ClCompile Include="fog_title.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gamemanager.cpp" />
     <ClCompile Include="hp_gauge.cpp" />
@@ -210,6 +211,7 @@
     <ClCompile Include="light.cpp" />
     <ClCompile Include="list.cpp" />
     <ClCompile Include="listmanager.cpp" />
+    <ClCompile Include="logo.cpp" />
     <ClCompile Include="logo_complete.cpp" />
     <ClCompile Include="logo_mechanion.cpp" />
     <ClCompile Include="logo_mekanion.cpp" />
@@ -311,6 +313,7 @@
     <ClInclude Include="explosion.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="fog.h" />
+    <ClInclude Include="fog_title.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="gamemanager.h" />
     <ClInclude Include="hp_gauge.h" />
@@ -323,6 +326,7 @@
     <ClInclude Include="light.h" />
     <ClInclude Include="list.h" />
     <ClInclude Include="listmanager.h" />
+    <ClInclude Include="logo.h" />
     <ClInclude Include="logo_complete.h" />
     <ClInclude Include="logo_mechanion.h" />
     <ClInclude Include="logo_mekanion.h" />

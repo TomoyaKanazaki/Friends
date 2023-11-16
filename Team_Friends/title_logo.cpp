@@ -10,8 +10,7 @@
 #include "logo_mekanion.h"
 #include "logo_squadron.h"
 
-#include "manager.h"
-#include "input.h"
+//
 
 //==========================================
 //  コンストラクタ
@@ -22,6 +21,8 @@ CTitleLogo::CTitleLogo()
 	m_pMeka = nullptr;
 	m_pSqou = nullptr;
 	m_pComp = nullptr;
+	m_State = DEFAULT;
+	m_bComplete = false;
 }
 
 //==========================================
@@ -39,6 +40,12 @@ HRESULT CTitleLogo::Init(void)
 {
 	//タイプの設定
 	SetType(TYPE_OBJECT3D);
+
+	//MECHANIONロゴを表示
+	if (m_pMech == nullptr)
+	{
+		m_pMech = CLogo_Mech::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	}
 
 	return S_OK;
 }
@@ -85,79 +92,8 @@ void CTitleLogo::Uninit(void)
 //==========================================
 void CTitleLogo::Update(void)
 {	
-	// キーボード情報取得
-	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-
-#ifdef _DEBUG
-
-	if (pInputKeyboard->GetTrigger(DIK_1))
-	{
-		//MECHANIONロゴを表示
-		if (m_pMech == nullptr)
-		{
-			m_pMech = CLogo_Mech::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-		}
-	}
-
-	if (pInputKeyboard->GetTrigger(DIK_2))
-	{
-		//メカニオンロゴを表示
-		if (m_pMeka == nullptr)
-		{
-			m_pMeka = CLogo_Meka::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-		}
-	}
-
-	if (pInputKeyboard->GetTrigger(DIK_3))
-	{
-		//戦隊ロゴを表示
-		if (m_pSqou == nullptr)
-		{
-			m_pSqou = CLogo_Sqou::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-		}
-	}
-
-	if (pInputKeyboard->GetTrigger(DIK_4))
-	{
-		//完成したロゴを表示
-		if (m_pComp == nullptr)
-		{
-			m_pComp = CLogo_Comp::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-		}
-	}
-
-	if (pInputKeyboard->GetTrigger(DIK_5))
-	{
-		//MECHANIONロゴを破棄
-		if (m_pMech != nullptr)
-		{
-			m_pMech->Uninit();
-			m_pMech = nullptr;
-		}
-
-		//メカニオンロゴを破棄
-		if (m_pMeka != nullptr)
-		{
-			m_pMeka->Uninit();
-			m_pMeka = nullptr;
-		}
-
-		//戦隊ロゴを破棄
-		if (m_pSqou != nullptr)
-		{
-			m_pSqou->Uninit();
-			m_pSqou = nullptr;
-		}
-
-		//完成したロゴを破棄
-		if (m_pComp != nullptr)
-		{
-			m_pComp->Uninit();
-			m_pComp = nullptr;
-		}
-	}
-
-#endif
+	//状態更新
+	UpdateState();
 }
 
 //==========================================
@@ -180,4 +116,90 @@ CTitleLogo* CTitleLogo::Create()
 	pLogo->Init();
 
 	return pLogo;
+}
+
+//==========================================
+//  状態を更新
+//==========================================
+void CTitleLogo::UpdateState()
+{
+	//完成していないとき
+	if (!m_bComplete)
+	{
+		switch (m_State)
+		{
+		case DEFAULT: // MECHANIONしかない
+
+			if (m_pMech != nullptr && m_pMech->GetComplete())
+			{
+				//メカニオンロゴを表示
+				if (m_pMeka == nullptr)
+				{
+					m_pMeka = CLogo_Meka::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				}
+
+				//状態を進める
+				m_State = WAKE;
+			}
+			break;
+
+		case WAKE: // メカニオンまで出てる
+
+			if (m_pMeka != nullptr && m_pMeka->GetComplete())
+			{
+				//戦隊ロゴを表示
+				if (m_pSqou == nullptr)
+				{
+					m_pSqou = CLogo_Sqou::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				}
+
+				//状態を進める
+				m_State = FLASH;
+			}
+			break;
+
+		case FLASH: //戦隊まで出てる
+
+			if (m_pSqou != nullptr && m_pSqou->GetComplete())
+			{
+				//MECHANIONロゴを破棄
+				if (m_pMech != nullptr)
+				{
+					m_pMech->Uninit();
+					m_pMech = nullptr;
+				}
+
+				//メカニオンロゴを破棄
+				if (m_pMeka != nullptr)
+				{
+					m_pMeka->Uninit();
+					m_pMeka = nullptr;
+				}
+
+				//戦隊ロゴを破棄
+				if (m_pSqou != nullptr)
+				{
+					m_pSqou->Uninit();
+					m_pSqou = nullptr;
+				}
+
+				//完成したロゴを表示
+				if (m_pComp == nullptr)
+				{
+					m_pComp = CLogo_Comp::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				}
+
+				//状態を進める
+				m_State = COMPLETE;
+			}
+			break;
+
+		case COMPLETE: // 完成している
+			m_bComplete = true; // タイトルロゴを完成
+			break;
+
+		default:
+			break;
+		}
+	}
 }

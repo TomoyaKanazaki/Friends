@@ -9,22 +9,14 @@
 #include "renderer.h"
 #include "texture.h"
 #include "input.h"
-
-//==========================================
-// 静的メンバ変数宣言
-//==========================================
-const char* CLogo_Meka::m_pTextureFile[] = 
-{
-	"data\\TEXTURE\\title\\title_01.png",
-	"data\\TEXTURE\\title\\title_11.png",
-};
+#include "debugproc.h"
 
 //==========================================
 //  コンストラクタ
 //==========================================
 CLogo_Meka::CLogo_Meka()
 {
-
+	m_posVirtual = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
 //==========================================
@@ -41,16 +33,26 @@ CLogo_Meka::~CLogo_Meka()
 HRESULT CLogo_Meka::Init(void)
 {
 	//初期化処理
-	HRESULT hr = CObject3D::Init();
+	HRESULT hr = CLogo::Init();
 
-	//タイプの設定
-	SetType(TYPE_OBJECT3D);
+	// 倒した状態を初期値にする
+	D3DXVECTOR3 rot = GetRotation(); // 角度を取得
+	rot.x = D3DX_PI * -0.5f; // 倒す
+	SetRotation(rot);
 
-	//サイズを設定
-	SetSize(D3DXVECTOR3(24.0f, 6.0f, 0.0f));
+	//仮想中心の設定
+	D3DXVECTOR3 pos = GetPosition(); // 中心座標を取得
+	D3DXVECTOR3 size = GetSize(); // ポリゴンの大きさを取得
+	m_posVirtual = pos; // 仮想中心を初期化
+	m_posVirtual.y = pos.y - size.y; // 座標を補正する
+
+	// 仮想中心に合わせて実際の中心座標を補正する
+	pos.z = sinf(rot.x) * size.y + m_posVirtual.z; // z
+	pos.y = cosf(rot.x) * size.y + m_posVirtual.y; // y
+	SetPosition(pos);  //設定
 
 	//テクスチャの割り当て
-	this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_pTextureFile[0]));
+	this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[1]));
 
 	return hr;
 }
@@ -61,7 +63,7 @@ HRESULT CLogo_Meka::Init(void)
 void CLogo_Meka::Uninit(void)
 {
 	//終了
-	CObject3D::Uninit();
+	CLogo::Uninit();
 }
 
 //==========================================
@@ -69,22 +71,43 @@ void CLogo_Meka::Uninit(void)
 //==========================================
 void CLogo_Meka::Update(void)
 {
+	//回転
+	D3DXVECTOR3 rot = GetRotation();
+	rot.x += 0.02f;
+	if (rot.x >= 0.0f)
+	{
+		rot.x = 0.0f;
+		SetComplete(true);
+	}
+	SetRotation(rot);
+
+	// 仮想中心に合わせて実際の中心座標を補正する
+	D3DXVECTOR3 pos = GetPosition(); // 中心座標を取得
+	D3DXVECTOR3 size = GetSize(); // ポリゴンの大きさを取得
+	pos.z = sinf(rot.x) * size.y + m_posVirtual.z; // z
+	pos.y = cosf(rot.x) * size.y + m_posVirtual.y; // y
+	SetPosition(pos);  //設定
+
+#ifdef _DEBUG
+
 	// キーボード情報取得
 	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 
 	if (pInputKeyboard->GetTrigger(DIK_6))
 	{
 		//テクスチャの割り当て
-		this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_pTextureFile[0]));
+		this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[1]));
 	}
 	if (pInputKeyboard->GetTrigger(DIK_7))
 	{
 		//テクスチャの割り当て
-		this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_pTextureFile[1]));
+		this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[4]));
 	}
 
+#endif
+
 	//更新
-	CObject3D::Update();
+	CLogo::Update();
 }
 
 //==========================================
@@ -92,17 +115,8 @@ void CLogo_Meka::Update(void)
 //==========================================
 void CLogo_Meka::Draw(void)
 {
-	// デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
-
-	// ライティングを無効にする
-	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-
 	//描画
-	CObject3D::Draw();
-
-	// ライティングを無効にする
-	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+	CLogo::Draw();
 }
 
 //==========================================
@@ -113,12 +127,11 @@ CLogo_Meka* CLogo_Meka::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	//インスタンス生成
 	CLogo_Meka* pLogo = DEBUG_NEW CLogo_Meka;
 
-	//初期化処理
-	pLogo->Init();
-
 	//値を設定
 	pLogo->SetPosition(pos);
-	pLogo->SetRotation(rot);
+
+	//初期化処理
+	pLogo->Init();
 
 	return pLogo;
 }

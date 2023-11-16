@@ -6,12 +6,12 @@
 //==========================================
 #ifndef _SQUADRON_H_
 #define _SQUADRON_H_
-#include "object3D.h"
+#include "logo.h"
 
 //==========================================
 //  クラス定義
 //==========================================
-class CLogo_Sqou : public CObject3D
+class CLogo_Sqou : public CLogo
 {
 public:
 
@@ -29,8 +29,14 @@ public:
 
 private:
 
+	//メンバ変数
+	int m_nCntFlash;
+	float m_fTime;
+
 	//静的メンバ変数
-	static const char* m_pTextureFile; //テクスチャのファイル
+	static const float m_fFlashTime;
+	static const int m_nFlashNum;
+
 };
 
 #endif

@@ -27,8 +27,10 @@
 //==========================================================================
 // マクロ定義
 //==========================================================================
-#define LIFE_UNION	(60 * 25)	// 合体寿命
-#define DEADTIME	(120)		// 死亡時の時間
+#define LIFE_UNION			(60 * 200)	// 合体寿命
+#define DEADTIME			(120)		// 死亡時の時間
+#define MAX_ALTERNATELY		(4)			// 交互攻撃の回数
+#define INTERVAL_ALTERNATELY	(60)			// 交互攻撃のインターバル
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -39,7 +41,11 @@
 //==========================================================================
 CUnion_ArntoArm::CUnion_ArntoArm(int nPriority) : CPlayerUnion(nPriority)
 {
-	
+	// 値のクリア
+	m_nInputSuperAtkIdx = 0;	// 必殺技入力のインデックス
+	m_nIntervalAlternately = 0;	// 交互入力のインターバル
+	m_nCntInputSuperATK = 0;	// 必殺技の入力回数
+	m_bSuperATK = false;		// 必殺技の判定
 }
 
 //==========================================================================
@@ -180,6 +186,13 @@ void CUnion_ArntoArm::Update(void)
 		return;
 	}
 
+
+	// デバッグ表示
+	CManager::GetInstance()->GetDebugProc()->Print(
+		"------------------[必殺！！！！！！！]------------------\n"
+		"入力受付中のインデックス：【%d】\n"
+		"入力回数：【%d】 \n", m_nInputSuperAtkIdx, m_nCntInputSuperATK);
+
 }
 
 //==========================================================================
@@ -191,13 +204,44 @@ void CUnion_ArntoArm::ControllParts(void)
 	for (int i = 0; i < PARTS_MAX; i++)
 	{
 		int nPartsIdx = CManager::GetInstance()->GetByPlayerPartsType(i);
-		
+
 		if (i == m_nControllMoveIdx)
 		{
 			// 脚移動操作
 			ControllLeg(i);
 		}
-		ControllATK(i);
+
+		// 攻撃操作
+		ControllATK(i, m_nPartsIdx[i]);
+	}
+
+
+	// 攻撃の入力カウンター減算
+	m_nCntInputAtk--;
+	if (m_nCntInputAtk <= 0)
+	{
+		m_nCntInputAtk = 0;
+
+		// 必殺技の入力回数リセット
+		m_nCntInputSuperATK = 0;
+	}
+
+	if (m_bSuperATK == true)
+	{
+		m_bSuperATK = false;
+	}
+
+	if (m_bSuperATK == false &&
+		m_nCntInputSuperATK >= MAX_ALTERNATELY)
+	{
+		// チャージ解除
+		for (int i = 0; i < PARTS_MAX; i++)
+		{
+			m_sMotionFrag[i].bCharge = false;
+		}
+
+		// 必殺技状態
+		m_bSuperATK = true;
 	}
 }
 
@@ -292,20 +336,53 @@ void CUnion_ArntoArm::ControllLeg(int nIdx)
 //==========================================================================
 // 攻撃操作
 //==========================================================================
-void CUnion_ArntoArm::ControllATK(int nIdx)
+void CUnion_ArntoArm::ControllATK(int nIdx, int nLoop)
 {
+	if (m_pMotion[nIdx] != NULL &&
+		m_pMotion[nIdx]->GetType() == MOTION_SUPERATK)
+	{
+		return;
+	}
+
+	if (nLoop < 0)
+	{
+		return;
+	}
+
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 	
-	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nIdx)))
+	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)))
 	{// 攻撃
 
 		// チャージ判定
 		m_sMotionFrag[nIdx].bCharge = true;
+
+		if (m_nInputSuperAtkIdx == nLoop)
+		{// 入力受付中のインデックスと同じだったら
+
+			// 必殺技の入力回数加算
+			m_nCntInputSuperATK++;
+
+			// 攻撃の入力カウンターリセット
+			m_nCntInputAtk = INTERVAL_ALTERNATELY;
+
+			// 必殺技入力のインデックス切り替え
+			m_nInputSuperAtkIdx = (m_nInputSuperAtkIdx == m_nPartsIdx[1]) ? m_nPartsIdx[0] : m_nPartsIdx[1];
+		}
+		else
+		{
+			// 入力カウンターリセット
+			m_nCntInputAtk = 0;
+
+			// 必殺技の入力回数リセット
+			m_nCntInputSuperATK = 0;
+		}
+
 	}
 
 	if (m_sMotionFrag[nIdx].bCharge == true &&
-		pInputGamepad->GetRelease(CInputGamepad::BUTTON_A, nIdx))
+		pInputGamepad->GetRelease(CInputGamepad::BUTTON_A, nLoop))
 	{// チャージ中に攻撃ボタンを離したら
 
 		// 攻撃中
@@ -367,6 +444,15 @@ void CUnion_ArntoArm::MotionSet(int nIdx)
 			// 落下モーション
 			m_pMotion[nIdx]->Set(MOTION_FALL);
 		}
+		else if (m_bSuperATK == true)
+		{// 必殺技中だったら
+
+			// 必殺技の入力回数リセット
+			m_nCntInputSuperATK = 0;
+
+			// 必殺技モーション
+			m_pMotion[nIdx]->Set(MOTION_SUPERATK);
+		}
 		else if (m_sMotionFrag[nIdx].bCharge == true)
 		{// チャージ中だったら
 
@@ -413,6 +499,10 @@ void CUnion_ArntoArm::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo 
 	{
 	case MOTION_ATK:
 		
+		break;
+
+	case MOTION_SUPERATK:
+		my_particle::Create(weponpos, my_particle::TYPE_MAGIC_EXPLOSION);
 		break;
 	}
 }

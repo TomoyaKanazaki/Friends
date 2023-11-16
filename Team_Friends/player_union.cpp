@@ -82,6 +82,7 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_bDead = false;			// 死亡中かどうか
 	m_nUnionLife = 0;			// 合体時間
 	m_nCntWalk = 0;				// 歩行カウンター
+	m_nCntInputAtk = 0;			// 攻撃の入力カウンター
 	m_state = STATE_NONE;		// 状態
 	memset(&m_pMotion[0], NULL, sizeof(m_pMotion));	// パーツ分のモーションポインタ
 	memset(&m_sMotionFrag[0], false, sizeof(m_sMotionFrag));	// モーションのフラグ
@@ -182,6 +183,11 @@ HRESULT CPlayerUnion::Init(void)
 	m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
 	memset(&m_bLandInjectionTable[0], false, sizeof(m_bLandInjectionTable));	// 射出台の着地判定
 	m_nUnionLife = 0;		// 合体時間
+
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		m_nPartsIdx[i] = -1;
+	}
 
 	// キャラ作成
 	CreateParts();
@@ -501,6 +507,7 @@ void CPlayerUnion::Update(void)
 		m_pHPGauge->SetLife(50);
 	}
 
+#if 0
 	// デバッグ表示
 	CManager::GetInstance()->GetDebugProc()->Print(
 		"------------------[プレイヤーの操作]------------------\n"
@@ -508,6 +515,7 @@ void CPlayerUnion::Update(void)
 		"向き：【X：%f, Y：%f, Z：%f】 【Z / C】\n"
 		"移動量：【X：%f, Y：%f, Z：%f】\n"
 		"体力：【%d】\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.y, move.x, move.y, move.z, 50);
+#endif
 }
 
 //==========================================================================
@@ -531,7 +539,7 @@ void CPlayerUnion::Controll(void)
 	D3DXVECTOR3 rot = GetRotation();
 
 	// 経過時間取得
-	float fCurrentTime = CManager::GetInstance()->DeltaTime();
+	float fCurrentTime = CManager::GetInstance()->GetDeltaTime();
 
 	if (CGame::GetGameManager()->IsControll())
 	{// 行動できるとき
@@ -2109,6 +2117,7 @@ void CPlayerUnion::ReadMultiCharacter(const char *pTextFile)
 void CPlayerUnion::SetPlayerByPartsIdx(int nPartsIdx, int nPlayerIdx)
 {
 	m_nPartsIdx[nPartsIdx] = nPlayerIdx;
+	m_nInputSuperAtkIdx = nPlayerIdx;
 }
 
 //==========================================================================

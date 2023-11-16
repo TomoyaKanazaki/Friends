@@ -6,12 +6,12 @@
 //==========================================
 #ifndef _LOGO_COMPLETE_H_
 #define _LOGO_COMPLETE_H_
-#include "object3D.h"
+#include "logo.h"
 
 //==========================================
 //  クラス定義
 //==========================================
-class CLogo_Comp : public CObject3D
+class CLogo_Comp : public CLogo
 {
 public:
 
@@ -27,10 +27,6 @@ public:
 	//静的メンバ関数
 	static CLogo_Comp* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 
-private:
-
-	//静的メンバ変数
-	static const char* m_pTextureFile; //テクスチャのファイル
 };
 
 #endif

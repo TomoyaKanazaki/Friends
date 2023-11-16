@@ -26,6 +26,7 @@ CTitle::CTitle()
 {
 	// 値のクリア
 	m_nCntSwitch = 0;		// 切り替えのカウンター
+	m_pLogo = nullptr;
 }
 
 //==========================================================================
@@ -59,7 +60,10 @@ HRESULT CTitle::Init(void)
 	Fog::SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 
 	//タイトルロゴの表示
-	CTitleLogo::Create();
+	if (m_pLogo == nullptr)
+	{
+		m_pLogo = CTitleLogo::Create();
+	}
 
 	// 成功
 	return S_OK;
@@ -70,8 +74,15 @@ HRESULT CTitle::Init(void)
 //==========================================================================
 void CTitle::Uninit(void)
 {
-	//煙を払う
+	// 煙を払う
 	Fog::Set(false);
+
+	// タイトルロゴを破棄
+	if (m_pLogo != nullptr)
+	{
+		m_pLogo->Uninit();
+		m_pLogo = nullptr;
+	}
 
 	// 終了処理
 	CScene::Uninit();
@@ -101,6 +112,12 @@ void CTitle::Update(void)
 	}
 
 	if (m_nCntSwitch <= 120)
+	{
+		return;
+	}
+
+	//タイトルロゴが完成していないときは抜ける
+	if (!m_pLogo->GetComplete())
 	{
 		return;
 	}

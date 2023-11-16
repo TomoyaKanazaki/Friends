@@ -11,15 +11,6 @@
 #include "input.h"
 
 //==========================================
-// 静的メンバ変数宣言
-//==========================================
-const char* CLogo_Meka::m_pTextureFile[] = 
-{
-	"data\\TEXTURE\\title\\title_01.png",
-	"data\\TEXTURE\\title\\title_11.png",
-};
-
-//==========================================
 //  コンストラクタ
 //==========================================
 CLogo_Meka::CLogo_Meka()
@@ -41,16 +32,10 @@ CLogo_Meka::~CLogo_Meka()
 HRESULT CLogo_Meka::Init(void)
 {
 	//初期化処理
-	HRESULT hr = CObject3D::Init();
-
-	//タイプの設定
-	SetType(TYPE_OBJECT3D);
-
-	//サイズを設定
-	SetSize(D3DXVECTOR3(24.0f, 6.0f, 0.0f));
+	HRESULT hr = CLogo::Init();
 
 	//テクスチャの割り当て
-	this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_pTextureFile[0]));
+	this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[1]));
 
 	return hr;
 }
@@ -61,7 +46,7 @@ HRESULT CLogo_Meka::Init(void)
 void CLogo_Meka::Uninit(void)
 {
 	//終了
-	CObject3D::Uninit();
+	CLogo::Uninit();
 }
 
 //==========================================
@@ -75,16 +60,23 @@ void CLogo_Meka::Update(void)
 	if (pInputKeyboard->GetTrigger(DIK_6))
 	{
 		//テクスチャの割り当て
-		this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_pTextureFile[0]));
+		this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[1]));
 	}
 	if (pInputKeyboard->GetTrigger(DIK_7))
 	{
 		//テクスチャの割り当て
-		this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_pTextureFile[1]));
+		this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[4]));
 	}
 
+#ifdef _DEBUG
+	if (pInputKeyboard->GetTrigger(DIK_2))
+	{
+		SetComplete(true);
+	}
+#endif
+
 	//更新
-	CObject3D::Update();
+	CLogo::Update();
 }
 
 //==========================================
@@ -92,17 +84,8 @@ void CLogo_Meka::Update(void)
 //==========================================
 void CLogo_Meka::Draw(void)
 {
-	// デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
-
-	// ライティングを無効にする
-	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-
 	//描画
-	CObject3D::Draw();
-
-	// ライティングを無効にする
-	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+	CLogo::Draw();
 }
 
 //==========================================

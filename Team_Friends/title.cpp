@@ -171,4 +171,19 @@ void CTitle::WhiteOut()
 
 	// 色を適用する
 	Fog::SetCol(m_col);
+
+#ifdef _DEBUG
+	// キーボード情報取得
+	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	if (pInputKeyboard->GetTrigger(DIK_1))
+	{
+		// fog消し
+		Fog::Set(false);
+	}
+	if (pInputKeyboard->GetTrigger(DIK_2))
+	{
+		// fog焚き
+		Fog::Set(true);
+	}
+#endif
 }

@@ -9,20 +9,30 @@
 #include "logo_mechanion.h"
 #include "logo_mekanion.h"
 #include "logo_squadron.h"
+#include "manager.h"
+#include "debugproc.h"
+#include "camera.h"
 
-//
+//==========================================
+//  定数定義
+//==========================================
+namespace
+{
+	const D3DXVECTOR3 DIFF_POS = D3DXVECTOR3(0.0f, 15.0f, 50.0f);
+}
 
 //==========================================
 //  コンストラクタ
 //==========================================
-CTitleLogo::CTitleLogo()
+CTitleLogo::CTitleLogo():
+m_pMech(nullptr),
+m_pMeka(nullptr),
+m_pSqou(nullptr),
+m_pComp(nullptr),
+m_State(DEFAULT),
+m_bComplete(false)
 {
-	m_pMech = nullptr;
-	m_pMeka = nullptr;
-	m_pSqou = nullptr;
-	m_pComp = nullptr;
-	m_State = DEFAULT;
-	m_bComplete = false;
+	
 }
 
 //==========================================
@@ -41,10 +51,13 @@ HRESULT CTitleLogo::Init(void)
 	//タイプの設定
 	SetType(TYPE_OBJECT3D);
 
+	//ロゴの位置を設定
+	SetPosition(CManager::GetInstance()->GetCamera()->GetPositionV() + DIFF_POS);
+
 	//MECHANIONロゴを表示
 	if (m_pMech == nullptr)
 	{
-		m_pMech = CLogo_Mech::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		m_pMech = CLogo_Mech::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	}
 
 	return S_OK;
@@ -94,6 +107,13 @@ void CTitleLogo::Update(void)
 {	
 	//状態更新
 	UpdateState();
+
+	//デバッグ表示
+	D3DXVECTOR3 pos = GetPosition();
+	CManager::GetInstance()->GetDebugProc()->Print
+	(
+		"位置 : ( %f, %f, %f )\n", pos.x, pos.y, pos.z
+	);
 }
 
 //==========================================
@@ -135,7 +155,7 @@ void CTitleLogo::UpdateState()
 				//メカニオンロゴを表示
 				if (m_pMeka == nullptr)
 				{
-					m_pMeka = CLogo_Meka::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+					m_pMeka = CLogo_Meka::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 				}
 
 				//状態を進める
@@ -150,7 +170,7 @@ void CTitleLogo::UpdateState()
 				//戦隊ロゴを表示
 				if (m_pSqou == nullptr)
 				{
-					m_pSqou = CLogo_Sqou::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+					m_pSqou = CLogo_Sqou::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 				}
 
 				//状態を進める
@@ -186,7 +206,7 @@ void CTitleLogo::UpdateState()
 				//完成したロゴを表示
 				if (m_pComp == nullptr)
 				{
-					m_pComp = CLogo_Comp::Create(D3DXVECTOR3(0.0f, 200.0f, -3600.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+					m_pComp = CLogo_Comp::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 				}
 
 				//状態を進める

@@ -198,7 +198,6 @@
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="fog.cpp" />
-    <ClCompile Include="fog_title.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gamemanager.cpp" />
     <ClCompile Include="hp_gauge.cpp" />
@@ -313,7 +312,6 @@
     <ClInclude Include="explosion.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="fog.h" />
-    <ClInclude Include="fog_title.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="gamemanager.h" />
     <ClInclude Include="hp_gauge.h" />

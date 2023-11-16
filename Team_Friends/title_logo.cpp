@@ -10,8 +10,7 @@
 #include "logo_mekanion.h"
 #include "logo_squadron.h"
 
-#include "manager.h"
-#include "input.h"
+//
 
 //==========================================
 //  コンストラクタ
@@ -95,9 +94,6 @@ void CTitleLogo::Update(void)
 {	
 	//状態更新
 	UpdateState();
-
-	//デバッグ用関数
-	DebugFunction();
 }
 
 //==========================================
@@ -206,48 +202,4 @@ void CTitleLogo::UpdateState()
 			break;
 		}
 	}
-}
-
-//==========================================
-//  デバッグ用の処理を詰めた関数
-//==========================================
-void CTitleLogo::DebugFunction()
-{
-	// キーボード情報取得
-	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-
-#ifdef _DEBUG
-
-	if (pInputKeyboard->GetTrigger(DIK_5))
-	{
-		//MECHANIONロゴを破棄
-		if (m_pMech != nullptr)
-		{
-			m_pMech->Uninit();
-			m_pMech = nullptr;
-		}
-
-		//メカニオンロゴを破棄
-		if (m_pMeka != nullptr)
-		{
-			m_pMeka->Uninit();
-			m_pMeka = nullptr;
-		}
-
-		//戦隊ロゴを破棄
-		if (m_pSqou != nullptr)
-		{
-			m_pSqou->Uninit();
-			m_pSqou = nullptr;
-		}
-
-		//完成したロゴを破棄
-		if (m_pComp != nullptr)
-		{
-			m_pComp->Uninit();
-			m_pComp = nullptr;
-		}
-	}
-
-#endif
 }

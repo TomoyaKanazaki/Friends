@@ -325,53 +325,63 @@ float CElevation::GetHeight(D3DXVECTOR3& pos, bool &bLand)
 				continue;
 			}
 
-			if (CollisionTriangle(pVtxPos[nNowPoint] + posfield, pVtxPos[nLeft] + posfield, pVtxPos[nRight] + posfield, pos, pos) == true)
-			{// 三角に入っていたら
-
-				// ベクトルを計算
-				vec1 = pVtxPos[nRight] - pVtxPos[nNowPoint];
-				vec2 = pVtxPos[nLeft] - pVtxPos[nNowPoint];
-
-				// 外積を求める
-				D3DXVec3Cross(&nor, &vec1, &vec2);
-
-				// 外積の正規化をして法線にする
-				D3DXVec3Normalize(&nor, &nor);
-
-				if (nor.y != 0.0f)
-				{// 法線が0.0fじゃなかったら
-
-					// 高さを求める
-					fHeight = ((pos.x - pVtxPos[nNowPoint].x - posfield.x) * nor.x + (pos.z - pVtxPos[nNowPoint].z - posfield.z) * nor.z + (pVtxPos[nNowPoint].y * -nor.y)) / -nor.y;
-					fHeight += GetPosition().y;
-					bLand = true;
-				}
+			fHeight = GetVtxHeight(pos, pVtxPos[nNowPoint] + posfield, pVtxPos[nLeft] + posfield, pVtxPos[nRight] + posfield, bLand);
+			if (bLand)
+			{
 				break;
 			}
+			//if (CollisionTriangle(pVtxPos[nNowPoint] + posfield, pVtxPos[nLeft] + posfield, pVtxPos[nRight] + posfield, pos, pos) == true)
+			//{// 三角に入っていたら
 
-			if (CollisionTriangle(pVtxPos[nNowPoint + GetWidthBlock()] + posfield, pVtxPos[nRight] + posfield, pVtxPos[nLeft] + posfield, pos, pos) == true)
-			{// 三角に入っていたら
+			//	// ベクトルを計算
+			//	vec1 = pVtxPos[nRight] - pVtxPos[nNowPoint];
+			//	vec2 = pVtxPos[nLeft] - pVtxPos[nNowPoint];
 
-				// ベクトルを計算
-				vec1 = pVtxPos[nLeft] - pVtxPos[nNowPoint + m_aInfo.nWidthBlock];
-				vec2 = pVtxPos[nRight] - pVtxPos[nNowPoint + m_aInfo.nWidthBlock];
+			//	// 外積を求める
+			//	D3DXVec3Cross(&nor, &vec1, &vec2);
 
-				// 外積を求める
-				D3DXVec3Cross(&nor, &vec1, &vec2);
+			//	// 外積の正規化をして法線にする
+			//	D3DXVec3Normalize(&nor, &nor);
 
-				// 外積の正規化をして法線にする
-				D3DXVec3Normalize(&nor, &nor);
+			//	if (nor.y != 0.0f)
+			//	{// 法線が0.0fじゃなかったら
 
-				if (nor.y != 0.0f)
-				{// 法線が0.0fじゃなかったら
+			//		// 高さを求める
+			//		fHeight = ((pos.x - pVtxPos[nNowPoint].x - posfield.x) * nor.x + (pos.z - pVtxPos[nNowPoint].z - posfield.z) * nor.z + (pVtxPos[nNowPoint].y * -nor.y)) / -nor.y;
+			//		fHeight += GetPosition().y;
+			//		bLand = true;
+			//	}
+			//	break;
+			//}
 
-					// 高さを求める
-					fHeight = ((pos.x - pVtxPos[nNowPoint + GetWidthBlock()].x - posfield.x) * nor.x + (pos.z - pVtxPos[nNowPoint + GetWidthBlock()].z - posfield.z) * nor.z + (pVtxPos[nNowPoint + GetWidthBlock()].y * -nor.y)) / -nor.y;
-					fHeight += GetPosition().y;
-					bLand = true;
-					break;
-				}
+			fHeight = GetVtxHeight(pos, pVtxPos[nNowPoint + GetWidthBlock()] + posfield, pVtxPos[nRight] + posfield, pVtxPos[nLeft] + posfield, bLand);
+			if (bLand)
+			{
+				break;
 			}
+			//if (CollisionTriangle(pVtxPos[nNowPoint + GetWidthBlock()] + posfield, pVtxPos[nRight] + posfield, pVtxPos[nLeft] + posfield, pos, pos) == true)
+			//{// 三角に入っていたら
+
+			//	// ベクトルを計算
+			//	vec1 = pVtxPos[nLeft] - pVtxPos[nNowPoint + m_aInfo.nWidthBlock];
+			//	vec2 = pVtxPos[nRight] - pVtxPos[nNowPoint + m_aInfo.nWidthBlock];
+
+			//	// 外積を求める
+			//	D3DXVec3Cross(&nor, &vec1, &vec2);
+
+			//	// 外積の正規化をして法線にする
+			//	D3DXVec3Normalize(&nor, &nor);
+
+			//	if (nor.y != 0.0f)
+			//	{// 法線が0.0fじゃなかったら
+
+			//		// 高さを求める
+			//		fHeight = ((pos.x - pVtxPos[nNowPoint + GetWidthBlock()].x - posfield.x) * nor.x + (pos.z - pVtxPos[nNowPoint + GetWidthBlock()].z - posfield.z) * nor.z + (pVtxPos[nNowPoint + GetWidthBlock()].y * -nor.y)) / -nor.y;
+			//		fHeight += GetPosition().y;
+			//		bLand = true;
+			//		break;
+			//	}
+			//}
 
 		}
 	}
@@ -392,6 +402,7 @@ float CElevation::GetHeight(D3DXVECTOR3& pos, bool &bLand)
 bool CElevation::IsHit(D3DXVECTOR3& pos)
 {
 	bool bHit = false;
+	bool bLand = false;
 
 	// ベクトルと法線
 	D3DXVECTOR3 vec1 = D3DXVECTOR3(0.0f, 0.0f, 0.0f), vec2 = D3DXVECTOR3(0.0f, 0.0f, 0.0f), nor = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -404,14 +415,14 @@ bool CElevation::IsHit(D3DXVECTOR3& pos)
 	float fHeightLen = GetHeightLen();
 
 	// 最大の長さ
-	float fMaxWidthLen = fWidthLen * m_aInfo.nWidthBlock + posfield.x;
-	float fMaxHeightLen = -fWidthLen * m_aInfo.nHeightBlock + posfield.z;
+	float fMaxWidthLen = fWidthLen * GetWidthBlock();
+	float fMaxHeightLen = -fWidthLen * GetHeightBlock();
 
-	// 頂点決め打ち
+	// 判定する頂点の計算
 	int nCntWidth = 0;
 	int nCntHeight = 0;
-	int nWidthPoint = (int)((pos.x - fMaxWidthLen * 0.5f) / fWidthLen) + m_aInfo.nWidthBlock;
-	int nHeightPoint = m_aInfo.nHeightBlock - (int)((pos.z - fMaxHeightLen * 0.5f) / fHeightLen);
+	int nWidthPoint = ((pos.x - posfield.x) - fMaxWidthLen * 0.5f) / fWidthLen + GetWidthBlock();
+	int nHeightPoint = GetHeightBlock() - ((pos.z - posfield.z) - fMaxHeightLen * 0.5f) / fHeightLen;
 
 	for (int nCntH = 0; nCntH < 2; nCntH++)
 	{
@@ -443,51 +454,74 @@ bool CElevation::IsHit(D3DXVECTOR3& pos)
 				continue;
 			}
 
-			if (CollisionTriangle(pVtxPos[nNowPoint], pVtxPos[nLeft], pVtxPos[nRight], pos, pos) == true)
-			{// 三角に入っていたら
-
-				// ベクトルを計算
-				vec1 = pVtxPos[nRight] - pVtxPos[nNowPoint];
-				vec2 = pVtxPos[nLeft] - pVtxPos[nNowPoint];
-
-				// 外積を求める
-				D3DXVec3Cross(&nor, &vec1, &vec2);
-
-				// 外積の正規化をして法線にする
-				D3DXVec3Normalize(&nor, &nor);
-
-				if (nor.y != 0.0f)
-				{// 法線が0.0fじゃなかったら
-
-					// 高さを求める
-					fHeight = ((pos.x - pVtxPos[nNowPoint].x) * nor.x + (pos.z - pVtxPos[nNowPoint].z) * nor.z + (pVtxPos[nNowPoint].y * -nor.y)) / -nor.y;
-					fHeight += GetPosition().y;
-					break;
+			fHeight = GetVtxHeight(pos, pVtxPos[nNowPoint] + posfield, pVtxPos[nLeft] + posfield, pVtxPos[nRight] + posfield, bLand);
+			if (bLand)
+			{
+				if (fHeight > pos.y)
+				{// 前回の位置よりも下だったら(当たっていたら)
+					bHit = true;
+					pos.y = fHeight;
 				}
+				return bHit;
 			}
 
-			if (CollisionTriangle(pVtxPos[nNowPoint + m_aInfo.nWidthBlock], pVtxPos[nRight], pVtxPos[nLeft], pos, pos) == true)
-			{// 三角に入っていたら
+			//if (CollisionTriangle(pVtxPos[nNowPoint], pVtxPos[nLeft], pVtxPos[nRight], pos, pos) == true)
+			//{// 三角に入っていたら
 
-				// ベクトルを計算
-				vec1 = pVtxPos[nLeft] - pVtxPos[nNowPoint + m_aInfo.nWidthBlock];
-				vec2 = pVtxPos[nRight] - pVtxPos[nNowPoint + m_aInfo.nWidthBlock];
+			//	// ベクトルを計算
+			//	vec1 = pVtxPos[nRight] - pVtxPos[nNowPoint];
+			//	vec2 = pVtxPos[nLeft] - pVtxPos[nNowPoint];
 
-				// 外積を求める
-				D3DXVec3Cross(&nor, &vec1, &vec2);
+			//	// 外積を求める
+			//	D3DXVec3Cross(&nor, &vec1, &vec2);
 
-				// 外積の正規化をして法線にする
-				D3DXVec3Normalize(&nor, &nor);
+			//	// 外積の正規化をして法線にする
+			//	D3DXVec3Normalize(&nor, &nor);
 
-				if (nor.y != 0.0f)
-				{// 法線が0.0fじゃなかったら
+			//	if (nor.y != 0.0f)
+			//	{// 法線が0.0fじゃなかったら
 
-					// 高さを求める
-					fHeight = ((pos.x - pVtxPos[nNowPoint + m_aInfo.nWidthBlock].x) * nor.x + (pos.z - pVtxPos[nNowPoint + m_aInfo.nWidthBlock].z) * nor.z + (pVtxPos[nNowPoint + m_aInfo.nWidthBlock].y * -nor.y)) / -nor.y;
-					fHeight += GetPosition().y;
-					break;
+			//		// 高さを求める
+			//		fHeight = ((pos.x - pVtxPos[nNowPoint].x) * nor.x + (pos.z - pVtxPos[nNowPoint].z) * nor.z + (pVtxPos[nNowPoint].y * -nor.y)) / -nor.y;
+			//		fHeight += GetPosition().y;
+			//		break;
+			//	}
+			//}
+
+			bLand = false;
+			fHeight = GetVtxHeight(pos, pVtxPos[nNowPoint + GetWidthBlock()] + posfield, pVtxPos[nRight] + posfield, pVtxPos[nLeft] + posfield, bLand);
+			if (bLand)
+			{
+				if (fHeight > pos.y)
+				{// 前回の位置よりも下だったら(当たっていたら)
+					bHit = true;
+					pos.y = fHeight;
 				}
+				return bHit;
 			}
+
+			//if (CollisionTriangle(pVtxPos[nNowPoint + m_aInfo.nWidthBlock], pVtxPos[nRight], pVtxPos[nLeft], pos, pos) == true)
+			//{// 三角に入っていたら
+
+			//	// ベクトルを計算
+			//	vec1 = pVtxPos[nLeft] - pVtxPos[nNowPoint + m_aInfo.nWidthBlock];
+			//	vec2 = pVtxPos[nRight] - pVtxPos[nNowPoint + m_aInfo.nWidthBlock];
+
+			//	// 外積を求める
+			//	D3DXVec3Cross(&nor, &vec1, &vec2);
+
+			//	// 外積の正規化をして法線にする
+			//	D3DXVec3Normalize(&nor, &nor);
+
+			//	if (nor.y != 0.0f)
+			//	{// 法線が0.0fじゃなかったら
+
+			//		// 高さを求める
+			//		fHeight = ((pos.x - pVtxPos[nNowPoint + m_aInfo.nWidthBlock].x) * nor.x + (pos.z - pVtxPos[nNowPoint + m_aInfo.nWidthBlock].z) * nor.z + (pVtxPos[nNowPoint + m_aInfo.nWidthBlock].y * -nor.y)) / -nor.y;
+			//		fHeight += GetPosition().y;
+			//		break;
+			//	}
+			//}
 		}
 	}
 

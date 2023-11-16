@@ -323,7 +323,7 @@ void CMotion::Update(void)
 		nNextKey = m_aInfo[m_nType].nNumKey - 1;
 	}
 
-	for (int nCntParts = 0; nCntParts < m_nNumModel; nCntParts++)
+	for (int nCntParts = m_pObjChara->GetMotionStartIdx(); nCntParts < m_nNumModel; nCntParts++)
 	{// 全パーツ分繰り返す
 
 		if (m_ppModel[nCntParts] == NULL)

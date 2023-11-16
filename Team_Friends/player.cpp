@@ -62,11 +62,17 @@
 // 静的メンバ変数宣言
 //==========================================================================
 const char *CPlayer::m_apModelFile[mylib_const::MAX_PLAYER] =	// モデルのファイル
+//{
+//	"data\\TEXT\\motion_player.txt",
+//	"data\\TEXT\\motion_2p.txt",
+//	"data\\TEXT\\motion_3p.txt",
+//	"data\\TEXT\\motion_4p.txt",
+//};
 {
 	"data\\TEXT\\motion_player.txt",
-	"data\\TEXT\\motion_2p.txt",
-	"data\\TEXT\\motion_3p.txt",
-	"data\\TEXT\\motion_4p.txt",
+	"data\\TEXT\\motion_player.txt",
+	"data\\TEXT\\motion_player.txt",
+	"data\\TEXT\\motion_player.txt",
 };
 
 bool CPlayer::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定

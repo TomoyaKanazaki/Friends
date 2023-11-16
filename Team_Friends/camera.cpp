@@ -813,7 +813,7 @@ void CCamera::SetCameraRGame(void)
 		m_fDiffHeightDest = m_fDiffHeightSave;
 
 		// ‚‚³‚Ì·•ª‚ğ•â³‚·‚é
-		m_fDiffHeight += (m_fDiffHeightDest - m_fDiffHeight) * 0.001f;
+		m_fDiffHeight += (m_fDiffHeightDest - m_fDiffHeight) * 0.01f;
 
 		// ’‹“_‚Ì‘ã“üˆ—
 		m_posRDest.x = (m_TargetPos.x + sinf(D3DX_PI + m_TargetRot.y) * 150.0f);

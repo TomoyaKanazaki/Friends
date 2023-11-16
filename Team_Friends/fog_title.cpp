@@ -12,7 +12,7 @@
 //==========================================
 namespace
 {
-	const D3DXCOLOR TARGET_COLOR = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+	const D3DXCOLOR TARGET_COLOR = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	const float START_LENGTH = 100.0f; // ‰Šú‹——£
 	const float END_LENGTH = 10000.0f; // –Ú•W‹——£
 	const float FUNCTION = 0.01f; //”{—¦

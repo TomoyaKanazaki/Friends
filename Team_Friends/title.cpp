@@ -52,7 +52,7 @@ HRESULT CTitle::Init(void)
 	}
 
 	//煙をかける
-	Fog::Set(false);
+	Fog::Set(true);
 
 	//フォグの値を設定する
 	Fog::SetStart(100.0f);

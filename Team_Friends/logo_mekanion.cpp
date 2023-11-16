@@ -73,7 +73,7 @@ void CLogo_Meka::Update(void)
 {
 	//‰ñ“]
 	D3DXVECTOR3 rot = GetRotation();
-	rot.x += 0.01f;
+	rot.x += 0.02f;
 	if (rot.x >= 0.0f)
 	{
 		rot.x = 0.0f;
@@ -88,19 +88,10 @@ void CLogo_Meka::Update(void)
 	pos.y = cosf(rot.x) * size.y + m_posVirtual.y; // y
 	SetPosition(pos);  //Ý’è
 
-	CManager::GetInstance()->GetDebugProc()->Print("ƒƒS‚ÌŠp“x : %f\n", rot.x);
-	CManager::GetInstance()->GetDebugProc()->Print("ƒƒS‚ÌˆÊ’u : %f, %f, %f\n", pos.x, pos.y, pos.z);
-	CManager::GetInstance()->GetDebugProc()->Print("ƒƒS‚Ì‰¼‘zˆÊ’u : %f, %f, %f\n", m_posVirtual.x, m_posVirtual.y, m_posVirtual.z);
-
 #ifdef _DEBUG
 
 	// ƒL[ƒ{[ƒhî•ñŽæ“¾
 	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-
-	if (pInputKeyboard->GetTrigger(DIK_2))
-	{
-		SetComplete(true);
-	}
 
 	if (pInputKeyboard->GetTrigger(DIK_6))
 	{

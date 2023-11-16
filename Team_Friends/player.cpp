@@ -419,7 +419,7 @@ void CPlayer::Controll(void)
 	float fMove = GetVelocity();
 
 	// Œo‰ßŽžŠÔŽæ“¾
-	float fCurrentTime = CManager::GetInstance()->DeltaTime();
+	float fCurrentTime = CManager::GetInstance()->GetDeltaTime();
 
 	if (CGame::GetGameManager()->IsControll())
 	{// s“®‚Å‚«‚é‚Æ‚«

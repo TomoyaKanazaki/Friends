@@ -852,7 +852,7 @@ void CManager::SetByPlayerPartsType(int nIdx, int nType)
 //==========================================================================
 // Œo‰ßŽžŠÔŽæ“¾
 //==========================================================================
-float CManager::DeltaTime(void)
+float CManager::GetDeltaTime(void)
 {
 	return m_fDeltaTime;
 }

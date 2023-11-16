@@ -12,12 +12,8 @@
 #include "calculation.h"
 #include "debugproc.h"
 #include "sound.h"
-#include "fog.h"
 #include "title_logo.h"
-
-//==========================================================================
-// 静的メンバ変数宣言
-//==========================================================================
+#include "fog_title.h"
 
 //==========================================================================
 // コンストラクタ
@@ -27,6 +23,7 @@ CTitle::CTitle()
 	// 値のクリア
 	m_nCntSwitch = 0;		// 切り替えのカウンター
 	m_pLogo = nullptr;
+	m_pFog = nullptr;
 }
 
 //==========================================================================
@@ -51,18 +48,17 @@ HRESULT CTitle::Init(void)
 		return E_FAIL;
 	}
 
-	//煙をかける
-	Fog::Set(true);
-
-	//フォグの値を設定する
-	Fog::SetStart(100.0f);
-	Fog::SetEnd(100.0f);
-	Fog::SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
-
 	//タイトルロゴの表示
 	if (m_pLogo == nullptr)
 	{
 		m_pLogo = CTitleLogo::Create();
+	}
+
+	//フォグを生成
+	if (m_pFog == nullptr)
+	{
+		m_pFog = DEBUG_NEW CFog_Title;
+		m_pFog->Init();
 	}
 
 	// 成功
@@ -74,13 +70,16 @@ HRESULT CTitle::Init(void)
 //==========================================================================
 void CTitle::Uninit(void)
 {
-	// 煙を払う
-	Fog::Set(false);
+	//フォグを破棄
+	if (m_pFog != nullptr)
+	{
+		m_pFog->Uninit();
+		m_pFog = nullptr;
+	}
 
 	// タイトルロゴを破棄
 	if (m_pLogo != nullptr)
 	{
-		m_pLogo->Uninit();
 		m_pLogo = nullptr;
 	}
 
@@ -122,6 +121,12 @@ void CTitle::Update(void)
 		return;
 	}
 
+	//フォグの更新
+	if (m_pFog != nullptr)
+	{
+		m_pFog->Update();
+	}
+
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
 	{
 		// モード設定
@@ -134,27 +139,6 @@ void CTitle::Update(void)
 		// モード設定
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
 	}
-
-#ifdef _DEBUG
-	if (pInputKeyboard->GetPress(DIK_UP))
-	{
-		float fLength = Fog::GetEnd();
-		Fog::SetEnd(fLength + 30.0f);
-	}
-	if (pInputKeyboard->GetPress(DIK_DOWN))
-	{
-		float fLength = Fog::GetEnd();
-		Fog::SetEnd(fLength - 30.0f);
-	}
-	if (pInputKeyboard->GetTrigger(DIK_LEFT))
-	{
-		Fog::SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
-	}
-	if (pInputKeyboard->GetTrigger(DIK_RIGHT))
-	{
-		Fog::SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-	}
-#endif
 }
 
 //==========================================================================

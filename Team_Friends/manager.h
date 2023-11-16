@@ -86,7 +86,7 @@ public:
 	void SetNumPlayer(int nNum);	// プレイヤーの数設定
 	int GetByPlayerPartsType(int nIdx);				// プレイヤー毎の担当パーツ種類取得
 	void SetByPlayerPartsType(int nIdx, int nType);	// プレイヤー毎の担当パーツ種類設定
-	float DeltaTime(void);								// 経過時間取得
+	float GetDeltaTime(void);								// 経過時間取得
 	void SetMode(CScene::MODE mode);					// 次のモード設定
 	CScene::MODE GetMode(void);							// 現在のモード取得
 	void SetEnableHitStop(int nCntHitStop);				// ヒットストップの設定

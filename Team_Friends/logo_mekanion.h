@@ -27,6 +27,11 @@ public:
 	//Ã“Iƒƒ“ƒoŠÖ”
 	static CLogo_Meka* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 
+private:
+
+	//ƒƒ“ƒo•Ï”
+	D3DXVECTOR3 m_posVirtual;
+
 };
 
 #endif

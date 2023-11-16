@@ -21,7 +21,7 @@
 // ƒ}ƒNƒ’è‹`
 //==========================================================================
 #define MOVE			(2.5f)				// ˆÚ“®—Ê
-#define MAX_LENGTH		(20000.0f)			// Å‘å‹——£
+#define MAX_LENGTH		(50000.0f)			// Å‘å‹——£
 #define MIN_LENGTH		(10.0f)				// Å­‹——£
 #define START_CAMERALEN	(1800.0f)			// Œ³‚Ì‹——£
 #define ROT_MOVE_MOUSE	(0.01f)				// ‰ñ“]ˆÚ“®—Ê

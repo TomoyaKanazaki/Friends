@@ -539,7 +539,7 @@ void CPlayerUnion::Controll(void)
 	D3DXVECTOR3 rot = GetRotation();
 
 	// Œo‰ßŽžŠÔŽæ“¾
-	float fCurrentTime = CManager::GetInstance()->DeltaTime();
+	float fCurrentTime = CManager::GetInstance()->GetDeltaTime();
 
 	if (CGame::GetGameManager()->IsControll())
 	{// s“®‚Å‚«‚é‚Æ‚«

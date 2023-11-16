@@ -36,6 +36,9 @@ HRESULT CLogo_Mech::Init(void)
 	//テクスチャの割り当て
 	this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[0]));
 
+	//完成状態で生成する
+	SetComplete(true);
+
 	return hr;
 }
 
@@ -53,16 +56,6 @@ void CLogo_Mech::Uninit(void)
 //==========================================
 void CLogo_Mech::Update(void)
 {
-	// キーボード情報取得
-	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-
-#ifdef _DEBUG
-	if (pInputKeyboard->GetTrigger(DIK_1))
-	{
-		SetComplete(true);
-	}
-#endif
-
 	//更新
 	CLogo::Update();
 }

@@ -82,6 +82,9 @@
     <Filter Include="ヘッダー ファイル\player">
       <UniqueIdentifier>{717598e5-2f37-478a-8b85-3959a0e6e416}</UniqueIdentifier>
     </Filter>
+    <Filter Include="金崎の作業部分\logos">
+      <UniqueIdentifier>{0542ee3f-e9f5-4796-a92e-85af29a9e997}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="2D_effect.cpp">
@@ -366,28 +369,31 @@
     <ClCompile Include="title.cpp">
       <Filter>金崎の作業部分</Filter>
     </ClCompile>
-    <ClCompile Include="title_logo.cpp">
-      <Filter>金崎の作業部分</Filter>
-    </ClCompile>
     <ClCompile Include="fog.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="compactcore.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="logo.cpp">
+      <Filter>金崎の作業部分\logos</Filter>
+    </ClCompile>
     <ClCompile Include="logo_complete.cpp">
-      <Filter>金崎の作業部分</Filter>
+      <Filter>金崎の作業部分\logos</Filter>
     </ClCompile>
     <ClCompile Include="logo_mechanion.cpp">
-      <Filter>金崎の作業部分</Filter>
+      <Filter>金崎の作業部分\logos</Filter>
     </ClCompile>
     <ClCompile Include="logo_mekanion.cpp">
-      <Filter>金崎の作業部分</Filter>
+      <Filter>金崎の作業部分\logos</Filter>
     </ClCompile>
     <ClCompile Include="logo_squadron.cpp">
-      <Filter>金崎の作業部分</Filter>
+      <Filter>金崎の作業部分\logos</Filter>
     </ClCompile>
-    <ClCompile Include="logo.cpp">
+    <ClCompile Include="title_logo.cpp">
+      <Filter>金崎の作業部分\logos</Filter>
+    </ClCompile>
+    <ClCompile Include="fog_title.cpp">
       <Filter>金崎の作業部分</Filter>
     </ClCompile>
     <ClCompile Include="player.cpp">
@@ -695,28 +701,31 @@
     <ClInclude Include="title.h">
       <Filter>金崎の作業部分</Filter>
     </ClInclude>
-    <ClInclude Include="title_logo.h">
-      <Filter>金崎の作業部分</Filter>
-    </ClInclude>
     <ClInclude Include="fog.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="compactcore.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="logo.h">
+      <Filter>金崎の作業部分\logos</Filter>
+    </ClInclude>
     <ClInclude Include="logo_complete.h">
-      <Filter>金崎の作業部分</Filter>
+      <Filter>金崎の作業部分\logos</Filter>
     </ClInclude>
     <ClInclude Include="logo_mechanion.h">
-      <Filter>金崎の作業部分</Filter>
+      <Filter>金崎の作業部分\logos</Filter>
     </ClInclude>
     <ClInclude Include="logo_mekanion.h">
-      <Filter>金崎の作業部分</Filter>
+      <Filter>金崎の作業部分\logos</Filter>
     </ClInclude>
     <ClInclude Include="logo_squadron.h">
-      <Filter>金崎の作業部分</Filter>
+      <Filter>金崎の作業部分\logos</Filter>
     </ClInclude>
-    <ClInclude Include="logo.h">
+    <ClInclude Include="title_logo.h">
+      <Filter>金崎の作業部分\logos</Filter>
+    </ClInclude>
+    <ClInclude Include="fog_title.h">
       <Filter>金崎の作業部分</Filter>
     </ClInclude>
     <ClInclude Include="union_legtoarm.h">

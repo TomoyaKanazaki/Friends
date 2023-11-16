@@ -103,7 +103,7 @@ HRESULT CResultScore::Init(void)
 
 	// 目標のスコア取得
 	m_nToatalNumDest = CManager::GetInstance()->GetResultManager()->GetToatalScore();
-	CManager::GetInstance()->GetRankingManager()->SetNowScore(m_nToatalNumDest);
+	CManager::GetInstance()->GetRankingManager()->SetNowScore(m_nToatalNumDest, 0);
 	
 	return S_OK;
 }
@@ -225,7 +225,7 @@ void CResultScore::MoveToatalScore(void)
 		// 目標のスコア取得
 		m_nToatalNumDest = CManager::GetInstance()->GetResultManager()->GetToatalScore();
 
-		CManager::GetInstance()->GetRankingManager()->SetNowScore(m_nToatalNumDest);
+		CManager::GetInstance()->GetRankingManager()->SetNowScore(m_nToatalNumDest, 0);
 
 		if (m_nToatalNumDest > m_nToatalNum)
 		{// 規定時間かけて補正

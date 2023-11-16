@@ -89,7 +89,7 @@ void CRanking::Update(void)
 	// 切り替えのカウンター加算
 	m_nCntSwitch++;
 
-	if (m_nCntSwitch >= 60 * 20)
+	if (m_nCntSwitch >= 60 * 60)
 	{
 		// モード設定
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
@@ -102,10 +102,11 @@ void CRanking::Update(void)
 			// モード設定
 			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
 		}
+
 		else
 		{
 			// 全ての到着処理
-			m_pRankingScore->SetAllArrival();
+			//m_pRankingScore->SetAllArrival();
 			m_bAllArrival = true;
 		}
 	}

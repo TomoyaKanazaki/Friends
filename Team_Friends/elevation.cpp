@@ -808,7 +808,17 @@ HRESULT CElevation::Load(const char *pText)
 	FILE *pFile = NULL;	// ファイルポインタを宣言
 
 	// ファイルを開く
-	pFile = fopen("data\\TEXT\\elevation_field.txt", "r");
+	//ファイルを開く
+	switch (CManager::GetInstance()->GetMode())
+	{
+	case CScene::MODE_GAME:
+		pFile = fopen(pText, "r");
+		break;
+
+	default:
+		pFile = fopen("data\\TEXT\\elevation_field_outgame.txt", "r");
+		break;
+	}
 
 	if (pFile == NULL)
 	{// ファイルが開けなかった場合

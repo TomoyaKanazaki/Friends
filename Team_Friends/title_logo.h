@@ -37,11 +37,27 @@ public:
 
 private:
 
+	//ロゴの更新状態列挙
+	enum STATE
+	{
+		DEFAULT = 0, //アルファベットのみがある状態
+		WAKE, //カタカナが起き上がる
+		FLASH, //戦隊が点滅する
+		COMPLETE, //完成！！
+		MAX, //総数
+		NONE //NULLLLLLLLL
+	};
+
 	//メンバ変数
 	CLogo_Mech* m_pMech;
 	CLogo_Meka* m_pMeka;
 	CLogo_Sqou* m_pSqou;
 	CLogo_Comp* m_pComp;
+	STATE m_State;
+	bool m_bComplete;
+
+	//メンバ関数
+	void DebugFunction();
 
 };
 

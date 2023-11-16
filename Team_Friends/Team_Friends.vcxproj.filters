@@ -399,6 +399,9 @@
     <ClCompile Include="logo_squadron.cpp">
       <Filter>金崎の作業部分</Filter>
     </ClCompile>
+    <ClCompile Include="logo.cpp">
+      <Filter>金崎の作業部分</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -723,6 +726,9 @@
       <Filter>金崎の作業部分</Filter>
     </ClInclude>
     <ClInclude Include="logo_squadron.h">
+      <Filter>金崎の作業部分</Filter>
+    </ClInclude>
+    <ClInclude Include="logo.h">
       <Filter>金崎の作業部分</Filter>
     </ClInclude>
   </ItemGroup>

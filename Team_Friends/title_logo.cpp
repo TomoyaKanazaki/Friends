@@ -22,6 +22,7 @@ CTitleLogo::CTitleLogo()
 	m_pMeka = nullptr;
 	m_pSqou = nullptr;
 	m_pComp = nullptr;
+	m_State = DEFAULT;
 }
 
 //==========================================
@@ -85,6 +86,37 @@ void CTitleLogo::Uninit(void)
 //==========================================
 void CTitleLogo::Update(void)
 {	
+	//デバッグ用関数
+	DebugFunction();
+}
+
+//==========================================
+//  描画処理
+//==========================================
+void CTitleLogo::Draw(void)
+{
+
+}
+
+//==========================================
+//  生成処理
+//==========================================
+CTitleLogo* CTitleLogo::Create()
+{
+	//インスタンス生成
+	CTitleLogo* pLogo = DEBUG_NEW CTitleLogo;
+
+	//初期化処理
+	pLogo->Init();
+
+	return pLogo;
+}
+
+//==========================================
+//  デバッグ用の処理を詰めた関数
+//==========================================
+void CTitleLogo::DebugFunction()
+{
 	// キーボード情報取得
 	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 
@@ -158,26 +190,4 @@ void CTitleLogo::Update(void)
 	}
 
 #endif
-}
-
-//==========================================
-//  描画処理
-//==========================================
-void CTitleLogo::Draw(void)
-{
-
-}
-
-//==========================================
-//  生成処理
-//==========================================
-CTitleLogo* CTitleLogo::Create()
-{
-	//インスタンス生成
-	CTitleLogo* pLogo = DEBUG_NEW CTitleLogo;
-
-	//初期化処理
-	pLogo->Init();
-
-	return pLogo;
 }

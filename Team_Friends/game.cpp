@@ -105,7 +105,7 @@ HRESULT CGame::Init(void)
 		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
 		if (pPlayer != NULL)
 		{
-			pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 250.0f, 1000.0f, -1000.0f));
+			pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 50.0f, 1000.0f, -1000.0f));
 			pPlayer->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 		}
 	}
@@ -129,7 +129,7 @@ HRESULT CGame::Init(void)
 	// ‡‘ÌŒãƒvƒŒƒCƒ„[¶¬
 	//CPlayerUnion::Create(CPlayerUnion::TYPE_ALL);
 
-	CCompactCore::Create(D3DXVECTOR3(500.0f, 200.0f, 0.0f));
+	CCompactCore::Create(D3DXVECTOR3(500.0f, 400.0f, 0.0f));
 
 	// ¬Œ÷
 	return S_OK;

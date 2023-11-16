@@ -33,6 +33,7 @@ CObjectChara::CObjectChara(int nPriority) : CObject(nPriority)
 	m_fRotDest = 0.0f;			// 目標の向き
 	m_nLife = 0;				// 体力
 	m_nLifeOrigin = 0;			// 元の体力
+	m_nMotionStartIdx = 0;		// モーション開始のインデックス番号
 	m_nAddScore = 0;			// スコア加算量
 	m_nNumModel = 0;			// モデルの数
 	m_nIdxFile = 0;				// ファイルのインデックス番号
@@ -551,6 +552,14 @@ HRESULT CObjectChara::ReadText(const std::string pTextFile)
 					m_nLifeOrigin = m_nLife;	// 元の体力
 				}
 
+				if (strcmp(aComment, "MOTION_STARTPARTS") == 0)
+				{// MOTION_STARTPARTSでモーション開始のインデックス番号
+
+					fscanf(pFile, "%s", &aComment[0]);	// =の分
+					fscanf(pFile, "%d", &m_aLoadData[m_nNumLoad].nMotionStartIdx);	// モーション開始のインデックス番号
+					m_nLife = m_aLoadData[m_nNumLoad].nMotionStartIdx;
+				}
+
 				if (strcmp(aComment, "SCORE") == 0)
 				{// LIFEで体力
 
@@ -782,6 +791,14 @@ int CObjectChara::GetLife(void) const
 int CObjectChara::GetLifeOrigin(void) const
 {
 	return m_nLifeOrigin;
+}
+
+//==========================================================================
+// モーション開始のインデックス番号取得
+//==========================================================================
+int CObjectChara::GetMotionStartIdx(void) const
+{
+	return m_nMotionStartIdx;
 }
 
 //==========================================================================

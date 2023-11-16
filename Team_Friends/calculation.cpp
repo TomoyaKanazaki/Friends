@@ -1143,7 +1143,7 @@ bool CollisionCircleSquare3D(D3DXVECTOR3 &posCircle, D3DXVECTOR3 &posSquare, D3D
 float GetVtxHeight(D3DXVECTOR3 pos, D3DXVECTOR3 NowPos, D3DXVECTOR3 posRight, D3DXVECTOR3 posLeft, bool &bLand)
 {
 	// 高さ
-	float fHeight = pos.y;
+	float fHeight = 0.0f;
 
 	// 直角部分と位置のベクトル
 	D3DXVECTOR3 calvec = pos - NowPos;

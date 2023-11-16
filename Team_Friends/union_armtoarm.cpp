@@ -270,7 +270,9 @@ void CUnion_ArntoArm::ControllLeg(int nIdx)
 	{// ˆÚ“®‰Â”\ƒ‚[ƒVƒ‡ƒ“‚ÌŽž
 
 		// ˆÚ“®‘€ì
-		if (ControllMove(nIdx))
+		if (ControllMove(nIdx) &&
+			m_pMotion[nIdx] != NULL &&
+			m_pMotion[nIdx]->GetType() == MOTION_SUPERATK)
 		{
 			// ˆÚ“®’†‚É‚·‚é
 			for (int i = 0; i < PARTS_MAX; i++)

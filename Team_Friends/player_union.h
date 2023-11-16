@@ -125,6 +125,12 @@ protected:
 	int m_nControllMoveIdx;		// 移動操作するやつのインデックス番号
 	int m_nCntWalk;				// 歩行カウンター
 	int m_nUnionLife;			// 合体時間
+	int m_nCntInputAtk;			// 攻撃の入力カウンター
+
+	int m_nInputSuperAtkIdx;	// 必殺技入力のインデックス
+	int m_nIntervalAlternately;	// 交互入力のインターバル
+	int m_nCntInputSuperATK;	// 必殺技の入力回数
+
 	D3DXCOLOR m_mMatcol;		// マテリアルの色
 	STATE m_Oldstate;			// 前回の状態
 	STATE m_state;			// 状態

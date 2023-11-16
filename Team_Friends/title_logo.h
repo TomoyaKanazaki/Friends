@@ -59,7 +59,6 @@ private:
 
 	//ƒƒ“ƒoŠÖ”
 	void UpdateState();
-	void DebugFunction();
 
 };
 

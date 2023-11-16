@@ -60,6 +60,7 @@ public:
 		TYPE_MESHDOME,		// メッシュドーム
 		TYPE_MESHDONUTS,	// メッシュドーナツ
 		TYPE_MESHSPHERE,	// メッシュスフィア
+		TYPE_FOG,			// フォグ
 		TYPE_BALLAST,		// 瓦礫
 		TYPE_FADE,			// フェード
 		TYPE_NUMBER,		// 数字

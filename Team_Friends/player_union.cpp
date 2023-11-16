@@ -40,7 +40,10 @@
 #include "injectiontable.h"
 
 // 派生先
-#include "tutorialplayer.h"
+#include "union_bodytoleg.h"
+#include "union_bodytoarm.h"
+#include "union_armtoarm.h"
+#include "union_legtoarm.h"
 
 //==========================================================================
 // マクロ定義
@@ -60,14 +63,6 @@
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
-const char *CPlayerUnion::m_apModelFile[mylib_const::MAX_PLAYER] =	// モデルのファイル
-{
-	"data\\TEXT\\player_union\\motion_body.txt",
-	"data\\TEXT\\player_union\\motion_leg.txt",
-	"data\\TEXT\\player_union\\motion_RArm.txt",
-	"data\\TEXT\\player_union\\motion_LArm.txt",
-};
-
 bool CPlayerUnion::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
 bool CPlayerUnion::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// 射出台の着地判定
 
@@ -78,17 +73,17 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 {
 	// 値のクリア
 	// 共有変数
-	m_bJump = false;				// ジャンプ中かどうか
+	m_bJump = false;			// ジャンプ中かどうか
 	m_bLandOld = false;			// 過去の着地情報
-	m_bHitStage = false;			// ステージの当たり判定
-	m_bLandField = false;			// フィールドの着地判定
+	m_bHitStage = false;		// ステージの当たり判定
+	m_bLandField = false;		// フィールドの着地判定
 	m_bHitWall = false;			// 壁の当たり判定
-	m_bKnockBack = false;			// ノックバック中かどうか
+	m_bKnockBack = false;		// ノックバック中かどうか
 	m_bDead = false;			// 死亡中かどうか
-
+	m_nUnionLife = 0;			// 合体時間
 	m_nCntWalk = 0;				// 歩行カウンター
-	m_state = STATE_NONE;			// 状態
-
+	m_nCntInputAtk = 0;			// 攻撃の入力カウンター
+	m_state = STATE_NONE;		// 状態
 	memset(&m_pMotion[0], NULL, sizeof(m_pMotion));	// パーツ分のモーションポインタ
 	memset(&m_sMotionFrag[0], false, sizeof(m_sMotionFrag));	// モーションのフラグ
 
@@ -102,7 +97,9 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_nCntState = 0;			// 状態遷移カウンター
 	m_nTexIdx = 0;				// テクスチャのインデックス番号
 	m_nIdxXFile = 0;			// Xファイルのインデックス番号
+	memset(&m_nPartsIdx[0], 0, sizeof(m_nPartsIdx));	// プレイヤー毎のパーツインデックス番号
 	m_nMyPlayerIdx = 0;			// プレイヤーインデックス番号
+	m_nControllMoveIdx = 0;		// 移動操作するやつのインデックス番号
 	m_fRotDest = 0.0f;
 	m_pShadow = NULL;			// 影の情報
 	m_pTargetP = NULL;	// 目標の地点
@@ -120,7 +117,7 @@ CPlayerUnion::~CPlayerUnion()
 //==========================================================================
 // 生成処理
 //==========================================================================
-CPlayerUnion *CPlayerUnion::Create(void)
+CPlayerUnion *CPlayerUnion::Create(eType type)
 {
 	// 生成用のオブジェクト
 	CPlayerUnion *pPlayer = NULL;
@@ -129,10 +126,26 @@ CPlayerUnion *CPlayerUnion::Create(void)
 	{// NULLだったら
 
 		// メモリの確保
-		switch (CManager::GetInstance()->GetMode())
+		switch (type)
 		{
-		case CScene::MODE_GAME:
+		case TYPE_ALL:
 			pPlayer = DEBUG_NEW CPlayerUnion;
+			break;
+
+		case TYPE_BODYtoLEG:
+			pPlayer = DEBUG_NEW CUnion_BodytoLeg;
+			break;
+
+		case TYPE_BODYtoARM:
+			pPlayer = DEBUG_NEW CUnion_BodytoArm;
+			break;
+
+		case TYPE_LEGtoARM:
+			pPlayer = DEBUG_NEW CUnion_LegtoArm;
+			break;
+
+		case TYPE_ARMtoARM:
+			pPlayer = DEBUG_NEW CUnion_ArntoArm;
 			break;
 
 		default:
@@ -169,13 +182,42 @@ HRESULT CPlayerUnion::Init(void)
 	m_bLandOld = true;		// 前回の着地状態
 	m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
 	memset(&m_bLandInjectionTable[0], false, sizeof(m_bLandInjectionTable));	// 射出台の着地判定
+	m_nUnionLife = 0;		// 合体時間
+
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		m_nPartsIdx[i] = -1;
+	}
 
 	// キャラ作成
+	CreateParts();
 
+
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+
+	// 体力ゲージ
+	m_pHPGauge = CHP_GaugePlayer::Create(D3DXVECTOR3(250.0f, 600.0f, 0.0f), 50);
+
+	// 影の生成
+	m_pShadow = CShadow::Create(pos, 50.0f);
+
+	SetPosition(D3DXVECTOR3(-600.0f, 0.0f, -1000.0f));
+	return S_OK;
+}
+
+//==========================================================================
+// パーツの設定
+//==========================================================================
+HRESULT CPlayerUnion::CreateParts(void)
+{
 	HRESULT hr;
-	CObjectChara *pObjChar = NULL;
 
 
+	// 複数キャラ読み込み
+	ReadMultiCharacter("data\\TEXT\\multicharacter_SuperUnion.txt");
+
+#if 0
 	//**********************************
 	// 胴体
 	//**********************************
@@ -184,6 +226,7 @@ HRESULT CPlayerUnion::Init(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_BODY]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_BODY] = CMotion::Create(m_apModelFile[PARTS_BODY]);
@@ -206,6 +249,7 @@ HRESULT CPlayerUnion::Init(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_LEG]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_LEG] = CMotion::Create(m_apModelFile[PARTS_LEG]);
@@ -228,6 +272,7 @@ HRESULT CPlayerUnion::Init(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_R_ARM]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_R_ARM] = CMotion::Create(m_apModelFile[PARTS_R_ARM]);
@@ -250,6 +295,7 @@ HRESULT CPlayerUnion::Init(void)
 	{// 失敗していたら
 		return E_FAIL;
 	}
+	m_pObjChara[PARTS_L_ARM]->SetType(CObject::TYPE_OBJECTX);
 
 	// モーションの生成処理
 	m_pMotion[PARTS_L_ARM] = CMotion::Create(m_apModelFile[PARTS_L_ARM]);
@@ -269,18 +315,7 @@ HRESULT CPlayerUnion::Init(void)
 	m_pObjChara[PARTS_R_ARM]->GetModel()[0]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[1]);
 	m_pObjChara[PARTS_LEG]->GetModel()[0]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[0]);
 	m_pObjChara[PARTS_LEG]->GetModel()[3]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[0]);
-
-
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
-
-	// 体力ゲージ
-	m_pHPGauge = CHP_GaugePlayer::Create(D3DXVECTOR3(250.0f, 600.0f, 0.0f), 50);
-
-	// 影の生成
-	m_pShadow = CShadow::Create(pos, 50.0f);
-
-	SetPosition(D3DXVECTOR3(-600.0f, 0.0f, -1000.0f));
+#endif
 	return S_OK;
 }
 
@@ -303,7 +338,6 @@ void CPlayerUnion::Uninit(void)
 	{
 		if (m_pObjChara[i] != NULL)
 		{
-			m_pObjChara[i]->Uninit();
 			m_pObjChara[i] = NULL;
 		}
 	}
@@ -334,12 +368,12 @@ void CPlayerUnion::Uninit(void)
 //==========================================================================
 void  CPlayerUnion::UninitByMode(void)
 {
-	CScene *pScene = CManager::GetInstance()->GetScene();
-	if (pScene != NULL)
-	{
-		// プレイヤーをNULL
-		CManager::GetInstance()->GetScene()->UninitPlayer(m_nMyPlayerIdx);
-	}
+	//CScene *pScene = CManager::GetInstance()->GetScene();
+	//if (pScene != NULL)
+	//{
+	//	// プレイヤーをNULL
+	//	CManager::GetInstance()->GetScene()->UninitPlayer(m_nMyPlayerIdx);
+	//}
 }
 
 //==========================================================================
@@ -362,6 +396,15 @@ void CPlayerUnion::Kill(void)
 	{
 		m_pShadow->Uninit();
 		m_pShadow = NULL;
+	}
+
+	for (int i = 0; i < PARTS_MAX; i++)
+	{
+		if (m_pObjChara[i] != NULL)
+		{
+			m_pObjChara[i]->Uninit();
+			m_pObjChara[i] = NULL;
+		}
 	}
 }
 
@@ -422,13 +465,10 @@ void CPlayerUnion::Update(void)
 			continue;
 		}
 		m_pMotion[i]->Update();
+
+		// 攻撃処理
+		Atack(i);
 	}
-
-	// 頂点情報設定
-	SetVtx();
-
-	// 攻撃処理
-	Atack();
 
 	// 状態更新
 	UpdateState();
@@ -467,6 +507,7 @@ void CPlayerUnion::Update(void)
 		m_pHPGauge->SetLife(50);
 	}
 
+#if 0
 	// デバッグ表示
 	CManager::GetInstance()->GetDebugProc()->Print(
 		"------------------[プレイヤーの操作]------------------\n"
@@ -474,6 +515,7 @@ void CPlayerUnion::Update(void)
 		"向き：【X：%f, Y：%f, Z：%f】 【Z / C】\n"
 		"移動量：【X：%f, Y：%f, Z：%f】\n"
 		"体力：【%d】\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.y, move.x, move.y, move.z, 50);
+#endif
 }
 
 //==========================================================================
@@ -496,41 +538,15 @@ void CPlayerUnion::Controll(void)
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
 
-	// 移動量取得
-	float fMove = 2.5f;
-
 	// 経過時間取得
-	float fCurrentTime = CManager::GetInstance()->DeltaTime();
+	float fCurrentTime = CManager::GetInstance()->GetDeltaTime();
 
 	if (CGame::GetGameManager()->IsControll())
 	{// 行動できるとき
 
-		// 各部位の操作	
-		for (int i = 0; i < PARTS_MAX; i++)
-		{
-			int nPartsIdx = CManager::GetInstance()->GetByPlayerPartsType(i);
-			switch (nPartsIdx)
-			{
-			case PARTS_BODY:
-				ControllBody(nPartsIdx);
-				break;
-
-			case PARTS_LEG:
-				ControllLeg(nPartsIdx);
-				break;
-
-			case PARTS_L_ARM:
-				ControllLeftArm(nPartsIdx);
-				break;
-
-			case PARTS_R_ARM:
-				ControllRightArm(nPartsIdx);
-				break;
-			}
-		}
-		
+		// パーツのコントロール処理
+		ControllParts();
 	}
-
 
 	// 移動量取得
 	D3DXVECTOR3 move = GetMove();
@@ -636,13 +652,43 @@ void CPlayerUnion::Controll(void)
 
 
 	// カメラの情報取得
-	CCamera *pCamera = CManager::GetInstance()->GetScene()->GetMultiCamera(0);
+	CCamera *pCamera = CManager::GetInstance()->GetCamera();
 	pCamera->SetTargetPosition(pos);
 	pCamera->SetTargetRotation(rot);
 
 	// 目標の向き設定
 	//SetRotDest(m_fRotDest);
 
+}
+
+//==========================================================================
+// パーツのコントロール処理(バーチャル)
+//==========================================================================
+void CPlayerUnion::ControllParts(void)
+{
+	// 各部位の操作	
+	for (int i = 0; i < PARTS_MAX; i++)
+	{
+		int nPartsIdx = CManager::GetInstance()->GetByPlayerPartsType(i);
+		switch (nPartsIdx)
+		{
+		case PARTS_BODY:
+			ControllBody(nPartsIdx);
+			break;
+
+		case PARTS_LEG:
+			ControllLeg(nPartsIdx);
+			break;
+
+		case PARTS_L_ARM:
+			ControllLeftArm(nPartsIdx);
+			break;
+
+		case PARTS_R_ARM:
+			ControllRightArm(nPartsIdx);
+			break;
+		}
+	}
 }
 
 //==========================================================================
@@ -663,11 +709,8 @@ void CPlayerUnion::ControllLeg(int nIdx)
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
-	// 移動量取得
-	D3DXVECTOR3 move = GetMove();
-
 	// カメラの情報取得
-	CCamera *pCamera = CManager::GetInstance()->GetScene()->GetMultiCamera(0);
+	CCamera *pCamera = CManager::GetInstance()->GetCamera();
 
 	// カメラの向き取得
 	D3DXVECTOR3 Camerarot = pCamera->GetRotation();
@@ -682,9 +725,9 @@ void CPlayerUnion::ControllLeg(int nIdx)
 		m_state != STATE_FADEOUT)
 	{// 移動可能モーションの時
 
-		if (pInputGamepad->GetStickMoveL(nIdx).x < 0)
-		{//←キーが押された,左移動
-
+		// 移動操作
+		if (ControllMove(nIdx))
+		{
 			// 移動中にする
 			for (int i = 0; i < PARTS_MAX; i++)
 			{
@@ -698,118 +741,18 @@ void CPlayerUnion::ControllLeg(int nIdx)
 					m_sMotionFrag[nLeftArmIdx].bMove = false;
 				}
 			}
-
-			if (pInputGamepad->GetStickMoveL(nIdx).y > 0)
-			{//A+W,左上移動
-
-				move.x += sinf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
-				move.z += cosf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
-				m_fRotDest = D3DX_PI * 0.75f + Camerarot.y;
-			}
-			else if (pInputGamepad->GetStickMoveL(nIdx).y < 0)
-			{//A+S,左下移動
-
-				move.x += sinf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
-				move.z += cosf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
-				m_fRotDest = D3DX_PI * 0.25f + Camerarot.y;
-			}
-			else
-			{//A,左移動
-
-				move.x += sinf(-D3DX_PI * 0.5f + Camerarot.y) * fMove;
-				move.z += cosf(-D3DX_PI * 0.5f + Camerarot.y) * fMove;
-				m_fRotDest = D3DX_PI * 0.5f + Camerarot.y;
-			}
-		}
-		else if (pInputGamepad->GetStickMoveL(nIdx).x > 0)
-		{//Dキーが押された,右移動
-
-			// 移動中にする
-			for (int i = 0; i < PARTS_MAX; i++)
-			{
-				m_sMotionFrag[i].bMove = true;
-				if (m_sMotionFrag[nRightArmIdx].bCharge == true)
-				{
-					m_sMotionFrag[nRightArmIdx].bMove = false;
-				}
-				if (m_sMotionFrag[nLeftArmIdx].bCharge == true)
-				{
-					m_sMotionFrag[nLeftArmIdx].bMove = false;
-				}
-			}
-
-			if (pInputGamepad->GetStickMoveL(nIdx).y > 0)
-			{//D+W,右上移動
-
-				move.x += sinf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
-				move.z += cosf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
-				m_fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
-			}
-			else if (pInputGamepad->GetStickMoveL(nIdx).y < 0)
-			{//D+S,右下移動
-
-				move.x += sinf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
-				move.z += cosf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
-				m_fRotDest = -D3DX_PI * 0.25f + Camerarot.y;
-			}
-			else
-			{//D,右移動
-
-				move.x += sinf(D3DX_PI * 0.5f + Camerarot.y) * fMove;
-				move.z += cosf(D3DX_PI * 0.5f + Camerarot.y) * fMove;
-				m_fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
-			}
-		}
-		else if (pInputGamepad->GetStickMoveL(nIdx).y > 0)
-		{//Wが押された、上移動
-
-			// 移動中にする
-			for (int i = 0; i < PARTS_MAX; i++)
-			{
-				m_sMotionFrag[i].bMove = true;
-				if (m_sMotionFrag[nRightArmIdx].bCharge == true)
-				{
-					m_sMotionFrag[nRightArmIdx].bMove = false;
-				}
-				if (m_sMotionFrag[nLeftArmIdx].bCharge == true)
-				{
-					m_sMotionFrag[nLeftArmIdx].bMove = false;
-				}
-			}
-
-			move.x += sinf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
-			move.z += cosf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
-			m_fRotDest = D3DX_PI * 1.0f + Camerarot.y;
-		}
-		else if (pInputGamepad->GetStickMoveL(nIdx).y < 0)
-		{//Sが押された、下移動
-
-			// 移動中にする
-			for (int i = 0; i < PARTS_MAX; i++)
-			{
-				m_sMotionFrag[i].bMove = true;
-				if (m_sMotionFrag[nRightArmIdx].bCharge == true)
-				{
-					m_sMotionFrag[nRightArmIdx].bMove = false;
-				}
-				if (m_sMotionFrag[nLeftArmIdx].bCharge == true)
-				{
-					m_sMotionFrag[nLeftArmIdx].bMove = false;
-				}
-			}
-
-			move.x += sinf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
-			move.z += cosf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
-			m_fRotDest = D3DX_PI * 0.0f + Camerarot.y;
 		}
 		else
 		{
-			// 移動やめる
 			for (int i = 0; i < PARTS_MAX; i++)
 			{
 				m_sMotionFrag[i].bMove = false;
 			}
 		}
+
+
+		// 移動量取得
+		D3DXVECTOR3 move = GetMove();
 
 		if (m_bJump == false &&
 			pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LB, nIdx))
@@ -835,10 +778,11 @@ void CPlayerUnion::ControllLeg(int nIdx)
 			// サウンド再生
 			CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
 		}
+
+		// 移動量設定
+		SetMove(move);
 	}
 
-	// 移動量設定
-	SetMove(move);
 }
 
 //==========================================================================
@@ -892,6 +836,103 @@ void CPlayerUnion::ControllLeftArm(int nIdx)
 }
 
 //==========================================================================
+// 移動操作
+//==========================================================================
+bool CPlayerUnion::ControllMove(int nIdx)
+{
+	// ゲームパッド情報取得
+	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+	// 移動量取得
+	D3DXVECTOR3 move = GetMove();
+
+	// カメラの情報取得
+	CCamera *pCamera = CManager::GetInstance()->GetCamera();
+
+	// カメラの向き取得
+	D3DXVECTOR3 Camerarot = pCamera->GetRotation();
+
+	// 移動量取得
+	float fMove = 2.5f;
+
+	bool bMove = true;
+
+	if (pInputGamepad->GetStickMoveL(nIdx).x < 0)
+	{//←キーが押された,左移動
+
+		if (pInputGamepad->GetStickMoveL(nIdx).y > 0)
+		{//A+W,左上移動
+
+			move.x += sinf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
+			move.z += cosf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
+			m_fRotDest = D3DX_PI * 0.75f + Camerarot.y;
+		}
+		else if (pInputGamepad->GetStickMoveL(nIdx).y < 0)
+		{//A+S,左下移動
+
+			move.x += sinf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
+			move.z += cosf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
+			m_fRotDest = D3DX_PI * 0.25f + Camerarot.y;
+		}
+		else
+		{//A,左移動
+
+			move.x += sinf(-D3DX_PI * 0.5f + Camerarot.y) * fMove;
+			move.z += cosf(-D3DX_PI * 0.5f + Camerarot.y) * fMove;
+			m_fRotDest = D3DX_PI * 0.5f + Camerarot.y;
+		}
+	}
+	else if (pInputGamepad->GetStickMoveL(nIdx).x > 0)
+	{//Dキーが押された,右移動
+
+		if (pInputGamepad->GetStickMoveL(nIdx).y > 0)
+		{//D+W,右上移動
+
+			move.x += sinf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
+			move.z += cosf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
+			m_fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
+		}
+		else if (pInputGamepad->GetStickMoveL(nIdx).y < 0)
+		{//D+S,右下移動
+
+			move.x += sinf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
+			move.z += cosf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
+			m_fRotDest = -D3DX_PI * 0.25f + Camerarot.y;
+		}
+		else
+		{//D,右移動
+
+			move.x += sinf(D3DX_PI * 0.5f + Camerarot.y) * fMove;
+			move.z += cosf(D3DX_PI * 0.5f + Camerarot.y) * fMove;
+			m_fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
+		}
+	}
+	else if (pInputGamepad->GetStickMoveL(nIdx).y > 0)
+	{//Wが押された、上移動
+
+		move.x += sinf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
+		move.z += cosf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
+		m_fRotDest = D3DX_PI * 1.0f + Camerarot.y;
+	}
+	else if (pInputGamepad->GetStickMoveL(nIdx).y < 0)
+	{//Sが押された、下移動
+
+		move.x += sinf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
+		move.z += cosf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
+		m_fRotDest = D3DX_PI * 0.0f + Camerarot.y;
+	}
+	else
+	{
+		bMove = false;
+	}
+
+	// 移動量設定
+	SetMove(move);
+
+	return bMove;
+}
+
+//==========================================================================
 // モーションの設定
 //==========================================================================
 void CPlayerUnion::MotionSet(int nIdx)
@@ -916,9 +957,13 @@ void CPlayerUnion::MotionSet(int nIdx)
 			m_bJump == false)
 		{// 移動していたら
 
-
 			// 移動モーション
 			m_pMotion[nIdx]->Set(MOTION_WALK);
+			if (nIdx == PARTS_R_ARM || nIdx == PARTS_L_ARM)
+			{// 腕パーツ
+				m_pMotion[nIdx]->SetNowPattern(m_pMotion[PARTS_BODY]->GetNowPattern());
+				m_pMotion[nIdx]->SetFrameCount(m_pMotion[PARTS_BODY]->GetFrameCount());
+			}
 		}
 		else if (m_sMotionFrag[nIdx].bJump == true &&
 			m_sMotionFrag[nIdx].bATK == false &&
@@ -979,9 +1024,9 @@ void CPlayerUnion::MotionSet(int nIdx)
 //==========================================================================
 // 攻撃
 //==========================================================================
-void CPlayerUnion::Atack(void)
+void CPlayerUnion::Atack(int nIdx)
 {
-	if (m_pMotion[PARTS_BODY] == NULL)
+	if (m_pMotion[nIdx] == NULL)
 	{// モーションがNULLだったら
 		return;
 	}
@@ -999,7 +1044,7 @@ void CPlayerUnion::Atack(void)
 	D3DXVECTOR3 Camerarot = pCamera->GetRotation();
 
 	// モーションの情報取得
-	CMotion::Info aInfo = m_pMotion[PARTS_BODY]->GetInfo(m_pMotion[PARTS_BODY]->GetType());
+	CMotion::Info aInfo = m_pMotion[nIdx]->GetInfo(m_pMotion[nIdx]->GetType());
 
 	// 攻撃情報の総数取得
 	int nNumAttackInfo = aInfo.nNumAttackInfo;
@@ -1011,80 +1056,22 @@ void CPlayerUnion::Atack(void)
 			continue;
 		}
 
-		if (m_pMotion[PARTS_BODY]->GetAllCount() == aInfo.AttackInfo[nCntAttack]->nInpactCnt)
+		if (m_pMotion[nIdx]->GetAllCount() == aInfo.AttackInfo[nCntAttack]->nInpactCnt)
 		{// 衝撃のカウントと同じとき
 
-			// 武器の位置
-			D3DXVECTOR3 weponpos = m_pMotion[PARTS_BODY]->GetAttackPosition(m_pObjChara[PARTS_BODY]->GetModel(), *aInfo.AttackInfo[nCntAttack]);
+			// 攻撃情報保存
+			CMotion::AttackInfo atkInfo = *aInfo.AttackInfo[nCntAttack];
 
-			// 種類別
-			switch (m_pMotion[PARTS_BODY]->GetType())
-			{
-			case MOTION_ATK:
-				//// パーティクル生成
-				//my_particle::Create(weponpos, my_particle::TYPE_SUPERATTACK);
-
-				//// チャージカウントリセット
-				////CGame::GetPowerGauge()->SetChargeCount(0);
-
-				//// 衝撃波生成
-				//CImpactWave::Create
-				//(
-				//	D3DXVECTOR3(pos.x, pos.y + 80.0f, pos.z),	// 位置
-				//	D3DXVECTOR3(0.0f, 0.0f, 0.0f),				// 向き
-				//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f),			// 色
-				//	100.0f,										// 幅
-				//	20.0f,										// 高さ
-				//	20,											// 寿命
-				//	28.0f,										// 幅の移動量
-				//	CImpactWave::TYPE_BLACK2,					// テクスチャタイプ
-				//	true										// 加算合成するか
-				//);
-
-				//CImpactWave::Create
-				//(
-				//	D3DXVECTOR3(pos.x, pos.y + 150.0f, pos.z),	// 位置
-				//	D3DXVECTOR3(0.0f, 0.0f, D3DX_PI),				// 向き
-				//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f),			// 色
-				//	180.0f,										// 幅
-				//	150.0f,										// 高さ
-				//	14,											// 寿命
-				//	4.0f,										// 幅の移動量
-				//	CImpactWave::TYPE_GIZAWHITE,				// テクスチャタイプ
-				//	false										// 加算合成するか
-				//);
-
-				// 振動
-				//CManager::GetInstance()->GetCamera()->SetShake(20, 10.0f, 0.0f);
-
-				// 斬撃生成
-				//CSlash::Create
-				//(
-				//	D3DXVECTOR3(pos.x, pos.y + 50.0f, pos.z),	// 位置
-				//	D3DXVECTOR3(0.0f, 0.0f, 0.0f),		// 向き
-				//	D3DXVECTOR3(m_fAtkStickRot, D3DX_PI + fRotY, 0.0f),		// 向き
-				//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),	// 色
-				//	200.0f,								// 幅
-				//	50.0f,								// 中心からの間隔
-				//	10,									// 寿命
-				//	40.0f,								// 幅の移動量
-				//	CImpactWave::TYPE_PURPLE4,			// テクスチャの種類
-				//	true,								// 加算合成するかどうか
-				//	GetMoveAngle()
-				//);
-
-				// 歩行音再生
-				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_SWING);
-				break;
-			}
+			// 攻撃時処理
+			AttackAction(nIdx, atkInfo.nCollisionNum, atkInfo);
 		}
 
 		// モーションカウンター取得
-		if (m_pMotion[PARTS_BODY]->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt && m_pMotion[PARTS_BODY]->GetAllCount() < aInfo.AttackInfo[nCntAttack]->nMaxCnt)
+		if (m_pMotion[nIdx]->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt && m_pMotion[nIdx]->GetAllCount() < aInfo.AttackInfo[nCntAttack]->nMaxCnt)
 		{// 攻撃判定中
 
 			// 武器の位置
-			D3DXVECTOR3 weponpos = m_pMotion[PARTS_BODY]->GetAttackPosition(m_pObjChara[PARTS_BODY]->GetModel(), *aInfo.AttackInfo[nCntAttack]);
+			D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_pObjChara[nIdx]->GetModel(), *aInfo.AttackInfo[nCntAttack]);
 
 			CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 
@@ -1180,6 +1167,77 @@ void CPlayerUnion::Atack(void)
 
 	CManager::GetInstance()->GetDebugProc()->Print(
 		"モーションカウンター：%d\n", m_pMotion[PARTS_BODY]->GetAllCount());
+}
+
+//==========================================================================
+// 攻撃時処理
+//==========================================================================
+void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo)
+{
+
+	// 武器の位置
+	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_pObjChara[nIdx]->GetModel(), ATKInfo);
+
+	// 種類別
+	switch (m_pMotion[nIdx]->GetType())
+	{
+	case MOTION_ATK:
+		//// パーティクル生成
+		//my_particle::Create(weponpos, my_particle::TYPE_SUPERATTACK);
+
+		//// チャージカウントリセット
+		////CGame::GetPowerGauge()->SetChargeCount(0);
+
+		//// 衝撃波生成
+		//CImpactWave::Create
+		//(
+		//	D3DXVECTOR3(pos.x, pos.y + 80.0f, pos.z),	// 位置
+		//	D3DXVECTOR3(0.0f, 0.0f, 0.0f),				// 向き
+		//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f),			// 色
+		//	100.0f,										// 幅
+		//	20.0f,										// 高さ
+		//	20,											// 寿命
+		//	28.0f,										// 幅の移動量
+		//	CImpactWave::TYPE_BLACK2,					// テクスチャタイプ
+		//	true										// 加算合成するか
+		//);
+
+		//CImpactWave::Create
+		//(
+		//	D3DXVECTOR3(pos.x, pos.y + 150.0f, pos.z),	// 位置
+		//	D3DXVECTOR3(0.0f, 0.0f, D3DX_PI),				// 向き
+		//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f),			// 色
+		//	180.0f,										// 幅
+		//	150.0f,										// 高さ
+		//	14,											// 寿命
+		//	4.0f,										// 幅の移動量
+		//	CImpactWave::TYPE_GIZAWHITE,				// テクスチャタイプ
+		//	false										// 加算合成するか
+		//);
+
+		// 振動
+		//CManager::GetInstance()->GetCamera()->SetShake(20, 10.0f, 0.0f);
+
+		// 斬撃生成
+		//CSlash::Create
+		//(
+		//	D3DXVECTOR3(pos.x, pos.y + 50.0f, pos.z),	// 位置
+		//	D3DXVECTOR3(0.0f, 0.0f, 0.0f),		// 向き
+		//	D3DXVECTOR3(m_fAtkStickRot, D3DX_PI + fRotY, 0.0f),		// 向き
+		//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),	// 色
+		//	200.0f,								// 幅
+		//	50.0f,								// 中心からの間隔
+		//	10,									// 寿命
+		//	40.0f,								// 幅の移動量
+		//	CImpactWave::TYPE_PURPLE4,			// テクスチャの種類
+		//	true,								// 加算合成するかどうか
+		//	GetMoveAngle()
+		//);
+
+		// 歩行音再生
+		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_SWING);
+		break;
+	}
 }
 
 //==========================================================================
@@ -1901,16 +1959,173 @@ void CPlayerUnion::Draw(void)
 		CObjectChara::Draw();
 	}*/
 
-	m_pObjChara[PARTS_BODY]->Draw();		// 胴体
-	m_pObjChara[PARTS_LEG]->Draw();		// 脚
-	m_pObjChara[PARTS_R_ARM]->Draw();	// 右腕
-	m_pObjChara[PARTS_L_ARM]->Draw();	// 左腕
+	for (int i = 0; i < PARTS_MAX; i++)
+	{
+		if (m_pObjChara[i] == NULL)
+		{
+			continue;
+		}
+
+		// 攻撃処理
+		//m_pObjChara[i]->Draw();		// 胴体
+	}
 
 	// HPゲージ
 	if (m_pHPGauge != NULL)
 	{
 		m_pHPGauge->Draw();
 	}
+}
+
+//==========================================================================
+// 複数キャラクター読み込み
+//==========================================================================
+void CPlayerUnion::ReadMultiCharacter(const char *pTextFile)
+{
+	FILE *pFile = NULL;	// ファイルポインタを宣言
+
+	// ファイルを開く
+	pFile = fopen(pTextFile, "r");
+
+	if (pFile == NULL)
+	{//ファイルが開けた場合
+		return;
+	}
+
+	char aComment[MAX_COMMENT];	// コメント
+
+	std::string CharacterFile[mylib_const::MAX_PLAYER];
+	int nCntFileName = 0;
+	int nNumModel = 0;
+
+	while (1)
+	{// END_SCRIPTが来るまで繰り返す
+
+		// 文字列の読み込み
+		fscanf(pFile, "%s", &aComment[0]);
+
+		// モデル数の設定
+		if (strcmp(aComment, "NUM_MODEL") == 0)
+		{// NUM_MODELがきたら
+
+			fscanf(pFile, "%s", &aComment[0]);	// =の分
+			fscanf(pFile, "%d", &nNumModel);	// モデル数
+		}
+
+		while (nCntFileName != nNumModel)
+		{// モデルの数分読み込むまで繰り返し
+
+			// 文字列の読み込み
+			fscanf(pFile, "%s", &aComment[0]);
+
+			// モデル名の設定
+			if (strcmp(aComment, "MOTION_FILENAME") == 0)
+			{// NUM_MODELがきたら
+
+				fscanf(pFile, "%s", &aComment[0]);	// =の分
+				fscanf(pFile, "%s", &aComment[0]);	// ファイル名
+
+				// ファイル名保存
+				CharacterFile[nCntFileName] = aComment;
+
+
+				//**********************************
+				// キャラクター生成
+				//**********************************
+				m_pObjChara[nCntFileName] = CObjectChara::Create(CharacterFile[nCntFileName]);
+				if (m_pObjChara[nCntFileName] == NULL)
+				{// 失敗していたら
+					return;
+				}
+				m_pObjChara[nCntFileName]->SetType(CObject::TYPE_OBJECTX);
+
+				// モーションの生成処理
+				m_pMotion[nCntFileName] = CMotion::Create(CharacterFile[nCntFileName]);
+
+				// オブジェクトキャラクターの情報取得
+				CObjectChara *pObjChar = m_pObjChara[nCntFileName]->GetObjectChara();
+
+				// モーションの設定
+				m_pMotion[nCntFileName]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
+
+				// ポーズのリセット
+				m_pMotion[nCntFileName]->ResetPose(MOTION_DEF);
+
+
+				nCntFileName++;	// ファイル数加算
+			}
+		}
+
+		// 各パーツの設定
+		if (strcmp(aComment, "PARENTSET") == 0)
+		{// 親設定の読み込みを開始
+
+			int nFileNumber = -1, nModelIdx = -1, nParentFileNumber = -1, nParentModelIdx = -1;
+
+			while (strcmp(aComment, "END_PARENTSET") != 0)
+			{// END_PARENTSETが来るまで繰り返し
+
+				fscanf(pFile, "%s", &aComment[0]);	//確認する
+
+				if (strcmp(aComment, "FILENUMBER") == 0)
+				{// FILENUMBERで設定するキャラクターファイル番号読み込み
+
+					fscanf(pFile, "%s", &aComment[0]);	// =の分
+					fscanf(pFile, "%d", &nFileNumber);	// キャラクターファイル番号
+				}
+
+				if (strcmp(aComment, "MODELINDEX") == 0)
+				{// MODELINDEXで設定するモデル番号読み込み
+
+					fscanf(pFile, "%s", &aComment[0]);	// =の分
+					fscanf(pFile, "%d", &nModelIdx);	// 設定するモデル番号
+				}
+
+				if (strcmp(aComment, "PARENT_FILENUMBER") == 0)
+				{// PARENT_FILENUMBERで親にするキャラクターファイル番号読み込み
+
+					fscanf(pFile, "%s", &aComment[0]);	// =の分
+					fscanf(pFile, "%d", &nParentFileNumber);	// キャラクターファイル番号
+				}
+
+				if (strcmp(aComment, "PARENT_MODELINDEX") == 0)
+				{// PARENT_MODELINDEXで親にするモデル番号読み込み
+
+					fscanf(pFile, "%s", &aComment[0]);	// =の分
+					fscanf(pFile, "%d", &nParentModelIdx);	// 設定するモデル番号
+				}
+			}// END_PARENTSETのかっこ
+
+			// 原点設定
+			m_pObjChara[nFileNumber]->GetModel()[nModelIdx]->SetParent(m_pObjChara[nParentFileNumber]->GetModel()[nParentModelIdx]);
+		}
+
+		if (strcmp(aComment, "END_SCRIPT") == 0)
+		{// 終了文字でループを抜ける
+			break;
+		}
+	}
+
+	// ファイルを閉じる
+	fclose(pFile);
+
+}
+
+//==========================================================================
+// プレイヤー毎のパーツインデックス番号設定
+//==========================================================================
+void CPlayerUnion::SetPlayerByPartsIdx(int nPartsIdx, int nPlayerIdx)
+{
+	m_nPartsIdx[nPartsIdx] = nPlayerIdx;
+	m_nInputSuperAtkIdx = nPlayerIdx;
+}
+
+//==========================================================================
+// 移動の操作するインデックス番号設定
+//==========================================================================
+void CPlayerUnion::SetControllMoveIdx(int nIdx)
+{
+	m_nControllMoveIdx = nIdx;
 }
 
 //==========================================================================

@@ -55,13 +55,15 @@
 #define CONFUSIONTIME	(60 * 2)		// ¬—ŠÔ
 #define DEADTIME		(120)
 #define FADEOUTTIME		(60)
+#define MAX_ATKCOMBO	(2)				// UŒ‚ƒRƒ“ƒ{‚ÌÅ‘å”
+#define INTERVAL_ATK	(30)			// UŒ‚‚Ì—P—\
 
 //==========================================================================
 // Ã“Iƒƒ“ƒo•Ï”éŒ¾
 //==========================================================================
 const char *CPlayer::m_apModelFile[mylib_const::MAX_PLAYER] =	// ƒ‚ƒfƒ‹‚Ìƒtƒ@ƒCƒ‹
 {
-	"data\\TEXT\\motion_1p.txt",
+	"data\\TEXT\\motion_player.txt",
 	"data\\TEXT\\motion_2p.txt",
 	"data\\TEXT\\motion_3p.txt",
 	"data\\TEXT\\motion_4p.txt",
@@ -69,6 +71,7 @@ const char *CPlayer::m_apModelFile[mylib_const::MAX_PLAYER] =	// ƒ‚ƒfƒ‹‚Ìƒtƒ@ƒCƒ
 
 bool CPlayer::m_bAllLandInjectionTable = false;	// ‘Sˆõ‚ÌËo‘ä’…’n”»’è
 bool CPlayer::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// Ëo‘ä‚Ì’…’n”»’è
+int CPlayer::m_nChaseTopIdx = 0;	// ’Ç]‚Ìæ“ªƒCƒ“ƒfƒbƒNƒX”Ô†
 
 //==========================================================================
 // ƒRƒ“ƒXƒgƒ‰ƒNƒ^
@@ -83,6 +86,8 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 	m_bLandField = false;			// ƒtƒB[ƒ‹ƒh‚Ì’…’n”»’è
 	m_bHitWall = false;			// •Ç‚Ì“–‚½‚è”»’è
 	m_nCntWalk = 0;				// •àsƒJƒEƒ“ƒ^[
+	m_nCntInputAtk = 0;			// UŒ‚‚Ì“ü—ÍƒJƒEƒ“ƒ^[
+	m_nAtkLevel = 0;			// UŒ‚‚Ì’iŠK
 	m_state = STATE_NONE;			// ó‘Ô
 	m_pMotion = NULL;		// ƒ‚[ƒVƒ‡ƒ“‚Ìî•ñ
 	m_sMotionFrag.bATK = false;		// ƒ‚[ƒVƒ‡ƒ“‚Ìƒtƒ‰ƒO
@@ -169,6 +174,7 @@ HRESULT CPlayer::Init(void)
 	m_bLandOld = true;		// ‘O‰ñ‚Ì’…’nó‘Ô
 	m_bAllLandInjectionTable = false;	// ‘Sˆõ‚ÌËo‘ä’…’n”»’è
 	memset(&m_bLandInjectionTable[0], false, sizeof(m_bLandInjectionTable));	// Ëo‘ä‚Ì’…’n”»’è
+	m_nChaseTopIdx = 0;		// ’Ç]‚Ìæ“ªƒCƒ“ƒfƒbƒNƒX”Ô†
 
 	// ƒLƒƒƒ‰ì¬
 	HRESULT hr = SetCharacter(m_apModelFile[m_nMyPlayerIdx]);
@@ -321,18 +327,12 @@ void CPlayer::Update(void)
 		m_pMotion->Update();
 	}
 
-	// ’¸“_î•ñİ’è
-	SetVtx();
-
 	// UŒ‚ˆ—
 	Atack();
 
 	// ó‘ÔXV
 	UpdateState();
 
-
-	// ƒJƒƒ‰‚Ìî•ñæ“¾
-	CCamera *pCamera = CManager::GetInstance()->GetScene()->GetMultiCamera(m_nMyPlayerIdx);
 
 	// ˆÊ’uæ“¾
 	D3DXVECTOR3 pos = GetPosition();
@@ -344,9 +344,16 @@ void CPlayer::Update(void)
 	// Œü‚«æ“¾
 	D3DXVECTOR3 rot = GetRotation();
 
+
+
 	// ’Ç]–Ú•W‚Ìî•ñİ’è
-	pCamera->SetTargetPosition(pos);
-	pCamera->SetTargetRotation(rot);
+	if (m_nChaseTopIdx == m_nMyPlayerIdx)
+	{
+		// ƒJƒƒ‰‚Ìî•ñæ“¾
+		CCamera *pCamera = CManager::GetInstance()->GetCamera();
+		pCamera->SetTargetPosition(pos);
+		pCamera->SetTargetRotation(rot);
+	}
 
 	// ‰e‚ÌˆÊ’uXV
 	if (m_pShadow != NULL)
@@ -361,6 +368,7 @@ void CPlayer::Update(void)
 		m_pHPGauge->SetLife(GetLife());
 	}
 
+#if 0
 	// ƒfƒoƒbƒO•\¦
 	CManager::GetInstance()->GetDebugProc()->Print(
 		"------------------[ƒvƒŒƒCƒ„[‚Ì‘€ì]------------------\n"
@@ -368,6 +376,8 @@ void CPlayer::Update(void)
 		"Œü‚«FyXF%f, YF%f, ZF%fz yZ / Cz\n"
 		"ˆÚ“®—ÊFyXF%f, YF%f, ZF%fz\n"
 		"‘Ì—ÍFy%dz\n", pos.x, pos.y, pos.z, posCenter.x, posCenter.y, posCenter.z, rot.x, rot.y, rot.y, move.x, move.y, move.z, GetLife());
+#endif
+
 }
 
 //==========================================================================
@@ -383,7 +393,7 @@ void CPlayer::Controll(void)
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
 	// ƒJƒƒ‰‚Ìî•ñæ“¾
-	CCamera *pCamera = CManager::GetInstance()->GetScene()->GetMultiCamera(m_nMyPlayerIdx);
+	CCamera *pCamera = CManager::GetInstance()->GetCamera();
 
 	// ƒJƒƒ‰‚ÌŒü‚«æ“¾
 	D3DXVECTOR3 Camerarot = pCamera->GetRotation();
@@ -409,14 +419,15 @@ void CPlayer::Controll(void)
 	float fMove = GetVelocity();
 
 	// Œo‰ßŠÔæ“¾
-	float fCurrentTime = CManager::GetInstance()->DeltaTime();
+	float fCurrentTime = CManager::GetInstance()->GetDeltaTime();
 
 	if (CGame::GetGameManager()->IsControll())
 	{// s“®‚Å‚«‚é‚Æ‚«
 
 		if (m_pMotion->IsGetMove(nMotionType) == 1 &&
 			m_state != STATE_DEAD &&
-			m_state != STATE_FADEOUT)
+			m_state != STATE_FADEOUT &&
+			m_state != STATE_COMPACTUNION)
 		{// ˆÚ“®‰Â”\ƒ‚[ƒVƒ‡ƒ“‚Ì
 
 			if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).x < 0)
@@ -513,6 +524,55 @@ void CPlayer::Controll(void)
 		}
 	}
 
+	if (m_pMotion->GetType() == MOTION_WALK)
+	{// ˆÚ“®’†
+		m_nCntWalk = (m_nCntWalk + 1) % 4;
+
+		if (m_nCntWalk == 0)
+		{
+			// ƒ‚[ƒVƒ‡ƒ“‚Ìî•ñæ“¾
+			CMotion::Info aInfo = m_pMotion->GetInfo(MOTION_WALK);
+
+			// UŒ‚î•ñ‚Ì‘”æ“¾
+			int nNumAttackInfo = aInfo.nNumAttackInfo;
+
+			// •Ší‚ÌˆÊ’u
+			for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
+			{
+				D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
+
+				D3DXVECTOR3 ModelRot = GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetRotation();
+				ModelRot.x += GetModel()[0]->GetRotation().x;
+
+				//D3DXVECTOR3 ModelRot = WorldMtxChangeToRotation(GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetWorldMtx());
+
+				// ‰Š
+				float fMove = 20.0f + Random(-40, 40) * 0.1f;
+				float fRot = Random(-20, 20) * 0.01f;
+
+				CEffect3D::Create(
+					weponpos,
+					D3DXVECTOR3(sinf(D3DX_PI + rot.y + fRot) * -fMove, sinf(ModelRot.x) * fMove, cosf(D3DX_PI + rot.y + fRot) * -fMove),
+					D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
+					250.0f + (float)Random(-10, 10) * 10.0f,
+					15,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_SMOKE);
+
+				fRot = Random(-20, 20) * 0.01f;
+				// ‰Š
+				CEffect3D::Create(
+					weponpos,
+					D3DXVECTOR3(sinf(D3DX_PI + rot.y + fRot) * -fMove, sinf(ModelRot.x) * fMove, cosf(D3DX_PI + rot.y + fRot) * -fMove),
+					D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
+					180.0f + (float)Random(-5, 5) * 10.0f,
+					15,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_SMOKE);
+			}
+		}
+	}
+
 	// ˆÚ“®—Ê‰ÁZ
 	newPosition.x += move.x;
 	newPosition.z += move.z;
@@ -536,7 +596,7 @@ void CPlayer::Controll(void)
 	RotNormalize(rot.y);
 
 	// d—Íˆ—
-	if (m_state != STATE_KNOCKBACK && m_state != STATE_DMG && m_state != STATE_DEAD && m_state != STATE_FADEOUT)
+	if (m_state != STATE_KNOCKBACK && m_state != STATE_DMG && m_state != STATE_DEAD && m_state != STATE_FADEOUT && m_state != STATE_COMPACTUNION)
 	{
 		move.y -= mylib_const::GRAVITY;
 
@@ -615,7 +675,18 @@ void CPlayer::Controll(void)
 	// –Ú•W‚ÌŒü‚«İ’è
 	SetRotDest(fRotDest);
 
-	if (CGame::GetGameManager()->IsControll())
+	// UŒ‚‚Ì“ü—ÍƒJƒEƒ“ƒ^[Œ¸Z
+	m_nCntInputAtk--;
+	if (m_nCntInputAtk <= 0)
+	{
+		m_nCntInputAtk = 0;
+		m_nAtkLevel = 0;
+	}
+
+	if (CGame::GetGameManager()->IsControll() &&
+		m_state != STATE_DEAD &&
+		m_state != STATE_FADEOUT &&
+		m_state != STATE_COMPACTUNION)
 	{// s“®‚Å‚«‚é‚Æ‚«
 
 		if (m_sMotionFrag.bATK == false && 
@@ -625,6 +696,17 @@ void CPlayer::Controll(void)
 			// UŒ‚”»’èON
 			m_sMotionFrag.bJump = false;
 			m_sMotionFrag.bATK = true;
+
+			//if (m_nCntInputAtk >= 0)
+			//{// ‚Ü‚¾—P—\‚ª‚ ‚Á‚½‚ç
+
+			//	// UŒ‚‚Ì’iŠK‰ÁZ
+			//	m_nAtkLevel++;
+			//	ValueNormalize(m_nAtkLevel, MAX_ATKCOMBO, 0);
+			//}
+
+			// UŒ‚‚Ì“ü—ÍƒJƒEƒ“ƒ^[ƒŠƒZƒbƒg
+			m_nCntInputAtk = INTERVAL_ATK;
 		}
 	}
 
@@ -702,7 +784,17 @@ void CPlayer::MotionSet(void)
 		{// UŒ‚‚µ‚Ä‚¢‚½‚ç
 
 			m_sMotionFrag.bATK = false;		// UŒ‚”»’èOFF
-			m_pMotion->Set(MOTION_ATK, true);
+
+			//(MAX_ATKCOMBO - m_nCntInputAtk) - 1;
+			m_pMotion->Set(MOTION_ATK + m_nAtkLevel, true);
+
+			// UŒ‚‚Ì’iŠK‰ÁZ
+			m_nAtkLevel++;
+			if (m_nAtkLevel >= MAX_ATKCOMBO)
+			{
+				m_nAtkLevel = 0;
+			}
+
 		}
 		else
 		{
@@ -1120,14 +1212,15 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 	// ˆÊ’uæ“¾
 	D3DXVECTOR3 posOld = GetPosition();
 
-	// ” 
-	float fLen = CGame::GetElevation()->GetWidthLen();
-	int nBlock = CGame::GetElevation()->GetWidthBlock();
-	nBlock /= 2;
-	if (pos.x + GetRadius() >= fLen * nBlock) { pos.x = fLen * nBlock - GetRadius(); }
-	if (pos.x - GetRadius() <= -fLen * nBlock) { pos.x = -fLen * nBlock + GetRadius(); }
-	if (pos.z + GetRadius() >= fLen * nBlock) { pos.z = fLen * nBlock - GetRadius(); }
-	if (pos.z - GetRadius() <= -fLen * nBlock) { pos.z = -fLen * nBlock + GetRadius(); }
+	//// ” 
+	//D3DXVECTOR3 FieldPos = CGame::GetElevation()->GetPosition();
+	//float fLen = CGame::GetElevation()->GetWidthLen();
+	//int nBlock = CGame::GetElevation()->GetWidthBlock();
+	//nBlock /= 2;
+	//if (pos.x + GetRadius() >= fLen * nBlock) { pos.x = fLen * nBlock - GetRadius(); }
+	//if (pos.x - GetRadius() <= -fLen * nBlock) { pos.x = -fLen * nBlock + GetRadius(); }
+	//if (pos.z + GetRadius() >= fLen * nBlock) { pos.z = fLen * nBlock - GetRadius(); }
+	//if (pos.z - GetRadius() <= -fLen * nBlock) { pos.z = -fLen * nBlock + GetRadius(); }
 
 	// Œü‚«İ’è
 	SetRotation(rot);
@@ -1296,6 +1389,14 @@ void CPlayer::UpdateState(void)
 
 	case STATE_KNOCKBACK:
 		KnockBack();
+		break;
+
+	case STATE_COMPACTUNION:
+		StateCompactUnion();
+		break;
+
+	case STATE_RELEASEUNION:
+		StateReleaseUnion();
 		break;
 	}
 }
@@ -1621,11 +1722,48 @@ void CPlayer::KnockBack(void)
 }
 
 //==========================================================================
+// ŠÈˆÕ‡‘Ì
+//==========================================================================
+void CPlayer::StateCompactUnion(void)
+{
+	// ‰e‚ğÁ‚·
+	if (m_pShadow != NULL)
+	{
+		m_pShadow->Uninit();
+		m_pShadow = NULL;
+	}
+}
+
+//==========================================================================
+// ‡‘Ì‰ğœ
+//==========================================================================
+void CPlayer::StateReleaseUnion(void)
+{
+	// ó‘Ô‘JˆÚƒJƒEƒ“ƒ^[Œ¸Z
+	m_nCntState--;
+
+	if (m_nCntState <= 0)
+	{// ‘JˆÚƒJƒEƒ“ƒ^[‚ª0‚É‚È‚Á‚½‚ç
+
+		m_nCntState = 0;
+		m_state = STATE_NONE;
+
+		// ‰e‚Ì¶¬
+		if (m_pShadow == NULL)
+		{
+			m_pShadow = CShadow::Create(GetPosition(), 50.0f);
+		}
+		return;
+	}
+}
+
+//==========================================================================
 // •`‰æˆ—
 //==========================================================================
 void CPlayer::Draw(void)
 {
 
+	// •`‰æˆ—
 	if (m_state == STATE_DMG)
 	{
 		CObjectChara::Draw(m_mMatcol);
@@ -1634,7 +1772,7 @@ void CPlayer::Draw(void)
 	{
 		CObjectChara::Draw(m_mMatcol.a);
 	}
-	else
+	else if(m_state != STATE_COMPACTUNION)
 	{
 		CObjectChara::Draw();
 	}
@@ -1644,6 +1782,15 @@ void CPlayer::Draw(void)
 	{
 		m_pHPGauge->Draw();
 	}
+}
+
+//==========================================================================
+// ó‘Ôİ’è
+//==========================================================================
+void CPlayer::SetState(STATE state, int nCntState)
+{
+	m_state = state;
+	m_nCntState = nCntState;
 }
 
 //==========================================================================

@@ -2,6 +2,7 @@
 // 
 //  タイトル処理 [title.cpp]
 //  Author : 相馬靜雅
+//  Added by 金崎朋弥
 // 
 //=============================================================================
 #include "title.h"
@@ -10,12 +11,9 @@
 #include "renderer.h"
 #include "calculation.h"
 #include "debugproc.h"
-#include "title_screen.h"
 #include "sound.h"
-
-//==========================================================================
-// 静的メンバ変数宣言
-//==========================================================================
+#include "title_logo.h"
+#include "fog_title.h"
 
 //==========================================================================
 // コンストラクタ
@@ -24,6 +22,8 @@ CTitle::CTitle()
 {
 	// 値のクリア
 	m_nCntSwitch = 0;		// 切り替えのカウンター
+	m_pLogo = nullptr;
+	m_pFog = nullptr;
 }
 
 //==========================================================================
@@ -39,7 +39,6 @@ CTitle::~CTitle()
 //==========================================================================
 HRESULT CTitle::Init(void)
 {
-
 	// BGM再生
 	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_TITLE);
 
@@ -49,8 +48,18 @@ HRESULT CTitle::Init(void)
 		return E_FAIL;
 	}
 
-	// タイトル画面
-	CTitleScreen::Create();
+	//タイトルロゴの表示
+	if (m_pLogo == nullptr)
+	{
+		m_pLogo = CTitleLogo::Create();
+	}
+
+	//フォグを生成
+	if (m_pFog == nullptr)
+	{
+		m_pFog = DEBUG_NEW CFog_Title;
+		m_pFog->Init();
+	}
 
 	// 成功
 	return S_OK;
@@ -61,6 +70,20 @@ HRESULT CTitle::Init(void)
 //==========================================================================
 void CTitle::Uninit(void)
 {
+	//フォグを破棄
+	if (m_pFog != nullptr)
+	{
+		m_pFog->Uninit();
+		delete m_pFog;
+		m_pFog = nullptr;
+	}
+
+	// タイトルロゴを破棄
+	if (m_pLogo != nullptr)
+	{
+		m_pLogo = nullptr;
+	}
+
 	// 終了処理
 	CScene::Uninit();
 }
@@ -91,6 +114,18 @@ void CTitle::Update(void)
 	if (m_nCntSwitch <= 120)
 	{
 		return;
+	}
+
+	//タイトルロゴが完成していないときは抜ける
+	if (!m_pLogo->GetComplete())
+	{
+		return;
+	}
+
+	//フォグの更新
+	if (m_pFog != nullptr)
+	{
+		m_pFog->Update();
 	}
 
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)

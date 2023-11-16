@@ -31,7 +31,7 @@ class CPlayer : public CObjectChara
 public:
 
 	// 状態定義
-	typedef enum
+	enum STATE
 	{
 		STATE_NONE = 0,		// なにもない
 		STATE_INVINCIBLE,	// 無敵
@@ -40,8 +40,10 @@ public:
 		STATE_DEAD,			// 死
 		STATE_FADEOUT,		// フェードアウト
 		STATE_ATTACK,		// 攻撃処理
+		STATE_COMPACTUNION,	// 簡易合体
+		STATE_RELEASEUNION,	// 合体解除
 		STATE_MAX
-	}STATE;
+	};
 
 	CPlayer(int nPriority = mylib_const::DEF2D_PRIORITY);
 	~CPlayer();
@@ -55,6 +57,7 @@ public:
 	bool Hit(const int nValue);	// ヒット処理
 	int GetState(void) override;
 
+	void SetState(STATE state, int nCntState = 0);			// 状態設定
 	static CPlayer *Create(int nIdx);	// 生成
 	void UninitByMode(void);
 	void Kill(void);	// 死亡処理
@@ -93,6 +96,8 @@ protected:
 	bool m_bHitWall;			// 壁の当たり判定
 	int m_nMyPlayerIdx;			// プレイヤーインデックス番号
 	int m_nCntWalk;				// 歩行カウンター
+	int m_nCntInputAtk;			// 攻撃の入力カウンター
+	int m_nAtkLevel;			// 攻撃の段階
 	STATE m_state;			// 状態
 	CMotion *m_pMotion;		// モーションの情報
 	SMotionFrag m_sMotionFrag;		// モーションのフラグ
@@ -105,6 +110,8 @@ private:
 	void Dead(void);		// 死亡
 	void FadeOut(void);		// フェードアウト
 	void Invincible(void);	// 無敵
+	void StateCompactUnion(void);		// 簡易合体
+	void StateReleaseUnion(void);		// 合体解除
 	virtual void Controll(void);	// 操作
 	void MotionSet(void);	// モーションの設定
 	void Atack(void);		// 攻撃
@@ -122,6 +129,7 @@ private:
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定
 	static const char *m_apModelFile[mylib_const::MAX_PLAYER];	// モデルのファイル
+	static int m_nChaseTopIdx;	// 追従の先頭インデックス番号
 };
 
 

@@ -8,6 +8,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
+#include "input.h"
 
 //==========================================
 //  コンストラクタ
@@ -53,6 +54,16 @@ void CLogo_Sqou::Uninit(void)
 //==========================================
 void CLogo_Sqou::Update(void)
 {
+	// キーボード情報取得
+	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+#ifdef _DEBUG
+	if (pInputKeyboard->GetTrigger(DIK_3))
+	{
+		SetComplete(true);
+	}
+#endif
+
 	//更新
 	CLogo::Update();
 }

@@ -27,6 +27,9 @@ public:
 
 protected:
 
+	//メンバ関数
+	void SetComplete(bool bComp) { m_bComplete = bComp; };
+
 	//静的メンバ変数
 	static const char* m_apTextureFile[]; // テクスチャのファイル
 

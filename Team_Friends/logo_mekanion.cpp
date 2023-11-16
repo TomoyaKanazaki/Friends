@@ -68,6 +68,13 @@ void CLogo_Meka::Update(void)
 		this->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[4]));
 	}
 
+#ifdef _DEBUG
+	if (pInputKeyboard->GetTrigger(DIK_2))
+	{
+		SetComplete(true);
+	}
+#endif
+
 	//XV
 	CLogo::Update();
 }

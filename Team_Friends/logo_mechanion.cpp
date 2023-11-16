@@ -7,6 +7,7 @@
 #include "logo_mechanion.h"
 #include "manager.h"
 #include "texture.h"
+#include "input.h"
 
 //==========================================
 //  コンストラクタ
@@ -52,6 +53,16 @@ void CLogo_Mech::Uninit(void)
 //==========================================
 void CLogo_Mech::Update(void)
 {
+	// キーボード情報取得
+	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+#ifdef _DEBUG
+	if (pInputKeyboard->GetTrigger(DIK_1))
+	{
+		SetComplete(true);
+	}
+#endif
+
 	//更新
 	CLogo::Update();
 }

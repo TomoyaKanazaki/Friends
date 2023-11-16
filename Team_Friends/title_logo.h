@@ -31,6 +31,7 @@ public:
 	void Uninit(void) override;
 	void Update(void) override;
 	void Draw(void) override;
+	bool GetComplete() { return m_bComplete; }
 
 	//Ã“Iƒƒ“ƒoŠÖ”
 	static CTitleLogo* Create();
@@ -57,6 +58,7 @@ private:
 	bool m_bComplete;
 
 	//ƒƒ“ƒoŠÖ”
+	void UpdateState();
 	void DebugFunction();
 
 };

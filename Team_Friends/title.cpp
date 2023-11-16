@@ -74,6 +74,7 @@ void CTitle::Uninit(void)
 	if (m_pFog != nullptr)
 	{
 		m_pFog->Uninit();
+		delete m_pFog;
 		m_pFog = nullptr;
 	}
 

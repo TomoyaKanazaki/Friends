@@ -39,6 +39,7 @@ public:
 		float fVelocity;		// 移動速度
 		float fRadius;			// 半径
 		int nLife;				// 体力
+		int nMotionStartIdx;	// モーション開始のインデックス番号
 		int nAddScore;			// スコア加算量
 		D3DXVECTOR3 posOrigin;	// 最初の位置
 		LoadData LoadData[mylib_const::MAX_MODEL];
@@ -76,6 +77,7 @@ public:
 	void SetLife(const int nLife);				// 体力設定
 	int GetLife(void) const;					// 体力取得
 	int GetLifeOrigin(void) const;				// 元の体力取得
+	int GetMotionStartIdx(void) const;			// モーション開始のインデックス番号取得
 	int GetAddScoreValue(void) const;			// スコア加算量取得
 	void SetEnableWaveHit(void);				// 波の当たり判定ON
 	void SetDisableWaveHit(void);				// 波の当たり判定OFF
@@ -109,6 +111,7 @@ private:
 	float m_fRotDest;			// 目標の向き
 	int m_nLife;				// 体力
 	int m_nLifeOrigin;			// 元の体力
+	int m_nMotionStartIdx;		// モーション開始のインデックス番号
 	int m_nAddScore;			// スコア加算量
 	int m_nNumModel;			// モデルの数
 	int m_nIdxFile;				// ファイルのインデックス番号

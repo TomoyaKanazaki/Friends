@@ -840,6 +840,10 @@ void CPlayerUnion::ControllLeftArm(int nIdx)
 //==========================================================================
 bool CPlayerUnion::ControllMove(int nIdx)
 {
+
+	// キーボード情報取得
+	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
@@ -857,17 +861,17 @@ bool CPlayerUnion::ControllMove(int nIdx)
 
 	bool bMove = true;
 
-	if (pInputGamepad->GetStickMoveL(nIdx).x < 0)
+	if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(nIdx).x < 0)
 	{//←キーが押された,左移動
 
-		if (pInputGamepad->GetStickMoveL(nIdx).y > 0)
+		if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(nIdx).y > 0)
 		{//A+W,左上移動
 
 			move.x += sinf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
 			move.z += cosf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
 			m_fRotDest = D3DX_PI * 0.75f + Camerarot.y;
 		}
-		else if (pInputGamepad->GetStickMoveL(nIdx).y < 0)
+		else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(nIdx).y < 0)
 		{//A+S,左下移動
 
 			move.x += sinf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
@@ -882,17 +886,17 @@ bool CPlayerUnion::ControllMove(int nIdx)
 			m_fRotDest = D3DX_PI * 0.5f + Camerarot.y;
 		}
 	}
-	else if (pInputGamepad->GetStickMoveL(nIdx).x > 0)
+	else if (pInputKeyboard->GetPress(DIK_D) == true || pInputGamepad->GetStickMoveL(nIdx).x > 0)
 	{//Dキーが押された,右移動
 
-		if (pInputGamepad->GetStickMoveL(nIdx).y > 0)
+		if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(nIdx).y > 0)
 		{//D+W,右上移動
 
 			move.x += sinf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
 			move.z += cosf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
 			m_fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
 		}
-		else if (pInputGamepad->GetStickMoveL(nIdx).y < 0)
+		else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(nIdx).y < 0)
 		{//D+S,右下移動
 
 			move.x += sinf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
@@ -907,14 +911,14 @@ bool CPlayerUnion::ControllMove(int nIdx)
 			m_fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
 		}
 	}
-	else if (pInputGamepad->GetStickMoveL(nIdx).y > 0)
+	else if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(nIdx).y > 0)
 	{//Wが押された、上移動
 
 		move.x += sinf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
 		move.z += cosf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
 		m_fRotDest = D3DX_PI * 1.0f + Camerarot.y;
 	}
-	else if (pInputGamepad->GetStickMoveL(nIdx).y < 0)
+	else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(nIdx).y < 0)
 	{//Sが押された、下移動
 
 		move.x += sinf(D3DX_PI * 1.0f + Camerarot.y) * fMove;

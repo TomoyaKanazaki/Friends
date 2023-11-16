@@ -4,8 +4,8 @@ Format Text Ver 1.0
 Scene {
 	pos -89.8557 11.0971 15728.6426
 	lookat 0.0000 0.0000 0.0000
-	head 0.0364
-	pich 1.5708
+	head 0.0864
+	pich 0.5808
 	bank 0.0000
 	ortho 0
 	zoom2 0.4768
@@ -19,9 +19,9 @@ Scene {
 }
 Material 4 {
 	"mat1" col(0.847 0.847 0.847 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"mat2" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("C:\Users\student\Desktop\反逆のニート\TheWorld\team000\data\TEXTURE\bill01\window.png")
+	"mat2" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("data\TEXTURE\bill01\window.png")
 	"mat3" col(0.000 0.000 0.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"mat4" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("C:\Users\student\Desktop\反逆のニート\TheWorld\team000\data\TEXTURE\bill01\22937751.png")
+	"mat4" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("data\TEXTURE\bill01\22937751.png")
 }
 Object "obj1" {
 	visible 15

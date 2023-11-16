@@ -140,6 +140,20 @@ void RotNormalize(D3DXVECTOR3 &rot)
 }
 
 //==================================================================================
+// ワールドマトリックスをrotに変換
+//==================================================================================
+D3DXVECTOR3 WorldMtxChangeToRotation(D3DXMATRIX worldmtx)
+{
+	D3DXVECTOR3 rot = mylib_const::DEFAULT_VECTOR3;
+
+	rot.x = atan2f(worldmtx._32, worldmtx._33);
+	rot.y = atan2f(-worldmtx._31, sqrtf(worldmtx._32 * worldmtx._32 + worldmtx._33 * worldmtx._33));
+	rot.z = atan2f(worldmtx._21, worldmtx._11);
+
+	return rot;
+}
+
+//==================================================================================
 // 慣性補正
 //==================================================================================
 void InertiaCorrection(float &fMain, float fTarget, float fCntCorrection)

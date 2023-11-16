@@ -56,14 +56,14 @@
 #define DEADTIME		(120)
 #define FADEOUTTIME		(60)
 #define MAX_ATKCOMBO	(2)				// 攻撃コンボの最大数
-#define INTERVAL_ATK	(60)			// 攻撃の猶予
+#define INTERVAL_ATK	(30)			// 攻撃の猶予
 
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
 const char *CPlayer::m_apModelFile[mylib_const::MAX_PLAYER] =	// モデルのファイル
 {
-	"data\\TEXT\\motion_1p.txt",
+	"data\\TEXT\\motion_player.txt",
 	"data\\TEXT\\motion_2p.txt",
 	"data\\TEXT\\motion_3p.txt",
 	"data\\TEXT\\motion_4p.txt",
@@ -520,6 +520,55 @@ void CPlayer::Controll(void)
 
 				// サウンド再生
 				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
+			}
+		}
+	}
+
+	if (m_pMotion->GetType() == MOTION_WALK)
+	{// 移動中
+		m_nCntWalk = (m_nCntWalk + 1) % 4;
+
+		if (m_nCntWalk == 0)
+		{
+			// モーションの情報取得
+			CMotion::Info aInfo = m_pMotion->GetInfo(MOTION_WALK);
+
+			// 攻撃情報の総数取得
+			int nNumAttackInfo = aInfo.nNumAttackInfo;
+
+			// 武器の位置
+			for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
+			{
+				D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
+
+				D3DXVECTOR3 ModelRot = GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetRotation();
+				ModelRot.x += GetModel()[0]->GetRotation().x;
+
+				//D3DXVECTOR3 ModelRot = WorldMtxChangeToRotation(GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetWorldMtx());
+
+				// 炎
+				float fMove = 20.0f + Random(-40, 40) * 0.1f;
+				float fRot = Random(-20, 20) * 0.01f;
+
+				CEffect3D::Create(
+					weponpos,
+					D3DXVECTOR3(sinf(D3DX_PI + rot.y + fRot) * -fMove, sinf(ModelRot.x) * fMove, cosf(D3DX_PI + rot.y + fRot) * -fMove),
+					D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
+					250.0f + (float)Random(-10, 10) * 10.0f,
+					15,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_SMOKE);
+
+				fRot = Random(-20, 20) * 0.01f;
+				// 炎
+				CEffect3D::Create(
+					weponpos,
+					D3DXVECTOR3(sinf(D3DX_PI + rot.y + fRot) * -fMove, sinf(ModelRot.x) * fMove, cosf(D3DX_PI + rot.y + fRot) * -fMove),
+					D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
+					180.0f + (float)Random(-5, 5) * 10.0f,
+					15,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_SMOKE);
 			}
 		}
 	}

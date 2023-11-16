@@ -1212,14 +1212,15 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 	// ˆÊ’uŽæ“¾
 	D3DXVECTOR3 posOld = GetPosition();
 
-	// ” 
-	float fLen = CGame::GetElevation()->GetWidthLen();
-	int nBlock = CGame::GetElevation()->GetWidthBlock();
-	nBlock /= 2;
-	if (pos.x + GetRadius() >= fLen * nBlock) { pos.x = fLen * nBlock - GetRadius(); }
-	if (pos.x - GetRadius() <= -fLen * nBlock) { pos.x = -fLen * nBlock + GetRadius(); }
-	if (pos.z + GetRadius() >= fLen * nBlock) { pos.z = fLen * nBlock - GetRadius(); }
-	if (pos.z - GetRadius() <= -fLen * nBlock) { pos.z = -fLen * nBlock + GetRadius(); }
+	//// ” 
+	//D3DXVECTOR3 FieldPos = CGame::GetElevation()->GetPosition();
+	//float fLen = CGame::GetElevation()->GetWidthLen();
+	//int nBlock = CGame::GetElevation()->GetWidthBlock();
+	//nBlock /= 2;
+	//if (pos.x + GetRadius() >= fLen * nBlock) { pos.x = fLen * nBlock - GetRadius(); }
+	//if (pos.x - GetRadius() <= -fLen * nBlock) { pos.x = -fLen * nBlock + GetRadius(); }
+	//if (pos.z + GetRadius() >= fLen * nBlock) { pos.z = fLen * nBlock - GetRadius(); }
+	//if (pos.z - GetRadius() <= -fLen * nBlock) { pos.z = -fLen * nBlock + GetRadius(); }
 
 	// Œü‚«Ý’è
 	SetRotation(rot);

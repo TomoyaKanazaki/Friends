@@ -648,13 +648,13 @@ void CPlayer::Controll(void)
 			m_sMotionFrag.bJump = false;
 			m_sMotionFrag.bATK = true;
 
-			if (m_nCntInputAtk >= 0)
-			{// ‚Ü‚¾—P—\‚ª‚ ‚Á‚½‚ç
+			//if (m_nCntInputAtk >= 0)
+			//{// ‚Ü‚¾—P—\‚ª‚ ‚Á‚½‚ç
 
-				// UŒ‚‚Ì’iŠK‰ÁŽZ
-				m_nAtkLevel++;
-				ValueNormalize(m_nAtkLevel, MAX_ATKCOMBO, 0);
-			}
+			//	// UŒ‚‚Ì’iŠK‰ÁŽZ
+			//	m_nAtkLevel++;
+			//	ValueNormalize(m_nAtkLevel, MAX_ATKCOMBO, 0);
+			//}
 
 			// UŒ‚‚Ì“ü—ÍƒJƒEƒ“ƒ^[ƒŠƒZƒbƒg
 			m_nCntInputAtk = INTERVAL_ATK;
@@ -738,6 +738,13 @@ void CPlayer::MotionSet(void)
 
 			//(MAX_ATKCOMBO - m_nCntInputAtk) - 1;
 			m_pMotion->Set(MOTION_ATK + m_nAtkLevel, true);
+
+			// UŒ‚‚Ì’iŠK‰ÁŽZ
+			m_nAtkLevel++;
+			if (m_nAtkLevel >= MAX_ATKCOMBO)
+			{
+				m_nAtkLevel = 0;
+			}
 
 		}
 		else

@@ -15,7 +15,6 @@
 //  前方宣言
 //==========================================
 class CTitleLogo;
-class CFog_Title;
 
 //==========================================================================
 // クラス定義
@@ -36,9 +35,15 @@ public:
 
 private:
 
+	// メンバ関数
+	void WhiteOut();
+
+	// メンバ変数
+	D3DXCOLOR m_col;
+	float m_fLength;
+
 	int m_nCntSwitch;		// 切り替えのカウンター
 	CTitleLogo *m_pLogo;
-	CFog_Title* m_pFog;
 
 };
 

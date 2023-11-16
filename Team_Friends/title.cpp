@@ -13,17 +13,29 @@
 #include "debugproc.h"
 #include "sound.h"
 #include "title_logo.h"
-#include "fog_title.h"
+#include "fog.h"
+
+//==========================================
+//  定数定義 金崎
+//==========================================
+namespace
+{
+	const D3DXCOLOR TARGET_COLOR = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	const float START_LENGTH = 100.0f; // 初期距離
+	const float END_LENGTH = 10000.0f; // 目標距離
+	const float FUNCTION = 0.01f; //倍率
+}
 
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CTitle::CTitle()
+CTitle::CTitle() :
+m_col(D3DXCOLOR(0.0f, 0.0, 0.0f, 1.0f)),
+m_fLength(START_LENGTH)
 {
 	// 値のクリア
 	m_nCntSwitch = 0;		// 切り替えのカウンター
 	m_pLogo = nullptr;
-	m_pFog = nullptr;
 }
 
 //==========================================================================
@@ -54,12 +66,13 @@ HRESULT CTitle::Init(void)
 		m_pLogo = CTitleLogo::Create();
 	}
 
-	//フォグを生成
-	if (m_pFog == nullptr)
-	{
-		m_pFog = DEBUG_NEW CFog_Title;
-		m_pFog->Init();
-	}
+	//煙をかける
+	Fog::Set(true);
+
+	//フォグの値を設定する
+	Fog::SetStart(START_LENGTH);
+	Fog::SetEnd(m_fLength);
+	Fog::SetCol(m_col);
 
 	// 成功
 	return S_OK;
@@ -70,13 +83,8 @@ HRESULT CTitle::Init(void)
 //==========================================================================
 void CTitle::Uninit(void)
 {
-	//フォグを破棄
-	if (m_pFog != nullptr)
-	{
-		m_pFog->Uninit();
-		delete m_pFog;
-		m_pFog = nullptr;
-	}
+	//煙を払う
+	Fog::Set(false);
 
 	// タイトルロゴを破棄
 	if (m_pLogo != nullptr)
@@ -122,11 +130,8 @@ void CTitle::Update(void)
 		return;
 	}
 
-	//フォグの更新
-	if (m_pFog != nullptr)
-	{
-		m_pFog->Update();
-	}
+	WhiteOut();
+	//m_pFog->Update();
 
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
 	{
@@ -148,4 +153,22 @@ void CTitle::Update(void)
 void CTitle::Draw(void)
 {
 
+}
+
+//==========================================
+//  フォグを引く処理
+//==========================================
+void CTitle::WhiteOut()
+{
+	// 目標距離まで引き伸ばす
+	m_fLength += (END_LENGTH - m_fLength) * FUNCTION;
+
+	// 目標色まで補正する
+	m_col += (TARGET_COLOR - m_col) * FUNCTION;
+
+	// 距離を適用する
+	Fog::SetEnd(m_fLength);
+
+	// 色を適用する
+	Fog::SetCol(m_col);
 }

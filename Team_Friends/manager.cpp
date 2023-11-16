@@ -369,22 +369,22 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	//**********************************
 	// リザルトマネージャ
 	//**********************************
-	m_pResultManager = CResultManager::Create();
+	//m_pResultManager = CResultManager::Create();
 
-	if (m_pResultManager == NULL)
-	{// 失敗していたら
-		return E_FAIL;
-	}
+	//if (m_pResultManager == NULL)
+	//{// 失敗していたら
+	//	return E_FAIL;
+	//}
 
 	//**********************************
 	// ランキングマネージャ
 	//**********************************
-	m_pRankingManager = CRankingManager::Create();
+	//m_pRankingManager = CRankingManager::Create();
 
-	if (m_pRankingManager == NULL)
-	{// 失敗していたら
-		return E_FAIL;
-	}
+	//if (m_pRankingManager == NULL)
+	//{// 失敗していたら
+	//	return E_FAIL;
+	//}
 
 	//**********************************
 	// フェード

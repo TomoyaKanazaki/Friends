@@ -47,9 +47,6 @@ HRESULT CFog_Title::Init()
 	Fog::SetStart(START_LENGTH);
 	Fog::SetEnd(m_fLength);
 	Fog::SetCol(m_col);
-	
-	//タイプ設定
-	SetType(CObject::TYPE_NONE);
 
 	return S_OK;
 }
@@ -90,4 +87,18 @@ void CFog_Title::Update()
 void CFog_Title::Draw()
 {
 
+}
+
+//==========================================
+//  生成処理
+//==========================================
+CFog_Title* CFog_Title::Create()
+{
+	//インスタンス生成
+	CFog_Title* pFog = DEBUG_NEW CFog_Title;
+
+	//初期化処理
+	pFog->Init();
+
+	return pFog;
 }

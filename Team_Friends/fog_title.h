@@ -24,6 +24,9 @@ public:
 	void Update();
 	void Draw();
 
+	//Ã“Iƒƒ“ƒoŠÖ”
+	static CFog_Title* Create();
+
 private:
 
 	// ƒƒ“ƒo•Ï”

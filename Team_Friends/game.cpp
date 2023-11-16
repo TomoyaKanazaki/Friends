@@ -127,7 +127,7 @@ HRESULT CGame::Init(void)
 	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_GAME);
 
 	// ‡‘ÌŒãƒvƒŒƒCƒ„[¶¬
-	CPlayerUnion::Create(CPlayerUnion::TYPE_ALL);
+	//CPlayerUnion::Create(CPlayerUnion::TYPE_ALL);
 
 	CCompactCore::Create(D3DXVECTOR3(500.0f, 200.0f, 0.0f));
 

@@ -52,7 +52,7 @@ HRESULT CTitle::Init(void)
 	}
 
 	//煙をかける
-	Fog::Set(true);
+	Fog::Set(false);
 
 	//フォグの値を設定する
 	Fog::SetStart(100.0f);
@@ -80,7 +80,6 @@ void CTitle::Uninit(void)
 	// タイトルロゴを破棄
 	if (m_pLogo != nullptr)
 	{
-		m_pLogo->Uninit();
 		m_pLogo = nullptr;
 	}
 

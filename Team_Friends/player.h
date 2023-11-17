@@ -8,7 +8,7 @@
 #ifndef _PLAYER_H_
 #define _PLAYER_H_	// 二重インクルード防止
 
-#include "main.h"
+#include "gamemanager.h"
 #include "objectChara.h"
 
 //==========================================================================
@@ -48,7 +48,6 @@ public:
 	CPlayer(int nPriority = mylib_const::DEF2D_PRIORITY);
 	~CPlayer();
 
-
 	// オーバーライドされた関数
 	virtual HRESULT Init(void);
 	virtual void Uninit(void);
@@ -57,9 +56,10 @@ public:
 	bool Hit(const int nValue);	// ヒット処理
 	virtual int GetState(void) override;
 
-	void SetState(STATE state, int nCntState = 0);			// 状態設定
+	void GiveStatus(CGameManager::eStatus status);	// ステータス付与
+	void SetState(STATE state, int nCntState = 0);	// 状態設定
 	static CPlayer *Create(int nIdx);	// 生成
-	void UninitByMode(void);
+	void UninitByMode(void);	// モード別終了
 	virtual void Kill(void);	// 死亡処理
 
 protected:
@@ -87,6 +87,14 @@ protected:
 		bool bMove;			// 移動中かどうか
 	};
 
+	// ステータスの構造体
+	struct sStatus
+	{
+		int nPower;	// 火力
+		int nSpeed;	// 駆動性
+		int nLife;	// 耐久
+	};
+
 	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
 
 	bool m_bJump;				// ジャンプ中かどうか
@@ -98,10 +106,10 @@ protected:
 	int m_nCntWalk;				// 歩行カウンター
 	int m_nCntInputAtk;			// 攻撃の入力カウンター
 	int m_nAtkLevel;			// 攻撃の段階
-	STATE m_state;			// 状態
-	CMotion *m_pMotion;		// モーションの情報
+	STATE m_state;				// 状態
+	CMotion *m_pMotion;			// モーションの情報
 	CShadow *m_pShadow;			// 影の情報
-	SMotionFrag m_sMotionFrag;		// モーションのフラグ
+	SMotionFrag m_sMotionFrag;	// モーションのフラグ
 private:
 
 	// メンバ関数
@@ -117,6 +125,7 @@ private:
 	void MotionSet(void);	// モーションの設定
 	void Atack(void);		// 攻撃
 
+	sStatus m_sStatus;			// ステータス情報
 	STATE m_Oldstate;			// 前回の状態
 	D3DXCOLOR m_mMatcol;		// マテリアルの色
 	D3DXVECTOR3 m_posKnokBack;	// ノックバックの位置

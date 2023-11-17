@@ -35,6 +35,15 @@ public:
 		SCENE_MAX
 	};
 
+	// ステータス項目
+	enum eStatus
+	{
+		STATUS_POWER = 0,	// 火力
+		STATUS_SPEED,		// 駆動性
+		STATUS_LIFE,		// 耐久
+		STATUS_MAX
+	};
+
 	CGameManager();
 	~CGameManager();
 

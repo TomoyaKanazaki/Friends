@@ -26,7 +26,7 @@
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
-const char *CItem::m_apModelFile[TYPE_MAX] =	// テクスチャのファイル
+const char *CItem::m_apModelFile[CGameManager::STATUS_MAX] =	// テクスチャのファイル
 {
 	"data\\MODEL\\item_power.x",	// 火力
 	"data\\MODEL\\item_speed.x",	// 駆動性
@@ -50,7 +50,7 @@ CItem::STATE_FUNC CItem::m_StateFuncList[] =
 CItem::CItem(int nPriority) : CObjectX(nPriority)
 {
 	// 値のクリア
-	m_type = TYPE_POWER;	// 種類
+	m_type = CGameManager::STATUS_POWER;	// 種類
 	m_state = STATE_NONE;			// 状態
 	m_nCntState = 0;			// 状態遷移カウンター
 	m_nLife = 0;
@@ -117,7 +117,7 @@ HRESULT CItem::Init(void)
 	m_nLife = m_nLifeMax;	// 寿命
 
 	// 種類
-	m_type = (TYPE)Random(0, (int)TYPE_MAX - 1);
+	m_type = (CGameManager::eStatus)Random(0, (int)CGameManager::STATUS_MAX - 1);
 
 	// 初期化処理
 	hr = CObjectX::Init(m_apModelFile[m_type]);
@@ -308,12 +308,15 @@ void CItem::CollisionPlayer(void)
 		if (SphereRange(pos, PlayerPosition, fRadius, fPlayerRadius))
 		{// 当たっていたら
 
+			// ステータス付与
+			pPlayer->GiveStatus(m_type);
+
 			// パーティクル生成
 			my_particle::Create(pos, my_particle::TYPE_ENEMY_FADE);
 
 			// 終了処理
 			Uninit();
-			return;
+			continue;
 		}
 	}
 }
@@ -350,29 +353,6 @@ void CItem::SetState(STATE state, int nCntState)
 CItem::STATE CItem::GetState(void)
 {
 	return m_state;
-}
-
-//==========================================================================
-// 種類設定
-//==========================================================================
-void CItem::SetType(TYPE type)
-{
-	m_type = type;
-
-	// モデルの割り当て
-	CScene *pScene = CManager::GetInstance()->GetScene();
-	m_nModelIdx = pScene->GetXLoad()->XLoad(m_apModelFile[m_type]);
-
-	// モデルの割り当て
-	BindXData(m_nModelIdx);
-}
-
-//==========================================================================
-// 種類取得
-//==========================================================================
-CItem::TYPE CItem::GetType(void)
-{
-	return m_type;
 }
 
 //==========================================================================

@@ -150,19 +150,19 @@ HRESULT CHP_GaugePlayer::Init(void)
 		case VTXTYPE_BLACK:	//下地
 
 			// サイズ
-			m_HPGauge[nCntGauge].pObj2D->SetSize(texsize * 0.5f);
+			m_HPGauge[nCntGauge].pObj2D->SetSize(texsize * 0.3f);
 			break;
 
 		case VTXTYPE_PINK:	//変動するゲージ
 
 			// サイズ
-			m_HPGauge[nCntGauge].pObj2D->SetSize(texsize * 0.5f);
+			m_HPGauge[nCntGauge].pObj2D->SetSize(texsize * 0.3f);
 			break;
 
 		case VTXTYPE_FRAM:	//フレーム
 
 			// サイズ
-			m_HPGauge[nCntGauge].pObj2D->SetSize(texsize * 0.5f);
+			m_HPGauge[nCntGauge].pObj2D->SetSize(texsize * 0.3f);
 			break;
 		}
 

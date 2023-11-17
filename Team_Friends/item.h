@@ -8,11 +8,8 @@
 #ifndef _ITEM_H_
 #define _ITEM_H_	// 二重インクルード防止
 
-#include "main.h"
 #include "objectX.h"
-
-class CThunderRing;
-class CObjectBillboard;
+#include "gamemanager.h"
 
 //==========================================================================
 // クラス定義
@@ -22,15 +19,7 @@ class CItem : public CObjectX
 {
 public:
 
-	// 列挙型定義
-	enum TYPE
-	{
-		TYPE_POWER = 0,	// 火力
-		TYPE_SPEED,		// 駆動性
-		TYPE_LIFE,		// 耐久力
-		TYPE_MAX
-	};
-
+	// 状態列挙型定義
 	enum STATE
 	{
 		STATE_NONE = 0,	// なにもなし
@@ -49,8 +38,6 @@ public:
 	virtual void Update(void);
 	virtual void Draw(void);
 
-	void SetType(TYPE type);	// 種類設定
-	TYPE GetType(void);	// 種類取得
 	void SetState(STATE state, int nCntState);	// 状態設定
 	STATE GetState(void);	// 状態取得
 
@@ -67,14 +54,14 @@ private:
 	void StateFadeOut(void);		// フェードアウト処理
 
 
-	TYPE m_type;				// 種類
+	CGameManager::eStatus m_type;				// 種類
 	STATE m_state;				// 状態
 	int m_nCntState;			// 状態遷移カウンター
 	int m_nIdxBulletManager;			// 弾マネージャのインデックス番号
 	int m_nLife;							// 寿命
 	int m_nLifeMax;					// 寿命の最大値
 	static int m_nNumAll;					// 弾の総数
-	static const char *m_apModelFile[TYPE_MAX];	// モデルのファイル
+	static const char *m_apModelFile[CGameManager::STATUS_MAX];	// モデルのファイル
 	int m_nModelIdx;				// モデルのインデックス番号
 	int m_nCntEmission;	// 発生物のカウンター
 

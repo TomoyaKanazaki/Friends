@@ -6,48 +6,21 @@
 //=============================================================================
 #include "game.h"
 #include "player_title.h"
-#include "player.h"
-#include "camera.h"
 #include "manager.h"
 #include "debugproc.h"
-#include "renderer.h"
 #include "input.h"
-#include "enemy.h"
-#include "calculation.h"
-#include "score.h"
-#include "texture.h"
-#include "Xload.h"
 #include "model.h"
 #include "motion.h"
-#include "hp_gauge.h"
 #include "objectChara.h"
-#include "elevation.h"
 #include "shadow.h"
-#include "particle.h"
-#include "3D_Effect.h"
-#include "ballast.h"
-#include "impactwave.h"
-#include "sound.h"
-#include "enemymanager.h"
-#include "bullet.h"
-#include "stage.h"
-#include "objectX.h"
-#include "gamemanager.h"
-#include "instantfade.h"
-#include "hp_gauge_player.h"
-#include "fade.h"
-#include "listmanager.h"
-#include "item.h"
-#include "injectiontable.h"
 
-//==========================================================================
-// マクロ定義
-//==========================================================================
-#define CHARAFILE		"data\\TEXT\\motion_player.txt"
-
-//==========================================================================
-// 静的メンバ変数宣言
-//==========================================================================
+//==========================================
+//  定数定義 : 金崎朋弥
+//==========================================
+namespace
+{
+	const char* CHARAFILE = "data\\TEXT\\motion_player.txt"; // モーションファイルパス
+}
 
 //==========================================================================
 // コンストラクタ
@@ -98,7 +71,7 @@ HRESULT CPlayerTitle::Init(void)
 	D3DXVECTOR3 pos = GetPosition();
 
 	// 影の生成
-	m_pShadow = CShadow::Create(pos, 50.0f);
+	//m_pShadow = CShadow::Create(pos, 50.0f);
 
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);
@@ -151,4 +124,22 @@ void CPlayerTitle::Draw(void)
 {
 	// 描画処理
 	CPlayer::Draw();
+}
+
+//==========================================
+//  生成処理 : 金崎朋弥
+//==========================================
+CPlayerTitle* CPlayerTitle::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+{
+	// インスタンス生成
+	CPlayerTitle* pPlayer = DEBUG_NEW CPlayerTitle;
+
+	// 初期化処理
+	pPlayer->Init();
+
+	// 値を保存
+	pPlayer->SetPosition(pos);
+	pPlayer->SetRotation(rot);
+
+	return pPlayer;
 }

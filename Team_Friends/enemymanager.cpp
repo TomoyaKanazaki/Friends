@@ -166,6 +166,12 @@ void CEnemyManager::Update(void)
 		// 通常クリア状態にする
 		CGame::GetGameManager()->SetType(CGameManager::SCENE_MAINCLEAR);
 
+		// 遷移なしフェード追加
+		CManager::GetInstance()->GetInstantFade()->SetFade();
+
+		// 遷移状態に変更
+		CGame::GetGameManager()->SetType(CGameManager::SCENE_TRANSITION);
+
 		CStageClearText::Create(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
 
 		//// 遷移なしフェード追加

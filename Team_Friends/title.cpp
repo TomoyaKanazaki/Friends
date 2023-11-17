@@ -141,7 +141,6 @@ void CTitle::Update(void)
 
 	if (m_nCntSwitch >= 60 * 40)
 	{// 自動遷移
-
 		// モード設定
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
 	}
@@ -184,6 +183,18 @@ void CTitle::WhiteOut()
 	{
 		// fog焚き
 		Fog::Set(true);
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_3))
+	{
+		// モード設定
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDEPLAYER);
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_4))
+	{// 自動遷移
+		// モード設定
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
 	}
 #endif
 }

@@ -412,7 +412,7 @@
       <Filter>ソース ファイル\mode\title\logos</Filter>
     </ClCompile>
     <ClCompile Include="player_title.cpp">
-      <Filter>ソース ファイル\player</Filter>
+      <Filter>ソース ファイル\mode\title</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -722,29 +722,29 @@
     <ClInclude Include="player.h">
       <Filter>ヘッダー ファイル\player</Filter>
     </ClInclude>
-    <ClInclude Include="logo.h">
-      <Filter>ヘッダー ファイル\mode\title</Filter>
-    </ClInclude>
-    <ClInclude Include="logo_complete.h">
-      <Filter>ヘッダー ファイル\mode\title</Filter>
-    </ClInclude>
-    <ClInclude Include="logo_mechanion.h">
-      <Filter>ヘッダー ファイル\mode\title</Filter>
-    </ClInclude>
-    <ClInclude Include="logo_mekanion.h">
-      <Filter>ヘッダー ファイル\mode\title</Filter>
-    </ClInclude>
-    <ClInclude Include="logo_squadron.h">
-      <Filter>ヘッダー ファイル\mode\title</Filter>
-    </ClInclude>
-    <ClInclude Include="title_logo.h">
-      <Filter>ヘッダー ファイル\mode\title</Filter>
-    </ClInclude>
     <ClInclude Include="title.h">
       <Filter>ヘッダー ファイル\mode\title</Filter>
     </ClInclude>
+    <ClInclude Include="logo.h">
+      <Filter>ヘッダー ファイル\mode\title\logos</Filter>
+    </ClInclude>
+    <ClInclude Include="logo_complete.h">
+      <Filter>ヘッダー ファイル\mode\title\logos</Filter>
+    </ClInclude>
+    <ClInclude Include="logo_mechanion.h">
+      <Filter>ヘッダー ファイル\mode\title\logos</Filter>
+    </ClInclude>
+    <ClInclude Include="logo_mekanion.h">
+      <Filter>ヘッダー ファイル\mode\title\logos</Filter>
+    </ClInclude>
+    <ClInclude Include="logo_squadron.h">
+      <Filter>ヘッダー ファイル\mode\title\logos</Filter>
+    </ClInclude>
+    <ClInclude Include="title_logo.h">
+      <Filter>ヘッダー ファイル\mode\title\logos</Filter>
+    </ClInclude>
     <ClInclude Include="player_title.h">
-      <Filter>ヘッダー ファイル\player</Filter>
+      <Filter>ヘッダー ファイル\mode\title</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

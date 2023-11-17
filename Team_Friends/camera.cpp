@@ -1071,7 +1071,7 @@ void CCamera::ResetBoss(void)
 //==========================================================================
 void CCamera::ResetTitle(void)
 {
-	m_posR = D3DXVECTOR3(0.0f, 300.0f, 0.0f);	// 注視点(見たい場所)
+	m_posR = D3DXVECTOR3(0.0f, 300.0f, 30.0f);	// 注視点(見たい場所)
 	m_posV = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 視点(カメラの位置)
 	m_posVDest = m_posV;								// 目標の視点
 	m_posRDest = m_posR;								// 目標の注視点

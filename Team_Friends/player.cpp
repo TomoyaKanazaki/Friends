@@ -31,7 +31,6 @@
 #include "bullet.h"
 #include "stage.h"
 #include "objectX.h"
-#include "gamemanager.h"
 #include "instantfade.h"
 #include "hp_gauge_player.h"
 #include "fade.h"
@@ -203,7 +202,7 @@ HRESULT CPlayer::Init(void)
 	D3DXVECTOR3 pos = GetPosition();
 
 	// 体力ゲージ
-	m_pHPGauge = CHP_GaugePlayer::Create(D3DXVECTOR3(250.0f, 600.0f, 0.0f), GetLifeOrigin());
+	m_pHPGauge = CHP_GaugePlayer::Create(D3DXVECTOR3(250.0f + m_nMyPlayerIdx * 300.0f, 600.0f, 0.0f), GetLifeOrigin());
 
 	// 影の生成
 	m_pShadow = CShadow::Create(pos, 50.0f);
@@ -553,14 +552,14 @@ void CPlayer::Controll(void)
 				//D3DXVECTOR3 ModelRot = WorldMtxChangeToRotation(GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetWorldMtx());
 
 				// 炎
-				float fMove = 20.0f + Random(-40, 40) * 0.1f;
+				float fMove = 1.5f + Random(-20, 20) * 0.01f;
 				float fRot = Random(-20, 20) * 0.01f;
 
 				CEffect3D::Create(
 					weponpos,
 					D3DXVECTOR3(sinf(D3DX_PI + rot.y + fRot) * -fMove, sinf(ModelRot.x) * fMove, cosf(D3DX_PI + rot.y + fRot) * -fMove),
 					D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
-					250.0f + (float)Random(-10, 10) * 10.0f,
+					30.0f + (float)Random(-10, 10),
 					15,
 					CEffect3D::MOVEEFFECT_ADD,
 					CEffect3D::TYPE_SMOKE);
@@ -571,7 +570,7 @@ void CPlayer::Controll(void)
 					weponpos,
 					D3DXVECTOR3(sinf(D3DX_PI + rot.y + fRot) * -fMove, sinf(ModelRot.x) * fMove, cosf(D3DX_PI + rot.y + fRot) * -fMove),
 					D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
-					180.0f + (float)Random(-5, 5) * 10.0f,
+					18.0f + (float)Random(-5, 5),
 					15,
 					CEffect3D::MOVEEFFECT_ADD,
 					CEffect3D::TYPE_SMOKE);
@@ -1363,6 +1362,28 @@ bool CPlayer::Hit(const int nValue)
 
 	// 死んでない
 	return false;
+}
+
+//==========================================================================
+// ステータス付与
+//==========================================================================
+void CPlayer::GiveStatus(CGameManager::eStatus status)
+{
+	// 強化
+	switch (status)
+	{
+	case CGameManager::STATUS_POWER:
+		m_sStatus.nPower++;
+		break;
+
+	case CGameManager::STATUS_SPEED:
+		m_sStatus.nSpeed++;
+		break;
+
+	case CGameManager::STATUS_LIFE:
+		m_sStatus.nLife++;
+		break;
+	}
 }
 
 //==========================================================================

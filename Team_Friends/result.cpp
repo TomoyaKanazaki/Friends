@@ -104,7 +104,10 @@ void CResult::Update(void)
 		if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)
 		{
 			// ‘S‚Ä‚Ì“ž’…ˆ—
-			m_pResultScore->SetAllArrival();
+			if (m_pResultScore != NULL)
+			{
+				m_pResultScore->SetAllArrival();
+			}
 			m_bAllArrival = true;
 		}
 	}

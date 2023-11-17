@@ -23,7 +23,7 @@
 #define MOVE			(2.5f)				// 移動量
 #define MAX_LENGTH		(50000.0f)			// 最大距離
 #define MIN_LENGTH		(10.0f)				// 最少距離
-#define START_CAMERALEN	(1800.0f)			// 元の距離
+#define START_CAMERALEN	(1300.0f)			// 元の距離
 #define ROT_MOVE_MOUSE	(0.01f)				// 回転移動量
 #define ROT_MOVE_STICK	(0.0015f)			// 回転移動量
 #define ROT_MOVE		(0.025f)			// 回転移動量
@@ -1071,7 +1071,7 @@ void CCamera::ResetBoss(void)
 //==========================================================================
 void CCamera::ResetTitle(void)
 {
-	m_posR = D3DXVECTOR3(0.0f, 300.0f, 0.0f);	// 注視点(見たい場所)
+	m_posR = D3DXVECTOR3(0.0f, 300.0f, 30.0f);	// 注視点(見たい場所)
 	m_posV = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 視点(カメラの位置)
 	m_posVDest = m_posV;								// 目標の視点
 	m_posRDest = m_posR;								// 目標の注視点

@@ -25,6 +25,18 @@ MODEL_FILENAME = data\MODEL\player\Rshoulder.x		# [7]右肩
 MODEL_FILENAME = data\MODEL\player\Rarm.x		# [8]右腕
 MODEL_FILENAME = data\MODEL\player\Rhand.x		# [9]右手
 
+#MODEL_FILENAME = data\MODEL\player\Rhand.x		# [10]強化[腕]右手
+#MODEL_FILENAME = data\MODEL\player\Lhand.x		# [11]強化[腕]左手
+
+#MODEL_FILENAME = data\MODEL\player\body.x		# [12]強化[胴]胴
+
+#MODEL_FILENAME = data\MODEL\player\Lthigh.x		# [13]強化[脚]左腿
+#MODEL_FILENAME = data\MODEL\player\Lleg.x		# [14]強化[脚]左脛
+#MODEL_FILENAME = data\MODEL\player\Lfoot.x		# [15]強化[脚]左足
+#MODEL_FILENAME = data\MODEL\player\Rthigh.x		# [16]強化[脚]右腿
+#MODEL_FILENAME = data\MODEL\player\Rleg.x		# [17]強化[脚]右脛
+#MODEL_FILENAME = data\MODEL\player\Rfoot.x		# [18]強化[脚]右足
+
 #------------------------------------------------------------------------------
 # キャラクター情報
 #------------------------------------------------------------------------------

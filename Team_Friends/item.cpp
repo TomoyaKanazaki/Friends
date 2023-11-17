@@ -113,7 +113,7 @@ HRESULT CItem::Init(void)
 	HRESULT hr;
 
 	// Šeí•Ï”‚Ì‰Šú‰»
-	m_nLifeMax = 60 * 5;
+	m_nLifeMax = 60 * 30;
 	m_nLife = m_nLifeMax;	// õ–½
 
 	// í—Ş

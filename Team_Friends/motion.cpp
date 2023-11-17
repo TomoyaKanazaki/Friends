@@ -35,9 +35,9 @@ CMotion::CMotion()
 	m_nOldType = 0;			// 前回のモーションの種類
 	m_bLoop = false;		// ループするかどうか
 	m_nPatternKey = 0;		// 何個目のキーか
-	m_nCntFrame = 0;		// フレームのカウント
-	m_nCntAllFrame = 0;		// 全てのカウント
-	m_nMaxAllFrame = 0;		// 全てのカウントの最大値
+	m_fCntFrame = 0.0f;		// フレームのカウント
+	m_fCntAllFrame = 0.0f;	// 全てのカウント
+	m_fMaxAllFrame = 0.0f;	// 全てのカウントの最大値
 	m_fSlowFactor = 0.0f;	// 遅延係数
 	m_bFinish = false;		// 終了したかどうか
 	m_pObjChara = NULL;		// オブジェクトのポインタ
@@ -87,9 +87,6 @@ CMotion::CMotion()
 	m_nOldType = 0;			// 前回のモーションの種類
 	m_bLoop = false;		// ループするかどうか
 	m_nPatternKey = 0;		// 何個目のキーか
-	m_nCntFrame = 0;		// フレームのカウント
-	m_nCntAllFrame = 0;		// 全てのカウント
-	m_nMaxAllFrame = 0;		// 全てのカウントの最大値
 	m_fSlowFactor = 0.0f;	// 遅延係数
 	m_bFinish = false;		// 終了したかどうか
 	m_pObjChara = NULL;		// オブジェクトのポインタ
@@ -169,15 +166,16 @@ CMotion *CMotion::Create(const std::string pTextFile)
 //==========================================================================
 HRESULT CMotion::Init(void)
 {
-	m_nNumAll = 0;				// モーションの総数
-	m_nType = 0;				// 現在のモーションの種類
-	m_bLoop = false;			// ループするかどうか
-	m_nPatternKey = 0;			// 何個目のキーか
-	m_nCntFrame = 0;			// フレームのカウント
-	m_nCntAllFrame = 0;			// 全てのカウント
-	m_bFinish = true;			// 終了したかどうか
-	m_ppModel = NULL;			// モデルのポインタ
-	m_nNumModel = 0;			// モデルの総数
+	m_nNumAll = 0;			// モーションの総数
+	m_nType = 0;			// 現在のモーションの種類
+	m_bLoop = false;		// ループするかどうか
+	m_nPatternKey = 0;		// 何個目のキーか
+	m_fCntFrame = 0.0f;		// フレームのカウント
+	m_fCntAllFrame = 0.0f;	// 全てのカウント
+	m_fMaxAllFrame = 0.0f;	// 全てのカウントの最大値
+	m_bFinish = true;		// 終了したかどうか
+	m_ppModel = NULL;		// モデルのポインタ
+	m_nNumModel = 0;		// モデルの総数
 	m_fSlowFactor = 1.0f;	// 遅延係数
 
 	return S_OK;
@@ -295,7 +293,7 @@ void CMotion::ResetPose(int nType)
 //==========================================================================
 // 更新処理
 //==========================================================================
-void CMotion::Update(void)
+void CMotion::Update(float fBuff)
 {
 	if (m_bFinish == true && m_aInfo[m_nType].nLoop == LOOP_OFF)
 	{// 終了してた && ループOFFだったら
@@ -353,42 +351,40 @@ void CMotion::Update(void)
 		float rotDiffZ = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].rot.z -
 			aPartsOld[nCntParts].rot.z;
 
-#if 1
 		// 角度の正規化
 		RotNormalize(rotDiffX);
 		RotNormalize(rotDiffY);
 		RotNormalize(rotDiffZ);
-#endif
 
 		// パーツの向きを設定
-		D3DXVECTOR3 rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		D3DXVECTOR3 rot = mylib_const::DEFAULT_VECTOR3;
 
 		// パーツの向きを設定
 		rot.x =
 			aPartsOld[nCntParts].rot.x +
 			rotDiffX *
 			(
-			(float)m_nCntFrame /
-				(float)nFrame
-				);
+			m_fCntFrame /
+			(float)nFrame
+			);
 
 		// パーツの向きを設定
 		rot.y =
 			aPartsOld[nCntParts].rot.y +
 			rotDiffY *
 			(
-			(float)m_nCntFrame /
-				(float)nFrame
-				);
+			m_fCntFrame /
+			(float)nFrame
+			);
 
 		// パーツの向きを設定
 		rot.z =
 			aPartsOld[nCntParts].rot.z +
 			rotDiffZ *
 			(
-			(float)m_nCntFrame /
-				(float)nFrame
-				);
+			m_fCntFrame /
+			(float)nFrame
+			);
 
 		// 角度の正規化
 		RotNormalize(rot.x);
@@ -415,13 +411,13 @@ void CMotion::Update(void)
 			D3DXVECTOR3 posPartsOld = m_ppModel[nCntModel]->GetPosition();
 
 			// 目標の位置との差分を求める
-			float posDiffX = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.x/* + posOrigin.x*/ -
+			float posDiffX = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.x -
 				aPartsOld[nCntParts].pos.x;
 
-			float posDiffY = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.y/* + posOrigin.y*/ -
+			float posDiffY = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.y -
 				aPartsOld[nCntParts].pos.y;
 
-			float posDiffZ = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.z/* + posOrigin.z*/ -
+			float posDiffZ = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.z -
 				aPartsOld[nCntParts].pos.z;
 
 			// 親のYを補正
@@ -429,21 +425,21 @@ void CMotion::Update(void)
 				aPartsOld[nCntParts].pos.y +
 				posDiffY *
 				(
-				(float)m_nCntFrame /
+				m_fCntFrame /
 				(float)nFrame);
 
 			posParts.x =
 				aPartsOld[nCntParts].pos.x +
 				posDiffX *
 				(
-				(float)m_nCntFrame /
+				m_fCntFrame /
 				(float)nFrame);
 
 			posParts.z =
 				aPartsOld[nCntParts].pos.z +
 				posDiffZ *
 				(
-				(float)m_nCntFrame /
+				m_fCntFrame /
 				(float)nFrame);
 
 			// 位置設定
@@ -467,8 +463,8 @@ void CMotion::Update(void)
 	}
 
 	// フレームのカウントを加算
-	m_nCntFrame++;
-	m_nCntAllFrame++;
+	m_fCntFrame += 1.0f * fBuff;
+	m_fCntAllFrame += 1.0f * fBuff;
 
 	if (m_aInfo[m_nType].nLoop == LOOP_ON)
 	{// ループモーションはいつでも終わってる
@@ -477,11 +473,11 @@ void CMotion::Update(void)
 		m_bFinish = true;
 	}
 
-	if (m_nCntFrame >= nFrame)
+	if (m_fCntFrame >= (float)nFrame)
 	{// フレームのカウントがフレーム数に達したら
 
 		// フレームのカウントをゼロに戻す
-		m_nCntFrame = 0;
+		m_fCntFrame = 0;
 
 		m_nOldType = m_nType;	// 前回のモーションの種類
 
@@ -492,17 +488,15 @@ void CMotion::Update(void)
 		int nStartIdx = m_pObjChara->GetMotionStartIdx();
 		for (int nCntParts = nStartIdx; nCntParts < m_nNumModel + nStartIdx + 1; nCntParts++)
 		{// 全パーツ分繰り返す
-
-
 			aPartsOld[nCntParts].rot = m_aInfo[m_nType].aKey[m_nPatternKey].aParts[nCntParts].rot;
-			aPartsOld[nCntParts].pos = m_aInfo[m_nType].aKey[m_nPatternKey].aParts[nCntParts].pos /*+ m_pObjChara->GetOriginPosition()*/;
+			aPartsOld[nCntParts].pos = m_aInfo[m_nType].aKey[m_nPatternKey].aParts[nCntParts].pos;
 		}
 
 		if (m_nPatternKey == 0)
 		{// キーがゼロの時
 
 			// 総フレーム数リセット
-			m_nCntAllFrame = 0;
+			m_fCntAllFrame = 0.0f;
 
 			//モーションの設定
 			if (m_aInfo[m_nType].nLoop == LOOP_OFF)
@@ -510,12 +504,6 @@ void CMotion::Update(void)
 
 				// 終了判定ON
 				m_bFinish = true;
-			}
-			else
-			{// ループモーションの時
-
-				// 現在と同じモーションを設定
-				//Set(m_nType);
 			}
 		}
 	}
@@ -542,14 +530,14 @@ void CMotion::Set(int nType, bool bBlend)
 		m_nOldType = m_nType;	// 前回のモーションの種類
 		m_nType = nType;		// 種類設定
 		m_nPatternKey = 0;		// 何個目のキーか
-		m_nCntFrame = 0;		// フレームのカウント
-		m_nCntAllFrame = 0;		// 全てのカウント
+		m_fCntFrame = 0.0f;		// フレームのカウント
+		m_fCntAllFrame = 0.0f;	// 全てのカウント
+		m_fMaxAllFrame = 0.0f;	// 全てのカウントの最大値
 		m_bFinish = false;		// 終了したかどうか
 
-		m_nMaxAllFrame = 0;
 		for (int nCntKey = 0; nCntKey < m_aInfo[m_nPatternKey].nNumKey; nCntKey++)
 		{
-			m_nMaxAllFrame += m_aInfo[m_nPatternKey].aKey[nCntKey].nFrame;	// 全てのカウントの最大値
+			m_fMaxAllFrame += m_aInfo[m_nPatternKey].aKey[nCntKey].nFrame;	// 全てのカウントの最大値
 		}
 
 		int nStartIdx = m_pObjChara->GetMotionStartIdx();
@@ -752,17 +740,17 @@ D3DXVECTOR3 CMotion::GetAttackPosition(CModel **ppModel, AttackInfo attackInfo)
 //==========================================================================
 // フレームカウント設定
 //==========================================================================
-void CMotion::SetFrameCount(int nCnt)
+void CMotion::SetFrameCount(float fCnt)
 {
-	m_nCntFrame = nCnt;
+	m_fCntFrame = fCnt;
 }
 
 //==========================================================================
 // カウント取得
 //==========================================================================
-int CMotion::GetAllCount(void)
+float CMotion::GetAllCount(void)
 {
-	return m_nCntAllFrame;
+	return m_fCntAllFrame;
 }
 
 //==========================================================================
@@ -997,10 +985,10 @@ void CMotion::ReadText(const std::string pTextFile)
 
 			if (m_nNumMotion == 0)
 			{
-				m_nMaxAllFrame = 0;
+				m_fMaxAllFrame = 0;
 				for (int nCntKey = 0; nCntKey < m_aInfo[m_nPatternKey].nNumKey; nCntKey++)
 				{
-					m_nMaxAllFrame += m_aInfo[m_nPatternKey].aKey[nCntKey].nFrame;	// 全てのカウントの最大値
+					m_fMaxAllFrame += m_aInfo[m_nPatternKey].aKey[nCntKey].nFrame;	// 全てのカウントの最大値
 				}
 			}
 

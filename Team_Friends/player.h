@@ -90,9 +90,12 @@ protected:
 	// ステータスの構造体
 	struct sStatus
 	{
-		int nPower;	// 火力
-		int nSpeed;	// 駆動性
-		int nLife;	// 耐久
+		int nPower;			// 火力
+		int nSpeed;			// 駆動性
+		int nLife;			// 耐久
+		float fPowerBuff;	// 火力バフ
+		float fSpeedBuff;	// 駆動性バフ
+		float fLifeBuff;	// 耐久バフ
 	};
 
 	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定

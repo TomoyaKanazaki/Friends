@@ -70,7 +70,7 @@ public:
 
 	HRESULT Init(void);
 	void Uninit(void);
-	void Update(void);
+	void Update(float fBuff = 1.0f);
 	static CMotion *Create(void);
 	static CMotion *Create(const std::string pTextFile);
 	void Set(int nType, bool bBlend = true);	// モーションの設定処理
@@ -81,11 +81,11 @@ public:
 	void SetSlowFactor(float fFactor);	// 遅延係数の設定
 
 	D3DXVECTOR3 GetAttackPosition(CModel **ppModel, AttackInfo attackInfo);	// 攻撃の位置取得
-	int GetAllCount(void);	// 全てのカウント取得
-	int GetMaxAllCount(void) { return m_nMaxAllFrame; }
+	float GetAllCount(void);	// 全てのカウント取得
+	float GetMaxAllCount(void) { return m_fMaxAllFrame; }
 	int GetMaxAllCount(int nType);	// 全てのカウント取得
-	void SetFrameCount(int nCnt);					// フレームカウント設定
-	int GetFrameCount(void) { return m_nCntFrame; }	// フレームカウント取得
+	void SetFrameCount(float fCnt);					// フレームカウント設定
+	float GetFrameCount(void) { return m_fCntFrame; }	// フレームカウント取得
 	int GetNumAll(void) { return m_nNumModel; }		// パーツ数取得
 	int GetNumMotion(void) { return m_nNumMotion; }	// モーションの総数取得
 	void SetNowPattern(int nPattern) { m_nPatternKey = nPattern; }		// 現在のパターン設定
@@ -120,9 +120,9 @@ private:
 	int m_nOldType;				// 前回のモーションの種類
 	bool m_bLoop;				// ループするかどうか
 	int m_nPatternKey;			// 何個目のキーか
-	int m_nCntFrame;			// フレームのカウント
-	int m_nCntAllFrame;			// 全てのカウント
-	int m_nMaxAllFrame;			// 全てのカウントの最大値
+	float m_fCntFrame;			// フレームのカウント
+	float m_fCntAllFrame;		// 全てのカウント
+	float m_fMaxAllFrame;		// 全てのカウントの最大値
 	float m_fSlowFactor;		// 遅延係数
 	bool m_bFinish;				// 終了したかどうか
 

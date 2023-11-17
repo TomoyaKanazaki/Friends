@@ -102,6 +102,7 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 	m_sMotionFrag.bMove = false;		// モーションのフラグ
 
 	// プライベート変数
+	memset(&m_sStatus, 0, sizeof(m_sStatus));	// ステータス情報
 	m_Oldstate = STATE_NONE;			// 前回の状態
 	m_mMatcol = mylib_const::DEFAULT_COLOR;		// マテリアルの色
 	m_posKnokBack = mylib_const::DEFAULT_VECTOR3;	// ノックバックの位置
@@ -209,6 +210,12 @@ HRESULT CPlayer::Init(void)
 
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);
+
+
+	// バフ計算
+	m_sStatus.fPowerBuff = 1.0f;
+	m_sStatus.fSpeedBuff = 1.0f;
+	m_sStatus.fLifeBuff = 1.0f;
 	return S_OK;
 }
 
@@ -329,7 +336,7 @@ void CPlayer::Update(void)
 	// モーション更新
 	if (m_pMotion != NULL)
 	{
-		m_pMotion->Update();
+		m_pMotion->Update(m_sStatus.fSpeedBuff);
 	}
 
 	// 攻撃処理
@@ -421,7 +428,7 @@ void CPlayer::Controll(void)
 	int nMotionType = m_pMotion->GetType();
 
 	// 移動量取得
-	float fMove = GetVelocity();
+	float fMove = GetVelocity() * m_sStatus.fSpeedBuff;
 
 	// 経過時間取得
 	float fCurrentTime = CManager::GetInstance()->GetDeltaTime();
@@ -1384,6 +1391,11 @@ void CPlayer::GiveStatus(CGameManager::eStatus status)
 		m_sStatus.nLife++;
 		break;
 	}
+
+	// バフ計算
+	m_sStatus.fPowerBuff = 1.0f + ((float)m_sStatus.nPower * 0.1f);
+	m_sStatus.fSpeedBuff = 1.0f + ((float)m_sStatus.nSpeed * 0.01f);
+	m_sStatus.fLifeBuff = 1.0f + ((float)m_sStatus.nLife * 0.1f);
 }
 
 //==========================================================================

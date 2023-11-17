@@ -238,6 +238,11 @@ void CUnion_ArntoArm::ControllParts(void)
 		for (int i = 0; i < PARTS_MAX; i++)
 		{
 			m_sMotionFrag[i].bCharge = false;
+
+			if (m_pMotion[i] != NULL)
+			{
+				m_pMotion[i]->ToggleFinish(true);
+			}
 		}
 
 		// 必殺技状態
@@ -272,7 +277,7 @@ void CUnion_ArntoArm::ControllLeg(int nIdx)
 		// 移動操作
 		if (ControllMove(nIdx) &&
 			m_pMotion[nIdx] != NULL &&
-			m_pMotion[nIdx]->GetType() == MOTION_SUPERATK)
+			m_pMotion[nIdx]->GetType() != MOTION_SUPERATK)
 		{
 			// 移動中にする
 			for (int i = 0; i < PARTS_MAX; i++)
@@ -284,12 +289,12 @@ void CUnion_ArntoArm::ControllLeg(int nIdx)
 					continue;
 				}
 
-				if (m_nControllMoveIdx != i &&
-					m_pMotion[i]->GetType() != MOTION_WALK &&
-					m_pMotion[i]->GetType() != MOTION_DEF)
-				{// 移動を担ってるパーツ以外 && 移動してない && 待機でもない
-					m_sMotionFrag[i].bMove = false;
-				}
+				//if (m_nControllMoveIdx != i &&
+				//	m_pMotion[i]->GetType() != MOTION_WALK &&
+				//	m_pMotion[i]->GetType() != MOTION_DEF)
+				//{// 移動を担ってるパーツ以外 && 移動してない && 待機でもない
+				//	m_sMotionFrag[i].bMove = false;
+				//}
 			}
 		}
 		else

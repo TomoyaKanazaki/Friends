@@ -557,7 +557,7 @@ HRESULT CObjectChara::ReadText(const std::string pTextFile)
 
 					fscanf(pFile, "%s", &aComment[0]);	// =の分
 					fscanf(pFile, "%d", &m_aLoadData[m_nNumLoad].nMotionStartIdx);	// モーション開始のインデックス番号
-					m_nLife = m_aLoadData[m_nNumLoad].nMotionStartIdx;
+					m_nMotionStartIdx = m_aLoadData[m_nNumLoad].nMotionStartIdx;
 				}
 
 				if (strcmp(aComment, "SCORE") == 0)

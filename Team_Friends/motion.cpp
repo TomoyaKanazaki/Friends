@@ -323,12 +323,23 @@ void CMotion::Update(void)
 		nNextKey = m_aInfo[m_nType].nNumKey - 1;
 	}
 
-	for (int nCntParts = m_pObjChara->GetMotionStartIdx(); nCntParts < m_nNumModel; nCntParts++)
+	int nStartIdx = m_pObjChara->GetMotionStartIdx();
+	for (int nCntParts = nStartIdx; nCntParts < m_nNumModel + nStartIdx + 1; nCntParts++)
 	{// 全パーツ分繰り返す
 
-		if (m_ppModel[nCntParts] == NULL)
-		{// NULLだったら
+		int nCntModel = nCntParts;
+		if (nStartIdx != 0)
+		{
+			nCntModel = nCntParts - nStartIdx;
+		}
 
+		if (nCntModel >= m_nNumModel)
+		{
+			break;
+		}
+
+		if (m_ppModel[nCntModel] == NULL)
+		{// NULLだったら
 			continue;
 		}
 
@@ -385,7 +396,7 @@ void CMotion::Update(void)
 		RotNormalize(rot.z);
 
 		// 向き設定
-		m_ppModel[nCntParts]->SetRotation(rot);
+		m_ppModel[nCntModel]->SetRotation(rot);
 
 		// パーツの位置を設定
 		if (nCntParts == 0)
@@ -400,8 +411,8 @@ void CMotion::Update(void)
 			D3DXVECTOR3 posOrigin = m_pObjChara->GetOriginPosition();
 
 			// パーツの位置取得
-			D3DXVECTOR3 posParts = m_ppModel[nCntParts]->GetPosition();
-			D3DXVECTOR3 posPartsOld = m_ppModel[nCntParts]->GetPosition();
+			D3DXVECTOR3 posParts = m_ppModel[nCntModel]->GetPosition();
+			D3DXVECTOR3 posPartsOld = m_ppModel[nCntModel]->GetPosition();
 
 			// 目標の位置との差分を求める
 			float posDiffX = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.x/* + posOrigin.x*/ -
@@ -436,7 +447,7 @@ void CMotion::Update(void)
 				(float)nFrame);
 
 			// 位置設定
-			m_ppModel[nCntParts]->SetPosition(posParts + posOrigin);
+			m_ppModel[nCntModel]->SetPosition(posParts + posOrigin);
 
 			// 動いた長さを求める
 			float fMoveDiff =
@@ -477,8 +488,12 @@ void CMotion::Update(void)
 		// パターンNO.更新
 		m_nPatternKey = (m_nPatternKey + 1) % m_aInfo[m_nType].nNumKey;
 
-		for (int nCntParts = 0; nCntParts < m_nNumModel; nCntParts++)
+
+		int nStartIdx = m_pObjChara->GetMotionStartIdx();
+		for (int nCntParts = nStartIdx; nCntParts < m_nNumModel + nStartIdx + 1; nCntParts++)
 		{// 全パーツ分繰り返す
+
+
 			aPartsOld[nCntParts].rot = m_aInfo[m_nType].aKey[m_nPatternKey].aParts[nCntParts].rot;
 			aPartsOld[nCntParts].pos = m_aInfo[m_nType].aKey[m_nPatternKey].aParts[nCntParts].pos /*+ m_pObjChara->GetOriginPosition()*/;
 		}
@@ -537,10 +552,22 @@ void CMotion::Set(int nType, bool bBlend)
 			m_nMaxAllFrame += m_aInfo[m_nPatternKey].aKey[nCntKey].nFrame;	// 全てのカウントの最大値
 		}
 
-		for (int nCntParts = 0; nCntParts < m_nNumModel; nCntParts++)
+		int nStartIdx = m_pObjChara->GetMotionStartIdx();
+		for (int nCntParts = nStartIdx; nCntParts < m_nNumModel + nStartIdx + 1; nCntParts++)
 		{// 全パーツ分繰り返す
 
-			if (m_ppModel[nCntParts] == NULL)
+			int nCntModel = nCntParts;
+			if (nStartIdx != 0)
+			{
+				nCntModel = nCntParts - nStartIdx;
+			}
+
+			if (nCntModel >= m_nNumModel)
+			{
+				break;
+			}
+
+			if (m_ppModel[nCntModel] == NULL)
 			{// NULLだったら
 				continue;
 			}
@@ -548,14 +575,16 @@ void CMotion::Set(int nType, bool bBlend)
 			// 過去の位置・向きを保存
 			if (bBlend == true)
 			{
-				aPartsOld[nCntParts].rot = m_ppModel[nCntParts]->GetRotation();
-				aPartsOld[nCntParts].pos = m_ppModel[nCntParts]->GetPosition() - m_pObjChara->GetOriginPosition();
+				aPartsOld[nCntParts].rot = m_ppModel[nCntModel]->GetRotation();
+				aPartsOld[nCntParts].pos = m_ppModel[nCntModel]->GetPosition() - m_pObjChara->GetOriginPosition();
 			}
 			else
 			{
 				aPartsOld[nCntParts].rot = m_aInfo[m_nType].aKey[0].aParts[nCntParts].rot;
 				aPartsOld[nCntParts].pos = m_aInfo[m_nType].aKey[0].aParts[nCntParts].pos + m_pObjChara->GetOriginPosition();
 			}
+
+
 		}
 	}
 	else

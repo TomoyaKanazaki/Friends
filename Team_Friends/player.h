@@ -51,16 +51,16 @@ public:
 
 	// オーバーライドされた関数
 	virtual HRESULT Init(void);
-	void Uninit(void);
+	virtual void Uninit(void);
 	virtual void Update(void);
-	void Draw(void);
+	virtual void Draw(void);
 	bool Hit(const int nValue);	// ヒット処理
-	int GetState(void) override;
+	virtual int GetState(void) override;
 
 	void SetState(STATE state, int nCntState = 0);			// 状態設定
 	static CPlayer *Create(int nIdx);	// 生成
 	void UninitByMode(void);
-	void Kill(void);	// 死亡処理
+	virtual void Kill(void);	// 死亡処理
 
 protected:
 	// 列挙型定義
@@ -100,6 +100,7 @@ protected:
 	int m_nAtkLevel;			// 攻撃の段階
 	STATE m_state;			// 状態
 	CMotion *m_pMotion;		// モーションの情報
+	CShadow *m_pShadow;			// 影の情報
 	SMotionFrag m_sMotionFrag;		// モーションのフラグ
 private:
 
@@ -123,7 +124,6 @@ private:
 	int m_nCntState;			// 状態遷移カウンター
 	int m_nTexIdx;				// テクスチャのインデックス番号
 	int m_nIdxXFile;			// Xファイルのインデックス番号
-	CShadow *m_pShadow;			// 影の情報
 	CTargetPoint *m_pTargetP;	// 目標の地点
 	CHP_GaugePlayer *m_pHPGauge;	// HPゲージの情報
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定

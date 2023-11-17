@@ -1453,14 +1453,14 @@ bool CPlayerUnion::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 	// ˆÊ’uŽæ“¾
 	D3DXVECTOR3 posOld = GetPosition();
 
-	// ” 
-	float fLen = CGame::GetElevation()->GetWidthLen();
-	int nBlock = CGame::GetElevation()->GetWidthBlock();
-	nBlock /= 2;
-	if (pos.x + RADIUS >= fLen * nBlock) { pos.x = fLen * nBlock - RADIUS; }
-	if (pos.x - RADIUS <= -fLen * nBlock) { pos.x = -fLen * nBlock + RADIUS; }
-	if (pos.z + RADIUS >= fLen * nBlock) { pos.z = fLen * nBlock - RADIUS; }
-	if (pos.z - RADIUS <= -fLen * nBlock) { pos.z = -fLen * nBlock + RADIUS; }
+	//// ” 
+	//float fLen = CGame::GetElevation()->GetWidthLen();
+	//int nBlock = CGame::GetElevation()->GetWidthBlock();
+	//nBlock /= 2;
+	//if (pos.x + RADIUS >= fLen * nBlock) { pos.x = fLen * nBlock - RADIUS; }
+	//if (pos.x - RADIUS <= -fLen * nBlock) { pos.x = -fLen * nBlock + RADIUS; }
+	//if (pos.z + RADIUS >= fLen * nBlock) { pos.z = fLen * nBlock - RADIUS; }
+	//if (pos.z - RADIUS <= -fLen * nBlock) { pos.z = -fLen * nBlock + RADIUS; }
 
 	// Œü‚«Ý’è
 	SetRotation(rot);

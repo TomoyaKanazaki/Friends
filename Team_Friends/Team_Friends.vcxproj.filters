@@ -28,9 +28,6 @@
     <Filter Include="ソース ファイル\mode\result">
       <UniqueIdentifier>{b7633126-5493-4019-8c71-92f5c309548d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\mode\rankking">
-      <UniqueIdentifier>{573cc5cd-af64-41d9-a12f-e64063ad19aa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\mode\tutorial">
       <UniqueIdentifier>{a781a96b-2354-4e2f-ad56-01309d60d8ce}</UniqueIdentifier>
     </Filter>
@@ -48,9 +45,6 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\mode\result">
       <UniqueIdentifier>{91d72d70-4882-48a5-905b-6466988bbdd7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\mode\ranking">
-      <UniqueIdentifier>{5f4c3ea1-eaa9-4546-a9e6-28c5810159fc}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\mode\tutorial">
       <UniqueIdentifier>{315d8002-5f52-48be-bfc9-d4a4aa227d37}</UniqueIdentifier>
@@ -84,6 +78,9 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\mode\title\logos">
       <UniqueIdentifier>{0542ee3f-e9f5-4796-a92e-85af29a9e997}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ランキング隔離">
+      <UniqueIdentifier>{eb2b8213-6962-4030-b7b3-871d1070ff53}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -258,15 +255,6 @@
     <ClCompile Include="gamemanager.cpp">
       <Filter>ソース ファイル\mode\game</Filter>
     </ClCompile>
-    <ClCompile Include="ranking.cpp">
-      <Filter>ソース ファイル\mode\rankking</Filter>
-    </ClCompile>
-    <ClCompile Include="rankingmanager.cpp">
-      <Filter>ソース ファイル\mode\rankking</Filter>
-    </ClCompile>
-    <ClCompile Include="rankingscore.cpp">
-      <Filter>ソース ファイル\mode\rankking</Filter>
-    </ClCompile>
     <ClCompile Include="result.cpp">
       <Filter>ソース ファイル\mode\result</Filter>
     </ClCompile>
@@ -410,6 +398,15 @@
     </ClCompile>
     <ClCompile Include="title_logo.cpp">
       <Filter>ソース ファイル\mode\title\logos</Filter>
+    </ClCompile>
+    <ClCompile Include="ranking.cpp">
+      <Filter>ランキング隔離</Filter>
+    </ClCompile>
+    <ClCompile Include="rankingmanager.cpp">
+      <Filter>ランキング隔離</Filter>
+    </ClCompile>
+    <ClCompile Include="rankingscore.cpp">
+      <Filter>ランキング隔離</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -602,15 +599,6 @@
     <ClInclude Include="resultscore.h">
       <Filter>ヘッダー ファイル\mode\result</Filter>
     </ClInclude>
-    <ClInclude Include="ranking.h">
-      <Filter>ヘッダー ファイル\mode\ranking</Filter>
-    </ClInclude>
-    <ClInclude Include="rankingmanager.h">
-      <Filter>ヘッダー ファイル\mode\ranking</Filter>
-    </ClInclude>
-    <ClInclude Include="rankingscore.h">
-      <Filter>ヘッダー ファイル\mode\ranking</Filter>
-    </ClInclude>
     <ClInclude Include="enemy.h">
       <Filter>ヘッダー ファイル\enemy</Filter>
     </ClInclude>
@@ -739,6 +727,15 @@
     </ClInclude>
     <ClInclude Include="title.h">
       <Filter>ヘッダー ファイル\mode\title</Filter>
+    </ClInclude>
+    <ClInclude Include="ranking.h">
+      <Filter>ランキング隔離</Filter>
+    </ClInclude>
+    <ClInclude Include="rankingmanager.h">
+      <Filter>ランキング隔離</Filter>
+    </ClInclude>
+    <ClInclude Include="rankingscore.h">
+      <Filter>ランキング隔離</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

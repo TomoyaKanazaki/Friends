@@ -31,7 +31,6 @@
 #include "bullet.h"
 #include "stage.h"
 #include "objectX.h"
-#include "gamemanager.h"
 #include "instantfade.h"
 #include "hp_gauge_player.h"
 #include "fade.h"
@@ -203,7 +202,7 @@ HRESULT CPlayer::Init(void)
 	D3DXVECTOR3 pos = GetPosition();
 
 	// 体力ゲージ
-	m_pHPGauge = CHP_GaugePlayer::Create(D3DXVECTOR3(250.0f, 600.0f, 0.0f), GetLifeOrigin());
+	m_pHPGauge = CHP_GaugePlayer::Create(D3DXVECTOR3(250.0f + m_nMyPlayerIdx * 300.0f, 600.0f, 0.0f), GetLifeOrigin());
 
 	// 影の生成
 	m_pShadow = CShadow::Create(pos, 50.0f);
@@ -1363,6 +1362,28 @@ bool CPlayer::Hit(const int nValue)
 
 	// 死んでない
 	return false;
+}
+
+//==========================================================================
+// ステータス付与
+//==========================================================================
+void CPlayer::GiveStatus(CGameManager::eStatus status)
+{
+	// 強化
+	switch (status)
+	{
+	case CGameManager::STATUS_POWER:
+		m_sStatus.nPower++;
+		break;
+
+	case CGameManager::STATUS_SPEED:
+		m_sStatus.nSpeed++;
+		break;
+
+	case CGameManager::STATUS_LIFE:
+		m_sStatus.nLife++;
+		break;
+	}
 }
 
 //==========================================================================

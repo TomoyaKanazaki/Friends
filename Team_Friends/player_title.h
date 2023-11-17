@@ -11,10 +11,6 @@
 #include "player.h"
 
 //==========================================================================
-// マクロ定義
-//==========================================================================
-
-//==========================================================================
 // クラス定義
 //==========================================================================
 // プレイヤークラス定義
@@ -25,22 +21,15 @@ public:
 	CPlayerTitle(int nPriority = mylib_const::DEF2D_PRIORITY);
 	~CPlayerTitle();
 
-
 	// オーバーライドされた関数
-	virtual HRESULT Init(void) override;
-	virtual void Uninit(void) override;
-	virtual void Update(void) override;
+	HRESULT Init(void) override;
+	void Uninit(void) override;
+	void Update(void) override;
 	void Draw(void) override;
 
-protected:
+	// 静的メンバ関数
+	static CPlayerTitle* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 
-private:
-
-	// メンバ関数
-
-	// メンバ変数
 };
-
-
 
 #endif

@@ -14,6 +14,7 @@
 #include "sound.h"
 #include "title_logo.h"
 #include "fog.h"
+#include "player_title.h"
 
 //==========================================
 //  定数定義 金崎
@@ -21,8 +22,8 @@
 namespace
 {
 	const D3DXCOLOR TARGET_COLOR = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	const float START_LENGTH = 100.0f; // 初期距離
-	const float END_LENGTH = 10000.0f; // 目標距離
+	const float START_LENGTH = 300.0f; // 初期距離
+	const float END_LENGTH = 3000.0f; // 目標距離
 	const float FUNCTION = 0.01f; //倍率
 }
 
@@ -73,6 +74,13 @@ HRESULT CTitle::Init(void)
 	Fog::SetStart(START_LENGTH);
 	Fog::SetEnd(m_fLength);
 	Fog::SetCol(m_col);
+
+	// プレイヤーを置いてみる
+	CPlayerTitle::Create(D3DXVECTOR3(0.0f, 100.0f, -1500.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	CPlayerTitle::Create(D3DXVECTOR3(160.0f, 0.0f, -2900.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	CPlayerTitle::Create(D3DXVECTOR3(-160.0f, 0.0f, -2900.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	CPlayerTitle::Create(D3DXVECTOR3(240.0f, 0.0f, -3200.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	CPlayerTitle::Create(D3DXVECTOR3(-240.0f, 0.0f, -3200.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	// 成功
 	return S_OK;

@@ -414,6 +414,9 @@
     <ClCompile Include="player_title.cpp">
       <Filter>ソース ファイル\mode\title</Filter>
     </ClCompile>
+    <ClCompile Include="object_circlegauge2D.cpp">
+      <Filter>ソース ファイル\object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -745,6 +748,9 @@
     </ClInclude>
     <ClInclude Include="player_title.h">
       <Filter>ヘッダー ファイル\mode\title</Filter>
+    </ClInclude>
+    <ClInclude Include="object_circlegauge2D.h">
+      <Filter>ヘッダー ファイル\object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

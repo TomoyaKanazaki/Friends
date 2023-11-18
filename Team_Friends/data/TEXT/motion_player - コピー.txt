@@ -9,7 +9,7 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 10
+NUM_MODEL = 16
 
 #------------------------------------------------------------------------------
 # モデルファイル名
@@ -25,6 +25,21 @@ MODEL_FILENAME = data\MODEL\player\Rshoulder.x		# [7]右肩
 MODEL_FILENAME = data\MODEL\player\Rarm.x		# [8]右腕
 MODEL_FILENAME = data\MODEL\player\Rhand.x		# [9]右手
 
+MODEL_FILENAME = data\MODEL\player\pUP_arm01\Lshoulder.x		# [10]強化[腕]左肩
+MODEL_FILENAME = data\MODEL\player\pUP_arm01\Larm.x		# [11]強化[腕]左腕
+MODEL_FILENAME = data\MODEL\player\pUP_arm01\Lhand.x		# [12]強化[腕]左手
+MODEL_FILENAME = data\MODEL\player\pUP_arm01\Rshoulder.x		# [13]強化[腕]右肩
+MODEL_FILENAME = data\MODEL\player\pUP_arm01\Rarm.x		# [14]強化[腕]右腕
+MODEL_FILENAME = data\MODEL\player\pUP_arm01\Rhand.x		# [15]強化[腕]右手
+
+#MODEL_FILENAME = data\MODEL\player\body.x		# [12]強化[胴]胴
+
+#MODEL_FILENAME = data\MODEL\player\Lthigh.x		# [13]強化[脚]左腿
+#MODEL_FILENAME = data\MODEL\player\Lleg.x		# [14]強化[脚]左脛
+#MODEL_FILENAME = data\MODEL\player\Lfoot.x		# [15]強化[脚]左足
+#MODEL_FILENAME = data\MODEL\player\Rthigh.x		# [16]強化[脚]右腿
+#MODEL_FILENAME = data\MODEL\player\Rleg.x		# [17]強化[脚]右脛
+#MODEL_FILENAME = data\MODEL\player\Rfoot.x		# [18]強化[脚]右足
 
 #------------------------------------------------------------------------------
 # キャラクター情報
@@ -116,6 +131,53 @@ CHARACTERSET
 		START = 1
 	END_PARTSSET
 
+	PARTSSET
+		INDEX = 10
+		PARENT = 1
+		POS = 22.20 43.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 11
+		PARENT = 10
+		POS = 43.95 2.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 12
+		PARENT = 11
+		POS = 22.50 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 13
+		PARENT = 1
+		POS = -22.20 43.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 14
+		PARENT = 13
+		POS = -43.95 1.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 15
+		PARENT = 14
+		POS = -22.50 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
 	
 END_CHARACTERSET
 

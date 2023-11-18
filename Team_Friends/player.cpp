@@ -37,6 +37,7 @@
 #include "listmanager.h"
 #include "item.h"
 #include "injectiontable.h"
+#include "object_circlegauge2D.h"
 
 // 派生先
 #include "tutorialplayer.h"
@@ -114,6 +115,7 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 	m_pShadow = NULL;			// 影の情報
 	m_pTargetP = NULL;	// 目標の地点
 	m_pHPGauge = NULL;	// HPゲージの情報
+	m_pCircleGauge2D = NULL;	// 円ゲージのポインタ
 }
 
 //==========================================================================
@@ -211,6 +213,10 @@ HRESULT CPlayer::Init(void)
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);
 
+	// 多角形ゲージ生成
+	m_pCircleGauge2D = CObjectCircleGauge2D::Create(5, 100.0f);
+	m_pCircleGauge2D->SetType(CObject::TYPE_OBJECT2D);
+	m_pCircleGauge2D->SetPosition(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
 
 	// バフ計算
 	m_sStatus.fPowerBuff = 1.0f;
@@ -355,8 +361,6 @@ void CPlayer::Update(void)
 
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
-
-
 
 	// 追従目標の情報設定
 	if (m_nChaseTopIdx == m_nMyPlayerIdx)
@@ -738,6 +742,22 @@ void CPlayer::Controll(void)
 
 		Hit(1);
 	}
+
+	static float fRate = 0.0f;
+
+	if (pInputKeyboard->GetPress(DIK_UP) == true)
+	{//SPACEが押された,ジャンプ
+
+		fRate += 0.01f;
+	}
+	if (pInputKeyboard->GetPress(DIK_DOWN) == true)
+	{//SPACEが押された,ジャンプ
+
+		fRate -= 0.01f;
+	}
+	ValueNormalize(fRate, 1.0f, 0.0f);
+
+	m_pCircleGauge2D->SetRate(fRate);
 }
 
 //==========================================================================

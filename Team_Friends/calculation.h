@@ -48,12 +48,12 @@ float EasingLinear(float start, float end, float time);						// 線形補正(等速)
 float EasingEaseIn(float start, float end, float time);						// 線形補正(徐々に加速)
 float EasingEaseOut(float start, float end, float time);					// 線形補正(徐々に減速)
 float EasingEaseInOut(float start, float end, float time);					// 線形補正(加速して減速)
-template<class T> void CuadricCurveComp(T& Value, const int nRange, T RangeOrigin, T Max, int& nAlphaCnt);	// 二次曲線補正
-D3DXCOLOR HSVtoRGB(float H, float S, float V);								// HSV変換
-int Random(int nMinNum, int nMaxNum);										// ランダム生成
-int GetDigit(int nNum);														// 桁数取得
-float GetRatio(D3DXVECTOR3 Mypos, D3DXVECTOR3 Targetpos);					// 割合取得
-float GetPosLength(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2);						// 長さ取得
+D3DXCOLOR HSVtoRGB(float H, float S, float V);										// HSV変換
+int Random(int nMinNum, int nMaxNum);												// ランダム生成
+int GetDigit(int nNum);																// 桁数取得
+float GetRatio(D3DXVECTOR3 Mypos, D3DXVECTOR3 Targetpos);							// 割合取得
+float GetPosLength(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2);								// 長さ取得
+D3DXVECTOR3 GetPointOnEdge2D(D3DXVECTOR3 point1, D3DXVECTOR3 point2, float fRate);	// 辺上の位置取得(2D)
 D3DXVECTOR3 GetParabola(D3DXVECTOR3 start, D3DXVECTOR3 end, float fMaxHeight, float time);				// 放物線移動
 bool CircleRange2D(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float fRadius1, float fRadius2);						// 1と2の当たり判定(円)(2D)
 bool CircleRange3D(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float fRadius1, float fRadius2);						// 1と2の当たり判定(円)(3D)
@@ -79,6 +79,7 @@ float MoveLog(int nIdxMoveLog, float pos, int nCntElapsed);																		// 
 void ResetMoveLog(int nIdxMoveLog);																								// もう一回拡縮したいとき
 D3DXVECTOR3 CatmullRomSplineInterp(D3DXVECTOR3 PointMili1, D3DXVECTOR3 Point0, D3DXVECTOR3 Point1, D3DXVECTOR3 Point2, float fTime);
 template<class T> void CalSort(T *pValue, int nStart, int nMax);	// ソート
+template<class T> void CuadricCurveComp(T& Value, const int nRange, T RangeOrigin, T Max, int& nAlphaCnt);	// 二次曲線補正
 
 
 //==========================================================================

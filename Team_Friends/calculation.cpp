@@ -355,6 +355,18 @@ float GetPosLength(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2)
 }
 
 //==================================================================================
+// ï”è„ÇÃà íuéÊìæ(2D)
+//==================================================================================
+D3DXVECTOR3 GetPointOnEdge2D(D3DXVECTOR3 point1, D3DXVECTOR3 point2, float fRate)
+{
+	D3DXVECTOR3 OnPoint = D3DXVECTOR3(
+		point1.x + fRate * (point2.x - point1.x),
+		point1.y + fRate * (point2.y - point1.y),
+		0.0f);
+	return OnPoint;
+}
+
+//==================================================================================
 // ï˙ï®ê¸à⁄ìÆ
 //==================================================================================
 D3DXVECTOR3 GetParabola(D3DXVECTOR3 start, D3DXVECTOR3 end, float fMaxHeight, float time)

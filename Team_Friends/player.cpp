@@ -32,12 +32,12 @@
 #include "stage.h"
 #include "objectX.h"
 #include "instantfade.h"
-#include "hp_gauge_player.h"
 #include "fade.h"
 #include "listmanager.h"
 #include "item.h"
 #include "injectiontable.h"
 #include "object_circlegauge2D.h"
+#include "statuswindow.h"
 
 // 派生先
 #include "tutorialplayer.h"
@@ -114,8 +114,6 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 	m_nMyPlayerIdx = 0;			// プレイヤーインデックス番号
 	m_pShadow = NULL;			// 影の情報
 	m_pTargetP = NULL;	// 目標の地点
-	m_pHPGauge = NULL;	// HPゲージの情報
-	m_pCircleGauge2D = NULL;	// 円ゲージのポインタ
 }
 
 //==========================================================================
@@ -204,19 +202,11 @@ HRESULT CPlayer::Init(void)
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
 
-	// 体力ゲージ
-	m_pHPGauge = CHP_GaugePlayer::Create(D3DXVECTOR3(250.0f + m_nMyPlayerIdx * 300.0f, 600.0f, 0.0f), GetLifeOrigin());
-
 	// 影の生成
 	m_pShadow = CShadow::Create(pos, 50.0f);
 
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);
-
-	// 多角形ゲージ生成
-	m_pCircleGauge2D = CObjectCircleGauge2D::Create(5, 100.0f);
-	m_pCircleGauge2D->SetType(CObject::TYPE_OBJECT2D);
-	m_pCircleGauge2D->SetPosition(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
 
 	// バフ計算
 	m_sStatus.fPowerBuff = 1.0f;
@@ -235,13 +225,6 @@ void CPlayer::Uninit(void)
 		m_pMotion->Uninit();
 		delete m_pMotion;
 		m_pMotion = NULL;
-	}
-
-	// HPゲージを消す
-	if (m_pHPGauge != NULL)
-	{
-		m_pHPGauge->Uninit();
-		m_pHPGauge = NULL;
 	}
 
 	// 影を消す
@@ -278,13 +261,6 @@ void CPlayer::Kill(void)
 {
 
 	my_particle::Create(GetPosition(), my_particle::TYPE_ENEMY_FADE);
-
-	// HPゲージを消す
-	if (m_pHPGauge != NULL)
-	{
-		m_pHPGauge->Kill();
-		m_pHPGauge = NULL;
-	}
 
 	// 影を消す
 	if (m_pShadow != NULL)
@@ -375,13 +351,6 @@ void CPlayer::Update(void)
 	if (m_pShadow != NULL)
 	{
 		m_pShadow->SetPosition(D3DXVECTOR3(pos.x, m_pShadow->GetPosition().y, pos.z));
-	}
-
-	// HPゲージの位置更新
-	if (m_pHPGauge != NULL)
-	{
-		m_pHPGauge->Update();
-		m_pHPGauge->SetLife(GetLife());
 	}
 
 #if 0
@@ -757,7 +726,10 @@ void CPlayer::Controll(void)
 	}
 	ValueNormalize(fRate, 1.0f, 0.0f);
 
-	m_pCircleGauge2D->SetRate(fRate);
+	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
+	{
+		CGame::GetStatusWindow(m_nMyPlayerIdx)->GetGauge((CGameManager::eStatus)i)->SetRate(fRate);
+	}
 }
 
 //==========================================================================
@@ -1834,12 +1806,6 @@ void CPlayer::Draw(void)
 	else if(m_state != STATE_COMPACTUNION)
 	{
 		CObjectChara::Draw();
-	}
-
-	// HPゲージ
-	if (m_pHPGauge != NULL)
-	{
-		m_pHPGauge->Draw();
 	}
 }
 

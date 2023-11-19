@@ -95,6 +95,7 @@ public:
 	virtual bool Hit(const int nValue);						// 嘆きのバーチャルヒット処理
 	virtual bool Hit(const int nValue, D3DXVECTOR3 move);
 
+	int GetPriority(void) { return m_nPriority; }	// 優先順位取得
 	void SetEnableDisp(bool bDisp) { m_bDisp = bDisp; }		// 描画設定
 
 	int SetEffectParent(CEffect3D *pEffect3D);	// エフェクト設定

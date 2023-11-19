@@ -10,6 +10,7 @@
 
 #include "main.h"
 #include "scene.h"
+#include "gamemanager.h"
 
 //==========================================================================
 // 前方宣言
@@ -20,8 +21,8 @@ class CPowerGauge;
 class CBulletManager;
 class CEditEnemyBase;
 class CStage;
-class CGameManager;
 class CHitScore;
+class CStatusWindow;
 
 class CEnemyManager;
 class CPlayer;
@@ -59,6 +60,7 @@ public:
 	static CBulletManager *GetBulletManager(void);
 	static CStage *GetStage(void);
 	static CGameManager *GetGameManager(void);
+	static CStatusWindow *GetStatusWindow(int nIdx);
 
 	static CEnemyManager *GetEnemyManager(void);
 	static CEnemyBase *GetEnemyBase(void);		// 敵の拠点
@@ -78,6 +80,7 @@ private:
 	static EEditType m_EditType;		// エディットの種類
 	static CEnemyManager *m_pEnemyManager;		// 敵マネージャのオブジェクト
 	static CEnemyBase *m_pEnemyBase;	// 敵の拠点
+	static CStatusWindow *m_pStatusWindow[CGameManager::STATUS_MAX];	// ステータスウィンドウのオブジェクト
 	static bool m_bEdit;				// エディットの判定
 };
 

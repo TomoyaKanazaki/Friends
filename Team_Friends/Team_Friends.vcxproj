@@ -259,6 +259,8 @@
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="stage.cpp" />
     <ClCompile Include="stagecleartext.cpp" />
+    <ClCompile Include="statuswindow.cpp" />
+    <ClCompile Include="statuswindow_base.cpp" />
     <ClCompile Include="targetpoint.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="timer.cpp" />
@@ -372,6 +374,8 @@
     <ClInclude Include="sound.h" />
     <ClInclude Include="stage.h" />
     <ClInclude Include="stagecleartext.h" />
+    <ClInclude Include="statuswindow.h" />
+    <ClInclude Include="statuswindow_base.h" />
     <ClInclude Include="targetpoint.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="timer.h" />

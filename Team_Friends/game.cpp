@@ -22,8 +22,8 @@
 #include "edit_enemybase.h"
 #include "bulletmanager.h"
 #include "stage.h"
-#include "gamemanager.h"
 #include "compactcore.h"
+#include "statuswindow.h"
 
 #include "enemymanager.h"
 #include "player.h"
@@ -41,6 +41,7 @@ CGameManager *CGame::m_pGameManager = NULL;			// ゲームマネージャのオブジェクト
 CGame::EEditType CGame::m_EditType = EDITTYPE_OFF;		// エディットの種類
 CEnemyBase *CGame::m_pEnemyBase = NULL;	// 敵の拠点
 CEnemyManager *CGame::m_pEnemyManager = NULL;	// 敵マネージャのオブジェクト
+CStatusWindow *CGame::m_pStatusWindow[CGameManager::STATUS_MAX] = {};	// ステータスウィンドウのオブジェクト
 bool CGame::m_bEdit = false;				// エディットの判定
 
 //==========================================================================
@@ -108,6 +109,16 @@ HRESULT CGame::Init(void)
 			pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 50.0f, 1000.0f, -1000.0f));
 			pPlayer->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 		}
+	}
+
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	{
+		bool bJoin = true;
+		if (CManager::GetInstance()->GetNumPlayer() <= nCntPlayer)
+		{
+			bJoin = false;
+		}
+		m_pStatusWindow[nCntPlayer] = CStatusWindow::Create(D3DXVECTOR3(160.0f + nCntPlayer * 320.0f, 600.0f, 0.0f), bJoin);
 	}
 
 	//**********************************
@@ -367,6 +378,14 @@ CEnemyManager *CGame::GetEnemyManager(void)
 CEnemyBase *CGame::GetEnemyBase(void)
 {
 	return m_pEnemyBase;
+}
+
+//==========================================================================
+// ステータスウィンドウ
+//==========================================================================
+CStatusWindow *CGame::GetStatusWindow(int nIdx)
+{
+	return m_pStatusWindow[nIdx];
 }
 
 //==========================================================================

@@ -138,8 +138,6 @@ private:
 	int m_nTexIdx;				// テクスチャのインデックス番号
 	int m_nIdxXFile;			// Xファイルのインデックス番号
 	CTargetPoint *m_pTargetP;	// 目標の地点
-	CHP_GaugePlayer *m_pHPGauge;	// HPゲージの情報
-	CObjectCircleGauge2D *m_pCircleGauge2D;	// 円ゲージのポインタ
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定
 	static const char *m_apModelFile[mylib_const::MAX_PLAYER];	// モデルのファイル

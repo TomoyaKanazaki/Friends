@@ -9,7 +9,7 @@ SCRIPT			# Ç±ÇÃçsÇÕê‚ëŒè¡Ç≥Ç»Ç¢Ç±Ç∆ÅI
 #------------------------------------------------------------------------------
 # ÉÇÉfÉãêî
 #------------------------------------------------------------------------------
-NUM_MODEL = 16
+NUM_MODEL = 24
 
 #------------------------------------------------------------------------------
 # ÉÇÉfÉãÉtÉ@ÉCÉãñº
@@ -32,14 +32,23 @@ MODEL_FILENAME = data\MODEL\player\pUP_arm01\Rshoulder.x		# [13]ã≠âª[òr]âEå®
 MODEL_FILENAME = data\MODEL\player\pUP_arm01\Rarm.x		# [14]ã≠âª[òr]âEòr
 MODEL_FILENAME = data\MODEL\player\pUP_arm01\Rhand.x		# [15]ã≠âª[òr]âEéË
 
-#MODEL_FILENAME = data\MODEL\player\body.x		# [12]ã≠âª[ì∑]ì∑
+MODEL_FILENAME = data\MODEL\player\pUP_body01\body.x		# [16]ã≠âª[ì∑]ì∑
+MODEL_FILENAME = data\MODEL\player\pUP_body01\head.x		# [17]ã≠âª[ì∑]ì™
+MODEL_FILENAME = data\MODEL\player\pUP_body01\Lshoulder.x		# [18]ã≠âª[ì∑]ç∂å®
+MODEL_FILENAME = data\MODEL\player\pUP_body01\Larm.x		# [19]ã≠âª[ì∑]ç∂òr
+MODEL_FILENAME = data\MODEL\player\pUP_body01\Lhand.x		# [20]ã≠âª[ì∑]ç∂éË
+MODEL_FILENAME = data\MODEL\player\pUP_body01\Rshoulder.x		# [21]ã≠âª[ì∑]âEå®
+MODEL_FILENAME = data\MODEL\player\pUP_body01\Rarm.x		# [22]ã≠âª[ì∑]âEòr
+MODEL_FILENAME = data\MODEL\player\pUP_body01\Rhand.x		# [23]ã≠âª[ì∑]âEéË
 
-#MODEL_FILENAME = data\MODEL\player\Lthigh.x		# [13]ã≠âª[ãr]ç∂ë⁄
-#MODEL_FILENAME = data\MODEL\player\Lleg.x		# [14]ã≠âª[ãr]ç∂„¯
-#MODEL_FILENAME = data\MODEL\player\Lfoot.x		# [15]ã≠âª[ãr]ç∂ë´
-#MODEL_FILENAME = data\MODEL\player\Rthigh.x		# [16]ã≠âª[ãr]âEë⁄
-#MODEL_FILENAME = data\MODEL\player\Rleg.x		# [17]ã≠âª[ãr]âE„¯
-#MODEL_FILENAME = data\MODEL\player\Rfoot.x		# [18]ã≠âª[ãr]âEë´
+#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lthigh.x		# [24]ã≠âª[ãr]ç∂ë⁄
+#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lleg.x		# [25]ã≠âª[ãr]ç∂„¯
+#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lankle.x		# [26]ã≠âª[ãr]ç∂ë´éÒ
+#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lfeet.x		# [27]ã≠âª[ãr]ç∂ë´
+#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rthigh.x		# [28]ã≠âª[ãr]âEë⁄
+#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rleg.x		# [29]ã≠âª[ãr]âE„¯
+#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rankle.x		# [30]ã≠âª[ãr]âEë´éÒ
+#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rfeet.x		# [31]ã≠âª[ãr]âEë´
 
 #------------------------------------------------------------------------------
 # ÉLÉÉÉâÉNÉ^Å[èÓïÒ
@@ -175,6 +184,70 @@ CHARACTERSET
 		INDEX = 15
 		PARENT = 14
 		POS = -22.50 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 16
+		PARENT = 0
+		POS = 0.00 0.35 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 17
+		PARENT = 16
+		POS = 0.00 45.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 18
+		PARENT = 16
+		POS = 16.70 40.95 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 19
+		PARENT = 18
+		POS = 18.45 0.40 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 20
+		PARENT = 19
+		POS = 10.82 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 21
+		PARENT = 16
+		POS = -16.70 40.95 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 22
+		PARENT = 21
+		POS = -17.95 0.40 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 23
+		PARENT = 22
+		POS = -11.27 0.00 0.00
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET

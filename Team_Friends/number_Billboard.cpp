@@ -39,7 +39,7 @@ CNumberBillboard::~CNumberBillboard()
 //==========================================================================
 // ‰Šú‰»ˆ—
 //==========================================================================
-HRESULT CNumberBillboard::Init(void)
+HRESULT CNumberBillboard::Init(int nPriority)
 {
 	// ¶¬ˆ—
 	m_pObjBillboard = CObjectBillboard::Create();

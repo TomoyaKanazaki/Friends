@@ -19,13 +19,20 @@
 //==========================================
 namespace
 {
-	const char* CHARAFILE = "data\\TEXT\\motion_player.txt"; // モーションファイルパス
+	const char* CHARAFILE[CPlayerTitle::MAX] =
+	{
+		"data\\TEXT\\motion_union_player.txt", // 合体ファイルパス
+		"data\\TEXT\\motion_ArmToArm.txt", // 腕ファイルパス
+		"data\\TEXT\\motion_player.txt", // 足ファイルパス
+		"data\\TEXT\\motion_player.txt" // 胴ファイルパス
+	};
 }
 
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CPlayerTitle::CPlayerTitle(int nPriority) : CPlayer(nPriority)
+CPlayerTitle::CPlayerTitle(int nPriority) : CPlayer(nPriority),
+m_nModelType(NONE)
 {
 	// 値のクリア
 	
@@ -51,7 +58,7 @@ HRESULT CPlayerTitle::Init(void)
 	m_bLandOld = true;		// 前回の着地状態
 
 	// キャラ作成
-	HRESULT hr = SetCharacter(CHARAFILE);
+	HRESULT hr = SetCharacter(CHARAFILE[m_nModelType]);
 
 	if (FAILED(hr))
 	{// 失敗していたら
@@ -59,7 +66,7 @@ HRESULT CPlayerTitle::Init(void)
 	}
 
 	// モーションの生成処理
-	m_pMotion = CMotion::Create(CHARAFILE);
+	m_pMotion = CMotion::Create(CHARAFILE[m_nModelType]);
 
 	// オブジェクトキャラクターの情報取得
 	CObjectChara *pObjChar = GetObjectChara();
@@ -69,9 +76,6 @@ HRESULT CPlayerTitle::Init(void)
 
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
-
-	// 影の生成
-	//m_pShadow = CShadow::Create(pos, 50.0f);
 
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);
@@ -129,10 +133,13 @@ void CPlayerTitle::Draw(void)
 //==========================================
 //  生成処理 : 金崎朋弥
 //==========================================
-CPlayerTitle* CPlayerTitle::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+CPlayerTitle* CPlayerTitle::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MODEL type)
 {
 	// インスタンス生成
 	CPlayerTitle* pPlayer = DEBUG_NEW CPlayerTitle;
+
+	//モデルを設定
+	pPlayer->m_nModelType = (int)type;
 
 	// 初期化処理
 	pPlayer->Init();

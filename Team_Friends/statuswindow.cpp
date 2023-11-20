@@ -12,6 +12,7 @@
 #include "calculation.h"
 #include "statuswindow_base.h"
 #include "object_circlegauge2D.h"
+#include "multinumber.h"
 
 //==========================================================================
 // マクロ定義
@@ -25,6 +26,7 @@ namespace
 	const char* TEXTURE_SHAPE = "data\\TEXTURE\\statuswindow\\statuswindow_shape02.png";		// 型のテクスチャ
 	const char* TEXTURE_ONLINE = "data\\TEXTURE\\statuswindow\\ONLINE.png";		// オンライン
 	const char* TEXTURE_OFFLINE = "data\\TEXTURE\\statuswindow\\OFFLINE.png";	// オフライン
+	const char* TEXTURE_NUMBER = "data\\TEXTURE\\number_status.png";	// 数字
 }
 
 //==========================================================================
@@ -40,6 +42,7 @@ CStatusWindow::CStatusWindow(int nPriority) : CObject(nPriority)
 	memset(&m_apOnOffSign[0], NULL, sizeof(m_apOnOffSign));		// オンオフサイン
 	memset(&m_apWindowShape[0], NULL, sizeof(m_apWindowShape));	// ウィンドウの型
 	memset(&m_pCircleGauge2D[0], NULL, sizeof(m_pCircleGauge2D));	// 円ゲージのポインタ
+	memset(&m_pStatusNumber[0], NULL, sizeof(m_pStatusNumber));		// ステータスの数字
 }
 
 //==========================================================================
@@ -137,9 +140,17 @@ HRESULT CStatusWindow::Init(void)
 
 
 		// 多角形ゲージ生成
-		m_pCircleGauge2D[i] = CObjectCircleGauge2D::Create(6, WindowSize.y);
+		m_pCircleGauge2D[i] = CObjectCircleGauge2D::Create(6, WindowSize.y * 0.9f);
 		m_pCircleGauge2D[i]->SetType(CObject::TYPE_OBJECT2D);
 		m_pCircleGauge2D[i]->SetPosition(WindowPos);
+		m_pCircleGauge2D[i]->SetRotation(D3DXVECTOR3(0.0f, 0.0f, D3DXToRadian(30.0f)));
+
+		// ステータスの数字
+		m_pStatusNumber[i] = CMultiNumber::Create(D3DXVECTOR3(640.0f, 360.0f, 0.0f), D3DXVECTOR2(WindowSize.x, WindowSize.x) * 5.2f, 4, CNumber::OBJECTTYPE_2D, TEXTURE_NUMBER, true, 8);
+
+		// 値の設定処理
+		m_pStatusNumber[i]->SetValue(100);
+
 	}
 
 	int nIdxTexOnOffline = pTexture->Regist(TEXTURE_ONLINE);
@@ -183,6 +194,18 @@ void CStatusWindow::Uninit(void)
 			continue;
 		}
 		m_apWindowShape[i] = NULL;
+	}
+
+	// 数字のオブジェクトの終了処理
+	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
+	{
+		if (m_pStatusNumber[i] == NULL)
+		{
+			continue;
+		}
+		m_pStatusNumber[i]->Uninit();
+		delete m_pStatusNumber[i];
+		m_pStatusNumber[i] = NULL;
 	}
 
 	// 情報削除

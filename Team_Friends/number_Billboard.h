@@ -28,7 +28,7 @@ public:
 	~CNumberBillboard();
 
 	// ƒƒ“ƒoŠÖ”
-	HRESULT Init(void) override;
+	HRESULT Init(int nPriority) override;
 	void Uninit(void) override;
 	void Update(void) override;
 	void Draw(void) override;

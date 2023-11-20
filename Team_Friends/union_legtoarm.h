@@ -60,8 +60,6 @@ private:
 	// メンバ関数
 	void ControllLeg(int nIdx);			// 脚操作
 	void ControllATK(int nIdx);		// 攻撃操作
-
-	static const char *m_apModelFile[mylib_const::MAX_PLAYER];	// モデルのファイル
 };
 
 

@@ -69,10 +69,10 @@ const char *CPlayer::m_apModelFile[mylib_const::MAX_PLAYER] =	// ƒ‚ƒfƒ‹‚Ìƒtƒ@ƒCƒ
 //	"data\\TEXT\\motion_4p.txt",
 //};
 {
-	"data\\TEXT\\motion_player.txt",
-	"data\\TEXT\\motion_player.txt",
-	"data\\TEXT\\motion_player.txt",
-	"data\\TEXT\\motion_player.txt",
+	"data\\TEXT\\character\\player\\motion_player.txt",
+	"data\\TEXT\\character\\player\\motion_player.txt",
+	"data\\TEXT\\character\\player\\motion_player.txt",
+	"data\\TEXT\\character\\player\\motion_player.txt",
 };
 
 bool CPlayer::m_bAllLandInjectionTable = false;	// ‘Sˆõ‚ÌËo‘ä’…’n”»’è

@@ -128,6 +128,7 @@ void CNumber2D::SetType(const CObject::TYPE type)
 //==========================================================================
 void CNumber2D::SetPosition(const D3DXVECTOR3 pos)
 {
+	m_aObject2D->SetPosition(pos);
 }
 
 //==========================================================================
@@ -135,7 +136,7 @@ void CNumber2D::SetPosition(const D3DXVECTOR3 pos)
 //==========================================================================
 D3DXVECTOR3 CNumber2D::GetPosition(void) const
 {
-	return mylib_const::DEFAULT_VECTOR3;
+	return m_aObject2D->GetPosition();
 }
 
 //==========================================================================
@@ -143,6 +144,7 @@ D3DXVECTOR3 CNumber2D::GetPosition(void) const
 //==========================================================================
 void CNumber2D::SetMove(const D3DXVECTOR3 move)
 {
+	m_aObject2D->SetMove(move);
 }
 
 //==========================================================================
@@ -150,7 +152,7 @@ void CNumber2D::SetMove(const D3DXVECTOR3 move)
 //==========================================================================
 D3DXVECTOR3 CNumber2D::GetMove(void) const
 {
-	return mylib_const::DEFAULT_VECTOR3;
+	return m_aObject2D->GetMove();
 }
 
 //==========================================================================
@@ -158,6 +160,7 @@ D3DXVECTOR3 CNumber2D::GetMove(void) const
 //==========================================================================
 void CNumber2D::SetRotation(const D3DXVECTOR3 rot)
 {
+	m_aObject2D->SetRotation(rot);
 }
 
 //==========================================================================
@@ -165,7 +168,7 @@ void CNumber2D::SetRotation(const D3DXVECTOR3 rot)
 //==========================================================================
 D3DXVECTOR3 CNumber2D::GetRotation(void) const
 {
-	return mylib_const::DEFAULT_VECTOR3;
+	return m_aObject2D->GetRotation();
 }
 
 //==========================================================================

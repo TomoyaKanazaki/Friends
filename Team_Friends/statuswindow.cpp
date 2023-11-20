@@ -146,7 +146,7 @@ HRESULT CStatusWindow::Init(void)
 		m_pCircleGauge2D[i]->SetRotation(D3DXVECTOR3(0.0f, 0.0f, D3DXToRadian(30.0f)));
 
 		// ステータスの数字
-		m_pStatusNumber[i] = CMultiNumber::Create(D3DXVECTOR3(640.0f, 360.0f, 0.0f), D3DXVECTOR2(WindowSize.x, WindowSize.x) * 5.2f, 4, CNumber::OBJECTTYPE_2D, TEXTURE_NUMBER, true, 8);
+		m_pStatusNumber[i] = CMultiNumber::Create(WindowPos, D3DXVECTOR2(WindowSize.x, WindowSize.x) * 0.2f, 4, CNumber::OBJECTTYPE_2D, TEXTURE_NUMBER, true, 8);
 
 		// 値の設定処理
 		m_pStatusNumber[i]->SetValue(100);
@@ -217,7 +217,15 @@ void CStatusWindow::Uninit(void)
 //==========================================================================
 void CStatusWindow::Update(void)
 {
-	
+	// 数字のオブジェクトの更新処理
+	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
+	{
+		if (m_pStatusNumber[i] == NULL)
+		{
+			continue;
+		}
+		m_pStatusNumber[i]->Update();
+	}
 }
 
 //==========================================================================

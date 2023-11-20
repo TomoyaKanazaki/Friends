@@ -126,7 +126,7 @@ HRESULT CScene::Init(void)
 	//**********************************
 	// マップの生成
 	//**********************************
-	if (FAILED(map::Create("data\\TEXT\\edit_info.txt")))
+	if (FAILED(map::Create("data\\TEXT\\map\\info.txt")))
 	{// 失敗した場合
 		return E_FAIL;
 	}
@@ -134,7 +134,7 @@ HRESULT CScene::Init(void)
 	//**********************************
 	// 起伏の地面
 	//**********************************
-	m_pObject3DMesh = CElevation::Create("data\\TEXT\\elevation_field.txt");
+	m_pObject3DMesh = CElevation::Create("data\\TEXT\\elevation\\field.txt");
 
 	// 初期化処理
 	hr = m_pXLoad->Init();
@@ -229,7 +229,7 @@ void CScene::ResetScene(void)
 	// 生成フェーズ
 	//**********************************
 	// マップ
-	if (FAILED(map::Create("data\\TEXT\\edit_info_boss.txt")))
+	if (FAILED(map::Create("data\\TEXT\\map\\info_boss.txt")))
 	{// 失敗した場合
 		return;
 	}

@@ -28,6 +28,8 @@ public:
 		int nType;				// モデル種類
 		int nParent;			// 親のインデックス
 		int nStart;				// 最初からあるかどうか
+		int nSwitchType;		// 切り替えの種類
+		int nIDSwitchModel;		// 切り替えモデルのID
 		D3DXVECTOR3 pos;		// 位置
 		D3DXVECTOR3 rot;		// 向き
 	};

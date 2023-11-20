@@ -36,10 +36,10 @@ public:
 	CNumber(int nPriority = 6);
 	~CNumber();
 
-	static CNumber *Create(EObjectType objtype);
+	static CNumber *Create(EObjectType objtype, int nPriority);
 
 	// ÉÅÉìÉoä÷êî
-	virtual HRESULT Init(void) = 0;
+	virtual HRESULT Init(int nPriority) = 0;
 	virtual void Uninit(void) = 0;
 	virtual void Update(void) = 0;
 	virtual void Draw(void) = 0;

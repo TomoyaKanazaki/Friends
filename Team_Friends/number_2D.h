@@ -24,15 +24,22 @@ class CNumber2D : public CNumber
 {
 public:
 
-	CNumber2D(int nPriority = 6);
+	CNumber2D(int nPriority = 7);
 	~CNumber2D();
 
 	// メンバ関数
-	HRESULT Init(void) override;
+	HRESULT Init(int nPriority) override;
 	void Uninit(void) override;
 	void Update(void) override;
 	void Draw(void) override;
 	void Release(void) override;	// 開放処理
+
+	void SetPosition(const D3DXVECTOR3 pos) override;	// 位置設定
+	D3DXVECTOR3 GetPosition(void) const override;		// 位置取得
+	void SetMove(const D3DXVECTOR3 move) override;		// 移動量設定
+	D3DXVECTOR3 GetMove(void) const override;			// 移動量取得
+	void SetRotation(const D3DXVECTOR3 rot) override;	// 向き設定
+	D3DXVECTOR3 GetRotation(void) const override;		// 向き取得
 
 	void SetColor(const D3DXCOLOR col) override;			// 色設定
 	D3DXCOLOR GetColor(void) const override;				// 色取得

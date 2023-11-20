@@ -48,7 +48,6 @@
 //==========================================================================
 // マクロ定義
 //==========================================================================
-#define CHARAFILE		"data\\TEXT\\motion_set_player.txt"
 #define JUMP			(20.0f * 1.5f)	// ジャンプ力初期値
 #define MAX_LIFE		(100)			// 体力
 #define TARGET_LEN		(400.0f)		// 目標までの距離
@@ -215,107 +214,7 @@ HRESULT CPlayerUnion::CreateParts(void)
 
 
 	// 複数キャラ読み込み
-	ReadMultiCharacter("data\\TEXT\\multicharacter_SuperUnion.txt");
-
-#if 0
-	//**********************************
-	// 胴体
-	//**********************************
-	m_pObjChara[PARTS_BODY] = CObjectChara::Create(m_apModelFile[PARTS_BODY]);
-	if (m_pObjChara[PARTS_BODY] == NULL)
-	{// 失敗していたら
-		return E_FAIL;
-	}
-	m_pObjChara[PARTS_BODY]->SetType(CObject::TYPE_OBJECTX);
-
-	// モーションの生成処理
-	m_pMotion[PARTS_BODY] = CMotion::Create(m_apModelFile[PARTS_BODY]);
-
-	// オブジェクトキャラクターの情報取得
-	pObjChar = m_pObjChara[PARTS_BODY]->GetObjectChara();
-
-	// モーションの設定
-	m_pMotion[PARTS_BODY]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
-
-	// ポーズのリセット
-	m_pMotion[PARTS_BODY]->ResetPose(MOTION_DEF);
-
-
-	//**********************************
-	// 脚
-	//**********************************
-	m_pObjChara[PARTS_LEG] = CObjectChara::Create(m_apModelFile[PARTS_LEG]);
-	if (m_pObjChara[PARTS_LEG] == NULL)
-	{// 失敗していたら
-		return E_FAIL;
-	}
-	m_pObjChara[PARTS_LEG]->SetType(CObject::TYPE_OBJECTX);
-
-	// モーションの生成処理
-	m_pMotion[PARTS_LEG] = CMotion::Create(m_apModelFile[PARTS_LEG]);
-
-	// オブジェクトキャラクターの情報取得
-	pObjChar = m_pObjChara[PARTS_LEG]->GetObjectChara();
-
-	// モーションの設定
-	m_pMotion[PARTS_LEG]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
-
-	// ポーズのリセット
-	m_pMotion[PARTS_LEG]->ResetPose(MOTION_DEF);
-
-
-	//**********************************
-	// 右腕
-	//**********************************
-	m_pObjChara[PARTS_R_ARM] = CObjectChara::Create(m_apModelFile[PARTS_R_ARM]);
-	if (m_pObjChara[PARTS_R_ARM] == NULL)
-	{// 失敗していたら
-		return E_FAIL;
-	}
-	m_pObjChara[PARTS_R_ARM]->SetType(CObject::TYPE_OBJECTX);
-
-	// モーションの生成処理
-	m_pMotion[PARTS_R_ARM] = CMotion::Create(m_apModelFile[PARTS_R_ARM]);
-
-	// オブジェクトキャラクターの情報取得
-	pObjChar = m_pObjChara[PARTS_R_ARM]->GetObjectChara();
-
-	// モーションの設定
-	m_pMotion[PARTS_R_ARM]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
-
-	// ポーズのリセット
-	m_pMotion[PARTS_R_ARM]->ResetPose(MOTION_DEF);
-
-
-	//**********************************
-	// 左腕
-	//**********************************
-	m_pObjChara[PARTS_L_ARM] = CObjectChara::Create(m_apModelFile[PARTS_L_ARM]);
-	if (m_pObjChara[PARTS_L_ARM] == NULL)
-	{// 失敗していたら
-		return E_FAIL;
-	}
-	m_pObjChara[PARTS_L_ARM]->SetType(CObject::TYPE_OBJECTX);
-
-	// モーションの生成処理
-	m_pMotion[PARTS_L_ARM] = CMotion::Create(m_apModelFile[PARTS_L_ARM]);
-
-	// オブジェクトキャラクターの情報取得
-	pObjChar = m_pObjChara[PARTS_L_ARM]->GetObjectChara();
-
-	// モーションの設定
-	m_pMotion[PARTS_L_ARM]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
-
-	// ポーズのリセット
-	m_pMotion[PARTS_L_ARM]->ResetPose(MOTION_DEF);
-
-
-	// 左腕の原点を体にする
-	m_pObjChara[PARTS_L_ARM]->GetModel()[0]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[1]);
-	m_pObjChara[PARTS_R_ARM]->GetModel()[0]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[1]);
-	m_pObjChara[PARTS_LEG]->GetModel()[0]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[0]);
-	m_pObjChara[PARTS_LEG]->GetModel()[3]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[0]);
-#endif
+	ReadMultiCharacter("data\\TEXT\\multicharacter\\SuperUnion.txt");
 	return S_OK;
 }
 

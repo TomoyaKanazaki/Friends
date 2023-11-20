@@ -100,7 +100,7 @@ HRESULT map::SaveText(void)
 	FILE *pFile = NULL;	// ファイルポインタを宣言
 
 	// ファイルを開く
-	pFile = fopen("data\\TEXT\\edit_info.txt", "w");
+	pFile = fopen("data\\TEXT\\map\\info.txt", "w");
 
 	if (pFile == NULL)
 	{// ファイルが開けなかった場合
@@ -373,7 +373,9 @@ HRESULT map::ReadTexture(void)
 	FILE *pFile = NULL;
 
 	//ファイルを開く
-	pFile = fopen("data\\TEXT\\edit_info.txt", "r");
+	pFile = fopen("data\\TEXT\\map\\info.txt", "r");
+
+	// 後でつかう
 	/*switch (CManager::GetInstance()->GetMode())
 	{
 	case CScene::MODE_TITLE:
@@ -473,7 +475,9 @@ HRESULT map::ReadXFile(void)
 	FILE *pFile = NULL;
 
 	//ファイルを開く
-	pFile = fopen("data\\TEXT\\edit_info.txt", "r");
+	pFile = fopen("data\\TEXT\\map\\info.txt", "r");
+
+	// 後で使う
 	/*switch (CManager::GetInstance()->GetMode())
 	{
 	case CScene::MODE_TITLE:
@@ -575,11 +579,11 @@ HRESULT map::ReadText(const char *pTextFile)
 	switch (CManager::GetInstance()->GetMode())
 	{
 	case CScene::MODE_TITLE:
-		pFile = fopen("data\\TEXT\\edit_info_title.txt", "r");
+		pFile = fopen("data\\TEXT\\map\\info_title.txt", "r");
 		break;
 
 	case CScene::MODE_TUTORIAL:
-		pFile = fopen("data\\TEXT\\edit_info_title.txt", "r");
+		pFile = fopen("data\\TEXT\\map\\info_title.txt", "r");
 		break;
 
 	case CScene::MODE_GAME:
@@ -587,16 +591,16 @@ HRESULT map::ReadText(const char *pTextFile)
 		break;
 
 	case CScene::MODE_RESULT:
-		pFile = fopen("data\\TEXT\\edit_info_title.txt", "r");
+		pFile = fopen("data\\TEXT\\map\\info_title.txt", "r");
 		break;
 
 	case CScene::MODE_RANKING:
-		pFile = fopen("data\\TEXT\\edit_info_title.txt", "r");
-		//pFile = fopen("data\\TEXT\\edit_info_ranking.txt", "r");
+		pFile = fopen("data\\TEXT\\map\\info_title.txt", "r");
+		//pFile = fopen("data\\TEXT\\map\\info_ranking.txt", "r");
 		break;
 
 	default:
-		//pFile = fopen("data\\TEXT\\edit_info.txt", "r");
+		//pFile = fopen("data\\TEXT\\map\\info.txt", "r");
 		return S_OK;
 		break;
 	}

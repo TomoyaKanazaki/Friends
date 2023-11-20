@@ -39,7 +39,7 @@ CNumberBillboard::~CNumberBillboard()
 //==========================================================================
 // ‰Šú‰»ˆ—
 //==========================================================================
-HRESULT CNumberBillboard::Init(void)
+HRESULT CNumberBillboard::Init(int nPriority)
 {
 	// ¶¬ˆ—
 	m_pObjBillboard = CObjectBillboard::Create();
@@ -137,6 +137,39 @@ void CNumberBillboard::BindTexture(int nIdx)
 void CNumberBillboard::SetType(const CObject::TYPE type)
 {
 	m_pObjBillboard->SetType(type);
+}
+
+
+//==========================================================================
+// ˆÊ’uÝ’è
+//==========================================================================
+void CNumberBillboard::SetPosition(const D3DXVECTOR3 pos)
+{
+	m_pObjBillboard->SetPosition(pos);
+}
+
+//==========================================================================
+// ˆÊ’uŽæ“¾
+//==========================================================================
+D3DXVECTOR3 CNumberBillboard::GetPosition(void) const
+{
+	return m_pObjBillboard->GetPosition();
+}
+
+//==========================================================================
+// ˆÚ“®—ÊÝ’è
+//==========================================================================
+void CNumberBillboard::SetMove(const D3DXVECTOR3 move)
+{
+	m_pObjBillboard->SetMove(move);
+}
+
+//==========================================================================
+// ˆÚ“®—ÊŽæ“¾
+//==========================================================================
+D3DXVECTOR3 CNumberBillboard::GetMove(void) const
+{
+	return m_pObjBillboard->GetMove();
 }
 
 //==========================================================================

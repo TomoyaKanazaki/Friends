@@ -34,11 +34,6 @@
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
-const char *CUnion_BodytoLeg::m_apModelFile[mylib_const::MAX_PLAYER] =	// モデルのファイル
-{
-	"data\\TEXT\\player_union\\motion_body.txt",
-	"data\\TEXT\\player_union\\motion_leg.txt",
-};
 
 //==========================================================================
 // コンストラクタ
@@ -82,7 +77,7 @@ HRESULT CUnion_BodytoLeg::CreateParts(void)
 	CObjectChara *pObjChar = NULL;
 
 	// 複数キャラ読み込み
-	ReadMultiCharacter("data\\TEXT\\multicharacter_BodytoLeg.txt");
+	ReadMultiCharacter("data\\TEXT\\multicharacter\\BodytoLeg.txt");
 
 #if 0
 	////**********************************

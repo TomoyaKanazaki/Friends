@@ -32,6 +32,7 @@ CMultiNumber::CMultiNumber(int nPriority)
 	m_nNum = 0;				// 数字
 	m_nNumNumber = 0;		// 数字の数
 	m_nTexIdx = 0;			// テクスチャのインデックス番号
+	m_nPriority = 0;		// 優先順位
 	m_ppMultiNumber = NULL;	// 数字のオブジェクト
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 位置
 	m_col =mylib_const::DEFAULT_COLOR;		// 色
@@ -51,7 +52,7 @@ CMultiNumber::~CMultiNumber()
 //==========================================================================
 // 生成処理
 //==========================================================================
-CMultiNumber *CMultiNumber::Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, CNumber::EObjectType objtype, bool bDigitDraw)
+CMultiNumber *CMultiNumber::Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, CNumber::EObjectType objtype, bool bDigitDraw, int nPriority)
 {
 	// 生成用のオブジェクト
 	CMultiNumber *pNumber = NULL;
@@ -79,6 +80,9 @@ CMultiNumber *CMultiNumber::Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, 
 
 			// 桁数描画
 			pNumber->m_bDigitDraw = bDigitDraw;
+
+			// 優先順位
+			pNumber->m_nPriority = nPriority;
 
 			// 初期化処理
 			pNumber->Init();
@@ -99,7 +103,7 @@ CMultiNumber *CMultiNumber::Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, 
 //==========================================================================
 // 生成処理(オーバーロード)
 //==========================================================================
-CMultiNumber *CMultiNumber::Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, CNumber::EObjectType objtype, const char *pTextureFile, bool bDigitDraw)
+CMultiNumber *CMultiNumber::Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, CNumber::EObjectType objtype, const char *pTextureFile, bool bDigitDraw, int nPriority)
 {
 	// 生成用のオブジェクト
 	CMultiNumber *pNumber = NULL;
@@ -127,6 +131,9 @@ CMultiNumber *CMultiNumber::Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, 
 
 			// 桁数描画
 			pNumber->m_bDigitDraw = bDigitDraw;
+
+			// 優先順位
+			pNumber->m_nPriority = nPriority;
 
 			// テクスチャ読み込み
 			pNumber->m_nTexIdx = CManager::GetInstance()->GetTexture()->Regist(pTextureFile);
@@ -163,7 +170,7 @@ HRESULT CMultiNumber::Init(void)
 	for (int nCntNum = 0; nCntNum < m_nNumNumber; nCntNum++)
 	{
 		// 生成処理
-		m_ppMultiNumber[nCntNum] = CNumber::Create(m_objType);
+		m_ppMultiNumber[nCntNum] = CNumber::Create(m_objType, m_nPriority);
 
 		// 各種変数の初期化
 		m_ppMultiNumber[nCntNum]->SetSize(size);	// サイズ

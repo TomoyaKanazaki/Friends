@@ -15,6 +15,7 @@
 // 前方宣言
 //==========================================================================
 class CObjectCircleGauge2D;
+class CMultiNumber;
 
 //==========================================================================
 // クラス定義
@@ -41,6 +42,7 @@ private:
 	CObject2D *m_apOnOffSign[2];							// オンオフサイン
 	CObject2D *m_apWindowShape[CGameManager::STATUS_MAX];	// ウィンドウの型
 	CObjectCircleGauge2D *m_pCircleGauge2D[CGameManager::STATUS_MAX];	// 円ゲージのポインタ
+	CMultiNumber *m_pStatusNumber[CGameManager::STATUS_MAX];			// ステータスの数字
 };
 
 

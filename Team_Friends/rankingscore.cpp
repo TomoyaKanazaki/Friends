@@ -156,7 +156,7 @@ HRESULT CRankingScore::Init(void)
 			for (int nCntScore = 0; nCntScore < RANKINGSCORE_DIGIT; nCntScore++)
 			{
 				// 生成処理
-				m_pScore[nCntPlayer][nCntRanking][nCntScore] = CNumber::Create(CNumber::OBJECTTYPE_2D);
+				m_pScore[nCntPlayer][nCntRanking][nCntScore] = CNumber::Create(CNumber::OBJECTTYPE_2D, 7);
 
 				// 各種変数の初期化
 				m_pScore[nCntPlayer][nCntRanking][nCntScore]->GetObject2D()->SetSize(D3DXVECTOR2(BASE_WIDTH, BASE_HEIGHT));	// サイズ

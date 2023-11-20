@@ -128,6 +128,7 @@ private:
 	virtual void Controll(void);	// 操作
 	void MotionSet(void);	// モーションの設定
 	void Atack(void);		// 攻撃
+	void SetEvolusion(CGameManager::eStatus statusType);	// 進化先設定
 
 	sStatus m_sStatus;			// ステータス情報
 	STATE m_Oldstate;			// 前回の状態
@@ -140,7 +141,6 @@ private:
 	CTargetPoint *m_pTargetP;	// 目標の地点
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定
-	static const char *m_apModelFile[mylib_const::MAX_PLAYER];	// モデルのファイル
 	static int m_nChaseTopIdx;	// 追従の先頭インデックス番号
 };
 

@@ -120,7 +120,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// プレイヤー毎の担当パーツ種類
 	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
 	{
-		m_nByPlayerPartsType[i] = i;
+		m_nByPlayerPartsType[i] = -1;
 	}
 
 	//**********************************

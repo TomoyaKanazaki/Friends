@@ -197,7 +197,7 @@ void CGameManager::SetBoss(void)
 		}
 
 		// ˆÊ’uİ’è
-		pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 250.0f, 5000.0f, -1000.0f));
+		pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 50.0f, 5000.0f, 0.0f));
 	}
 
 	// ƒJƒƒ‰‚Ìî•ñæ“¾

@@ -380,7 +380,7 @@ bool CDecideCharacter::CollisionSelect(int nCntSelect)
 			m_bDecide[nCntSelect] = true;
 			m_apCursor[nCursorIdx]->SetEnbaleDicide(true);
 			m_apCursor[nCursorIdx]->SetSelectIdx(nCntSelect);
-			CManager::GetInstance()->SetByPlayerPartsType(nCursorIdx, nCntSelect);
+			//CManager::GetInstance()->SetByPlayerPartsType(nCursorIdx, nCntSelect);
 		}
 
 	}

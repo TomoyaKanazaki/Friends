@@ -282,6 +282,70 @@ void CObjectChara::ChangeObject(int nDeleteParts, int nNewParts)
 }
 
 //==========================================================================
+// 切り替えの種類
+//==========================================================================
+void CObjectChara::ChangeObject(int nSwitchType)
+{
+	// ファイルインデックス番号取得
+	int nIdx = GetIdxFile();
+	Load LoadData = GetLoadData(nIdx);
+
+	// モデルの切り替え
+	for (int nCntParts = 0; nCntParts < LoadData.nNumModel; nCntParts++)
+	{// パーツ分繰り返し
+
+		if (LoadData.LoadData[nCntParts].nSwitchType != nSwitchType)
+		{// 切り替えの種類が違うとき
+			continue;
+		}
+
+		// 削除するインデックス番号
+		int nDeleteIdx = LoadData.LoadData[nCntParts].nIDSwitchModel;
+
+
+		if (nDeleteIdx >= 0 && m_apModel[nDeleteIdx] != NULL)
+		{// NULLじゃなかったら
+
+			// モデルの終了処理
+			m_apModel[nDeleteIdx]->Uninit();
+			delete m_apModel[nDeleteIdx];
+			m_apModel[nDeleteIdx] = NULL;
+		}
+
+
+
+		// 生成するインデックス番号
+		int nNewIdx = nDeleteIdx;
+
+		if (nNewIdx < 0)
+		{
+			nNewIdx = nCntParts;
+		}
+
+		// モデル作成
+		if (m_apModel[nNewIdx] == NULL)
+		{
+			m_apModel[nNewIdx] = CModel::Create(
+				LoadData.LoadData[LoadData.LoadData[nCntParts].nType].pModelFile.c_str(),
+				LoadData.LoadData[nCntParts].pos,
+				LoadData.LoadData[nCntParts].rot);
+		}
+
+		// 親モデルの設定
+		if (LoadData.LoadData[nCntParts].nParent >= 0)
+		{
+			// 親のモデルオブジェクト設定
+			m_apModel[nNewIdx]->SetParent(m_apModel[LoadData.LoadData[nCntParts].nParent]);
+		}
+		else
+		{// 自分が親の時
+			m_apModel[nNewIdx]->SetParent(NULL);
+		}
+	}
+
+}
+
+//==========================================================================
 // モデル設定
 //==========================================================================
 void CObjectChara::SetObject(int nNewParts)

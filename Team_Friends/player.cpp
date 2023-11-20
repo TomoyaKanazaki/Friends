@@ -6,6 +6,7 @@
 //=============================================================================
 #include "game.h"
 #include "player.h"
+#include "player_union.h"
 #include "camera.h"
 #include "manager.h"
 #include "debugproc.h"
@@ -43,37 +44,19 @@
 #include "tutorialplayer.h"
 
 //==========================================================================
-// マクロ定義
-//==========================================================================
-#define CHARAFILE		"data\\TEXT\\motion_set_player.txt"
-#define JUMP			(20.0f * 1.5f)	// ジャンプ力初期値
-#define MAX_LIFE		(100)			// 体力
-#define TARGET_LEN		(400.0f)		// 目標までの距離
-#define WALK_INT		(30)			// 歩行の時間
-#define INVINCIBLE_INT	(2)				// 無敵の間隔
-#define INVINCIBLE_TIME	(90)			// 無敵の時間
-#define CONFUSIONTIME	(60 * 2)		// 混乱時間
-#define DEADTIME		(120)
-#define FADEOUTTIME		(60)
-#define MAX_ATKCOMBO	(2)				// 攻撃コンボの最大数
-#define INTERVAL_ATK	(30)			// 攻撃の猶予
-
-//==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
-const char *CPlayer::m_apModelFile[mylib_const::MAX_PLAYER] =	// モデルのファイル
-//{
-//	"data\\TEXT\\motion_player.txt",
-//	"data\\TEXT\\motion_2p.txt",
-//	"data\\TEXT\\motion_3p.txt",
-//	"data\\TEXT\\motion_4p.txt",
-//};
+namespace
 {
-	"data\\TEXT\\character\\player\\motion_player.txt",
-	"data\\TEXT\\character\\player\\motion_player.txt",
-	"data\\TEXT\\character\\player\\motion_player.txt",
-	"data\\TEXT\\character\\player\\motion_player.txt",
-};
+	const char* CHARAFILE = "data\\TEXT\\character\\player\\motion_player.txt";	// キャラクターファイル
+	const float JUMP = 20.0f * 1.5f;	// ジャンプ力初期値
+	const int INVINCIBLE_INT = 2;		// 無敵の間隔
+	const int INVINCIBLE_TIME = 90;		// 無敵の時間
+	const int DEADTIME = 120;			// 死亡時の時間
+	const int FADEOUTTIME = 60;			// フェードアウトの時間
+	const int MAX_ATKCOMBO = 2;			// 攻撃コンボの最大数
+	const int INTERVAL_ATK = 30;		// 攻撃の猶予
+}
 
 bool CPlayer::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
 bool CPlayer::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// 射出台の着地判定
@@ -183,7 +166,7 @@ HRESULT CPlayer::Init(void)
 	m_nChaseTopIdx = 0;		// 追従の先頭インデックス番号
 
 	// キャラ作成
-	HRESULT hr = SetCharacter(m_apModelFile[m_nMyPlayerIdx]);
+	HRESULT hr = SetCharacter(CHARAFILE);
 
 	if (FAILED(hr))
 	{// 失敗していたら
@@ -191,7 +174,7 @@ HRESULT CPlayer::Init(void)
 	}
 
 	// モーションの生成処理
-	m_pMotion = CMotion::Create(m_apModelFile[m_nMyPlayerIdx]);
+	m_pMotion = CMotion::Create(CHARAFILE);
 
 	// オブジェクトキャラクターの情報取得
 	CObjectChara *pObjChar = GetObjectChara();
@@ -207,6 +190,22 @@ HRESULT CPlayer::Init(void)
 
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);
+
+	if (m_nMyPlayerIdx == 2 ||
+		m_nMyPlayerIdx == 3)
+	{// うで
+		SetEvolusion(CGameManager::STATUS_POWER);
+	}
+
+	if (m_nMyPlayerIdx == 0)
+	{// 胴
+		SetEvolusion(CGameManager::STATUS_LIFE);
+	}
+
+	if (m_nMyPlayerIdx == 1)
+	{// 胴
+		SetEvolusion(CGameManager::STATUS_SPEED);
+	}
 
 	// バフ計算
 	m_sStatus.fPowerBuff = 1.0f;
@@ -693,23 +692,6 @@ void CPlayer::Controll(void)
 			// 攻撃の入力カウンターリセット
 			m_nCntInputAtk = INTERVAL_ATK;
 		}
-	}
-
-	if (pInputKeyboard->GetPress(DIK_1) == true)
-	{//SPACEが押された,ジャンプ
-
-		int nLife = GetLife();
-
-		// 体力減らす
-		nLife -= 1;
-
-		// 体力設定
-		SetLife(nLife);
-	}
-	if (pInputKeyboard->GetPress(DIK_2) == true)
-	{//SPACEが押された,ジャンプ
-
-		Hit(1);
 	}
 
 	static float fRate = 0.0f;
@@ -1388,6 +1370,58 @@ void CPlayer::GiveStatus(CGameManager::eStatus status)
 	m_sStatus.fPowerBuff = 1.0f + ((float)m_sStatus.nPower * 0.1f);
 	m_sStatus.fSpeedBuff = 1.0f + ((float)m_sStatus.nSpeed * 0.01f);
 	m_sStatus.fLifeBuff = 1.0f + ((float)m_sStatus.nLife * 0.1f);
+}
+
+//==========================================================================
+// 進化先設定
+//==========================================================================
+void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
+{
+	// プレイヤー毎の担当パーツ種類設定
+	switch (statusType)
+	{
+	case CGameManager::STATUS_POWER:
+	{
+		bool bR_Arm = false, bL_Arm = false;
+		for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+		{
+			int nPartsType = CManager::GetInstance()->GetByPlayerPartsType(i);
+			if (nPartsType == CPlayerUnion::PARTS_R_ARM)
+			{
+				bR_Arm = true;
+			}
+			else if (nPartsType == CPlayerUnion::PARTS_L_ARM)
+			{
+				bL_Arm = true;
+			}
+		}
+
+		if (bR_Arm == false && bL_Arm == false)
+		{
+			CManager::GetInstance()->SetByPlayerPartsType(m_nMyPlayerIdx, CPlayerUnion::PARTS_R_ARM);
+		}
+		else if (bR_Arm == true && bL_Arm == false)
+		{
+			CManager::GetInstance()->SetByPlayerPartsType(m_nMyPlayerIdx, CPlayerUnion::PARTS_L_ARM);
+		}
+		else
+		{
+			CManager::GetInstance()->SetByPlayerPartsType(m_nMyPlayerIdx, CPlayerUnion::PARTS_R_ARM);
+		}
+	}
+		break;
+
+	case CGameManager::STATUS_SPEED:
+		CManager::GetInstance()->SetByPlayerPartsType(m_nMyPlayerIdx, CPlayerUnion::PARTS_LEG);
+		break;
+
+	case CGameManager::STATUS_LIFE:
+		CManager::GetInstance()->SetByPlayerPartsType(m_nMyPlayerIdx, CPlayerUnion::PARTS_BODY);
+		break;
+	}
+
+	// パーツ変更
+	ChangeObject((int)statusType + 1);
 }
 
 //==========================================================================

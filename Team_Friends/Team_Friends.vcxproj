@@ -189,12 +189,9 @@
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemybase.cpp" />
     <ClCompile Include="enemymanager.cpp" />
-    <ClCompile Include="enemy_bee.cpp" />
-    <ClCompile Include="enemy_boss.cpp" />
-    <ClCompile Include="enemy_crowd.cpp" />
     <ClCompile Include="enemy_fly.cpp" />
     <ClCompile Include="enemy_papion.cpp" />
-    <ClCompile Include="enemy_power.cpp" />
+    <ClCompile Include="enemy_test.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="fog.cpp" />
@@ -307,12 +304,9 @@
     <ClInclude Include="enemy.h" />
     <ClInclude Include="enemybase.h" />
     <ClInclude Include="enemymanager.h" />
-    <ClInclude Include="enemy_bee.h" />
-    <ClInclude Include="enemy_boss.h" />
-    <ClInclude Include="enemy_crowd.h" />
     <ClInclude Include="enemy_fly.h" />
     <ClInclude Include="enemy_papion.h" />
-    <ClInclude Include="enemy_power.h" />
+    <ClInclude Include="enemy_test.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="fog.h" />

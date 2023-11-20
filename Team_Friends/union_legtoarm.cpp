@@ -77,59 +77,8 @@ HRESULT CUnion_LegtoArm::CreateParts(void)
 	CObjectChara *pObjChar = NULL;
 
 	// 複数キャラ読み込み
-	ReadMultiCharacter("data\\TEXT\\multicharacter_LegtoArm.txt");
+	ReadMultiCharacter("data\\TEXT\\multicharacter\\LegtoArm.txt");
 
-#if 0
-	////**********************************
-	//// 胴体
-	////**********************************
-	//m_pObjChara[PARTS_BODY] = CObjectChara::Create(m_apModelFile[PARTS_BODY]);
-	//if (m_pObjChara[PARTS_BODY] == NULL)
-	//{// 失敗していたら
-	//	return E_FAIL;
-	//}
-	//m_pObjChara[PARTS_BODY]->SetType(CObject::TYPE_OBJECTX);
-
-	//// モーションの生成処理
-	//m_pMotion[PARTS_BODY] = CMotion::Create(m_apModelFile[PARTS_BODY]);
-
-	//// オブジェクトキャラクターの情報取得
-	//pObjChar = m_pObjChara[PARTS_BODY]->GetObjectChara();
-
-	//// モーションの設定
-	//m_pMotion[PARTS_BODY]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
-
-	//// ポーズのリセット
-	//m_pMotion[PARTS_BODY]->ResetPose(MOTION_DEF);
-
-
-	////**********************************
-	//// 脚
-	////**********************************
-	//m_pObjChara[PARTS_LEG] = CObjectChara::Create(m_apModelFile[PARTS_LEG]);
-	//if (m_pObjChara[PARTS_LEG] == NULL)
-	//{// 失敗していたら
-	//	return E_FAIL;
-	//}
-	//m_pObjChara[PARTS_LEG]->SetType(CObject::TYPE_OBJECTX);
-
-	//// モーションの生成処理
-	//m_pMotion[PARTS_LEG] = CMotion::Create(m_apModelFile[PARTS_LEG]);
-
-	//// オブジェクトキャラクターの情報取得
-	//pObjChar = m_pObjChara[PARTS_LEG]->GetObjectChara();
-
-	//// モーションの設定
-	//m_pMotion[PARTS_LEG]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
-
-	//// ポーズのリセット
-	//m_pMotion[PARTS_LEG]->ResetPose(MOTION_DEF);
-
-
-	//// 左腕の原点を体にする
-	//m_pObjChara[PARTS_LEG]->GetModel()[0]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[0]);
-	//m_pObjChara[PARTS_LEG]->GetModel()[3]->SetParent(m_pObjChara[PARTS_BODY]->GetModel()[0]);
-#endif
 	return S_OK;
 }
 

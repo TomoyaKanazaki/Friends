@@ -15,6 +15,7 @@
 #include "title_logo.h"
 #include "fog.h"
 #include "player_title.h"
+#include "enemy.h"
 
 //==========================================
 //  定数定義 金崎
@@ -67,20 +68,23 @@ HRESULT CTitle::Init(void)
 		m_pLogo = CTitleLogo::Create();
 	}
 
-	//煙をかける
+	// 煙をかける
 	Fog::Set(true);
 
-	//フォグの値を設定する
+	// フォグの値を設定する
 	Fog::SetStart(START_LENGTH);
 	Fog::SetEnd(m_fLength);
 	Fog::SetCol(m_col);
 
 	// プレイヤーを置いてみる
-	CPlayerTitle::Create(D3DXVECTOR3(0.0f, 100.0f, -1500.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	CPlayerTitle::Create(D3DXVECTOR3(160.0f, 0.0f, -2900.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	CPlayerTitle::Create(D3DXVECTOR3(-160.0f, 0.0f, -2900.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	CPlayerTitle::Create(D3DXVECTOR3(240.0f, 0.0f, -3200.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	CPlayerTitle::Create(D3DXVECTOR3(-240.0f, 0.0f, -3200.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	CPlayerTitle::Create(D3DXVECTOR3(0.0f, 100.0f, -3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_UNION);
+	CPlayerTitle::Create(D3DXVECTOR3(160.0f, 0.0f, -2900.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
+	CPlayerTitle::Create(D3DXVECTOR3(-160.0f, 0.0f, -2900.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
+	CPlayerTitle::Create(D3DXVECTOR3(240.0f, 0.0f, -3200.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
+	CPlayerTitle::Create(D3DXVECTOR3(-240.0f, 0.0f, -3200.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
+
+	// 敵置いてみる
+	CEnemy::Create(0, "data\\TEXT\\motion_set_player.txt", D3DXVECTOR3(0.0f, 0.0f, -3000.0f), CEnemy::TYPE_TEST);
 
 	// 成功
 	return S_OK;

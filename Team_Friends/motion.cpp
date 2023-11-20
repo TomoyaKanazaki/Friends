@@ -428,19 +428,19 @@ void CMotion::Update(float fBuff)
 				m_fCntFrame /
 				(float)nFrame);
 
-			posParts.x =
+			/*posParts.x =
 				aPartsOld[nCntParts].pos.x +
 				posDiffX *
 				(
 				m_fCntFrame /
-				(float)nFrame);
+				(float)nFrame);*/
 
-			posParts.z =
+			/*posParts.z =
 				aPartsOld[nCntParts].pos.z +
 				posDiffZ *
 				(
 				m_fCntFrame /
-				(float)nFrame);
+				(float)nFrame);*/
 
 			// ˆÊ’uÝ’è
 			m_ppModel[nCntModel]->SetPosition(posParts + posOrigin);

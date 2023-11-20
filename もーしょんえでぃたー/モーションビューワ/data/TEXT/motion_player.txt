@@ -9,7 +9,7 @@ SCRIPT			# Ç±ÇÃçsÇÕê‚ëŒè¡Ç≥Ç»Ç¢Ç±Ç∆ÅI
 #------------------------------------------------------------------------------
 # ÉÇÉfÉãêî
 #------------------------------------------------------------------------------
-NUM_MODEL = 24
+NUM_MODEL = 31
 
 #------------------------------------------------------------------------------
 # ÉÇÉfÉãÉtÉ@ÉCÉãñº
@@ -25,6 +25,7 @@ MODEL_FILENAME = data\MODEL\player\Rshoulder.x		# [7]âEå®
 MODEL_FILENAME = data\MODEL\player\Rarm.x		# [8]âEòr
 MODEL_FILENAME = data\MODEL\player\Rhand.x		# [9]âEéË
 
+#ã≠âª[òr]01
 MODEL_FILENAME = data\MODEL\player\pUP_arm01\Lshoulder.x		# [10]ã≠âª[òr]ç∂å®
 MODEL_FILENAME = data\MODEL\player\pUP_arm01\Larm.x		# [11]ã≠âª[òr]ç∂òr
 MODEL_FILENAME = data\MODEL\player\pUP_arm01\Lhand.x		# [12]ã≠âª[òr]ç∂éË
@@ -32,6 +33,7 @@ MODEL_FILENAME = data\MODEL\player\pUP_arm01\Rshoulder.x		# [13]ã≠âª[òr]âEå®
 MODEL_FILENAME = data\MODEL\player\pUP_arm01\Rarm.x		# [14]ã≠âª[òr]âEòr
 MODEL_FILENAME = data\MODEL\player\pUP_arm01\Rhand.x		# [15]ã≠âª[òr]âEéË
 
+#ã≠âª[ì∑]01
 MODEL_FILENAME = data\MODEL\player\pUP_body01\body.x		# [16]ã≠âª[ì∑]ì∑
 MODEL_FILENAME = data\MODEL\player\pUP_body01\head.x		# [17]ã≠âª[ì∑]ì™
 MODEL_FILENAME = data\MODEL\player\pUP_body01\Lshoulder.x		# [18]ã≠âª[ì∑]ç∂å®
@@ -41,14 +43,14 @@ MODEL_FILENAME = data\MODEL\player\pUP_body01\Rshoulder.x		# [21]ã≠âª[ì∑]âEå®
 MODEL_FILENAME = data\MODEL\player\pUP_body01\Rarm.x		# [22]ã≠âª[ì∑]âEòr
 MODEL_FILENAME = data\MODEL\player\pUP_body01\Rhand.x		# [23]ã≠âª[ì∑]âEéË
 
-#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lthigh.x		# [24]ã≠âª[ãr]ç∂ë⁄
-#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lleg.x		# [25]ã≠âª[ãr]ç∂„¯
-#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lankle.x		# [26]ã≠âª[ãr]ç∂ë´éÒ
-#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lfeet.x		# [27]ã≠âª[ãr]ç∂ë´
-#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rthigh.x		# [28]ã≠âª[ãr]âEë⁄
-#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rleg.x		# [29]ã≠âª[ãr]âE„¯
-#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rankle.x		# [30]ã≠âª[ãr]âEë´éÒ
-#MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rfeet.x		# [31]ã≠âª[ãr]âEë´
+#ã≠âª[ãr]01
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\thighs.x		# [24]ã≠âª[ãr]ë⁄
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lleg.x		# [25]ã≠âª[ãr]ç∂„¯
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lankle.x		# [26]ã≠âª[ãr]ç∂ë´éÒ
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lfeet.x		# [27]ã≠âª[ãr]ç∂ë´
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rleg.x		# [28]ã≠âª[ãr]âE„¯
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rankle.x		# [29]ã≠âª[ãr]âEë´éÒ
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rfeet.x		# [30]ã≠âª[ãr]âEë´
 
 #------------------------------------------------------------------------------
 # ÉLÉÉÉâÉNÉ^Å[èÓïÒ
@@ -63,7 +65,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 0
 		PARENT = -1
-		POS = 0.00 81.35 0.00
+		POS = 0.00 92.35 0.00
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -187,7 +189,7 @@ CHARACTERSET
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
-	
+
 	PARTSSET
 		INDEX = 16
 		PARENT = 0
@@ -251,7 +253,62 @@ CHARACTERSET
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
-	
+
+	PARTSSET
+		INDEX = 24
+		PARENT = 0
+		POS = 0.00 -9.55 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 25
+		PARENT = 24
+		POS = 20.00 -38.55 -9.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 26
+		PARENT = 25
+		POS = 4.00 -9.54 46.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 27
+		PARENT = 26
+		POS = 4.00 -27.55 -46.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 28
+		PARENT = 24
+		POS = -20.00 -38.55 -9.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 29
+		PARENT = 28
+		POS = -4.00 -9.54 46.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 30
+		PARENT = 29
+		POS = -4.00 -27.55 -46.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
 END_CHARACTERSET
 
 #------------------------------------------------------------------------------

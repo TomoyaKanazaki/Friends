@@ -850,7 +850,7 @@ HRESULT CElevation::Load(const char *pText)
 		break;
 
 	default:
-		pFile = fopen("data\\TEXT\\elevation_field_outgame.txt", "r");
+		pFile = fopen("data\\TEXT\\elevation\\field_outgame.txt", "r");
 		break;
 	}
 
@@ -980,7 +980,7 @@ void CElevation::Save(void)
 	FILE *pFile = NULL;	// ファイルポインタを宣言
 
 	// ファイルを開く
-	pFile = fopen("data\\TEXT\\elevation_field_save.txt", "w");
+	pFile = fopen("data\\TEXT\\elevation\\field_save.txt", "w");
 
 	if (pFile == NULL)
 	{// ファイルが開けなかった場合

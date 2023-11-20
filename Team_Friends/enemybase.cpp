@@ -15,11 +15,14 @@
 #include "enemymanager.h"
 #include "manager.h"
 
-//==========================================================================
-// マクロ定義
-//==========================================================================
-#define MARKOBJ	"data\\MODEL\\koko.x"
-#define FILE_ENEMYBASE	"data\\BIN\\enemybase.bin"
+//==========================================
+//  定数定義
+//==========================================
+namespace
+{
+	const char* MARKOBJ = "data\\MODEL\\koko.x";
+	const char* FILE_ENEMYBASE = "data\\BIN\\enemybase.bin";
+}
 
 //==========================================================================
 // 静的メンバ変数宣言

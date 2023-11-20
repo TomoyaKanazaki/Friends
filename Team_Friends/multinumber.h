@@ -35,8 +35,8 @@ public:
 	CMultiNumber(int nPriority = 6);
 	~CMultiNumber();
 
-	static CMultiNumber *Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, CNumber::EObjectType objtype, bool bDigitDraw = false);
-	static CMultiNumber *Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, CNumber::EObjectType objtype, const char *pTextureFile, bool bDigitDraw = false);
+	static CMultiNumber *Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, CNumber::EObjectType objtype, bool bDigitDraw = false, int nPriority = 6);
+	static CMultiNumber *Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, CNumber::EObjectType objtype, const char *pTextureFile, bool bDigitDraw = false, int nPriority = 6);
 
 	// メンバ関数
 	HRESULT Init(void);
@@ -63,6 +63,7 @@ private:
 	int m_nNum;						// 数字
 	int m_nNumNumber;				// 数字の数
 	int m_nTexIdx;					// テクスチャのインデックス番号
+	int m_nPriority;				// 優先順位
 	bool m_bDigitDraw;				// 桁数描画
 	CNumber **m_ppMultiNumber;		// 数字のオブジェクト
 	CNumber::EObjectType m_objType;	// オブジェクトの種類

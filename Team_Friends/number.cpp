@@ -38,7 +38,7 @@ CNumber::~CNumber()
 //==========================================================================
 // 生成処理
 //==========================================================================
-CNumber *CNumber::Create(EObjectType objtype)
+CNumber *CNumber::Create(EObjectType objtype, int nPriority)
 {
 	// 生成用のオブジェクト
 	CNumber *pNumber = NULL;
@@ -69,7 +69,7 @@ CNumber *CNumber::Create(EObjectType objtype)
 			pNumber->m_objType = objtype;
 
 			// 初期化処理
-			pNumber->Init();
+			pNumber->Init(nPriority);
 		}
 		else
 		{

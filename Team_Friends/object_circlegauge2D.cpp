@@ -179,6 +179,7 @@ void CObjectCircleGauge2D::SetVtx(void)
 
 	// 情報取得
 	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
 
 	// 頂点座標の設定
 	pVtx[0].pos = pos;
@@ -228,13 +229,13 @@ void CObjectCircleGauge2D::SetVtx(void)
 
 				// 前回の頂点と今回の頂点
 				D3DXVECTOR3 p1 = D3DXVECTOR3(
-					pos.x + cosf(D3DX_PI * -0.5f + (fRotDivision * nIdx)) * m_fSize,
-					pos.y + sinf(D3DX_PI * -0.5f + (fRotDivision * nIdx)) * m_fSize,
+					pos.x + cosf(D3DX_PI * -0.5f + (fRotDivision * nIdx) + rot.z) * m_fSize,
+					pos.y + sinf(D3DX_PI * -0.5f + (fRotDivision * nIdx) + rot.z) * m_fSize,
 					0.0f);
 
 				D3DXVECTOR3 p2 = D3DXVECTOR3(
-					pos.x + cosf(D3DX_PI * -0.5f + (fRotDivision * i)) * m_fSize,
-					pos.y + sinf(D3DX_PI * -0.5f + (fRotDivision * i)) * m_fSize,
+					pos.x + cosf(D3DX_PI * -0.5f + (fRotDivision * i) + rot.z) * m_fSize,
+					pos.y + sinf(D3DX_PI * -0.5f + (fRotDivision * i) + rot.z) * m_fSize,
 					0.0f);
 
 				// 辺上の位置取得(2D)
@@ -249,8 +250,8 @@ void CObjectCircleGauge2D::SetVtx(void)
 		{
 			// 頂点座標の設定
 			pVtx[0].pos = D3DXVECTOR3(
-				pos.x + cosf(D3DX_PI * -0.5f + fRot) * m_fSize,
-				pos.y + sinf(D3DX_PI * -0.5f + fRot) * m_fSize,
+				pos.x + cosf(D3DX_PI * -0.5f + fRot + rot.z) * m_fSize,
+				pos.y + sinf(D3DX_PI * -0.5f + fRot + rot.z) * m_fSize,
 				0.0f);
 		}
 		else

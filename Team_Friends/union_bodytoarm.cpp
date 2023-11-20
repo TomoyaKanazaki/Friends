@@ -75,7 +75,7 @@ HRESULT CUnion_BodytoArm::Init(void)
 HRESULT CUnion_BodytoArm::CreateParts(void)
 {
 	// •¡”ƒLƒƒƒ‰“Ç‚İ‚İ
-	ReadMultiCharacter("data\\TEXT\\multicharacter_BodytoArm.txt");
+	ReadMultiCharacter("data\\TEXT\\multicharacter\\BodytoArm.txt");
 	return S_OK;
 }
 

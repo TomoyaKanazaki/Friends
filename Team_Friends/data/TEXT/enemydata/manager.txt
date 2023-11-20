@@ -14,8 +14,8 @@ NUM_CHARACTER = 2
 #------------------------------------------------------------------
 # キャラクターファイル名
 #------------------------------------------------------------------
-MOTION_FILENAME = data/TEXT/motion_enemyboss.txt			# [0]ボス
-MOTION_FILENAME = data/TEXT/motion_enemyfly_02.txt			# [1]蝶
+MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyboss.txt			# [0]ボス
+MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [1]蝶
 
 #===================================================================================================
 # 敵の情報

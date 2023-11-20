@@ -14,8 +14,8 @@ NUM_MODEL = 2
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-MOTION_FILENAME = data/TEXT/player_union/motion_body.txt	# [0]体モーションファイル
-MOTION_FILENAME = data/TEXT/player_union/motion_RArm.txt	# [1]腕モーションファイル
+MOTION_FILENAME = data/TEXT/parts/union_sample/motion_body.txt	# [0]体モーションファイル
+MOTION_FILENAME = data/TEXT/parts/union_sample/motion_RArm.txt	# [1]腕モーションファイル
 
 #------------------------------------------------------------------------------
 # キャラクター情報

@@ -82,7 +82,7 @@ HRESULT CGame::Init(void)
 	//**********************************
 	// 敵マネージャ
 	//**********************************
-	m_pEnemyManager = CEnemyManager::Create("data\\TEXT\\enemy_manager.txt");
+	m_pEnemyManager = CEnemyManager::Create("data\\TEXT\\enemydata\\manager.txt");
 
 	if (m_pEnemyManager == NULL)
 	{// NULLだったら
@@ -92,7 +92,7 @@ HRESULT CGame::Init(void)
 	//**********************************
 	// 敵の拠点
 	//**********************************
-	m_pEnemyBase = CEnemyBase::Create("data\\TEXT\\enemybase.txt");
+	m_pEnemyBase = CEnemyBase::Create("data\\TEXT\\enemydata\\base.txt");
 	if (m_pEnemyBase == NULL)
 	{// NULLだったら
 		return E_FAIL;
@@ -127,7 +127,7 @@ HRESULT CGame::Init(void)
 	m_pBulletManager = CBulletManager::Create();
 
 	// ステージ
-	m_pStage = CStage::Create("data\\TEXT\\stage_info.txt");
+	m_pStage = CStage::Create("data\\TEXT\\stage\\info.txt");
 
 	// スコアの生成処理
 	m_pScore = CScore::Create(D3DXVECTOR3(1000.0f, 50.0f, 0.0f));
@@ -418,12 +418,12 @@ void CGame::Reset(void)
 	}
 
 	// ステージ
-	m_pStage = CStage::Create("data\\TEXT\\bossstage_info.txt");
+	m_pStage = CStage::Create("data\\TEXT\\stage\\boss_info.txt");
 
 	//**********************************
 	// 敵の拠点
 	//**********************************
-	m_pEnemyBase = CEnemyBase::Create("data\\TEXT\\enemybase_boss.txt");
+	m_pEnemyBase = CEnemyBase::Create("data\\TEXT\\enemydata\\base_boss.txt");
 	if (m_pEnemyBase == NULL)
 	{// NULLだったら
 		return;

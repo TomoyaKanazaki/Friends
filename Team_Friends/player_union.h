@@ -8,7 +8,6 @@
 #ifndef _PLAYER_UNION_H_
 #define _PLAYER_UNION_H_	// 二重インクルード防止
 
-#include "main.h"
 #include "objectChara.h"
 #include "motion.h"
 

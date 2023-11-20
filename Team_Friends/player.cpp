@@ -6,6 +6,7 @@
 //=============================================================================
 #include "game.h"
 #include "player.h"
+#include "player_union.h"
 #include "camera.h"
 #include "manager.h"
 #include "debugproc.h"
@@ -207,6 +208,22 @@ HRESULT CPlayer::Init(void)
 
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);
+
+	if (m_nMyPlayerIdx == 2 ||
+		m_nMyPlayerIdx == 3)
+	{// うで
+		SetEvolusion(CGameManager::STATUS_POWER);
+	}
+
+	if (m_nMyPlayerIdx == 0)
+	{// 胴
+		SetEvolusion(CGameManager::STATUS_LIFE);
+	}
+
+	if (m_nMyPlayerIdx == 1)
+	{// 胴
+		SetEvolusion(CGameManager::STATUS_SPEED);
+	}
 
 	// バフ計算
 	m_sStatus.fPowerBuff = 1.0f;
@@ -693,23 +710,6 @@ void CPlayer::Controll(void)
 			// 攻撃の入力カウンターリセット
 			m_nCntInputAtk = INTERVAL_ATK;
 		}
-	}
-
-	if (pInputKeyboard->GetPress(DIK_1) == true)
-	{//SPACEが押された,ジャンプ
-
-		int nLife = GetLife();
-
-		// 体力減らす
-		nLife -= 1;
-
-		// 体力設定
-		SetLife(nLife);
-	}
-	if (pInputKeyboard->GetPress(DIK_2) == true)
-	{//SPACEが押された,ジャンプ
-
-		Hit(1);
 	}
 
 	static float fRate = 0.0f;
@@ -1388,6 +1388,58 @@ void CPlayer::GiveStatus(CGameManager::eStatus status)
 	m_sStatus.fPowerBuff = 1.0f + ((float)m_sStatus.nPower * 0.1f);
 	m_sStatus.fSpeedBuff = 1.0f + ((float)m_sStatus.nSpeed * 0.01f);
 	m_sStatus.fLifeBuff = 1.0f + ((float)m_sStatus.nLife * 0.1f);
+}
+
+//==========================================================================
+// 進化先設定
+//==========================================================================
+void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
+{
+	// プレイヤー毎の担当パーツ種類設定
+	switch (statusType)
+	{
+	case CGameManager::STATUS_POWER:
+	{
+		bool bR_Arm = false, bL_Arm = false;
+		for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+		{
+			int nPartsType = CManager::GetInstance()->GetByPlayerPartsType(i);
+			if (nPartsType == CPlayerUnion::PARTS_R_ARM)
+			{
+				bR_Arm = true;
+			}
+			else if (nPartsType == CPlayerUnion::PARTS_L_ARM)
+			{
+				bL_Arm = true;
+			}
+		}
+
+		if (bR_Arm == false && bL_Arm == false)
+		{
+			CManager::GetInstance()->SetByPlayerPartsType(m_nMyPlayerIdx, CPlayerUnion::PARTS_R_ARM);
+		}
+		else if (bR_Arm == true && bL_Arm == false)
+		{
+			CManager::GetInstance()->SetByPlayerPartsType(m_nMyPlayerIdx, CPlayerUnion::PARTS_L_ARM);
+		}
+		else
+		{
+			CManager::GetInstance()->SetByPlayerPartsType(m_nMyPlayerIdx, CPlayerUnion::PARTS_R_ARM);
+		}
+	}
+		break;
+
+	case CGameManager::STATUS_SPEED:
+		CManager::GetInstance()->SetByPlayerPartsType(m_nMyPlayerIdx, CPlayerUnion::PARTS_LEG);
+		break;
+
+	case CGameManager::STATUS_LIFE:
+		CManager::GetInstance()->SetByPlayerPartsType(m_nMyPlayerIdx, CPlayerUnion::PARTS_BODY);
+		break;
+	}
+
+	// パーツ変更
+	ChangeObject((int)statusType + 1);
 }
 
 //==========================================================================

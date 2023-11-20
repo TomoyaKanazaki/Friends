@@ -14,9 +14,9 @@ NUM_MODEL = 3
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-MOTION_FILENAME = data/TEXT/parts/union_ArmtoArm/motion_RArm.txt	# [0]腕モーションファイル
-MOTION_FILENAME = data/TEXT/parts/union_ArmtoArm/motion_LArm.txt	# [1]腕モーションファイル
-MOTION_FILENAME = data/TEXT/parts/union_ArmtoArm/motion_body.txt	# [2]体モーションファイル
+MOTION_FILENAME = data/TEXT/multicharacter/parts/union_ArmtoArm/motion_RArm.txt	# [0]腕モーションファイル
+MOTION_FILENAME = data/TEXT/multicharacter/parts/union_ArmtoArm/motion_LArm.txt	# [1]腕モーションファイル
+MOTION_FILENAME = data/TEXT/multicharacter/parts/union_ArmtoArm/motion_body.txt	# [2]体モーションファイル
 
 #------------------------------------------------------------------------------
 # キャラクター情報

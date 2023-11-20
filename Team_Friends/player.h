@@ -128,6 +128,7 @@ private:
 	virtual void Controll(void);	// 操作
 	void MotionSet(void);	// モーションの設定
 	void Atack(void);		// 攻撃
+	void SetEvolusion(CGameManager::eStatus statusType);	// 進化先設定
 
 	sStatus m_sStatus;			// ステータス情報
 	STATE m_Oldstate;			// 前回の状態

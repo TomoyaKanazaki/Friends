@@ -94,6 +94,7 @@ public:
 	HRESULT SetCharacter(const std::string pTextFile);
 
 	void ChangeObject(int nDeleteParts, int nNewParts);
+	void ChangeObject(int nSwitchType);		// Ø‚è‘Ö‚¦‚Ìí—Ş
 	void SetObject(int nNewParts);
 
 	CObjectChara *GetObjectChara(void);

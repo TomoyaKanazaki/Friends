@@ -9,7 +9,7 @@ SCRIPT			# Ç±ÇÃçsÇÕê‚ëŒè¡Ç≥Ç»Ç¢Ç±Ç∆ÅI
 #------------------------------------------------------------------------------
 # ÉÇÉfÉãêî
 #------------------------------------------------------------------------------
-NUM_MODEL = 40
+NUM_MODEL = 24
 
 #------------------------------------------------------------------------------
 # ÉÇÉfÉãÉtÉ@ÉCÉãñº
@@ -42,24 +42,6 @@ MODEL_FILENAME = data\MODEL\player\pUP_body01\Lhand.x		# [20]ã≠âª[ì∑]ç∂éË
 MODEL_FILENAME = data\MODEL\player\pUP_body01\Rshoulder.x		# [21]ã≠âª[ì∑]âEå®
 MODEL_FILENAME = data\MODEL\player\pUP_body01\Rarm.x		# [22]ã≠âª[ì∑]âEòr
 MODEL_FILENAME = data\MODEL\player\pUP_body01\Rhand.x		# [23]ã≠âª[ì∑]âEéË
-
-#ã≠âª[ãr]01
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\waist.x		# [24]ã≠âª[ãr]çò
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\body.x		# [25]ã≠âª[ãr]ì∑
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\head.x		# [26]ã≠âª[ãr]ì™
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lshoulder.x		# [27]ã≠âª[ãr]ç∂å®
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Larm.x		# [28]ã≠âª[ãr]ç∂òr
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lhand.x		# [29]ã≠âª[ãr]ç∂éË
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rshoulder.x		# [30]ã≠âª[ãr]âEå®
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rarm.x		# [31]ã≠âª[ãr]âEòr
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rhand.x		# [32]ã≠âª[ãr]âEéË
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\thighs.x		# [33]ã≠âª[ãr]ë⁄
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lleg.x		# [34]ã≠âª[ãr]ç∂„¯
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lankle.x		# [35]ã≠âª[ãr]ç∂ë´éÒ
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lfeet.x		# [36]ã≠âª[ãr]ç∂ë´
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rleg.x		# [37]ã≠âª[ãr]âE„¯
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rankle.x		# [38]ã≠âª[ãr]âEë´éÒ
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rfeet.x		# [39]ã≠âª[ãr]âEë´
 
 #------------------------------------------------------------------------------
 # ÉLÉÉÉâÉNÉ^Å[èÓïÒ
@@ -259,134 +241,6 @@ CHARACTERSET
 		INDEX = 23
 		PARENT = 22
 		POS = -11.27 0.00 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-	
-		PARTSSET
-		INDEX = 24
-		PARENT = -1
-		POS = 0.00 81.35 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 25
-		PARENT = 24
-		POS = 0.00 0.35 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 26
-		PARENT = 25
-		POS = 0.00 54.00 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 27
-		PARENT = 25
-		POS = 22.20 42.95 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 28
-		PARENT = 27
-		POS = 23.45 0.40 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 29
-		PARENT = 28
-		POS = 14.82 0.00 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 30
-		PARENT = 25
-		POS = -22.20 42.45 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 31
-		PARENT = 30
-		POS = -23.45 0.40 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 32
-		PARENT = 31
-		POS = -13.77 0.00 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-	
-	PARTSSET
-		INDEX = 33
-		PARENT = 24
-		POS = 0.00 -9.55 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 34
-		PARENT = 33
-		POS = 0.00 -9.55 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-	
-		PARTSSET
-		INDEX = 35
-		PARENT = 34
-		POS = 0.00 -9.55 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-	
-		PARTSSET
-		INDEX = 36
-		PARENT = 35
-		POS = 0.00 -9.55 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 37
-		PARENT = 33
-		POS = 0.00 -9.55 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-	
-		PARTSSET
-		INDEX = 38
-		PARENT = 37
-		POS = 0.00 -9.55 0.00
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-	
-		PARTSSET
-		INDEX = 39
-		PARENT = 38
-		POS = 0.00 -9.55 0.00
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET

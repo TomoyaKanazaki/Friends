@@ -34,6 +34,7 @@ public:
 	{
 		TYPE_BOSS = 0,	// ƒ{ƒX
 		TYPE_FLY,
+		TYPE_TEST, //ŽŽŒ±
 		TYPE_MAX
 	}TYPE;
 

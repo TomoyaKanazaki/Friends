@@ -621,6 +621,20 @@ HRESULT CObjectChara::ReadText(const std::string pTextFile)
 							fscanf(pFile, "%d", &m_aLoadData[m_nNumLoad].LoadData[nCntSetParts].nStart);	// Å‰‚©‚ç‚ ‚é‚©
 						}
 
+						if (strcmp(aComment, "SWITCHTYPE") == 0)
+						{// SWITCHTYPE‚ª—ˆ‚½‚çØ‚è‘Ö‚¦‚Ìí—Ş
+
+							fscanf(pFile, "%s", &aComment[0]);		//=‚Ì•ª
+							fscanf(pFile, "%d", &m_aLoadData[m_nNumLoad].LoadData[nCntSetParts].nSwitchType);	// Ø‚è‘Ö‚¦‚Ìí—Ş
+						}
+						
+						if (strcmp(aComment, "ID_SWITCHMODEL") == 0)
+						{// ID_SWITCHMODEL‚ª—ˆ‚½‚çØ‚è‘Ö‚¦‚éƒ‚ƒfƒ‹ID
+
+							fscanf(pFile, "%s", &aComment[0]);		//=‚Ì•ª
+							fscanf(pFile, "%d", &m_aLoadData[m_nNumLoad].LoadData[nCntSetParts].nIDSwitchModel);	// Ø‚è‘Ö‚¦‚éƒ‚ƒfƒ‹ID
+						}
+
 					}// END_PARTSSET‚Ì‚©‚Á‚±
 
 					// ƒ‚ƒfƒ‹‚Ì¶¬

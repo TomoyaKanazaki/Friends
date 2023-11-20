@@ -15,6 +15,7 @@
 #include "title_logo.h"
 #include "fog.h"
 #include "player_title.h"
+#include "enemy.h"
 
 //==========================================
 //  íËêîíËã` ã‡çË
@@ -81,6 +82,9 @@ HRESULT CTitle::Init(void)
 	CPlayerTitle::Create(D3DXVECTOR3(-160.0f, 0.0f, -2900.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
 	CPlayerTitle::Create(D3DXVECTOR3(240.0f, 0.0f, -3200.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
 	CPlayerTitle::Create(D3DXVECTOR3(-240.0f, 0.0f, -3200.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
+
+	// ìGíuÇ¢ÇƒÇ›ÇÈ
+	CEnemy::Create(0, "data\\TEXT\\motion_set_player.txt", D3DXVECTOR3(0.0f, 0.0f, -3000.0f), CEnemy::TYPE_TEST);
 
 	// ê¨å˜
 	return S_OK;

@@ -34,6 +34,7 @@
 // 子クラス
 #include "enemy_boss.h"
 #include "enemy_fly.h"
+#include "enemy_test.h"
 
 //==========================================================================
 // マクロ定義
@@ -113,7 +114,11 @@ CEnemy *CEnemy::Create(int nIdx, const char *pFileName, D3DXVECTOR3 pos, TYPE ty
 		switch (type)
 		{
 		case TYPE_BOSS:
-			pEnemy = DEBUG_NEW CEnemyBoss;
+			//pEnemy = DEBUG_NEW CEnemyBoss;
+			break;
+
+		case TYPE_TEST:
+			pEnemy = DEBUG_NEW CEnemyTest;
 			break;
 
 		case TYPE_FLY:
@@ -388,12 +393,6 @@ void CEnemy::Update(void)
 
 	// エディット中は抜ける
 	if (CGame::GetElevation()->IsEdit())
-	{
-		return;
-	}
-
-	// コンボ演出中は抜ける
-	if (CGame::GetEnemyManager()->GetState() == CEnemyManager::STATE_COMBOANIM)
 	{
 		return;
 	}

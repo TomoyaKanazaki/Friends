@@ -88,6 +88,9 @@
     <Filter Include="ランキング触るよ">
       <UniqueIdentifier>{9509972c-4eb0-4652-b547-39881d5a58bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="enemy">
+      <UniqueIdentifier>{ac86d4c0-d54a-4a3b-9eae-e9dca4a79c9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="2D_effect.cpp">
@@ -282,33 +285,6 @@
     <ClCompile Include="tutorialwindow.cpp">
       <Filter>ソース ファイル\mode\tutorial</Filter>
     </ClCompile>
-    <ClCompile Include="enemy.cpp">
-      <Filter>ソース ファイル\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_bee.cpp">
-      <Filter>ソース ファイル\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_boss.cpp">
-      <Filter>ソース ファイル\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_crowd.cpp">
-      <Filter>ソース ファイル\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_fly.cpp">
-      <Filter>ソース ファイル\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_papion.cpp">
-      <Filter>ソース ファイル\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_power.cpp">
-      <Filter>ソース ファイル\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemybase.cpp">
-      <Filter>ソース ファイル\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemymanager.cpp">
-      <Filter>ソース ファイル\enemy</Filter>
-    </ClCompile>
     <ClCompile Include="meshcylinder.cpp">
       <Filter>ソース ファイル\mesh</Filter>
     </ClCompile>
@@ -425,6 +401,24 @@
     </ClCompile>
     <ClCompile Include="rankingscore.cpp">
       <Filter>ランキング触るよ</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_fly.cpp">
+      <Filter>enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_papion.cpp">
+      <Filter>enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemybase.cpp">
+      <Filter>enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemymanager.cpp">
+      <Filter>enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_test.cpp">
+      <Filter>enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -617,33 +611,6 @@
     <ClInclude Include="resultscore.h">
       <Filter>ヘッダー ファイル\mode\result</Filter>
     </ClInclude>
-    <ClInclude Include="enemy.h">
-      <Filter>ヘッダー ファイル\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_bee.h">
-      <Filter>ヘッダー ファイル\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_boss.h">
-      <Filter>ヘッダー ファイル\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_crowd.h">
-      <Filter>ヘッダー ファイル\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_fly.h">
-      <Filter>ヘッダー ファイル\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_papion.h">
-      <Filter>ヘッダー ファイル\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_power.h">
-      <Filter>ヘッダー ファイル\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemybase.h">
-      <Filter>ヘッダー ファイル\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemymanager.h">
-      <Filter>ヘッダー ファイル\enemy</Filter>
-    </ClInclude>
     <ClInclude Include="meshcylinder.h">
       <Filter>ヘッダー ファイル\mesh</Filter>
     </ClInclude>
@@ -766,6 +733,24 @@
     </ClInclude>
     <ClInclude Include="rankingscore.h">
       <Filter>ランキング触るよ</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy.h">
+      <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_fly.h">
+      <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_papion.h">
+      <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemybase.h">
+      <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemymanager.h">
+      <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_test.h">
+      <Filter>enemy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

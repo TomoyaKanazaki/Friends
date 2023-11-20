@@ -35,6 +35,7 @@ public:
 protected:
 
 private:
+
 	typedef enum
 	{
 		MOTION_DEF = 0,	// ニュートラルモーション

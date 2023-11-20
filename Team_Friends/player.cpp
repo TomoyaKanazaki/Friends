@@ -44,37 +44,19 @@
 #include "tutorialplayer.h"
 
 //==========================================================================
-// マクロ定義
-//==========================================================================
-#define CHARAFILE		"data\\TEXT\\motion_set_player.txt"
-#define JUMP			(20.0f * 1.5f)	// ジャンプ力初期値
-#define MAX_LIFE		(100)			// 体力
-#define TARGET_LEN		(400.0f)		// 目標までの距離
-#define WALK_INT		(30)			// 歩行の時間
-#define INVINCIBLE_INT	(2)				// 無敵の間隔
-#define INVINCIBLE_TIME	(90)			// 無敵の時間
-#define CONFUSIONTIME	(60 * 2)		// 混乱時間
-#define DEADTIME		(120)
-#define FADEOUTTIME		(60)
-#define MAX_ATKCOMBO	(2)				// 攻撃コンボの最大数
-#define INTERVAL_ATK	(30)			// 攻撃の猶予
-
-//==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
-const char *CPlayer::m_apModelFile[mylib_const::MAX_PLAYER] =	// モデルのファイル
-//{
-//	"data\\TEXT\\motion_player.txt",
-//	"data\\TEXT\\motion_2p.txt",
-//	"data\\TEXT\\motion_3p.txt",
-//	"data\\TEXT\\motion_4p.txt",
-//};
+namespace
 {
-	"data\\TEXT\\character\\player\\motion_player.txt",
-	"data\\TEXT\\character\\player\\motion_player.txt",
-	"data\\TEXT\\character\\player\\motion_player.txt",
-	"data\\TEXT\\character\\player\\motion_player.txt",
-};
+	const char* CHARAFILE = "data\\TEXT\\character\\player\\motion_player.txt";	// キャラクターファイル
+	const float JUMP = 20.0f * 1.5f;	// ジャンプ力初期値
+	const int INVINCIBLE_INT = 2;		// 無敵の間隔
+	const int INVINCIBLE_TIME = 90;		// 無敵の時間
+	const int DEADTIME = 120;			// 死亡時の時間
+	const int FADEOUTTIME = 60;			// フェードアウトの時間
+	const int MAX_ATKCOMBO = 2;			// 攻撃コンボの最大数
+	const int INTERVAL_ATK = 30;		// 攻撃の猶予
+}
 
 bool CPlayer::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
 bool CPlayer::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// 射出台の着地判定
@@ -184,7 +166,7 @@ HRESULT CPlayer::Init(void)
 	m_nChaseTopIdx = 0;		// 追従の先頭インデックス番号
 
 	// キャラ作成
-	HRESULT hr = SetCharacter(m_apModelFile[m_nMyPlayerIdx]);
+	HRESULT hr = SetCharacter(CHARAFILE);
 
 	if (FAILED(hr))
 	{// 失敗していたら
@@ -192,7 +174,7 @@ HRESULT CPlayer::Init(void)
 	}
 
 	// モーションの生成処理
-	m_pMotion = CMotion::Create(m_apModelFile[m_nMyPlayerIdx]);
+	m_pMotion = CMotion::Create(CHARAFILE);
 
 	// オブジェクトキャラクターの情報取得
 	CObjectChara *pObjChar = GetObjectChara();

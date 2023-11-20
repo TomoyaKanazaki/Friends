@@ -25,7 +25,7 @@ TEXTURE_FILENAME = data/TEXTURE/glass.jpg		# [14]
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 34
+NUM_MODEL = 39
 
 #------------------------------------------------------------------------------
 # モデルファイル名
@@ -64,6 +64,11 @@ MODEL_FILENAME = data\\MODEL\\bill\bill006.x		# [30]
 MODEL_FILENAME = data\\MODEL\\木\treegroup_02.x		# [31]
 MODEL_FILENAME = data\\MODEL\\木\treegroup_03.x		# [32]
 MODEL_FILENAME = data\\MODEL\\木\treegroup_04.x		# [33]
+MODEL_FILENAME = data\\MODEL\\city\building_group01.x		# [34]
+MODEL_FILENAME = data\\MODEL\\city\building_group02.x		# [35]
+MODEL_FILENAME = data\\MODEL\\city\building_group03.x		# [36]
+MODEL_FILENAME = data\\MODEL\\city\building_group04.x		# [37]
+MODEL_FILENAME = data\\MODEL\\city\building_group05.x		# [38]
 
 #==============================================================================
 # 空情報
@@ -5228,6 +5233,41 @@ MODELSET
 	TYPE = 32
 	POS = 7167.43 470.00 -645.76
 	ROT = 0.00 0.31 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 38
+	POS = 9768.19 0.00 -1063.92
+	ROT = 0.00 0.00 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 38
+	POS = 11716.96 0.00 -1056.25
+	ROT = 0.00 -1.57 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 38
+	POS = 11701.79 0.00 893.19
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 38
+	POS = 11292.98 0.00 817.50
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 38
+	POS = 9770.01 0.00 907.66
+	ROT = 0.00 1.57 0.00
 	SHADOW = 1
 END_MODELSET
 

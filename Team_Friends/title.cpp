@@ -80,12 +80,12 @@ HRESULT CTitle::Init(void)
 	CPlayerTitle::Create(D3DXVECTOR3(0.0f, 100.0f, -3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_UNION);
 	CPlayerTitle::Create(D3DXVECTOR3(160.0f, 0.0f, -2900.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
 	CPlayerTitle::Create(D3DXVECTOR3(-160.0f, 0.0f, -2900.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
-	CPlayerTitle::Create(D3DXVECTOR3(240.0f, 0.0f, -3200.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
-	CPlayerTitle::Create(D3DXVECTOR3(-240.0f, 0.0f, -3200.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
+	CPlayerTitle::Create(D3DXVECTOR3(300.0f, 0.0f, -3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
+	CPlayerTitle::Create(D3DXVECTOR3(-300.0f, 0.0f, -3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
 
-	// ìGíuÇ¢ÇƒÇ›ÇÈ
-	//CEnemy::Create(0, "data\\TEXT\\character\\player\\motion_player.txt", D3DXVECTOR3(0.0f, 0.0f, -3000.0f), CEnemy::TYPE_TEST);
+	CEnemy::Create(0, "data\\TEXT\\character\\player\\motion_player.txt", D3DXVECTOR3(0.0f, 0.0f, -3000.0f), CEnemy::TYPE_TEST);
 
+	// ê¨å˜
 	// ê¨å˜
 	return S_OK;
 }

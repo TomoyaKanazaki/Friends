@@ -539,10 +539,13 @@ void CMotion::Update(float fBuff)
 //==========================================================================
 void CMotion::Set(int nType, bool bBlend)
 {
+	// デバッグ用処理
+#ifdef _DEBUG
 	if (nType == 15)
 	{
 		int n = 0;
 	}
+#endif
 
 	if (nType > m_nNumAll)
 	{// 総数を超えていたら
@@ -616,7 +619,10 @@ void CMotion::Set(int nType, bool bBlend)
 	}
 	else
 	{
+		// デバッグ用処理
+#ifdef _DEBUG
 		int n = 0;
+#endif
 	}
 }
 

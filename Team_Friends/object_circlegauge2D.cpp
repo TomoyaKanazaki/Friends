@@ -23,6 +23,7 @@ CObjectCircleGauge2D::CObjectCircleGauge2D(int nPriority) : CObject(nPriority)
 {
 	m_col = mylib_const::DEFAULT_COLOR;	// 色
 	m_fRate = 0.0f;		// 割合
+	m_fRateDest = 0.0f;	// 目標の割合
 	m_fSize = 0.0f;		// サイズ
 	m_nNumVertex = 0;	// 頂点数
 	m_nTexIdx = 0;						// テクスチャのインデックス番号
@@ -140,6 +141,9 @@ void CObjectCircleGauge2D::Uninit(void)
 //==========================================================================
 void CObjectCircleGauge2D::Update(void)
 {
+	// 割合更新
+	m_fRate += (m_fRateDest - m_fRate) * 0.15f;
+
 	// 頂点情報設定
 	SetVtx();
 }
@@ -306,4 +310,20 @@ void CObjectCircleGauge2D::SetRate(const float fRate)
 float CObjectCircleGauge2D::GetRate(void) const
 {
 	return m_fRate;
+}
+
+//==========================================================================
+// 目標の割合設定
+//==========================================================================
+void CObjectCircleGauge2D::SetRateDest(const float fRate)
+{
+	m_fRateDest = fRate;
+}
+
+//==========================================================================
+// 目標の割合取得
+//==========================================================================
+float CObjectCircleGauge2D::GetRateDest(void) const
+{
+	return m_fRateDest;
 }

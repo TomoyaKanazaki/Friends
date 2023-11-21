@@ -372,24 +372,23 @@ void CEffect3D::Update(void)
 	// 移動量設定
 	SetMove(move);
 
-	// 小さくしていく処理の場合
-	if (m_moveType == MOVEEFFECT_SUB)
-	{// エフェクトを小さくしていく
-
-		// 縮小処理
-		SubSize();
-	}
-	else if (m_moveType == MOVEEFFECT_SUPERSUB)
-	{// エフェクトを小さくしていく
-
-		// 超縮小処理
-		SuperSubSize();
-	}
-	else if (m_moveType == MOVEEFFECT_ADD)
-	{// エフェクトを大きくしていく
-
-		// 拡大処理
+	switch (m_moveType)
+	{
+	case MOVEEFFECT_ADD:
 		AddSize();
+		break;
+
+	case MOVEEFFECT_SUB:
+		SubSize();
+		break;
+
+	case MOVEEFFECT_SUPERSUB:
+		SuperSubSize();
+		break;
+
+	case MOVEEFFECT_GENSUI:
+		Gensui();
+		break;
 	}
 
 	// 寿命の更新
@@ -474,6 +473,25 @@ void CEffect3D::AddSize(void)
 {
 	// 拡大
 	m_fRadius += m_fAddSizeValue;
+}
+
+//==================================================================================
+// エフェクトの減衰処理
+//==================================================================================
+void CEffect3D::Gensui(void)
+{
+	// 移動量取得
+	D3DXVECTOR3 move = GetMove();
+
+	move.x += (0.0f - move.x) * 0.15f;
+	move.y += (0.0f - move.y) * 0.15f;
+	move.z += (0.0f - move.z) * 0.15f;
+
+	// 移動量設定
+	SetMove(move);
+
+	m_fRadius = m_fMaxRadius * (float)m_nLife / (float)m_nMaxLife;
+
 }
 
 //==================================================================================

@@ -36,6 +36,8 @@ public:
 		int nMaxCnt;			// 判定の最大カウント
 		int nDamage;			// ダメージ
 		int nInpactCnt;			// 衝撃のカウント
+		bool bInpactAct;		// 衝撃カウントの行動をしたか
+		bool bInpactActSet;		// 衝撃カウントの行動設定したか
 	}AttackInfo;
 
 	// モーションの構造体
@@ -80,6 +82,7 @@ public:
 	void ToggleFinish(bool bFinish);	// 終了しているかの判定切り替え
 	void SetSlowFactor(float fFactor);	// 遅延係数の設定
 
+	bool IsImpactFrame(AttackInfo attackInfo);	// 衝撃のフレームかどうか取得
 	D3DXVECTOR3 GetAttackPosition(CModel **ppModel, AttackInfo attackInfo);	// 攻撃の位置取得
 	float GetAllCount(void);	// 全てのカウント取得
 	float GetMaxAllCount(void) { return m_fMaxAllFrame; }

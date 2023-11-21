@@ -39,6 +39,7 @@
 #include "injectiontable.h"
 #include "object_circlegauge2D.h"
 #include "statuswindow.h"
+#include "collisionobject.h"
 
 // 派生先
 #include "tutorialplayer.h"
@@ -55,7 +56,7 @@ namespace
 	const int DEADTIME = 120;			// 死亡時の時間
 	const int FADEOUTTIME = 60;			// フェードアウトの時間
 	const int MAX_ATKCOMBO = 2;			// 攻撃コンボの最大数
-	const int INTERVAL_ATK = 30;		// 攻撃の猶予
+	const int INTERVAL_ATK = 15;		// 攻撃の猶予
 }
 
 bool CPlayer::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
@@ -326,6 +327,8 @@ void CPlayer::Update(void)
 	// 状態更新
 	UpdateState();
 
+	// ゲージの割合更新
+	CGame::GetStatusWindow(m_nMyPlayerIdx)->GetGauge(CGameManager::STATUS_LIFE)->SetRateDest((float)GetLife() / (float)GetLifeOrigin());
 
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
@@ -659,12 +662,16 @@ void CPlayer::Controll(void)
 	// 目標の向き設定
 	SetRotDest(fRotDest);
 
-	// 攻撃の入力カウンター減算
-	m_nCntInputAtk--;
-	if (m_nCntInputAtk <= 0)
+	int nType = m_pMotion->GetType();
+	if (nType != MOTION_ATK)
 	{
-		m_nCntInputAtk = 0;
-		m_nAtkLevel = 0;
+		// 攻撃の入力カウンター減算
+		m_nCntInputAtk--;
+		if (m_nCntInputAtk <= 0)
+		{
+			m_nCntInputAtk = 0;
+			m_nAtkLevel = 0;
+		}
 	}
 
 	if (CGame::GetGameManager()->IsControll() &&
@@ -694,23 +701,12 @@ void CPlayer::Controll(void)
 		}
 	}
 
-	static float fRate = 0.0f;
 
 	if (pInputKeyboard->GetPress(DIK_UP) == true)
 	{//SPACEが押された,ジャンプ
 
-		fRate += 0.01f;
-	}
-	if (pInputKeyboard->GetPress(DIK_DOWN) == true)
-	{//SPACEが押された,ジャンプ
-
-		fRate -= 0.01f;
-	}
-	ValueNormalize(fRate, 1.0f, 0.0f);
-
-	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
-	{
-		CGame::GetStatusWindow(m_nMyPlayerIdx)->GetGauge((CGameManager::eStatus)i)->SetRate(fRate);
+		// アイテムドロップ
+		CItem::Create(D3DXVECTOR3(pos.x, pos.y + 100.0f, pos.z), D3DXVECTOR3(0.0f, Random(-31, 31) * 0.1f, 0.0f));
 	}
 }
 
@@ -825,7 +821,7 @@ void CPlayer::Atack(void)
 			continue;
 		}
 
-		if (m_pMotion->GetAllCount() == aInfo.AttackInfo[nCntAttack]->nInpactCnt)
+		if (m_pMotion->IsImpactFrame(*aInfo.AttackInfo[nCntAttack]))
 		{// 衝撃のカウントと同じとき
 
 			// 武器の位置
@@ -836,25 +832,67 @@ void CPlayer::Atack(void)
 			{
 			case MOTION_ATK:
 			case MOTION_ATK2:
-				//// パーティクル生成
-				//my_particle::Create(weponpos, my_particle::TYPE_SUPERATTACK);
+				// パーティクル生成
+				//my_particle::Create(weponpos, my_particle::TYPE_BRASTATTACK);
+
+				// 武器の位置
+				for (int i = 0; i < 4; i++)
+				{
+					D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
+
+					// 炎
+					float fMove = 5.0f + Random(-2, 5);
+					float fRot = Random(-20, 20) * 0.01f;
+					float fRotMove = Random(-10, 10) * 0.01f;
+
+					// 炎
+					CEffect3D *pEffect = CEffect3D::Create(
+						weponpos,
+						D3DXVECTOR3(
+							sinf(D3DX_PI + rot.y + fRotMove) * fMove,
+							fRotMove,
+							cosf(D3DX_PI + rot.y + fRotMove) * fMove),
+						D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
+						60.0f + (float)Random(-10, 10),
+						15,
+						CEffect3D::MOVEEFFECT_ADD,
+						CEffect3D::TYPE_SMOKE);
+
+					// 炎
+					CEffect3D::Create(
+						weponpos,
+						D3DXVECTOR3(
+							sinf(D3DX_PI + rot.y + fRotMove) * fMove,
+							fRotMove,
+							cosf(D3DX_PI + rot.y + fRotMove) * fMove),
+						D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
+						30.0f + (float)Random(-10, 10),
+						15,
+						CEffect3D::MOVEEFFECT_ADD,
+						CEffect3D::TYPE_SMOKE);
+
+					CCollisionObject::Create(pEffect->GetPosition(), pEffect->GetMove(), pEffect->GetSize().x, 15);
+				}
 
 				//// チャージカウントリセット
 				////CGame::GetPowerGauge()->SetChargeCount(0);
 
-				//// 衝撃波生成
-				//CImpactWave::Create
+				// 衝撃波生成
+				//CImpactWave *pWave = CImpactWave::Create
 				//(
 				//	D3DXVECTOR3(pos.x, pos.y + 80.0f, pos.z),	// 位置
-				//	D3DXVECTOR3(0.0f, 0.0f, 0.0f),				// 向き
+				//	D3DXVECTOR3(D3DX_PI * 0.5f, D3DX_PI + rot.y, 0.0f),				// 向き
 				//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f),			// 色
-				//	100.0f,										// 幅
-				//	20.0f,										// 高さ
-				//	20,											// 寿命
-				//	28.0f,										// 幅の移動量
-				//	CImpactWave::TYPE_BLACK2,					// テクスチャタイプ
+				//	150.0f,										// 幅
+				//	150.0f,										// 高さ
+				//	0.0f,										// 中心からの間隔
+				//	8,											// 寿命
+				//	1.0f,										// 幅の移動量
+				//	CImpactWave::TYPE_GIZAWHITE2,					// テクスチャタイプ
 				//	true										// 加算合成するか
 				//);
+				//pWave->SetMove(D3DXVECTOR3(sinf(D3DX_PI + rot.y) * 15.0f, 0.0f, cosf(D3DX_PI + rot.y) * 15.0f));
+
 
 				//CImpactWave::Create
 				//(
@@ -934,7 +972,8 @@ void CPlayer::Atack(void)
 				if (SphereRange(weponpos, TargetPos, aInfo.AttackInfo[nCntAttack]->fRangeSize, fTargetRadius))
 				{// 球の判定
 
-					if (ppEnemy[i]->Hit(aInfo.AttackInfo[nCntAttack]->nDamage) == true)
+					int nDamage = (int)((float)aInfo.AttackInfo[nCntAttack]->nDamage * m_sStatus.fPowerBuff);
+					if (ppEnemy[i]->Hit(nDamage) == true)
 					{// 当たってたら
 
 					}
@@ -1351,14 +1390,17 @@ bool CPlayer::Hit(const int nValue)
 void CPlayer::GiveStatus(CGameManager::eStatus status)
 {
 	// 強化
+	int nStatus = 0;
 	switch (status)
 	{
 	case CGameManager::STATUS_POWER:
 		m_sStatus.nPower++;
+		nStatus = m_sStatus.nPower;
 		break;
 
 	case CGameManager::STATUS_SPEED:
 		m_sStatus.nSpeed++;
+		nStatus = m_sStatus.nSpeed;
 		break;
 
 	case CGameManager::STATUS_LIFE:
@@ -1366,10 +1408,18 @@ void CPlayer::GiveStatus(CGameManager::eStatus status)
 		break;
 	}
 
+	float fRate = (float)nStatus / (float)100;
+
 	// バフ計算
-	m_sStatus.fPowerBuff = 1.0f + ((float)m_sStatus.nPower * 0.1f);
-	m_sStatus.fSpeedBuff = 1.0f + ((float)m_sStatus.nSpeed * 0.01f);
+	m_sStatus.fPowerBuff = 1.0f + ((float)m_sStatus.nPower * 0.05f);
+	m_sStatus.fSpeedBuff = 1.0f + ((float)m_sStatus.nSpeed * 0.025f);
 	m_sStatus.fLifeBuff = 1.0f + ((float)m_sStatus.nLife * 0.1f);
+
+	if (status == CGameManager::STATUS_POWER || status == CGameManager::STATUS_SPEED)
+	{
+		// ゲージの割合更新
+		CGame::GetStatusWindow(m_nMyPlayerIdx)->GetGauge(status)->SetRateDest(fRate);
+	}
 }
 
 //==========================================================================

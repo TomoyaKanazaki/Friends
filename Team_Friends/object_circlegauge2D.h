@@ -29,10 +29,12 @@ public:
 	void Draw(void);
 	virtual void SetVtx(void);
 
-	void SetColor(const D3DXCOLOR col);	// 色設定
-	D3DXCOLOR GetColor(void) const;		// 色取得
-	void SetRate(const float fRate);	// 割合設定
-	float GetRate(void) const;			// 割合取得
+	void SetColor(const D3DXCOLOR col);		// 色設定
+	D3DXCOLOR GetColor(void) const;			// 色取得
+	void SetRate(const float fRate);		// 割合設定
+	float GetRate(void) const;				// 割合取得
+	void SetRateDest(const float fRate);	// 目標の割合設定
+	float GetRateDest(void) const;			// 目標の割合取得
 
 	void BindTexture(int nIdx);	// テクスチャのインデックス番号割り当て
 	static CObjectCircleGauge2D *Create(int nPolygon, float fSize);
@@ -43,6 +45,7 @@ private:
 	D3DXCOLOR m_col;	// 色
 	float m_fSize;		// サイズ
 	float m_fRate;		// 割合
+	float m_fRateDest;	// 目標の割合
 	int m_nNumVertex;	// 頂点数
 	int m_nTexIdx;		// テクスチャのインデックス番号
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファ

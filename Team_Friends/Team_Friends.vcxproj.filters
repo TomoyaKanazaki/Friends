@@ -420,6 +420,9 @@
     <ClCompile Include="enemy_test.cpp">
       <Filter>enemy</Filter>
     </ClCompile>
+    <ClCompile Include="collisionobject.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -751,6 +754,9 @@
     </ClInclude>
     <ClInclude Include="enemy_test.h">
       <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="collisionobject.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

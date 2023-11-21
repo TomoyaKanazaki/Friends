@@ -295,6 +295,31 @@ void CMotion::ResetPose(int nType)
 //==========================================================================
 void CMotion::Update(float fBuff)
 {
+
+	// 攻撃情報の総数取得
+	int nNumAttackInfo = m_aInfo[m_nType].nNumAttackInfo;
+
+	for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
+	{
+		if (m_aInfo[m_nType].AttackInfo[nCntAttack] == NULL)
+		{// NULLだったら
+			continue;
+		}
+
+		// まだ衝撃カウントの行動をしてない状態にする
+		m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactAct = false;
+
+		if (m_fCntAllFrame >= m_aInfo[m_nType].AttackInfo[nCntAttack]->nInpactCnt &&
+			m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactActSet == false)
+		{// 衝撃のカウントを超えた時 && まだ行動してなかったら
+			
+			// まだ衝撃カウントの行動をしてない状態にする
+			m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactAct = true;
+			m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactActSet = true;
+		}
+	}
+
+
 	if (m_bFinish == true && m_aInfo[m_nType].nLoop == LOOP_OFF)
 	{// 終了してた && ループOFFだったら
 		return;
@@ -540,6 +565,20 @@ void CMotion::Set(int nType, bool bBlend)
 			m_fMaxAllFrame += m_aInfo[m_nPatternKey].aKey[nCntKey].nFrame;	// 全てのカウントの最大値
 		}
 
+		// 攻撃情報の総数取得
+		int nNumAttackInfo = m_aInfo[m_nType].nNumAttackInfo;
+		for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
+		{
+			if (m_aInfo[m_nType].AttackInfo[nCntAttack] == NULL)
+			{// NULLだったら
+				continue;
+			}
+
+			// まだ衝撃カウントの行動をしてない状態にする
+			m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactAct = false;
+			m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactActSet = false;
+		}
+
 		int nStartIdx = m_pObjChara->GetMotionStartIdx();
 		for (int nCntParts = nStartIdx; nCntParts < m_nNumModel + nStartIdx + 1; nCntParts++)
 		{// 全パーツ分繰り返す
@@ -713,6 +752,14 @@ void CMotion::SubNumAttackInfo(int nType)
 		// 攻撃情報の総数減算
 		m_aInfo[nType].nNumAttackInfo--;
 	}
+}
+
+//==========================================================================
+// 衝撃のフレームかどうか取得
+//==========================================================================
+bool CMotion::IsImpactFrame(AttackInfo attackInfo)
+{
+	return attackInfo.bInpactAct;
 }
 
 //==========================================================================

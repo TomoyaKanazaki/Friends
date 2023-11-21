@@ -172,6 +172,7 @@
     <ClCompile Include="calculation.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collision.cpp" />
+    <ClCompile Include="collisionobject.cpp" />
     <ClCompile Include="compactcore.cpp" />
     <ClCompile Include="cursor.cpp" />
     <ClCompile Include="debugpointnumber.cpp" />
@@ -286,6 +287,7 @@
     <ClInclude Include="calculation.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision.h" />
+    <ClInclude Include="collisionobject.h" />
     <ClInclude Include="compactcore.h" />
     <ClInclude Include="constans.h" />
     <ClInclude Include="cursor.h" />

@@ -49,6 +49,7 @@ void WaterIn(void);
 void Move(void);
 void EnemyKillCombo(void);
 void AddScore(void);
+void BrastAttack(void);
 
 //==========================================================================
 // パーティクルの初期化処理
@@ -214,6 +215,11 @@ void my_particle::Create(D3DXVECTOR3 pos, TYPE nType)
 	case TYPE_ADDSCORE:
 		m_nLife = 40;
 		AddScore();
+		break;
+
+	case TYPE_BRASTATTACK:
+		m_nLife = 40;
+		BrastAttack();
 		break;
 
 	}
@@ -1413,5 +1419,41 @@ void AddScore(void)
 				m_nLife,
 				CEffect2D::MOVEEFFECT_GENSUI, CEffect2D::TYPE_JUJI2);
 		}
+	}
+}
+
+//==========================================================================
+// ブラストアタック
+//==========================================================================
+void BrastAttack(void)
+{
+	for (int nCntUse = 0; nCntUse < 10; nCntUse++)
+	{
+		float fMove = (float)Random(150, 250) * 0.1f;		// 移動量
+		float fMoveY = (float)Random(150, 250) * 0.01f;		// 移動量
+
+		// 移動量の設定
+		m_move.x = sinf((float)Random(-314, 314) / 100.0f) * fMove;
+		m_move.y = cosf((float)Random(-314, 314) / 100.0f) * fMoveY;
+		m_move.z = cosf((float)Random(-314, 314) / 100.0f) * fMove;
+
+		m_col = D3DXCOLOR(
+			0.9f + Random(-100, 100) * 0.001f,
+			0.2f + Random(-200, 200) * 0.001f,
+			0.2f + Random(-200, 200) * 0.001f,
+			1.0f);
+
+		// 半径設定
+		m_fRadius = 60.0f;
+
+		// エフェクトの設定
+		CEffect3D::Create(
+			m_pos,
+			m_move,
+			m_col,
+			m_fRadius,
+			m_nLife,
+			CEffect3D::MOVEEFFECT_GENSUI, CEffect3D::TYPE_SMOKE,
+			m_fRadius * 0.1f);
 	}
 }

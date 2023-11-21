@@ -69,34 +69,34 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 {
 	// 値のクリア
 	// 共有変数
-	m_bJump = false;				// ジャンプ中かどうか
-	m_bLandOld = false;			// 過去の着地情報
-	m_bHitStage = false;			// ステージの当たり判定
-	m_bLandField = false;			// フィールドの着地判定
-	m_bHitWall = false;			// 壁の当たり判定
-	m_nCntWalk = 0;				// 歩行カウンター
-	m_nCntInputAtk = 0;			// 攻撃の入力カウンター
-	m_nAtkLevel = 0;			// 攻撃の段階
-	m_state = STATE_NONE;			// 状態
-	m_pMotion = NULL;		// モーションの情報
-	m_sMotionFrag.bATK = false;		// モーションのフラグ
+	m_bJump = false;					// ジャンプ中かどうか
+	m_bLandOld = false;					// 過去の着地情報
+	m_bHitStage = false;				// ステージの当たり判定
+	m_bLandField = false;				// フィールドの着地判定
+	m_bHitWall = false;					// 壁の当たり判定
+	m_nCntWalk = 0;						// 歩行カウンター
+	m_nCntInputAtk = 0;					// 攻撃の入力カウンター
+	m_nAtkLevel = 0;					// 攻撃の段階
+	m_state = STATE_NONE;				// 状態
+	m_pMotion = NULL;					// モーションの情報
+	m_sMotionFrag.bATK = false;			// モーションのフラグ
 	m_sMotionFrag.bJump = false;		// モーションのフラグ
 	m_sMotionFrag.bKnockBack = false;	// モーションのフラグ
 	m_sMotionFrag.bDead = false;		// モーションのフラグ
 	m_sMotionFrag.bMove = false;		// モーションのフラグ
 
 	// プライベート変数
-	memset(&m_sStatus, 0, sizeof(m_sStatus));	// ステータス情報
-	m_Oldstate = STATE_NONE;			// 前回の状態
-	m_mMatcol = mylib_const::DEFAULT_COLOR;		// マテリアルの色
+	memset(&m_sStatus, 0, sizeof(m_sStatus));		// ステータス情報
+	m_Oldstate = STATE_NONE;						// 前回の状態
+	m_mMatcol = mylib_const::DEFAULT_COLOR;			// マテリアルの色
 	m_posKnokBack = mylib_const::DEFAULT_VECTOR3;	// ノックバックの位置
 	m_KnokBackMove = mylib_const::DEFAULT_VECTOR3;	// ノックバックの移動量
-	m_nCntState = 0;			// 状態遷移カウンター
-	m_nTexIdx = 0;				// テクスチャのインデックス番号
-	m_nIdxXFile = 0;			// Xファイルのインデックス番号
-	m_nMyPlayerIdx = 0;			// プレイヤーインデックス番号
-	m_pShadow = NULL;			// 影の情報
-	m_pTargetP = NULL;	// 目標の地点
+	m_nCntState = 0;								// 状態遷移カウンター
+	m_nTexIdx = 0;									// テクスチャのインデックス番号
+	m_nIdxXFile = 0;								// Xファイルのインデックス番号
+	m_nMyPlayerIdx = 0;								// プレイヤーインデックス番号
+	m_pShadow = NULL;								// 影の情報
+	m_pTargetP = NULL;								// 目標の地点
 }
 
 //==========================================================================

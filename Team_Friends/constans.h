@@ -35,7 +35,7 @@ namespace mylib_const
 	const int MAX_STAGE = 64;			// ステージの最大数
 	const float GRAVITY = 0.7f;			// 重力
 	const int MAX_VTX = 51200;			// 頂点の最大数
-	const float KILL_Y = -800.0f;		// 消滅する座標
+	const float KILL_Y = 0.0f;		// 消滅する座標
 	const int DMG_BOUNCE = 15;			// 跳ね返しの威力
 	const int DMG_SLASH = 2;			// 斬撃の威力
 	const int BULLETAPPEARANCE_NUM = 2;	// 見た目の弾の数

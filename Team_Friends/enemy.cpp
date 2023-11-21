@@ -185,7 +185,7 @@ HRESULT CEnemy::Init(void)
 	m_pShadow = CShadow::Create(GetPosition(), GetRadius() * 0.5f);
 
 	// ポーズのリセット
-	m_pMotion->ResetPose(MOTION_DEF);
+	m_pMotion->ResetPose(0);
 
 	// 生存時間
 	m_nSurvivalLifeOrigin = m_nSurvivalLife;
@@ -628,8 +628,8 @@ bool CEnemy::Hit(const int nValue)
 	// 体力取得
 	int nLife = GetLife();
 
-
-	if ((nValue == mylib_const::DMG_BOUNCE && m_state != STATE_DEAD) || (m_state != STATE_DMG && m_state != STATE_DEAD && m_state != STATE_SPAWN))
+	if ((nValue == mylib_const::DMG_BOUNCE && m_state != STATE_DEAD) ||
+		(m_state != STATE_DMG && m_state != STATE_DEAD && m_state != STATE_SPAWN && m_state != STATE_FADEOUT))
 	{// なにもない状態の時
 
 		// 体力減らす
@@ -997,53 +997,14 @@ void CEnemy::Dead(void)
 	rot.y += D3DX_PI * 0.025f;
 	rot.x += D3DX_PI * (Random(5, 25) * 0.001f);
 
-	// Xファイルとの判定
-	CStage *pStage = CGame::GetStage();
-	if (pStage == NULL)
-	{// NULLだったら
-		return;
-	}
-
-	// ステージに当たった判定
-	bool bLandStage = false;
-	for (int nCntStage = 0; nCntStage < pStage->GetNumAll(); nCntStage++)
+	if(CGame::GetElevation()->IsHit(pos))
 	{
-		// オブジェクト取得
-		CObjectX *pObjX = pStage->GetObj(nCntStage);
-
-		if (pObjX == NULL)
-		{// NULLだったら
-			continue;
-		}
-
-		// 高さ取得
-		bool bLand = false;
-		float fHeight = pObjX->GetHeight(pos, bLand);
-
-		if (bLand == true && fHeight > pos.y)
-		{// 地面の方が自分より高かったら
-
-			// ステージの高さに補正
-			pos.y = fHeight;
-
-			if (bLand == true)
-			{// 着地してたら
-
-				move.y = 0.0f;
-				bLandStage = true;
-			}
-		}
-	}
-
-	if (bLandStage == true)
-	{// 遷移カウンターが0になったら or 地面に接触
-
 		// パーティクル生成
 		my_particle::Create(pos, my_particle::TYPE_ENEMY_FADE);
 
 		// 敵の終了処理
-		Kill();
-		Uninit();
+		m_state = STATE_FADEOUT;
+		//Uninit();
 		return;
 	}
 
@@ -1186,7 +1147,6 @@ void CEnemy::PlayerChase(void)
 			m_state = STATE_NONE;
 		}
 	}
-
 
 	// 位置設定
 	SetPosition(pos);
@@ -1429,7 +1389,7 @@ void CEnemy::StateAttack(void)
 			continue;
 		}
 
-		if (nType == MOTION_DEF && pPlayer != NULL)
+		if (nType == 0 && pPlayer != NULL)
 		{// ニュートラルに戻れば
 
 			if (CircleRange3D(pos, pPlayer->GetPosition(), 400.0f, PLAYER_SERCH) == false)

@@ -100,6 +100,7 @@ protected:
 	};
 
 	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
+	void SetEvolusion(CGameManager::eStatus statusType);	// 進化先設定
 
 	bool m_bJump;				// ジャンプ中かどうか
 	bool m_bLandOld;			// 過去の着地情報
@@ -128,7 +129,6 @@ private:
 	virtual void Controll(void);	// 操作
 	void MotionSet(void);	// モーションの設定
 	void Atack(void);		// 攻撃
-	void SetEvolusion(CGameManager::eStatus statusType);	// 進化先設定
 
 	sStatus m_sStatus;			// ステータス情報
 	STATE m_Oldstate;			// 前回の状態

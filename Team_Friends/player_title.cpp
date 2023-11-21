@@ -22,7 +22,7 @@ namespace
 	const char* CHARAFILE[CPlayerTitle::MAX] =
 	{
 		"data\\TEXT\\sample\\motion_union_player.txt", // 合体ファイルパス
-		"data\\TEXT\\sample\\motion_ArmToArm.txt", // 腕ファイルパス
+		"data\\TEXT\\character\\player\\motion_player.txt", // 腕ファイルパス
 		"data\\TEXT\\character\\player\\motion_player.txt", // 足ファイルパス
 		"data\\TEXT\\character\\player\\motion_player.txt" // 胴ファイルパス
 	};
@@ -55,7 +55,6 @@ HRESULT CPlayerTitle::Init(void)
 	SetType(TYPE_PLAYER);
 
 	m_state = STATE_NONE;	// 状態
-	m_bLandOld = true;		// 前回の着地状態
 
 	// キャラ作成
 	HRESULT hr = SetCharacter(CHARAFILE[m_nModelType]);
@@ -73,9 +72,25 @@ HRESULT CPlayerTitle::Init(void)
 
 	// モーションの設定
 	m_pMotion->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), CObjectChara::GetObjectChara());
+	
+	// モデルの差し替え
+	switch (m_nModelType)
+	{
+	case PLAYER_BODY:
+		SetEvolusion(CGameManager::STATUS_LIFE);
+		break;
 
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
+	case PLAYER_ARM:
+		SetEvolusion(CGameManager::STATUS_POWER);
+		break;
+
+	case PLAYER_LEG:
+		SetEvolusion(CGameManager::STATUS_SPEED);
+		break;
+
+	default:
+		break;
+	}
 
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);

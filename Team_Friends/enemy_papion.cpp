@@ -78,7 +78,7 @@ void CEnemyPapion::Uninit(void)
 void CEnemyPapion::Kill(void)
 {
 	// €–Sˆ—
-	CEnemy::Kill();
+	CEnemy::FadeOut();
 }
 
 //==========================================================================

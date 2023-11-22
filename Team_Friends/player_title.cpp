@@ -21,7 +21,7 @@ namespace
 {
 	const char* CHARAFILE[CPlayerTitle::MAX] =
 	{
-		"data\\TEXT\\sample\\motion_union_player.txt", // 合体ファイルパス
+		"data\\TEXT\\multicharacter\\SuperUnion.txt", // 合体ファイルパス
 		"data\\TEXT\\character\\player\\motion_player.txt", // 腕ファイルパス
 		"data\\TEXT\\character\\player\\motion_player.txt", // 足ファイルパス
 		"data\\TEXT\\character\\player\\motion_player.txt" // 胴ファイルパス

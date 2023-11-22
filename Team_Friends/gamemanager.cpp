@@ -140,6 +140,12 @@ void CGameManager::Update(void)
 	}
 
 
+	// テキストの描画
+	CManager::GetInstance()->GetDebugProc()->Print(
+		"---------------- ゲームマネージャ情報 ----------------\n"
+		"【今のモード】[%d]\n", m_SceneType);
+
+
 	if (m_SceneType == SCENE_TRANSITION)
 	{// 遷移中
 

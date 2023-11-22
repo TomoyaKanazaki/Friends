@@ -587,7 +587,7 @@ void CPlayer::Controll(void)
 	// 重力処理
 	if (m_state != STATE_KNOCKBACK && m_state != STATE_DMG && m_state != STATE_DEAD && m_state != STATE_FADEOUT && m_state != STATE_COMPACTUNION)
 	{
-		//move.y -= mylib_const::GRAVITY;
+		move.y -= mylib_const::GRAVITY;
 
 		// 位置更新
 		newPosition.y += move.y;

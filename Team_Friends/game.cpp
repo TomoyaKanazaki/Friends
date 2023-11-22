@@ -215,9 +215,6 @@ void CGame::Uninit(void)
 		m_pEnemyBase = NULL;
 	}
 
-	//プレイヤー数をリセット
-	CManager::GetInstance()->SetNumPlayer(0);
-
 	// 終了処理
 	CScene::Uninit();
 }

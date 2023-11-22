@@ -40,8 +40,8 @@
 CEnemyManager::CEnemyManager()
 {
 	// 値のクリア
-	memset(&m_pEnemy[0], 0, sizeof(m_pEnemy));		// 敵へのポインタ
-	memset(&m_aPattern[0], 0, sizeof(m_aPattern));	// 配置の種類
+	memset(&m_pEnemy[0], NULL, sizeof(m_pEnemy));		// 敵へのポインタ
+	memset(&m_aPattern[0], NULL, sizeof(m_aPattern));	// 配置の種類
 	m_state = STATE_NONE;	// 状態
 	m_nCntSpawn = 0;		// 出現カウント
 	m_nPatternNum = 0;		// 出現パターン数
@@ -167,7 +167,7 @@ void CEnemyManager::Update(void)
 		CGame::GetGameManager()->SetType(CGameManager::SCENE_MAINCLEAR);
 
 		// 遷移なしフェード追加
-		CManager::GetInstance()->GetInstantFade()->SetFade();
+		CManager::GetInstance()->GetInstantFade()->SetFade(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f), 320);
 
 		// 遷移状態に変更
 		CGame::GetGameManager()->SetType(CGameManager::SCENE_TRANSITION);
@@ -183,7 +183,21 @@ void CEnemyManager::Update(void)
 	// テキストの描画
 	CManager::GetInstance()->GetDebugProc()->Print(
 		"---------------- 敵情報 ----------------\n"
-		"【残り人数】[%d]\n", m_nNumAll);
+		"【残り人数】[%d], 【パターン数】[%d]\n", m_nNumAll, m_nPatternNum);
+
+
+	for (int i = 0; i < m_nPatternNum; i++)
+	{
+		CManager::GetInstance()->GetDebugProc()->Print(
+			"\n【パターン】[%d] , 敵の数[%d]", i, m_aPattern[i].nNumEnemy);
+
+		int nNumSpawn = m_aPattern[i].nNumEnemy;	// スポーンする数
+		for (int nCntEnemy = 0; nCntEnemy < nNumSpawn; nCntEnemy++)
+		{
+			CManager::GetInstance()->GetDebugProc()->Print(
+				"種類[%d]", m_aPattern[i].EnemyData[nCntEnemy].nType);
+		}
+	}
 }
 
 //==========================================================================
@@ -193,7 +207,12 @@ void CEnemyManager::SetStageEnemy(void)
 {
 	// ゲームマネージャ取得
 	CGameManager *pGameManager = CGame::GetGameManager();
-	if (pGameManager == NULL || pGameManager->IsEndNormalStage() == true)
+	if (pGameManager == NULL)
+	{
+		return;
+	}
+
+	if (pGameManager->IsEndNormalStage() == true)
 	{
 		return;
 	}
@@ -239,7 +258,7 @@ CEnemy **CEnemyManager::SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nPattern)
 	int nCntNULL = 0;
 	int nCntStart = 0;
 	Pattern NowPattern = m_aPattern[nPattern];
-	CEnemy *pEnemy[mylib_const::MAX_PATTEN_ENEMY] = {};
+	CEnemy *pEnemy[mylib_const::MAX_PATTEN_ENEMY];
 	memset(&pEnemy[0], NULL, sizeof(pEnemy));
 
 	for (int nCntEnemy = 0; nCntEnemy < nNumSpawn; nCntEnemy++)
@@ -340,7 +359,6 @@ HRESULT CEnemyManager::ReadText(const std::string pTextFile)
 
 	// ファイルを開く
 	pFile = fopen(pTextFile.c_str(), "r");
-
 	if (pFile == NULL)
 	{//ファイルが開けた場合
 		return E_FAIL;

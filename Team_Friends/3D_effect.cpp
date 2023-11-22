@@ -34,6 +34,7 @@ const char *CEffect3D::m_apTextureFile[] =					// ファイル読み込み
 	"data\\TEXTURE\\grassblades_01.png",		// 草エフェクト
 	"data\\TEXTURE\\effect\\sweat_01.png",		// 汗エフェクト
 	"data\\TEXTURE\\effect\\thunder_01.tga",	// 雷エフェクト
+	NULL,										// NULLエフェクト
 };
 int CEffect3D::m_nNumAll = 0;	// 総数
 int CEffect3D::m_nTexIdx[TYPE_MAX] = {};				// テクスチャのインデックス番号

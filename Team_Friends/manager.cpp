@@ -407,7 +407,7 @@ void CManager::SetMode(CScene::MODE mode)
 	// 前回のモード設定
 	m_OldMode = GetMode();
 
-	if (mode == CScene::MODE_GAME && m_pResultManager != NULL)
+	if (mode == CScene::MODE_GAME && m_pResultManager != NULL && m_pRankingManager != NULL)
 	{// 次のモードがゲームだったら
 
 		// スコア情報リセット

@@ -16,7 +16,7 @@ NUM_CHARACTER = 3
 #------------------------------------------------------------------
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyboss.txt			# [0]ボス
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [1]蝶
-MOTION_FILENAME = data/TEXT/character/player/motion_player.txt				# [2]テスト
+MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt				# [2]テスト
 
 #===================================================================================================
 # 敵の情報
@@ -48,6 +48,13 @@ PATTERNSET
 		TYPE = 1		# キャラの種類
 		INDEX = 0
 		POS = 0.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE = 1		# キャラの種類
+		INDEX = 0
+		POS = 150.00 0.00 0.00
 		STARTFRAME = 0		# 初期フレーム
 	END_ENEMYSET
 	

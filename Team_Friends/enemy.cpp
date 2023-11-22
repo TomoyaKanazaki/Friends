@@ -30,6 +30,7 @@
 #include "objectX.h"
 #include "listmanager.h"
 #include "item.h"
+#include "collisionobject.h"
 
 // 子クラス
 #include "enemy_boss.h"
@@ -560,6 +561,19 @@ void CEnemy::Collision(void)
 //==========================================================================
 void CEnemy::CollisionPlayer(void)
 {
+	if (m_state == STATE_SPAWN || m_state == STATE_DEAD || m_state == STATE_FADEOUT)
+	{
+		return;
+	}
+
+	// 自分の情報取得
+	D3DXVECTOR3 pos = GetPosition();
+	float fRadius = GetRadius();
+
+#if _DEBUG
+	CEffect3D::Create(pos, mylib_const::DEFAULT_VECTOR3, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), fRadius, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NULL);
+#endif
+
 	// プレイヤーの取得
 	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
@@ -567,11 +581,6 @@ void CEnemy::CollisionPlayer(void)
 		if (pPlayer == NULL)
 		{
 			continue;
-		}
-
-		if (m_state == STATE_SPAWN || m_state == STATE_DEAD || m_state == STATE_FADEOUT)
-		{
-			return;
 		}
 
 		// 自分の情報取得
@@ -582,6 +591,10 @@ void CEnemy::CollisionPlayer(void)
 		D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
 		float PlayerRadius = pPlayer->GetRadius();
 		CPlayer::STATE PlayerState = (CPlayer::STATE)pPlayer->GetState();
+
+#if _DEBUG
+		CEffect3D::Create(PlayerPos, mylib_const::DEFAULT_VECTOR3, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), PlayerRadius, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NULL);
+#endif
 
 		// 球の判定
 		if (SphereRange(pos, PlayerPos, fRadius, PlayerRadius) &&

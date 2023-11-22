@@ -80,7 +80,7 @@ HRESULT CDebugProc::Init(HINSTANCE hInstance, HWND hWnd)
 #endif
 	
 	// ON
-	//m_bDisp = true;
+	m_bDisp = true;
 
 	return S_OK;
 }

@@ -102,8 +102,11 @@ HRESULT CResultScore::Init(void)
 	CreateToatalScore();
 
 	// 目標のスコア取得
-	m_nToatalNumDest = CManager::GetInstance()->GetResultManager()->GetToatalScore();
-	CManager::GetInstance()->GetRankingManager()->SetNowScore(m_nToatalNumDest, 0);
+	if (CManager::GetInstance()->GetResultManager() != nullptr)
+	{
+		m_nToatalNumDest = CManager::GetInstance()->GetResultManager()->GetToatalScore();
+		CManager::GetInstance()->GetRankingManager()->SetNowScore(m_nToatalNumDest, 0);
+	}
 	
 	return S_OK;
 }
@@ -223,9 +226,11 @@ void CResultScore::MoveToatalScore(void)
 	{// 到着していたら
 
 		// 目標のスコア取得
-		m_nToatalNumDest = CManager::GetInstance()->GetResultManager()->GetToatalScore();
-
-		CManager::GetInstance()->GetRankingManager()->SetNowScore(m_nToatalNumDest, 0);
+		if (CManager::GetInstance()->GetResultManager() != nullptr)
+		{
+			m_nToatalNumDest = CManager::GetInstance()->GetResultManager()->GetToatalScore();
+			CManager::GetInstance()->GetRankingManager()->SetNowScore(m_nToatalNumDest, 0);
+		}
 
 		if (m_nToatalNumDest > m_nToatalNum)
 		{// 規定時間かけて補正

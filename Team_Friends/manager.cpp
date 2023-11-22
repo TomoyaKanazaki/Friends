@@ -778,7 +778,10 @@ void CManager::Update(void)
 #endif
 
 	// レンダラーの更新処理
-	m_pRenderer->Update();
+	if (m_pRenderer != NULL)
+	{
+		m_pRenderer->Update();
+	}
 
 	// ライトの更新処理
 	m_pLight->Update();

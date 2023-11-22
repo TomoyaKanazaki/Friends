@@ -328,7 +328,11 @@ void CPlayer::Update(void)
 	UpdateState();
 
 	// ゲージの割合更新
-	CGame::GetStatusWindow(m_nMyPlayerIdx)->GetGauge(CGameManager::STATUS_LIFE)->SetRateDest((float)GetLife() / (float)GetLifeOrigin());
+	CStatusWindow *pStatusWindow = CGame::GetStatusWindow(m_nMyPlayerIdx);
+	if (pStatusWindow != NULL)
+	{
+		pStatusWindow->GetGauge(CGameManager::STATUS_LIFE)->SetRateDest((float)GetLife() / (float)GetLifeOrigin());
+	}
 
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
@@ -1420,8 +1424,13 @@ void CPlayer::GiveStatus(CGameManager::eStatus status)
 
 	if (status == CGameManager::STATUS_POWER || status == CGameManager::STATUS_SPEED)
 	{
-		// ゲージの割合更新
-		CGame::GetStatusWindow(m_nMyPlayerIdx)->GetGauge(status)->SetRateDest(fRate);
+		// ステータスウィンドウ
+		CStatusWindow *pStatusWindow = CGame::GetStatusWindow(m_nMyPlayerIdx);
+		if (pStatusWindow != NULL)
+		{
+			// ゲージの割合更新
+			pStatusWindow->GetGauge(status)->SetRateDest(fRate);
+		}
 	}
 }
 

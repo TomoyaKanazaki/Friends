@@ -201,7 +201,7 @@ HRESULT CPlayerUnion::Init(void)
 	// âeÇÃê∂ê¨
 	m_pShadow = CShadow::Create(pos, 50.0f);
 
-	SetPosition(D3DXVECTOR3(-600.0f, 0.0f, -1000.0f));
+	SetPosition(D3DXVECTOR3(-600.0f, 0.0f, 0.0f));
 	return S_OK;
 }
 

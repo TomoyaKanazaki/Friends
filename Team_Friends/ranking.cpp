@@ -12,6 +12,8 @@
 #include "debugproc.h"
 #include "rankingscore.h"
 #include "enemymanager.h"
+#include "objectX.h"
+#include "union_bodytoleg.h"
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -53,8 +55,11 @@ HRESULT CRanking::Init(void)
 		return E_FAIL;
 	}
 
-	// 初期化処理
-	CObjectX::Create(m_apModelFile);
+	// 生成処理
+	CObjectX *p = CObjectX::Create(m_apModelFile, D3DXVECTOR3(0.0f, 1000.0f, 0.0f));
+	p->SetType(CObject::TYPE_OBJECTX);
+
+	//CUnion_BodytoLeg::Create(CPlayerUnion::TYPE_BODYtoLEG);
 
 	// ランキングのスコア生成
 	m_pRankingScore = CRankingScore::Create();

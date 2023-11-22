@@ -89,6 +89,7 @@ HRESULT CGameManager::Init(void)
 {
 	m_bControll = true;		// 操作できるか
 	m_bEndNormalStage = false;	// 通常ステージが終了したか
+	m_nNowStage = 0;			// 現在のステージ
 
 	//CPlayerUnion::Create();
 
@@ -108,6 +109,14 @@ void CGameManager::Uninit(void)
 //==========================================================================
 void CGameManager::Update(void)
 {
+	if (CGame::GetEnemyBase()->GetNumStage() - 1 <= m_nNowStage)
+	{// 総ステージ数を超えたら
+		m_nNowStage = CGame::GetEnemyBase()->GetNumStage() - 1;
+
+		// 通常ステージが終了判定
+		m_bEndNormalStage = true;
+	}
+
 	// 操作状態
 	switch (m_SceneType)
 	{

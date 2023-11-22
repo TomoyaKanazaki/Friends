@@ -79,21 +79,22 @@ HRESULT CGame::Init(void)
 	//**********************************
 	m_pGameManager = CGameManager::Create();
 
-	//**********************************
-	// 敵マネージャ
-	//**********************************
-	m_pEnemyManager = CEnemyManager::Create("data\\TEXT\\enemydata\\manager.txt");
-
-	if (m_pEnemyManager == NULL)
-	{// NULLだったら
-		return E_FAIL;
-	}
 
 	//**********************************
 	// 敵の拠点
 	//**********************************
 	m_pEnemyBase = CEnemyBase::Create("data\\TEXT\\enemydata\\base.txt");
 	if (m_pEnemyBase == NULL)
+	{// NULLだったら
+		return E_FAIL;
+	}
+
+	//**********************************
+	// 敵マネージャ
+	//**********************************
+	m_pEnemyManager = CEnemyManager::Create("data\\TEXT\\enemydata\\manager.txt");
+
+	if (m_pEnemyManager == NULL)
 	{// NULLだったら
 		return E_FAIL;
 	}
@@ -106,7 +107,7 @@ HRESULT CGame::Init(void)
 		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
 		if (pPlayer != NULL)
 		{
-			pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 50.0f, 1000.0f, 0.0f));
+			pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 50.0f, 5000.0f, 0.0f));
 			pPlayer->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 		}
 	}
@@ -214,6 +215,8 @@ void CGame::Uninit(void)
 		m_pEnemyBase = NULL;
 	}
 
+	//プレイヤー数をリセット
+	CManager::GetInstance()->SetNumPlayer(0);
 
 	// 終了処理
 	CScene::Uninit();

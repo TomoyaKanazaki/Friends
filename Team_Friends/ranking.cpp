@@ -19,7 +19,7 @@
 int CRanking::m_nRandStage = 0;	// ステージのランダムインデックス番号
 CRankingScore *CRanking::m_pRankingScore = NULL;	// ランキングスコアのオブジェクト
 bool CRanking::m_bAllArrival = false;		// 全て到着した判定
-const char *CRanking::m_apModelFile = "data\\MODEL\\ranking_00.x";	// テクスチャのファイル
+const char *CRanking::m_apModelFile = "data\\MODEL\\ranking_00.x";	// モデルのファイル
 
 //==========================================================================
 // コンストラクタ

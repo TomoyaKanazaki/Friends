@@ -19,6 +19,7 @@
 int CRanking::m_nRandStage = 0;	// ステージのランダムインデックス番号
 CRankingScore *CRanking::m_pRankingScore = NULL;	// ランキングスコアのオブジェクト
 bool CRanking::m_bAllArrival = false;		// 全て到着した判定
+const char *CRanking::m_apModelFile = "data\\MODEL\\ranking_00.x";	// テクスチャのファイル
 
 //==========================================================================
 // コンストラクタ
@@ -51,6 +52,9 @@ HRESULT CRanking::Init(void)
 	{// 失敗した場合
 		return E_FAIL;
 	}
+
+	// 初期化処理
+	CObjectX::Create(m_apModelFile);
 
 	// ランキングのスコア生成
 	m_pRankingScore = CRankingScore::Create();
@@ -92,7 +96,7 @@ void CRanking::Update(void)
 	if (m_nCntSwitch >= 60 * 60)
 	{
 		// モード設定
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
 	}
 
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
@@ -100,7 +104,7 @@ void CRanking::Update(void)
 		if (m_bAllArrival == true)
 		{
 			// モード設定
-			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
+			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
 		}
 
 		else

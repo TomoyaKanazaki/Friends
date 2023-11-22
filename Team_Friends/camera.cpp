@@ -694,6 +694,17 @@ void CCamera::SetCameraVResult(void)
 }
 
 //==================================================================================
+// カメラの視点代入処理(ランキング)
+//==================================================================================
+void CCamera::SetCameraVRanking(void)
+{
+	// 視点の代入処理
+	m_posV.x = m_posR.x + cosf(m_rot.z) * sinf(m_rot.y) * -m_fDistance;
+	m_posV.z = m_posR.z + cosf(m_rot.z) * cosf(m_rot.y) * -m_fDistance;
+	m_posV.y = m_posR.y + sinf(m_rot.z) * -m_fDistance;
+}
+
+//==================================================================================
 // カメラの注視点代入処理
 //==================================================================================
 void CCamera::SetCameraR(void)
@@ -714,6 +725,10 @@ void CCamera::SetCameraR(void)
 		break;
 
 	case CScene::MODE_RESULT:
+		SetCameraRResult();
+		break;
+
+	case CScene::MODE_RANKING:
 		SetCameraRResult();
 		break;
 
@@ -829,6 +844,17 @@ void CCamera::SetCameraRGame(void)
 // カメラの注視点代入処理(リザルト)
 //==================================================================================
 void CCamera::SetCameraRResult(void)
+{
+	// 注視点の代入処理
+	m_posR.x = m_posV.x + cosf(m_rot.z) * sinf(m_rot.y) * m_fDistance;
+	m_posR.z = m_posV.z + cosf(m_rot.z) * cosf(m_rot.y) * m_fDistance;
+	m_posR.y = m_posV.y + sinf(m_rot.z) * m_fDistance;
+}
+
+//==================================================================================
+// カメラの注視点代入処理(ランキング)
+//==================================================================================
+void CCamera::SetCameraRRanking(void)
 {
 	// 注視点の代入処理
 	m_posR.x = m_posV.x + cosf(m_rot.z) * sinf(m_rot.y) * m_fDistance;
@@ -1138,7 +1164,7 @@ void CCamera::ResetResult(void)
 void CCamera::ResetRanking(void)
 {
 	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 注視点(見たい場所)
-	m_posV = D3DXVECTOR3(2401.44f, 1542.82f, -2355.46f);	// 視点(カメラの位置)
+	m_posV = D3DXVECTOR3(0.0f, 200.0f, 2355.46f);	// 視点(カメラの位置)
 	m_posVDest = m_posV;								// 目標の視点
 	m_posRDest = m_posR;								// 目標の注視点
 	m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);				// 上方向ベクトル

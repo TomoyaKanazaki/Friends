@@ -10,6 +10,7 @@
 
 #include "main.h"
 #include "manager.h"
+#include "objectX.h"
 
 //==========================================================================
 // 前方宣言
@@ -40,6 +41,9 @@ private:
 	static bool m_bAllArrival;		// 全て到着した判定
 	static int m_nRandStage;	// ステージのランダムインデックス番号
 	static CRankingScore *m_pRankingScore;	// ランキングスコアのオブジェクト
+	static CObjectX *m_pObjectX;
+
+	static const char *m_apModelFile;		// モデルのファイル
 };
 
 

@@ -81,10 +81,12 @@ private:
 	void SetCameraVTitle(void);
 	void SetCameraVGame(void);
 	void SetCameraVResult(void);
+	void SetCameraVRanking(void);
 	void SetCameraR(void);
 	void SetCameraRTitle(void);
 	void SetCameraRGame(void);
 	void SetCameraRResult(void);
+	void SetCameraRRanking(void);
 	void MoveCameraFollow(void);
 	void Shake(void);
 	void UpdateState(void);

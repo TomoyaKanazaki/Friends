@@ -154,9 +154,6 @@ CObjectX *CObjectX::Create(const char *pFileName, D3DXVECTOR3 pos, D3DXVECTOR3 r
 				return NULL;
 			}
 
-			// Ží—ÞÝ’è
-			//pObjectX->SetType(TYPE_XFILE);
-
 			// ˆÊ’uEŒü‚«
 			pObjectX->SetPosition(pos);
 			pObjectX->SetRotation(rot);

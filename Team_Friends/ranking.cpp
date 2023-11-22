@@ -12,6 +12,8 @@
 #include "debugproc.h"
 #include "rankingscore.h"
 #include "enemymanager.h"
+#include "objectX.h"
+#include "union_bodytoleg.h"
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -19,6 +21,7 @@
 int CRanking::m_nRandStage = 0;	// ステージのランダムインデックス番号
 CRankingScore *CRanking::m_pRankingScore = NULL;	// ランキングスコアのオブジェクト
 bool CRanking::m_bAllArrival = false;		// 全て到着した判定
+const char *CRanking::m_apModelFile = "data\\MODEL\\ranking_00.x";	// モデルのファイル
 
 //==========================================================================
 // コンストラクタ
@@ -51,6 +54,12 @@ HRESULT CRanking::Init(void)
 	{// 失敗した場合
 		return E_FAIL;
 	}
+
+	// 生成処理
+	CObjectX *p = CObjectX::Create(m_apModelFile, D3DXVECTOR3(0.0f, 1000.0f, 0.0f));
+	p->SetType(CObject::TYPE_OBJECTX);
+
+	//CUnion_BodytoLeg::Create(CPlayerUnion::TYPE_BODYtoLEG);
 
 	// ランキングのスコア生成
 	m_pRankingScore = CRankingScore::Create();
@@ -92,7 +101,7 @@ void CRanking::Update(void)
 	if (m_nCntSwitch >= 60 * 60)
 	{
 		// モード設定
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
 	}
 
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
@@ -100,7 +109,7 @@ void CRanking::Update(void)
 		if (m_bAllArrival == true)
 		{
 			// モード設定
-			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
+			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
 		}
 
 		else

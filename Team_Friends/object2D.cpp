@@ -266,24 +266,6 @@ void CObject2D::Draw(void)
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
-#if _DEBUG
-	if (CManager::GetInstance()->GetPause()->IsPause() == false)
-	{// ポーズ中
-
-		// 頂点バッファをデータストリームに設定
-		pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_2D));
-
-		// 頂点フォーマットの設定
-		pDevice->SetFVF(FVF_VERTEX_2D);
-
-		// テクスチャの設定
-		pDevice->SetTexture(0, CManager::GetInstance()->GetTexture()->GetAdress(m_nTexIdx));
-
-		// ポリゴンの描画
-		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
-	}
-#else
-
 	// 頂点バッファをデータストリームに設定
 	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_2D));
 
@@ -295,7 +277,6 @@ void CObject2D::Draw(void)
 
 	// ポリゴンの描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
-#endif
 }
 
 //==========================================================================

@@ -26,6 +26,13 @@ namespace
 	const float START_LENGTH = 300.0f; // 初期距離
 	const float END_LENGTH = 3000.0f; // 目標距離
 	const float FUNCTION = 0.01f; //倍率
+
+	//モデルの配置位置
+	const D3DXVECTOR3 CENTER	= D3DXVECTOR3(0.0f, 100.0f, -3000.0f);
+	const D3DXVECTOR3 IN_LEFT	= D3DXVECTOR3(-160.0f, 0.0f, -2900.0f);
+	const D3DXVECTOR3 IN_RIGHT	= D3DXVECTOR3(160.0f, 0.0f, -2900.0f);
+	const D3DXVECTOR3 OUT_LEFT	= D3DXVECTOR3(-300.0f, 0.0f, -3000.0f);
+	const D3DXVECTOR3 OUT_RIGHT	= D3DXVECTOR3(300.0f, 0.0f, -3000.0f);
 }
 
 //==========================================================================
@@ -77,11 +84,11 @@ HRESULT CTitle::Init(void)
 	Fog::SetCol(m_col);
 
 	// プレイヤーを置いてみる
-	CPlayerTitle::Create(D3DXVECTOR3(0.0f, 100.0f, -3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_UNION);
-	CPlayerTitle::Create(D3DXVECTOR3(160.0f, 0.0f, -2900.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
-	CPlayerTitle::Create(D3DXVECTOR3(-160.0f, 0.0f, -2900.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
-	CPlayerTitle::Create(D3DXVECTOR3(300.0f, 0.0f, -3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
-	CPlayerTitle::Create(D3DXVECTOR3(-300.0f, 0.0f, -3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
+	CPlayerTitle::Create(CENTER, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_UNION);
+	CPlayerTitle::Create(IN_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
+	CPlayerTitle::Create(IN_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
+	CPlayerTitle::Create(OUT_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
+	CPlayerTitle::Create(OUT_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
 
 	// 成功
 	return S_OK;

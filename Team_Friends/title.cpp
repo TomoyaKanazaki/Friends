@@ -84,11 +84,11 @@ HRESULT CTitle::Init(void)
 	Fog::SetCol(m_col);
 
 	// プレイヤーを置いてみる
-	CPlayerTitle::Create(CENTER, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_UNION);
+	/*CPlayerTitle::Create(CENTER, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_UNION);
 	CPlayerTitle::Create(IN_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
 	CPlayerTitle::Create(IN_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
 	CPlayerTitle::Create(OUT_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
-	CPlayerTitle::Create(OUT_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
+	CPlayerTitle::Create(OUT_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);*/
 
 	// 成功
 	return S_OK;

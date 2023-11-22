@@ -51,6 +51,13 @@ PATTERNSET
 		STARTFRAME = 0		# 初期フレーム
 	END_ENEMYSET
 	
+	ENEMYSET
+		TYPE = 1		# キャラの種類
+		INDEX = 0
+		POS = 150.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+	
 END_PATTERNSET
 
 #------------------------------------------------------------------

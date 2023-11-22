@@ -60,6 +60,9 @@ CTitle::~CTitle()
 //==========================================================================
 HRESULT CTitle::Init(void)
 {
+	//プレイヤー数をリセット
+	CManager::GetInstance()->SetNumPlayer(0);
+
 	// BGM再生
 	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_TITLE);
 

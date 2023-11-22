@@ -29,7 +29,7 @@ class CList;
 class CEnemy : public CObjectChara
 {
 public:
-	// 列挙型定義
+	// 敵種類
 	typedef enum
 	{
 		TYPE_BOSS = 0,	// ボス
@@ -38,7 +38,7 @@ public:
 		TYPE_MAX
 	}TYPE;
 
-	// 列挙型定義
+	// 状態列挙
 	typedef enum
 	{
 		STATE_NONE = 0,		// なにもない
@@ -53,6 +53,14 @@ public:
 		STATE_BASECHANGE,	// 拠点切り替え
 		STATE_MAX
 	}STATE;
+
+	// 行動列挙 : 金崎
+	enum ACTION
+	{
+		ACTION_DEF = 0, //待機行動
+		ACTION_ATTACK, //攻撃行動
+		ACTION_SEARCH, //索敵行動
+	};
 
 	CEnemy(int nPriority = mylib_const::ENEMY_PRIORITY);
 	virtual ~CEnemy();
@@ -99,15 +107,6 @@ protected:
 		BASETYPE_MAP = 0,	// マップに沿っている
 		BASETYPE_ORIGIN,	// 出現位置
 		BASETYPE_MAX
-	};
-
-	enum ACTTYPE
-	{
-		ACTTYPE_FIXED = 0,	// 一定の動き
-		ACTTYPE_CHASE,		// 追い掛け
-		ACTTYPE_TURRET,		// タレット
-		ACTTYPE_BOSS,		// ボス
-		ACTTYPE_MAX
 	};
 
 	// モーションの判定
@@ -160,7 +159,6 @@ protected:
 	CHP_Gauge *m_pHPGauge;					// HPゲージの情報
 	CMotion *m_pMotion;						// モーションの情報
 	COLORTYPE m_colorType;					// 色ごとの種類
-	ACTTYPE m_ActType;						// 行動の種
 	CEnemy *m_pParent;		// 親のポインタ
 	D3DXCOLOR m_mMatcol;	// マテリアルの色
 private:

@@ -9,13 +9,14 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------
 # キャラクター数
 #------------------------------------------------------------------
-NUM_CHARACTER = 2
+NUM_CHARACTER = 3
 
 #------------------------------------------------------------------
 # キャラクターファイル名
 #------------------------------------------------------------------
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyboss.txt			# [0]ボス
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [1]蝶
+MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt				# [2]テスト
 
 #===================================================================================================
 # 敵の情報
@@ -45,6 +46,29 @@ PATTERNSET
 	
 	ENEMYSET
 		TYPE = 1		# キャラの種類
+		INDEX = 0
+		POS = 0.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE = 1		# キャラの種類
+		INDEX = 0
+		POS = 150.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+	
+END_PATTERNSET
+
+#------------------------------------------------------------------
+# [2]テスト
+#------------------------------------------------------------------
+PATTERNSET
+	
+	FIXEDMOVE = 0		# 一定の動きの種類
+	
+	ENEMYSET
+		TYPE = 2		# キャラの種類
 		INDEX = 0
 		POS = 0.00 0.00 0.00
 		STARTFRAME = 0		# 初期フレーム

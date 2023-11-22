@@ -140,6 +140,12 @@ void CGameManager::Update(void)
 	}
 
 
+	// テキストの描画
+	CManager::GetInstance()->GetDebugProc()->Print(
+		"---------------- ゲームマネージャ情報 ----------------\n"
+		"【今のモード】[%d]\n", m_SceneType);
+
+
 	if (m_SceneType == SCENE_TRANSITION)
 	{// 遷移中
 
@@ -151,10 +157,14 @@ void CGameManager::Update(void)
 
 			// カメラ取得
 			CCamera *pCamera = CManager::GetInstance()->GetCamera();
-			pCamera->SetEnableFollow(true);
+			if (pCamera != NULL)
+			{
+				pCamera->SetEnableFollow(true);
+			}
 
 			// 射出台の位置リセット
-			CGame::GetStage()->GetInjectionTable()->SetPosition(CGame::GetStage()->GetInjectionTable()->GetOriginPosition());
+			CInjectionTable *pTable = CGame::GetStage()->GetInjectionTable();
+			pTable->SetPosition(pTable->GetOriginPosition());
 
 			if (m_bEndNormalStage == false)
 			{// 通常ステージが終わっていなかったら
@@ -223,21 +233,30 @@ void CGameManager::SetEnemy(void)
 		}
 
 		// 位置設定
-		pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 250.0f, 0.0f, -1000.0f));
+		pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 250.0f, 0.0f, 0.0f));
 	}
 
 	// カメラの情報取得
 	CCamera *pCamera = CManager::GetInstance()->GetCamera();
-	pCamera->Reset(CScene::MODE_GAME);
+	if (pCamera != NULL)
+	{
+		pCamera->Reset(CScene::MODE_GAME);
+	}
 
-	// 敵の再配置
-	CGame::GetEnemyManager()->SetStageEnemy();
-
-	// 変更中じゃなくする
-	CGame::GetEnemyManager()->SetEnableChangeStage(false);
 
 	// 種類設定
 	m_SceneType = SCENE_MAIN;
+
+	// 敵の再配置
+	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
+	if (pEnemyManager != NULL)
+	{
+		// 敵の再配置
+		pEnemyManager->SetStageEnemy();
+
+		// 変更中じゃなくする
+		pEnemyManager->SetEnableChangeStage(false);
+	}
 }
 
 //==========================================================================

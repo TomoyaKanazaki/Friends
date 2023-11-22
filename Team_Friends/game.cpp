@@ -251,6 +251,7 @@ void CGame::Update(void)
 	}
 #endif
 
+#if _DEBUG
 	if (pInputKeyboard->GetTrigger(DIK_F4))
 	{// F4でエディット切り替え
 
@@ -281,6 +282,7 @@ void CGame::Update(void)
 
 		}
 	}
+#endif
 
 	if (GetEnemyManager() != NULL)
 	{// 敵マネージャの更新処理

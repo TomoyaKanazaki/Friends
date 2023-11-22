@@ -21,7 +21,6 @@
 namespace
 {
 	const char* MARKOBJ = "data\\MODEL\\koko.x";
-	const char* FILE_ENEMYBASE = "data\\BIN\\enemybase.bin";
 }
 
 //==========================================================================

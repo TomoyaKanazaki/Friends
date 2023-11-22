@@ -15,7 +15,7 @@ class CEnemyTest : public CEnemy
 {
 public:
 
-	//メンバ変数
+	// オーバーライドされた関数
 	CEnemyTest(int nPriority = mylib_const::ENEMY_PRIORITY);
 	~CEnemyTest();
 
@@ -26,8 +26,12 @@ public:
 	void Kill(void) override;
 	void MotionSet(void) override;		// モーションの設定
 
+	// メンバ関数
+	void SetDefaultPos(const D3DXVECTOR3 pos);
+
 private:
 
+	//モーション列挙
 	enum MOTION
 	{
 		MOTION_DEF = 0,		// ニュートラルモーション
@@ -37,6 +41,27 @@ private:
 		MOTION_FADEOUT,		// 帰還モーション
 		MOTION_MAX
 	};
+
+	// 行動列挙
+	enum ACTION
+	{
+		ACTION_DEF = 0, //待機行動
+		ACTION_RETURN, //帰還行動
+		ACTION_ATTACK, //攻撃行動
+		ACTION_SEARCH, //索敵行動
+		ACTION_CHASE, //追跡行動
+		MAX
+	};
+
+	// メンバ変数
+	ACTION m_Act; //行動状態
+	D3DXVECTOR3 m_posDefault; //初期位置
+
+	// メンバ関数
+	void ActionSet(void); // 行動の設定
+	bool CalcLenDefault(void); //初期位置に戻る処理
+	void RotationPlayer(void); // プレイヤーを向く処理
+	bool CalcLenPlayer(float fLen); // プレイヤーとの距離判定
 
 };
 

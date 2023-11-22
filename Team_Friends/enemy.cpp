@@ -86,7 +86,6 @@ CEnemy::CEnemy(int nPriority) : CObjectChara(nPriority)
 	m_pHPGauge = NULL;					// HPゲージの情報
 	m_pMotion = NULL;					// モーションの情報
 	m_colorType = COLORTYPE_NORMAL;		// 色ごとの種類
-	m_ActType = ACTTYPE_FIXED;			// 行動の種類
 	m_pList = NULL;				// リストのオブジェクト
 
 	memset(&m_pChild[0], NULL, sizeof(m_pChild));	// 子のポインタ
@@ -771,8 +770,6 @@ void CEnemy::UpdateState(void)
 	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 pos11 = D3DXVECTOR3(GetObjectChara()->GetModel()[0]->GetWorldMtx()._41, GetObjectChara()->GetModel()[0]->GetWorldMtx()._42, GetObjectChara()->GetModel()[0]->GetWorldMtx()._43);
 
-	//CEffect3D::Create(pos11, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), GetRadius(), 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
-
 	// 移動量取得
 	D3DXVECTOR3 move = GetMove();
 
@@ -838,43 +835,11 @@ void CEnemy::UpdateStateByType(void)
 //==========================================================================
 void CEnemy::StateNone(void)
 {
-	
 	// 色設定
 	m_mMatcol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// 状態遷移カウンター減算
 	m_nCntState--;
-
-	switch (m_ActType)
-	{
-	case CEnemy::ACTTYPE_FIXED:
-		break;
-
-	case CEnemy::ACTTYPE_CHASE:
-
-		m_state = STATE_PLAYERCHASE;
-
-		//// 位置取得
-		//D3DXVECTOR3 pos = GetPosition();
-
-		//if (CircleRange3D(pos, PlayerPos, 200.0f, PLAYER_SERCH) == true)
-		//{// プレイヤーが視界に入った
-		//	m_state = STATE_PLAYERCHASE;
-		//}
-
-		//// 位置設定
-		//SetPosition(pos);
-		break;
-
-	case CEnemy::ACTTYPE_TURRET:
-		break;
-
-	case CEnemy::ACTTYPE_MAX:
-		break;
-
-	default:
-		break;
-	}
 
 	if (m_nCntState <= 0)
 	{// 遷移カウンターが0になったら

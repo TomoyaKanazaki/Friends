@@ -101,7 +101,7 @@ CStatusWindow *CStatusWindow::Create(D3DXVECTOR3 pos, bool bJoin)
 HRESULT CStatusWindow::Init(void)
 {
 	// éÌóﬁê›íË
-	SetType(CObject::TYPE_SCORE);
+	SetType(CObject::TYPE_OBJECT2D);
 
 	D3DXVECTOR3 pos = GetPosition();
 	CStatusWindow_Base *pBase = CStatusWindow_Base::Create(pos);

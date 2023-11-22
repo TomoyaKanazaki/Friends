@@ -131,7 +131,7 @@ HRESULT CGame::Init(void)
 	m_pStage = CStage::Create("data\\TEXT\\stage\\info.txt");
 
 	// スコアの生成処理
-	m_pScore = CScore::Create(D3DXVECTOR3(1000.0f, 50.0f, 0.0f));
+	//m_pScore = CScore::Create(D3DXVECTOR3(1000.0f, 50.0f, 0.0f));
 
 	CManager::GetInstance()->GetCamera()->Reset(CScene::MODE_GAME);
 
@@ -141,7 +141,7 @@ HRESULT CGame::Init(void)
 	// 合体後プレイヤー生成
 	//CPlayerUnion::Create(CPlayerUnion::TYPE_ALL);
 
-	CCompactCore::Create(D3DXVECTOR3(500.0f, 400.0f, 0.0f));
+	//CCompactCore::Create(D3DXVECTOR3(500.0f, 400.0f, 0.0f));
 
 	// 成功
 	return S_OK;
@@ -243,7 +243,8 @@ void CGame::Update(void)
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
 #if 1
-	if (CManager::GetInstance()->GetEdit() == NULL &&
+	if (m_pScore != NULL &&
+		CManager::GetInstance()->GetEdit() == NULL &&
 		m_pEnemyManager != NULL &&
 		GetEnemyManager()->GetState() != CEnemyManager::STATE_COMBOANIM)
 	{
@@ -285,27 +286,27 @@ void CGame::Update(void)
 	}
 #endif
 
-	if (GetEnemyManager() != NULL)
-	{// 敵マネージャの更新処理
-		GetEnemyManager()->Update();
-	}
+	//if (GetEnemyManager() != NULL)
+	//{// 敵マネージャの更新処理
+	//	GetEnemyManager()->Update();
+	//}
 
-	if (m_pEditEnemyBase != NULL)
-	{// 敵の拠点エディターの更新処理
-		m_pEditEnemyBase->Update();
-	}
+	//if (m_pEditEnemyBase != NULL)
+	//{// 敵の拠点エディターの更新処理
+	//	m_pEditEnemyBase->Update();
+	//}
 
-	// 敵の拠点
-	if (m_pEnemyBase != NULL)
-	{
-		m_pEnemyBase->Update();
-	}
+	//// 敵の拠点
+	//if (m_pEnemyBase != NULL)
+	//{
+	//	m_pEnemyBase->Update();
+	//}
 
-	// ステージの更新
-	if (m_pStage != NULL)
-	{
-		m_pStage->Update();
-	}
+	//// ステージの更新
+	//if (m_pStage != NULL)
+	//{
+	//	m_pStage->Update();
+	//}
 
 #if _DEBUG
 

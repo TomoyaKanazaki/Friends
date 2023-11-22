@@ -43,6 +43,7 @@ public:
 		TYPE_GRASS,			// 草エフェクト
 		TYPE_SWEAT,			// 汗エフェクト
 		TYPE_THUNDER,		// 雷エフェクト
+		TYPE_NULL,			// NULLエフェクト
 		TYPE_MAX
 	}TYPE;
 

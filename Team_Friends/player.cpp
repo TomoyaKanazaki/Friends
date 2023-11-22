@@ -334,6 +334,8 @@ void CPlayer::Update(void)
 	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 posCenter = GetCenterPosition();
 
+	CEffect3D::Create(pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), GetRadius(), 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NULL);
+
 	// 移動量取得
 	D3DXVECTOR3 move = GetMove();
 
@@ -585,7 +587,7 @@ void CPlayer::Controll(void)
 	// 重力処理
 	if (m_state != STATE_KNOCKBACK && m_state != STATE_DMG && m_state != STATE_DEAD && m_state != STATE_FADEOUT && m_state != STATE_COMPACTUNION)
 	{
-		move.y -= mylib_const::GRAVITY;
+		//move.y -= mylib_const::GRAVITY;
 
 		// 位置更新
 		newPosition.y += move.y;
@@ -841,7 +843,7 @@ void CPlayer::Atack(void)
 					D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
 
 					// 炎
-					float fMove = 5.0f + Random(-2, 5);
+					float fMove = 6.0f + Random(-2, 5);
 					float fRot = Random(-20, 20) * 0.01f;
 					float fRotMove = Random(-10, 10) * 0.01f;
 
@@ -871,7 +873,8 @@ void CPlayer::Atack(void)
 						CEffect3D::MOVEEFFECT_ADD,
 						CEffect3D::TYPE_SMOKE);
 
-					CCollisionObject::Create(pEffect->GetPosition(), pEffect->GetMove(), pEffect->GetSize().x, 15);
+					int nDamage = (int)((float)aInfo.AttackInfo[nCntAttack]->nDamage * m_sStatus.fPowerBuff);
+					CCollisionObject::Create(pEffect->GetPosition(), pEffect->GetMove(), pEffect->GetSize().x, 15, nDamage, CCollisionObject::TAG_PLAYER);
 				}
 
 				//// チャージカウントリセット

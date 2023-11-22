@@ -193,7 +193,12 @@ void CEnemyManager::SetStageEnemy(void)
 {
 	// ゲームマネージャ取得
 	CGameManager *pGameManager = CGame::GetGameManager();
-	if (pGameManager == NULL || pGameManager->IsEndNormalStage() == true)
+	if (pGameManager == NULL)
+	{
+		return;
+	}
+
+	if (pGameManager->IsEndNormalStage() == true)
 	{
 		return;
 	}

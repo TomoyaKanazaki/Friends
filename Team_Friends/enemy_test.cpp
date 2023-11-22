@@ -7,7 +7,18 @@
 #include "enemy_test.h"
 #include "player.h"
 #include "manager.h"
+#include "debugproc.h"
 #include "calculation.h"
+
+//==========================================
+//  敵についての説明
+//==========================================
+/*
+	1.enemydataフォルダ内のmanager.txtに使用したいモデルのテキストファイルを追加する
+	2.enemy.hのTYPE列挙に新しいタイプを追加する
+	3.enemydataフォルダ内のbase.txtで追加したタイプを呼び出す
+	4.実行したらいる！！！
+*/
 
 //==========================================
 //  コンストラクタ
@@ -101,6 +112,8 @@ void CEnemyTest::Update(void)
 
 	// 目標の向き設定
 	SetRotDest(fRotDest);
+
+	CManager::GetInstance()->GetDebugProc()->Print("testenemy\n\n");
 }
 
 //==========================================

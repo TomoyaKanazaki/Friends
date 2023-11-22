@@ -29,9 +29,6 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	void SetVtx(void);
-
-	static int GetNumAll(void);	// 総数取得
 
 private:
 
@@ -39,7 +36,7 @@ private:
 	float m_fRadius;		// 半径
 	int m_nLife;			// 寿命
 	int m_nMaxLife;			// 最大寿命(固定)
-	int m_nParentIdx;		// 親のインデックス番号
+	static int m_nIdxTex;	// テクスチャのインデックス番号
 };
 
 #endif

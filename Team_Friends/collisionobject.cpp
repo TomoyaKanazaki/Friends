@@ -10,12 +10,9 @@
 #include "manager.h"
 
 //==========================================================================
-// マクロ定義
-//==========================================================================
-
-//==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
+int CCollisionObject::m_nIdxTex = 0;	// テクスチャのインデックス番号
 
 //==========================================================================
 // コンストラクタ
@@ -23,9 +20,9 @@
 CCollisionObject::CCollisionObject(int nPriority) : CObjectBillboard(nPriority)
 {
 	// 値のクリア
-	m_fRadius = 0.0f;							// 半径
-	m_nLife = 0;								// 寿命
-	m_nMaxLife = 0;								// 最大寿命(固定)
+	m_fRadius = 0.0f;	// 半径
+	m_nLife = 0;		// 寿命
+	m_nMaxLife = 0;		// 最大寿命(固定)
 }
 
 //==========================================================================
@@ -112,6 +109,14 @@ HRESULT CCollisionObject::Init(void)
 
 	// 種類の設定
 	SetType(TYPE_EFFECT3D);
+
+	if (m_nIdxTex == 0)
+	{
+		m_nIdxTex = CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\effect\\effect000.jpg");
+	}
+
+	// テクスチャの割り当て
+	BindTexture(m_nIdxTex);
 
 	// 初期化処理
 	hr = CObjectBillboard::Init();
@@ -218,13 +223,3 @@ void CCollisionObject::Draw(void)
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 #endif
 }
-
-//==========================================================================
-// 頂点情報設定処理
-//==========================================================================
-void CCollisionObject::SetVtx(void)
-{
-	// 頂点設定
-	CObjectBillboard::SetVtx();
-}
-

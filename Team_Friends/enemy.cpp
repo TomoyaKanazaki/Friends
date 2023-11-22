@@ -338,8 +338,12 @@ void CEnemy::Uninit(void)
 
 	// 敵マネージャ取得
 	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
-	// マネージャの終了
-	pEnemyManager->Release(nIdx);
+
+	if (pEnemyManager != NULL)
+	{
+		// マネージャの終了
+		pEnemyManager->Release(nIdx);
+	}
 }
 
 //==========================================================================

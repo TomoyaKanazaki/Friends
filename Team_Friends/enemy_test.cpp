@@ -14,6 +14,8 @@
 //  敵についての説明
 //==========================================
 /*
+	※このファイルに記述されているコードは敵を動かす最低限です。消さないでください。※
+
 	1.enemydataフォルダ内のmanager.txtに使用したいモデルのテキストファイルを追加する
 	2.enemy.hのTYPE列挙に新しいタイプを追加する
 	3.enemydataフォルダ内のbase.txtで追加したタイプを呼び出す
@@ -112,8 +114,6 @@ void CEnemyTest::Update(void)
 
 	// 目標の向き設定
 	SetRotDest(fRotDest);
-
-	CManager::GetInstance()->GetDebugProc()->Print("testenemy\n\n");
 }
 
 //==========================================

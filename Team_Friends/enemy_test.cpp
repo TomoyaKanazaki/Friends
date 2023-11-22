@@ -7,6 +7,7 @@
 #include "enemy_test.h"
 #include "player.h"
 #include "manager.h"
+#include "debugproc.h"
 #include "calculation.h"
 
 //==========================================
@@ -101,6 +102,8 @@ void CEnemyTest::Update(void)
 
 	// –Ú•W‚ÌŒü‚«İ’è
 	SetRotDest(fRotDest);
+
+	CManager::GetInstance()->GetDebugProc()->Print("testenemy\n\n");
 }
 
 //==========================================

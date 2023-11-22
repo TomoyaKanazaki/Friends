@@ -86,7 +86,6 @@ HRESULT CTitle::Init(void)
 	CEnemy::Create(0, "data\\TEXT\\character\\player\\motion_player.txt", D3DXVECTOR3(0.0f, 0.0f, -3000.0f), CEnemy::TYPE_TEST);
 
 	// ¬Œ÷
-	// ¬Œ÷
 	return S_OK;
 }
 
@@ -137,7 +136,7 @@ void CTitle::Update(void)
 	}
 
 	//ƒ^ƒCƒgƒ‹ƒƒS‚ªŠ®¬‚µ‚Ä‚¢‚È‚¢‚Æ‚«‚Í”²‚¯‚é
-	if (!m_pLogo->GetComplete())
+	if (m_pLogo == nullptr || !m_pLogo->GetComplete())
 	{
 		return;
 	}

@@ -177,7 +177,7 @@ HRESULT CMultiNumber::Init(void)
 		m_ppMultiNumber[nCntNum]->SetPosition(D3DXVECTOR3(m_pos.x + size.y * nCntNum, m_pos.y, m_pos.z));	// 位置
 
 		// 種類の設定
-		m_ppMultiNumber[nCntNum]->SetType(CObject::TYPE_SCORE);
+		m_ppMultiNumber[nCntNum]->SetType(CObject::TYPE_OBJECT2D);
 
 		// テクスチャの割り当て
 		m_ppMultiNumber[nCntNum]->BindTexture(m_nTexIdx);

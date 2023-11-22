@@ -41,7 +41,7 @@ CGameManager *CGame::m_pGameManager = NULL;			// ゲームマネージャのオブジェクト
 CGame::EEditType CGame::m_EditType = EDITTYPE_OFF;		// エディットの種類
 CEnemyBase *CGame::m_pEnemyBase = NULL;	// 敵の拠点
 CEnemyManager *CGame::m_pEnemyManager = NULL;	// 敵マネージャのオブジェクト
-CStatusWindow *CGame::m_pStatusWindow[CGameManager::STATUS_MAX] = {};	// ステータスウィンドウのオブジェクト
+CStatusWindow *CGame::m_pStatusWindow[mylib_const::MAX_PLAYER] = {};	// ステータスウィンドウのオブジェクト
 bool CGame::m_bEdit = false;				// エディットの判定
 
 //==========================================================================
@@ -285,27 +285,27 @@ void CGame::Update(void)
 	}
 #endif
 
-	//if (GetEnemyManager() != NULL)
-	//{// 敵マネージャの更新処理
-	//	GetEnemyManager()->Update();
-	//}
+	if (GetEnemyManager() != NULL)
+	{// 敵マネージャの更新処理
+		GetEnemyManager()->Update();
+	}
 
-	//if (m_pEditEnemyBase != NULL)
-	//{// 敵の拠点エディターの更新処理
-	//	m_pEditEnemyBase->Update();
-	//}
+	if (m_pEditEnemyBase != NULL)
+	{// 敵の拠点エディターの更新処理
+		m_pEditEnemyBase->Update();
+	}
 
-	//// 敵の拠点
-	//if (m_pEnemyBase != NULL)
-	//{
-	//	m_pEnemyBase->Update();
-	//}
+	// 敵の拠点
+	if (m_pEnemyBase != NULL)
+	{
+		m_pEnemyBase->Update();
+	}
 
-	//// ステージの更新
-	//if (m_pStage != NULL)
-	//{
-	//	m_pStage->Update();
-	//}
+	// ステージの更新
+	if (m_pStage != NULL)
+	{
+		m_pStage->Update();
+	}
 
 #if _DEBUG
 

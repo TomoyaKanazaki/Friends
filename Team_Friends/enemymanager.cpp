@@ -106,6 +106,34 @@ HRESULT CEnemyManager::Init(void)
 	m_nNumAll = 0;
 	m_nCntSpawn = 0;
 
+	// ステージ変更中にする
+	m_bChangeStage = false;
+
+	// 遷移状態に変更
+	//CGame::GetGameManager()->SetType(CGameManager::SCENE_TRANSITION);
+
+	// 敵拠点データ取得
+	CEnemyBase *pEnemyBase = CGame::GetEnemyBase();
+	if (pEnemyBase == NULL)
+	{
+		return E_FAIL;
+	}
+
+	// 拠点の数取得
+	int nNumBase = pEnemyBase->GetNumBase(0);
+
+	for (int i = 0; i < nNumBase; i++)
+	{
+		// 拠点ごとのデータ取得
+		CEnemyBase::sInfo sEnemyBaseInfo = pEnemyBase->GetEnemyBaseInfo(0, i);
+
+		// 敵の配置
+		SetEnemy(sEnemyBaseInfo.pos, sEnemyBaseInfo.rot, sEnemyBaseInfo.nPattern);
+	}
+
+	// 変更中じゃなくする
+	//SetEnableChangeStage(false);
+
 	return S_OK;
 }
 
@@ -167,7 +195,7 @@ void CEnemyManager::Update(void)
 		CGame::GetGameManager()->SetType(CGameManager::SCENE_MAINCLEAR);
 
 		// 遷移なしフェード追加
-		CManager::GetInstance()->GetInstantFade()->SetFade(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f), 320);
+		CManager::GetInstance()->GetInstantFade()->SetFade(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f), 40);
 
 		// 遷移状態に変更
 		CGame::GetGameManager()->SetType(CGameManager::SCENE_TRANSITION);
@@ -293,7 +321,6 @@ CEnemy **CEnemyManager::SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nPattern)
 			// 拠点の位置分加算
 			spawnPos += pos;
 
-
 			// 敵の生成
 			m_pEnemy[nCntNULL] = CEnemy::Create(
 				nCntNULL,						// インデックス番号
@@ -370,7 +397,7 @@ HRESULT CEnemyManager::ReadText(const std::string pTextFile)
 	int nCntFileName = 0;
 
 	memset(&m_aPattern[0], NULL, sizeof(m_aPattern));	// 読み込みデータ
-	m_nPatternNum = 0;
+	//m_nPatternNum = 0;
 	m_nNumChara = 0;
 
 	while (1)

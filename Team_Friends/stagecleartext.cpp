@@ -136,6 +136,11 @@ void CStageClearText::Uninit(void)
 //==================================================================================
 void CStageClearText::Update(void)
 {
+	if (IsDeath())
+	{
+		return;
+	}
+
 	// ó‘Ô•Êˆ—
 	(this->*(m_StateFuncList[m_state]))();
 

@@ -101,7 +101,7 @@ CStatusWindow *CStatusWindow::Create(D3DXVECTOR3 pos, bool bJoin)
 HRESULT CStatusWindow::Init(void)
 {
 	// 種類設定
-	SetType(CObject::TYPE_SCORE);
+	SetType(CObject::TYPE_OBJECT2D);
 
 	D3DXVECTOR3 pos = GetPosition();
 	CStatusWindow_Base *pBase = CStatusWindow_Base::Create(pos);
@@ -223,6 +223,7 @@ HRESULT CStatusWindow::Init(void)
 void CStatusWindow::Uninit(void)
 {
 	
+	// ウィンドウの型の終了処理
 	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
 	{
 		if (m_apWindowShape[i] == NULL)
@@ -230,6 +231,36 @@ void CStatusWindow::Uninit(void)
 			continue;
 		}
 		m_apWindowShape[i] = NULL;
+	}
+
+	// ウィンドウの型の終了処理
+	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
+	{
+		if (m_apWindowShapeLid[i] == NULL)
+		{
+			continue;
+		}
+		m_apWindowShapeLid[i] = NULL;
+	}
+
+	// ステータステキストの終了処理
+	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
+	{
+		if (m_apStatusText[i] == NULL)
+		{
+			continue;
+		}
+		m_apStatusText[i] = NULL;
+	}
+
+	// 円ゲージのポインタの終了処理
+	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
+	{
+		if (m_pCircleGauge2D[i] == NULL)
+		{
+			continue;
+		}
+		m_pCircleGauge2D[i] = NULL;
 	}
 
 	// 数字のオブジェクトの終了処理
@@ -242,6 +273,15 @@ void CStatusWindow::Uninit(void)
 		m_pStatusNumber[i]->Uninit();
 		delete m_pStatusNumber[i];
 		m_pStatusNumber[i] = NULL;
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		if (m_pStatusNumber[i] == NULL)
+		{
+			continue;
+		}
+		m_apOnOffSign[i] = NULL;
 	}
 
 	// 情報削除

@@ -320,6 +320,9 @@ HRESULT CEnemyBase::ReadText(const char *pFileName)
 		}
 	}
 
+	// ステージの総数設定
+	CGame::GetGameManager()->SetNumStage(m_nNumStage);
+
 	return S_OK;
 }
 

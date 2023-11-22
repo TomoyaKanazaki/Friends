@@ -41,7 +41,7 @@ CGameManager *CGame::m_pGameManager = NULL;			// ゲームマネージャのオブジェクト
 CGame::EEditType CGame::m_EditType = EDITTYPE_OFF;		// エディットの種類
 CEnemyBase *CGame::m_pEnemyBase = NULL;	// 敵の拠点
 CEnemyManager *CGame::m_pEnemyManager = NULL;	// 敵マネージャのオブジェクト
-CStatusWindow *CGame::m_pStatusWindow[CGameManager::STATUS_MAX] = {};	// ステータスウィンドウのオブジェクト
+CStatusWindow *CGame::m_pStatusWindow[mylib_const::MAX_PLAYER] = {};	// ステータスウィンドウのオブジェクト
 bool CGame::m_bEdit = false;				// エディットの判定
 
 //==========================================================================
@@ -79,21 +79,22 @@ HRESULT CGame::Init(void)
 	//**********************************
 	m_pGameManager = CGameManager::Create();
 
-	//**********************************
-	// 敵マネージャ
-	//**********************************
-	m_pEnemyManager = CEnemyManager::Create("data\\TEXT\\enemydata\\manager.txt");
-
-	if (m_pEnemyManager == NULL)
-	{// NULLだったら
-		return E_FAIL;
-	}
 
 	//**********************************
 	// 敵の拠点
 	//**********************************
 	m_pEnemyBase = CEnemyBase::Create("data\\TEXT\\enemydata\\base.txt");
 	if (m_pEnemyBase == NULL)
+	{// NULLだったら
+		return E_FAIL;
+	}
+
+	//**********************************
+	// 敵マネージャ
+	//**********************************
+	m_pEnemyManager = CEnemyManager::Create("data\\TEXT\\enemydata\\manager.txt");
+
+	if (m_pEnemyManager == NULL)
 	{// NULLだったら
 		return E_FAIL;
 	}
@@ -106,7 +107,7 @@ HRESULT CGame::Init(void)
 		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
 		if (pPlayer != NULL)
 		{
-			pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 50.0f, 1000.0f, 0.0f));
+			pPlayer->SetPosition(D3DXVECTOR3(-500.0f + nCntPlayer * 50.0f, 5000.0f, 0.0f));
 			pPlayer->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 		}
 	}
@@ -130,7 +131,7 @@ HRESULT CGame::Init(void)
 	m_pStage = CStage::Create("data\\TEXT\\stage\\info.txt");
 
 	// スコアの生成処理
-	m_pScore = CScore::Create(D3DXVECTOR3(1000.0f, 50.0f, 0.0f));
+	//m_pScore = CScore::Create(D3DXVECTOR3(1000.0f, 50.0f, 0.0f));
 
 	CManager::GetInstance()->GetCamera()->Reset(CScene::MODE_GAME);
 
@@ -140,7 +141,7 @@ HRESULT CGame::Init(void)
 	// 合体後プレイヤー生成
 	//CPlayerUnion::Create(CPlayerUnion::TYPE_ALL);
 
-	CCompactCore::Create(D3DXVECTOR3(500.0f, 400.0f, 0.0f));
+	//CCompactCore::Create(D3DXVECTOR3(500.0f, 400.0f, 0.0f));
 
 	// 成功
 	return S_OK;
@@ -214,7 +215,6 @@ void CGame::Uninit(void)
 		m_pEnemyBase = NULL;
 	}
 
-
 	// 終了処理
 	CScene::Uninit();
 }
@@ -242,7 +242,8 @@ void CGame::Update(void)
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
 #if 1
-	if (CManager::GetInstance()->GetEdit() == NULL &&
+	if (m_pScore != NULL &&
+		CManager::GetInstance()->GetEdit() == NULL &&
 		m_pEnemyManager != NULL &&
 		GetEnemyManager()->GetState() != CEnemyManager::STATE_COMBOANIM)
 	{

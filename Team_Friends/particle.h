@@ -43,6 +43,7 @@ namespace my_particle
 		TYPE_MOVESMOKE,	// 移動の煙
 		TYPE_ENEMYKILL_COMBO,	// コンボ時の敵倒した
 		TYPE_ADDSCORE,			// スコア加算時
+		TYPE_BRASTATTACK,		// ブラストアタック
 		TYPE_MAX
 	}TYPE;
 

@@ -200,6 +200,14 @@ void CImpactWave::Update(void)
 {
 	// 色取得
 	D3DXCOLOR col = GetColor();
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 move = GetMove();
+
+	// 位置更新
+	pos += move;
+
+	SetPosition(pos);
+	SetMove(move);
 
 	// 広げていく
 	m_fOutWidth += m_fMove;

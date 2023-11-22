@@ -26,6 +26,7 @@ public:
 		MOVEEFFECT_SUB,			// å∏éZ
 		MOVEEFFECT_SUPERSUB,	// í¥å∏éZ
 		MOVEEFFECT_NONE,		// ïœâªÇ»Çµ
+		MOVEEFFECT_GENSUI,		// å∏êä
 		MOVEEFFECT_MAX
 	}MOVEEFFECT;
 
@@ -71,6 +72,7 @@ private:
 	void SubSize(void);
 	void SuperSubSize(void);
 	void AddSize(void);
+	void Gensui(void);
 
 	// ÉÅÉìÉoïœêî
 	D3DXVECTOR3 m_posOrigin;		// å¥ì_

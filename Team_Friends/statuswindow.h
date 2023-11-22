@@ -40,7 +40,9 @@ private:
 	
 	bool m_bJoin;	// 参加してるか
 	CObject2D *m_apOnOffSign[2];							// オンオフサイン
+	CObject2D *m_apStatusText[CGameManager::STATUS_MAX];	// ステータステキスト
 	CObject2D *m_apWindowShape[CGameManager::STATUS_MAX];	// ウィンドウの型
+	CObject2D *m_apWindowShapeLid[CGameManager::STATUS_MAX];	// ウィンドウの型の蓋
 	CObjectCircleGauge2D *m_pCircleGauge2D[CGameManager::STATUS_MAX];	// 円ゲージのポインタ
 	CMultiNumber *m_pStatusNumber[CGameManager::STATUS_MAX];			// ステータスの数字
 };

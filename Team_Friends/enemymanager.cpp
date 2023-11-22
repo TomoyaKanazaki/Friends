@@ -321,7 +321,6 @@ CEnemy **CEnemyManager::SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nPattern)
 			// 拠点の位置分加算
 			spawnPos += pos;
 
-
 			// 敵の生成
 			m_pEnemy[nCntNULL] = CEnemy::Create(
 				nCntNULL,						// インデックス番号
@@ -398,7 +397,7 @@ HRESULT CEnemyManager::ReadText(const std::string pTextFile)
 	int nCntFileName = 0;
 
 	memset(&m_aPattern[0], NULL, sizeof(m_aPattern));	// 読み込みデータ
-	m_nPatternNum = 0;
+	//m_nPatternNum = 0;
 	m_nNumChara = 0;
 
 	while (1)

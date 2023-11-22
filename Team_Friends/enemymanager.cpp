@@ -183,7 +183,7 @@ void CEnemyManager::Update(void)
 	// テキストの描画
 	CManager::GetInstance()->GetDebugProc()->Print(
 		"---------------- 敵情報 ----------------\n"
-		"【残り人数】[%d]\n", m_nNumAll);
+		"【残りの敵の数】[%d]\n", m_nNumAll);
 
 
 	for (int i = 0; i < m_nPatternNum; i++)

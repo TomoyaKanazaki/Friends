@@ -49,7 +49,7 @@ void Fog::Draw()
 	}
 	else
 	{
-		CManager::GetInstance()->GetDebugProc()->Print("フォグ 【 OFF 】\n");
+		CManager::GetInstance()->GetDebugProc()->Print("\n\nフォグ 【 OFF 】\n");
 	}
 
 	//デバイスの取得

@@ -157,26 +157,26 @@ void CEnemyManager::Kill(void)
 //==========================================================================
 void CEnemyManager::Update(void)
 {
-	if (m_nNumAll <= 0 && m_bChangeStage == false)
-	{// 全員倒されたら
+	//if (m_nNumAll <= 0 && m_bChangeStage == false)
+	//{// 全員倒されたら
 
-		// ステージ変更中にする
-		m_bChangeStage = true;
+	//	// ステージ変更中にする
+	//	m_bChangeStage = true;
 
-		// 通常クリア状態にする
-		CGame::GetGameManager()->SetType(CGameManager::SCENE_MAINCLEAR);
+	//	// 通常クリア状態にする
+	//	CGame::GetGameManager()->SetType(CGameManager::SCENE_MAINCLEAR);
 
-		// 遷移なしフェード追加
-		CManager::GetInstance()->GetInstantFade()->SetFade();
+	//	// 遷移なしフェード追加
+	//	CManager::GetInstance()->GetInstantFade()->SetFade();
 
-		// 遷移状態に変更
-		CGame::GetGameManager()->SetType(CGameManager::SCENE_TRANSITION);
+	//	// 遷移状態に変更
+	//	CGame::GetGameManager()->SetType(CGameManager::SCENE_TRANSITION);
 
-		CStageClearText::Create(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
+	//	CStageClearText::Create(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
 
-		//// 遷移なしフェード追加
-		//CManager::GetInstance()->GetInstantFade()->SetFade();
-	}
+	//	//// 遷移なしフェード追加
+	//	//CManager::GetInstance()->GetInstantFade()->SetFade();
+	//}
 
 	
 
@@ -244,7 +244,7 @@ CEnemy **CEnemyManager::SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nPattern)
 	int nCntNULL = 0;
 	int nCntStart = 0;
 	Pattern NowPattern = m_aPattern[nPattern];
-	CEnemy *pEnemy[mylib_const::MAX_PATTEN_ENEMY] = {};
+	CEnemy *pEnemy[mylib_const::MAX_PATTEN_ENEMY];
 	memset(&pEnemy[0], NULL, sizeof(pEnemy));
 
 	for (int nCntEnemy = 0; nCntEnemy < nNumSpawn; nCntEnemy++)
@@ -345,7 +345,6 @@ HRESULT CEnemyManager::ReadText(const std::string pTextFile)
 
 	// ファイルを開く
 	pFile = fopen(pTextFile.c_str(), "r");
-
 	if (pFile == NULL)
 	{//ファイルが開けた場合
 		return E_FAIL;

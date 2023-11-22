@@ -141,7 +141,7 @@ void CTitle::Update(void)
 	}
 
 	//ƒ^ƒCƒgƒ‹ƒƒS‚ªŠ®¬‚µ‚Ä‚¢‚È‚¢‚Æ‚«‚Í”²‚¯‚é
-	if (!m_pLogo->GetComplete())
+	if (m_pLogo == nullptr || !m_pLogo->GetComplete())
 	{
 		return;
 	}

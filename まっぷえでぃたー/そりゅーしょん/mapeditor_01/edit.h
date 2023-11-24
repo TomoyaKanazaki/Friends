@@ -26,7 +26,6 @@ public:
 
 	// オーバーライドされた関数
 	HRESULT Init(void);
-	HRESULT Init(const char *pFileName);
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);

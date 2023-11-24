@@ -293,12 +293,12 @@ CHARACTERSET
 		ROT = 0.00 0.00 0.00
 		START = 0
 		SWITCHTYPE = 2			# êÿÇËë÷Ç¶ÇÃéÌóﬁ
-		ID_SWITCHMODEL = -1		# êÿÇËë÷Ç¶êÊÇÃID
+		ID_SWITCHMODEL = 3		# êÿÇËë÷Ç¶êÊÇÃID
 	END_PARTSSET
 
 	PARTSSET					# [25]ã≠âª[ãr]ç∂„¯
 		INDEX = 25
-		PARENT = 24
+		PARENT = 3
 		POS = 20.00 -38.55 -9.00
 		ROT = 0.00 0.00 0.00
 		START = 0
@@ -328,7 +328,7 @@ CHARACTERSET
 
 	PARTSSET
 		INDEX = 28				# [28]ã≠âª[ãr]âE„¯
-		PARENT = 24
+		PARENT = 3
 		POS = -20.00 -38.55 -9.00
 		ROT = 0.00 0.00 0.00
 		START = 0
@@ -1203,7 +1203,7 @@ MOTIONSET
 	#===================
 	ATTACKINFO
 		COLLISIONPARTS = 6
-		ATTACKRANGE = 600.00
+		ATTACKRANGE = 60.00
 		OFFSET = -19.00 0.00 0.00
 		ATTACKCOUNT = 13 32
 		INPACTCOUNT = 20

@@ -22,6 +22,8 @@ namespace map
 	HRESULT SaveText(void);	// 外部ファイル書き込み処理
 	int GetNumModelAll(void);	// 総数取得
 	void Release(void);
+	const char *GetModelFile(int nType);	// モデルファイル名取得
+	int GetModelIdx(int nType);				// モデルインデックス番号取得
 }
 
 #endif

@@ -50,6 +50,12 @@
 namespace
 {
 	const char* CHARAFILE = "data\\TEXT\\character\\player\\motion_player.txt";	// キャラクターファイル
+	const char* EVOLUSIONFILE[CGameManager::STATUS_MAX] =						// 進化先のファイル
+	{
+		"data\\TEXT\\character\\player\\motion_pUPArm.txt",		// 火力
+		"data\\TEXT\\character\\player\\motion_pUPLeg.txt",		// 駆動性
+		"data\\TEXT\\character\\player\\motion_pUPBody.txt",	// 耐久
+	};
 	const float JUMP = 20.0f * 1.5f;	// ジャンプ力初期値
 	const int INVINCIBLE_INT = 2;		// 無敵の間隔
 	const int INVINCIBLE_TIME = 90;		// 無敵の時間
@@ -338,8 +344,6 @@ void CPlayer::Update(void)
 	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 posCenter = GetCenterPosition();
 
-	CEffect3D::Create(pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), GetRadius(), 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NULL);
-
 	// 移動量取得
 	D3DXVECTOR3 move = GetMove();
 
@@ -359,6 +363,36 @@ void CPlayer::Update(void)
 	if (m_pShadow != NULL)
 	{
 		m_pShadow->SetPosition(D3DXVECTOR3(pos.x, m_pShadow->GetPosition().y, pos.z));
+	}
+
+	
+
+	// モーションの情報取得
+	if (m_pMotion != NULL)
+	{
+		CMotion::Info aInfo = m_pMotion->GetInfo(MOTION_WALK);
+
+		// 攻撃情報の総数取得
+		int nNumAttackInfo = aInfo.nNumAttackInfo;
+
+		int nCntEffect = 0;
+		int nNumEffect = GetEffectParentNum();
+		for (int i = 0; i < mylib_const::MAX_OBJ; i++)
+		{
+			CEffect3D *pEffect = GetEffectParent(i);
+			if (pEffect == NULL)
+			{// NULLだったら
+				continue;
+			}
+
+			// エフェクトの位置更新
+			pEffect->UpdatePosition(WorldMtxChangeToPosition(GetModel()[aInfo.AttackInfo[0]->nCollisionNum]->GetWorldMtx()), GetRotation());
+			nCntEffect++;
+			if (nNumEffect <= nCntEffect)
+			{
+				break;
+			}
+		}
 	}
 
 #if 0
@@ -517,7 +551,7 @@ void CPlayer::Controll(void)
 		}
 	}
 
-	if (m_pMotion->GetType() == MOTION_WALK)
+	//if (m_pMotion->GetType() == MOTION_WALK)
 	{// 移動中
 		m_nCntWalk = (m_nCntWalk + 1) % 4;
 
@@ -529,39 +563,62 @@ void CPlayer::Controll(void)
 			// 攻撃情報の総数取得
 			int nNumAttackInfo = aInfo.nNumAttackInfo;
 
+			CEffect3D *pEffect = NULL;
 			// 武器の位置
 			for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
 			{
 				D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
 
 				D3DXVECTOR3 ModelRot = GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetRotation();
-				ModelRot.x += GetModel()[0]->GetRotation().x;
+				ModelRot.x = GetModel()[0]->GetRotation().z;
 
 				//D3DXVECTOR3 ModelRot = WorldMtxChangeToRotation(GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetWorldMtx());
 
 				// 炎
-				float fMove = 1.5f + Random(-20, 20) * 0.01f;
+				float fMove = 5.5f + Random(-20, 20) * 0.1f;
 				float fRot = Random(-20, 20) * 0.01f;
 
-				CEffect3D::Create(
+				float ffff = sinf(D3DX_PI + ModelRot.x) * fMove;
+				float fffff = cosf(D3DX_PI + ModelRot.x) * fMove;
+				float ffffff = sinf(D3DX_PI * 0.5f + ModelRot.x) * fMove;
+				float fffffff = cosf(D3DX_PI * 0.5f + ModelRot.x) * fMove;
+
+				pEffect = CEffect3D::Create(
 					weponpos,
-					D3DXVECTOR3(sinf(D3DX_PI + rot.y + fRot) * -fMove, sinf(ModelRot.x) * fMove, cosf(D3DX_PI + rot.y + fRot) * -fMove),
+					D3DXVECTOR3(
+						sinf(ModelRot.x) * (sinf(D3DX_PI + rot.y + fRot) * fMove),
+						cosf(D3DX_PI + ModelRot.x) * fMove,
+						sinf(ModelRot.x) * (cosf(D3DX_PI + rot.y + fRot) * fMove)),
 					D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
-					30.0f + (float)Random(-10, 10),
+					40.0f + (float)Random(-10, 10),
 					15,
 					CEffect3D::MOVEEFFECT_ADD,
 					CEffect3D::TYPE_SMOKE);
+
+				if (pEffect != NULL)
+				{
+					// セットアップ位置設定
+					pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+				}
 
 				fRot = Random(-20, 20) * 0.01f;
 				// 炎
-				CEffect3D::Create(
+				pEffect = CEffect3D::Create(
 					weponpos,
-					D3DXVECTOR3(sinf(D3DX_PI + rot.y + fRot) * -fMove, sinf(ModelRot.x) * fMove, cosf(D3DX_PI + rot.y + fRot) * -fMove),
+					D3DXVECTOR3(
+						sinf(ModelRot.x) * (sinf(D3DX_PI + rot.y + fRot) * fMove),
+						cosf(D3DX_PI + ModelRot.x) * fMove,
+						sinf(ModelRot.x) * (cosf(D3DX_PI + rot.y + fRot) * fMove)),
 					D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
-					18.0f + (float)Random(-5, 5),
+					25.0f + (float)Random(-5, 5),
 					15,
 					CEffect3D::MOVEEFFECT_ADD,
 					CEffect3D::TYPE_SMOKE);
+				if (pEffect != NULL)
+				{
+					// セットアップ位置設定
+					pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+				}
 			}
 		}
 	}
@@ -946,7 +1003,9 @@ void CPlayer::Atack(void)
 			// 武器の位置
 			D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetObjectChara()->GetModel(), *aInfo.AttackInfo[nCntAttack]);
 
+#if _DEBUG
 			CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+#endif
 
 #if 1
 			// 敵取得
@@ -1484,6 +1543,34 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 
 	// パーツ変更
 	ChangeObject((int)statusType + 1);
+
+	// モーション切り替え
+	ChangeMotion(EVOLUSIONFILE[(int)statusType]);
+}
+
+//==========================================================================
+// モーションファイル
+//==========================================================================
+void CPlayer::ChangeMotion(const char* pMotionFile)
+{
+	if (m_pMotion != NULL)
+	{
+		m_pMotion->Uninit();
+		delete m_pMotion;
+		m_pMotion = NULL;
+	}
+
+	// モーションの生成処理
+	m_pMotion = CMotion::Create(pMotionFile);
+
+	// オブジェクトキャラクターの情報取得
+	CObjectChara *pObjChar = GetObjectChara();
+
+	// モーションの設定
+	m_pMotion->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), CObjectChara::GetObjectChara());
+
+	// ポーズのリセット
+	m_pMotion->ResetPose(MOTION_DEF);
 }
 
 //==========================================================================

@@ -592,7 +592,7 @@ void CEnemy::CollisionPlayer(void)
 		CPlayer::STATE PlayerState = (CPlayer::STATE)pPlayer->GetState();
 
 #if _DEBUG
-		CEffect3D::Create(PlayerPos, mylib_const::DEFAULT_VECTOR3, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), PlayerRadius, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NULL);
+		//CEffect3D::Create(PlayerPos, mylib_const::DEFAULT_VECTOR3, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), PlayerRadius, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NULL);
 #endif
 
 		// ‹…‚Ì”»’è
@@ -1605,6 +1605,10 @@ void CEnemy::ChaseMove(float fMove)
 //==========================================================================
 void CEnemy::Atack(void)
 {
+	if (m_pMotion == NULL)
+	{
+		return;
+	}
 
 	// ˆÊ’uŽæ“¾
 	D3DXVECTOR3 pos = GetPosition();

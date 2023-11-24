@@ -190,12 +190,8 @@ void CMeshField::Draw(void)
 	//  デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
-	//pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);	// 埋めるモード
-
 	// 描画処理
 	CObject3DMesh::Draw();
-
-	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);	// 埋めるモード
 }
 
 //==========================================================================

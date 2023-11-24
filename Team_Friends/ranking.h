@@ -40,6 +40,8 @@ private:
 	static bool m_bAllArrival;		// 全て到着した判定
 	static int m_nRandStage;	// ステージのランダムインデックス番号
 	static CRankingScore *m_pRankingScore;	// ランキングスコアのオブジェクト
+
+	static const char *m_apModelFile;		// モデルのファイル
 };
 
 

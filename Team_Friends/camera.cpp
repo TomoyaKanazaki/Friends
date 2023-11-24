@@ -37,8 +37,10 @@
 #define TITLESTATE_CHANGE	(60 * 14)
 #define TITLESTATE_CHASE	(60 * 20)
 #define RESULT_LEN	(280.0f)
+#define RANKING_LEN_DEST	(1000.0f)
+#define RANKING_POS_V	(D3DXVECTOR3(180.0f, 880.0f, -450.0f))
 //#define RESULT_LEN	(1000.0f)
-#define RANKINGROT_NONE		(D3DXVECTOR3(0.0f, -0.79f + D3DX_PI, -0.30f))
+#define RANKINGROT_NONE		(D3DXVECTOR3(0.0f, 0.09f, 0.05f))
 
 //==========================================================================
 // コンストラクタ
@@ -528,6 +530,10 @@ void CCamera::SetCameraV(void)
 		SetCameraVResult();
 		break;
 
+	case CScene::MODE_RANKING:
+		SetCameraVRanking();
+		break;
+
 	default:
 		SetCameraVResult();
 		break;
@@ -694,6 +700,15 @@ void CCamera::SetCameraVResult(void)
 }
 
 //==================================================================================
+// カメラの視点代入処理(ランキング)
+//==================================================================================
+void CCamera::SetCameraVRanking(void)
+{
+	// 視点の代入処理
+	m_posV = D3DXVECTOR3(RANKING_POS_V.x, RANKING_POS_V.y, RANKING_POS_V.z);
+}
+
+//==================================================================================
 // カメラの注視点代入処理
 //==================================================================================
 void CCamera::SetCameraR(void)
@@ -715,6 +730,10 @@ void CCamera::SetCameraR(void)
 
 	case CScene::MODE_RESULT:
 		SetCameraRResult();
+		break;
+
+	case CScene::MODE_RANKING:
+		SetCameraRRanking();
 		break;
 
 	default:
@@ -829,6 +848,17 @@ void CCamera::SetCameraRGame(void)
 // カメラの注視点代入処理(リザルト)
 //==================================================================================
 void CCamera::SetCameraRResult(void)
+{
+	// 注視点の代入処理
+	m_posR.x = m_posV.x + cosf(m_rot.z) * sinf(m_rot.y) * m_fDistance;
+	m_posR.z = m_posV.z + cosf(m_rot.z) * cosf(m_rot.y) * m_fDistance;
+	m_posR.y = m_posV.y + sinf(m_rot.z) * m_fDistance;
+}
+
+//==================================================================================
+// カメラの注視点代入処理(ランキング)
+//==================================================================================
+void CCamera::SetCameraRRanking(void)
 {
 	// 注視点の代入処理
 	m_posR.x = m_posV.x + cosf(m_rot.z) * sinf(m_rot.y) * m_fDistance;
@@ -1138,15 +1168,15 @@ void CCamera::ResetResult(void)
 void CCamera::ResetRanking(void)
 {
 	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 注視点(見たい場所)
-	m_posV = D3DXVECTOR3(2401.44f, 1542.82f, -2355.46f);	// 視点(カメラの位置)
+	m_posV = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 視点(カメラの位置)
 	m_posVDest = m_posV;								// 目標の視点
 	m_posRDest = m_posR;								// 目標の注視点
 	m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);				// 上方向ベクトル
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);				// 移動量
 	m_TargetPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 目標の位置
-	m_fDistance = TITLE_LEN_DEST;						// 距離
-	m_fDestDistance = TITLE_LEN_DEST;					// 目標の距離
-	m_fOriginDistance = TITLE_LEN_DEST;					// 元の距離
+	m_fDistance = RANKING_LEN_DEST;						// 距離
+	m_fDestDistance = RANKING_LEN_DEST;					// 目標の距離
+	m_fOriginDistance = RANKING_LEN_DEST;					// 元の距離
 	m_fDiffHeight = 0.0f;								// 高さの差分
 	m_fDiffHeightSave = 0.0f;							// 高さの差分保存用
 	m_fDiffHeightDest = 0.0f;							// 目標の高さの差分
@@ -1162,7 +1192,7 @@ void CCamera::ResetRanking(void)
 	m_rotVDest = m_rot;									// 目標の視点の向き
 
 	// 注視点の代入
-	m_posR = D3DXVECTOR3(0.0f, 400.0f, 0.0f);			// 注視点(見たい場所)
+	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 注視点(見たい場所)
 
 	// 視点の代入
 	m_posV.x = m_posR.x + cosf(m_rot.z) * sinf(m_rot.y) * -m_fDistance;

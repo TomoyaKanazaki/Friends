@@ -140,6 +140,18 @@ void RotNormalize(D3DXVECTOR3 &rot)
 }
 
 //==================================================================================
+// ワールドマトリックスをposに変換
+//==================================================================================
+D3DXVECTOR3 WorldMtxChangeToPosition(D3DXMATRIX worldmtx)
+{
+	D3DXVECTOR3 pos = mylib_const::DEFAULT_VECTOR3;
+
+	pos = D3DXVECTOR3(worldmtx._41, worldmtx._42, worldmtx._43);
+
+	return pos;
+}
+
+//==================================================================================
 // ワールドマトリックスをrotに変換
 //==================================================================================
 D3DXVECTOR3 WorldMtxChangeToRotation(D3DXMATRIX worldmtx)

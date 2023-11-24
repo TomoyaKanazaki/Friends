@@ -215,7 +215,7 @@ void CEnemyTest::ActionSet(void)
 		// ‹——£‚ª‹ß‚¢‚ÆUŒ‚ó‘Ô‚É‚È‚é
 		m_Act = ACTION_ATTACK;
 	}
-	else if (CalcLenPlayer(JUDGMENT_LENGTH))
+	else if (CalcLenPlayer(SEARCH_LENGTH))
 	{
 		// ‹——£‚ª‹ß‚¢‚Æ’ÇÕó‘Ô‚É‚È‚é
 		m_Act = ACTION_CHASE;
@@ -298,7 +298,7 @@ bool CEnemyTest::CalcLenDefault(void)
 	float fLength = vecToPlayer.x * vecToPlayer.x + vecToPlayer.z * vecToPlayer.z;
 
 	// ˆê’è”ÍˆÍ“à‚Ì”»’è
-	if (JUDGMENT_LENGTH >= fLength)
+	if (SEARCH_LENGTH * SEARCH_LENGTH >= fLength)
 	{
 		return false;
 	}

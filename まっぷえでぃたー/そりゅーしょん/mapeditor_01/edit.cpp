@@ -105,24 +105,14 @@ HRESULT CEdit::Init(void)
 	m_pObjX = m_pObjX->Create(CScene::GetXLoad()->GetMyObject(m_nType)->acFilename);
 	m_pObjX->SetType(TYPE_EDIT);
 
+	D3DXVECTOR3 pos = CManager::GetInstance()->GetCamera()->GetPositionR();
+	pos.y = 0.0f;
+	m_pObjX->SetPosition(pos);
+
 	if (m_pObjX == NULL)
 	{// 失敗していたら
 		return E_FAIL;
 	}
-
-	return S_OK;
-}
-
-//==========================================================================
-// 初期化処理
-//==========================================================================
-HRESULT CEdit::Init(const char *pFileName)
-{
-	// デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
-	
-	// 生成処理
-	m_pObjX = m_pObjX->Create(pFileName);
 
 	return S_OK;
 }
@@ -173,7 +163,7 @@ void CEdit::Update(void)
 	{// ENTERで配置
 
 		// タイプの物を生成
-		CObjectX *pObjX = CObjectX::Create(&CScene::GetXLoad()->GetMyObject(m_nType)->acFilename[0], pos, rot, m_bShadow);
+		CObjectX *pObjX = CObjectX::Create(map::GetModelFile(m_nType), pos, rot, m_bShadow);
 		pObjX->SetType(CObject::TYPE_XFILE);
 	}
 
@@ -402,7 +392,7 @@ void CEdit::ChangeType(void)
 		m_nType = (m_nType + (nNumAll - 1)) % nNumAll;
 
 		// オブジェクト割り当て
-		m_pObjX->BindXData(m_nType);
+		m_pObjX->BindXData(map::GetModelIdx(m_nType));
 	}
 	else if (pInputKeyboard->GetTrigger(DIK_2) == true)
 	{// 2が押された
@@ -411,7 +401,7 @@ void CEdit::ChangeType(void)
 		m_nType = (m_nType + 1) % nNumAll;
 
 		// オブジェクト割り当て
-		m_pObjX->BindXData(m_nType);
+		m_pObjX->BindXData(map::GetModelIdx(m_nType));
 	}
 
 	if (pInputKeyboard->GetTrigger(DIK_3) == true)
@@ -529,7 +519,7 @@ void CEdit::Draw(void)
 //==========================================================================
 HRESULT CEdit::ReadText(void)
 {
-	return S_OK;;
+	return S_OK;
 }
 
 //==========================================================================

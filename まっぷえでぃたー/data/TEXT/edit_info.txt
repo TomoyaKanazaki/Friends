@@ -25,66 +25,65 @@ TEXTURE_FILENAME = data/TEXTURE/glass.jpg		# [14]
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 55
+NUM_MODEL = 54
 
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-MODEL_FILENAME = data\\MODEL\\map\mark_01.x		# [0]
-MODEL_FILENAME = data\\MODEL\\character\union_test.x		# [1]
-MODEL_FILENAME = data\\MODEL\\map\bill_00.x		# [2]
-MODEL_FILENAME = data\\MODEL\\map\bill_01.x		# [3]
-MODEL_FILENAME = data\\MODEL\\map\stone000.x		# [4]
-MODEL_FILENAME = data\\MODEL\\map\stone001.x		# [5]
-MODEL_FILENAME = data\\MODEL\\map\stone002.x		# [6]
-MODEL_FILENAME = data\\MODEL\\map\stone003.x		# [7]
-MODEL_FILENAME = data\\MODEL\\tree\tree_01.x		# [8]
-MODEL_FILENAME = data\\MODEL\\tree\tree_01_big.x		# [9]
-MODEL_FILENAME = data\\MODEL\\tree\tree_01_normal.x		# [10]
-MODEL_FILENAME = data\\MODEL\\tree\tree_01_small.x		# [11]
-MODEL_FILENAME = data\\MODEL\\tree\tree_02_big.x		# [12]
-MODEL_FILENAME = data\\MODEL\\tree\tree_02_normal.x		# [13]
-MODEL_FILENAME = data\\MODEL\\tree\tree_02_small.x		# [14]
-MODEL_FILENAME = data\\MODEL\\tree\tree_03.x		# [15]
-MODEL_FILENAME = data\\MODEL\\tree\treegroup_01.x		# [16]
-MODEL_FILENAME = data\\MODEL\\mount\car.x		# [17]
-MODEL_FILENAME = data\\MODEL\\mount\irontower.x		# [18]
-MODEL_FILENAME = data\\MODEL\\mount\rock.x		# [19]
-MODEL_FILENAME = data\\MODEL\\bill\building001.x		# [20]
-MODEL_FILENAME = data\\MODEL\\bill\building002.x		# [21]
-MODEL_FILENAME = data\\MODEL\\bill\building003.x		# [22]
-MODEL_FILENAME = data\\MODEL\\bill\building004.x		# [23]
-MODEL_FILENAME = data\\MODEL\\bill\building005.x		# [24]
-MODEL_FILENAME = data\\MODEL\\bill\bill001.x		# [25]
-MODEL_FILENAME = data\\MODEL\\bill\bill002.x		# [26]
-MODEL_FILENAME = data\\MODEL\\bill\bill003.x		# [27]
-MODEL_FILENAME = data\\MODEL\\bill\bill004.x		# [28]
-MODEL_FILENAME = data\\MODEL\\bill\bill005.x		# [29]
-MODEL_FILENAME = data\\MODEL\\bill\bill006.x		# [30]
-MODEL_FILENAME = data\\MODEL\\tree\treegroup_02.x		# [31]
-MODEL_FILENAME = data\\MODEL\\tree\treegroup_03.x		# [32]
-MODEL_FILENAME = data\\MODEL\\tree\treegroup_04.x		# [33]
-MODEL_FILENAME = data\\MODEL\\city\building_group01.x		# [34]
-MODEL_FILENAME = data\\MODEL\\city\building_group02.x		# [35]
-MODEL_FILENAME = data\\MODEL\\city\building_group03.x		# [36]
-MODEL_FILENAME = data\\MODEL\\city\building_group04.x		# [37]
-MODEL_FILENAME = data\\MODEL\\city\building_group05.x		# [38]
-MODEL_FILENAME = data\\MODEL\\city\panel_cheat.x		# [39]
-MODEL_FILENAME = data\\MODEL\\city\panel_supersolar.x		# [40]
-MODEL_FILENAME = data\\MODEL\\city\size_city\building_group06.x		# [41]
-MODEL_FILENAME = data\\MODEL\\city\size_city\building_group07.x		# [42]
-MODEL_FILENAME = data\\MODEL\\city\size_city\building_group08.x		# [43]
-MODEL_FILENAME = data\\MODEL\\city\size_city\building_group09.x		# [44]
-MODEL_FILENAME = data\\MODEL\\city\size_city\building_group10.x		# [45]
-MODEL_FILENAME = data\\MODEL\\city\size_city\building_group11.x		# [46]
-MODEL_FILENAME = data\\MODEL\\city\size_city\dome00.x		# [47]
-MODEL_FILENAME = data\\MODEL\\city\size_city\panel_cheat_city.x		# [48]
-MODEL_FILENAME = data\\MODEL\\city\size_city\panel_supersolar_city.x		# [49]
-MODEL_FILENAME = data\\MODEL\\city\size_city\building_group02_city.x		# [50]
-MODEL_FILENAME = data\\MODEL\\city\size_city\building_group03_city.x		# [51]
-MODEL_FILENAME = data\\MODEL\\city\size_city\building_group04_city.x		# [52]
-MODEL_FILENAME = data\\MODEL\\city\size_city\building_group12.x		# [53]
-MODEL_FILENAME = data\\MODEL\\city\forest001.x		# [54]
+MODEL_FILENAME = data/MODEL/map/mark_01.x		# [0]
+MODEL_FILENAME = data/MODEL/character/union_test.x		# [1]
+MODEL_FILENAME = data/MODEL/map/bill_00.x		# [2]
+MODEL_FILENAME = data/MODEL/map/bill_01.x		# [3]
+MODEL_FILENAME = data/MODEL/map/stone000.x		# [4]
+MODEL_FILENAME = data/MODEL/map/stone001.x		# [5]
+MODEL_FILENAME = data/MODEL/map/stone002.x		# [6]
+MODEL_FILENAME = data/MODEL/map/stone003.x		# [7]
+MODEL_FILENAME = data/MODEL/tree/tree_01.x		# [8]
+MODEL_FILENAME = data/MODEL/tree/tree_01_big.x		# [9]
+MODEL_FILENAME = data/MODEL/tree/tree_01_normal.x		# [10]
+MODEL_FILENAME = data/MODEL/tree/tree_01_small.x		# [11]
+MODEL_FILENAME = data/MODEL/tree/tree_02_big.x		# [12]
+MODEL_FILENAME = data/MODEL/tree/tree_02_normal.x		# [13]
+MODEL_FILENAME = data/MODEL/tree/tree_02_small.x		# [14]
+MODEL_FILENAME = data/MODEL/tree/tree_03.x		# [15]
+MODEL_FILENAME = data/MODEL/tree/treegroup_01.x		# [16]
+MODEL_FILENAME = data/MODEL/mount/car.x		# [17]
+MODEL_FILENAME = data/MODEL/mount/irontower.x		# [18]
+MODEL_FILENAME = data/MODEL/mount/rock.x		# [19]
+MODEL_FILENAME = data/MODEL/bill/building001.x		# [20]
+MODEL_FILENAME = data/MODEL/bill/building002.x		# [21]
+MODEL_FILENAME = data/MODEL/bill/building003.x		# [22]
+MODEL_FILENAME = data/MODEL/bill/building004.x		# [23]
+MODEL_FILENAME = data/MODEL/bill/building005.x		# [24]
+MODEL_FILENAME = data/MODEL/bill/bill001.x		# [25]
+MODEL_FILENAME = data/MODEL/bill/bill002.x		# [26]
+MODEL_FILENAME = data/MODEL/bill/bill003.x		# [27]
+MODEL_FILENAME = data/MODEL/bill/bill004.x		# [28]
+MODEL_FILENAME = data/MODEL/bill/bill005.x		# [29]
+MODEL_FILENAME = data/MODEL/bill/bill006.x		# [30]
+MODEL_FILENAME = data/MODEL/tree/treegroup_02.x		# [31]
+MODEL_FILENAME = data/MODEL/tree/treegroup_03.x		# [32]
+MODEL_FILENAME = data/MODEL/tree/treegroup_04.x		# [33]
+MODEL_FILENAME = data/MODEL/city/building_group01.x		# [34]
+MODEL_FILENAME = data/MODEL/city/building_group02.x		# [35]
+MODEL_FILENAME = data/MODEL/city/building_group03.x		# [36]
+MODEL_FILENAME = data/MODEL/city/building_group04.x		# [37]
+MODEL_FILENAME = data/MODEL/city/building_group05.x		# [38]
+MODEL_FILENAME = data/MODEL/city/panel_cheat.x		# [39]
+MODEL_FILENAME = data/MODEL/city/panel_supersolar.x		# [40]
+MODEL_FILENAME = data/MODEL/city/size_city/building_group06.x		# [41]
+MODEL_FILENAME = data/MODEL/city/size_city/building_group07.x		# [42]
+MODEL_FILENAME = data/MODEL/city/size_city/building_group08.x		# [43]
+MODEL_FILENAME = data/MODEL/city/size_city/building_group09.x		# [44]
+MODEL_FILENAME = data/MODEL/city/size_city/building_group10.x		# [45]
+MODEL_FILENAME = data/MODEL/city/size_city/building_group11.x		# [46]
+MODEL_FILENAME = data/MODEL/city/size_city/dome00.x		# [47]
+MODEL_FILENAME = data/MODEL/city/size_city/panel_cheat_city.x		# [48]
+MODEL_FILENAME = data/MODEL/city/size_city/panel_supersolar_city.x		# [49]
+MODEL_FILENAME = data/MODEL/city/size_city/building_group02_city.x		# [50]
+MODEL_FILENAME = data/MODEL/city/size_city/building_group03_city.x		# [51]
+MODEL_FILENAME = data/MODEL/city/size_city/building_group04_city.x		# [52]
+MODEL_FILENAME = data/MODEL/city/size_city/building_group12.x		# [53]
 
 #==============================================================================
 # 空情報
@@ -416,13 +415,6 @@ MODELSET
 END_MODELSET
 
 MODELSET
-	TYPE = 48
-	POS = -1.20 0.00 1865.05
-	ROT = 0.00 0.00 0.00
-	SHADOW = 1
-END_MODELSET
-
-MODELSET
 	TYPE = 37
 	POS = -4934.70 0.00 -3925.97
 	ROT = 0.00 -1.57 0.00
@@ -454,20 +446,6 @@ MODELSET
 	TYPE = 37
 	POS = -4923.23 0.00 3395.93
 	ROT = 0.00 -1.57 0.00
-	SHADOW = 1
-END_MODELSET
-
-MODELSET
-	TYPE = 35
-	POS = -1051.42 0.00 3387.64
-	ROT = 0.00 0.00 0.00
-	SHADOW = 1
-END_MODELSET
-
-MODELSET
-	TYPE = 35
-	POS = 1048.54 0.00 3377.58
-	ROT = 0.00 0.00 0.00
 	SHADOW = 1
 END_MODELSET
 
@@ -626,27 +604,6 @@ MODELSET
 END_MODELSET
 
 MODELSET
-	TYPE = 48
-	POS = 2.75 0.00 -1741.67
-	ROT = 0.00 0.00 0.00
-	SHADOW = 1
-END_MODELSET
-
-MODELSET
-	TYPE = 48
-	POS = -3.35 0.00 -2972.90
-	ROT = 0.00 0.00 0.00
-	SHADOW = 1
-END_MODELSET
-
-MODELSET
-	TYPE = 48
-	POS = -0.34 0.00 -4155.75
-	ROT = 0.00 0.00 0.00
-	SHADOW = 1
-END_MODELSET
-
-MODELSET
 	TYPE = 47
 	POS = 1608.88 0.00 -5342.59
 	ROT = 0.00 0.00 0.00
@@ -664,27 +621,6 @@ MODELSET
 	TYPE = 53
 	POS = -3466.06 0.00 473.95
 	ROT = 0.00 -1.57 0.00
-	SHADOW = 1
-END_MODELSET
-
-MODELSET
-	TYPE = 48
-	POS = -3.20 0.00 639.99
-	ROT = 0.00 0.00 0.00
-	SHADOW = 1
-END_MODELSET
-
-MODELSET
-	TYPE = 48
-	POS = -21.50 0.00 -579.87
-	ROT = 0.00 0.00 0.00
-	SHADOW = 1
-END_MODELSET
-
-MODELSET
-	TYPE = 48
-	POS = -27.06 0.00 -5352.56
-	ROT = 0.00 0.00 0.00
 	SHADOW = 1
 END_MODELSET
 
@@ -997,16 +933,135 @@ MODELSET
 END_MODELSET
 
 MODELSET
-	TYPE = 52
-	POS = 3431.17 0.00 -2742.15
-	ROT = 0.00 -3.14 0.00
+	TYPE = 49
+	POS = 24.76 0.00 3811.95
+	ROT = 0.00 3.14 0.00
 	SHADOW = 1
 END_MODELSET
 
 MODELSET
-	TYPE = 52
-	POS = 3434.31 0.00 -3052.29
-	ROT = 0.00 0.00 0.00
+	TYPE = 49
+	POS = 24.87 0.00 2879.14
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = 26.52 0.00 1945.85
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = 25.59 0.00 1010.84
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = 25.70 0.00 78.77
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = 29.78 0.00 -854.25
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = 30.73 0.00 -1788.62
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = 28.80 0.00 -2722.63
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = 29.89 0.00 -3654.65
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = 27.98 0.00 -4586.66
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = 27.18 0.00 -5520.67
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = -903.21 0.00 -2724.32
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = -1837.21 0.00 -2725.80
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = -2771.22 0.00 -2721.29
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = -3703.22 0.00 -2722.76
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = 963.27 0.00 -2722.00
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = 1895.27 0.00 -2720.52
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = 2829.27 0.00 -2719.04
+	ROT = 0.00 3.14 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 48
+	POS = 3764.27 0.00 -2717.56
+	ROT = 0.00 3.14 0.00
 	SHADOW = 1
 END_MODELSET
 

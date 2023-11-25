@@ -4,8 +4,8 @@ Format Text Ver 1.0
 Scene {
 	pos -52.3266 -383.1424 4030.9109
 	lookat 0.0000 0.0000 0.0000
-	head -6.9937
-	pich 0.3436
+	head -6.3137
+	pich 0.6436
 	bank 0.0000
 	ortho 0
 	zoom2 1.8606
@@ -18,9 +18,9 @@ Scene {
 	}
 }
 Material 4 {
-	"“V•Ó" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("C:\Users\student\Desktop\konkuri.jpg")
-	"•Ç" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("C:\Users\student\Desktop\biru.jpg")
-	"mat2" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("C:\Users\student\Desktop\panel.tga")
+	"“V•Ó" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("data\konkuri.jpg")
+	"•Ç" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("data\biru.jpg")
+	"mat2" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("data\panel.tga")
 	"mat1" col(0.000 0.000 0.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
 }
 Object "obj1" {

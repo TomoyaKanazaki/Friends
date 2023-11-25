@@ -42,6 +42,7 @@ namespace mapdate
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
+vector<int> nIdxModel;				// モデルインデックス番号
 vector<std::string> ModelFile;		// モデルファイル名
 vector<std::string> TextureFile;	// テクスチャファイル名
 mapdate::SMap g_Map;
@@ -540,7 +541,7 @@ HRESULT map::ReadXFile(void)
 				CXLoad *pXLoad = CScene::GetXLoad();
 
 				// ファイル読み込み
-				pXLoad->XLoad(&ModelFile[mapdate::nNumModelAll][0]);
+				nIdxModel.push_back(pXLoad->XLoad(&ModelFile[mapdate::nNumModelAll][0]));
 
 				mapdate::nNumModelAll++;	// モデル数加算
 			}
@@ -841,4 +842,18 @@ HRESULT map::ReadText(const char *pTextFile)
 int map::GetNumModelAll(void)
 {
 	return mapdate::nNumModelAll;
+}
+
+//==========================================================================
+// モデルファイル名取得
+//==========================================================================
+const char *map::GetModelFile(int nType)
+{
+	return ModelFile[nType].c_str();
+}
+
+// モデルインデックス番号取得
+int map::GetModelIdx(int nType)
+{
+	return nIdxModel[nType];
 }

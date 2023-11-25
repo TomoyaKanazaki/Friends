@@ -41,6 +41,7 @@ void InitCalculastion(void);
 void RotNormalize(float &fRot);												// 角度の正規化(-3.14 || 3.14超えたら補正)
 void RotNormalize(D3DXVECTOR3 &rot);										// 角度の正規化(-3.14 || 3.14超えたら補正)
 template<class T> void ValueNormalize(T &Value, T MaxValue, T MinValue);	// 値の正規化処理
+D3DXVECTOR3 WorldMtxChangeToPosition(D3DXMATRIX worldmtx);					// ワールドマトリックスをposに変換
 D3DXVECTOR3 WorldMtxChangeToRotation(D3DXMATRIX worldmtx);					// ワールドマトリックスをrotに変換
 void InertiaCorrection(float &fMain, float fTarget, float fCntCorrection);	// 慣性補正
 float Lerp(float start, float end, float time);								// 線形補正

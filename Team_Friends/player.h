@@ -130,6 +130,8 @@ private:
 	void MotionSet(void);	// モーションの設定
 	void Atack(void);		// 攻撃
 
+	void ChangeMotion(const char* pMotionFile);	// モーションファイル
+
 	sStatus m_sStatus;			// ステータス情報
 	STATE m_Oldstate;			// 前回の状態
 	D3DXCOLOR m_mMatcol;		// マテリアルの色

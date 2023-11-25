@@ -229,7 +229,7 @@ void CCamera::UpdateByMode(void)
 //==================================================================================
 void CCamera::MoveCameraInput(void)
 {
-#ifndef _DEBUG
+#if _DEBUG
 	// ƒ}ƒEƒX‚Å‚ÌˆÚ“®ˆ—
 	MoveCameraMouse();
 #endif

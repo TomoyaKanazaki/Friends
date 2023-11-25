@@ -205,9 +205,6 @@ void CMotion::Uninit(void)
 //==========================================================================
 void CMotion::SetInfo(Info info)
 {
-	// 情報を渡す
-	//m_aInfo[m_nNumAll] = info;\
-
 	// コピー
 	memcpy(m_aInfo[m_nNumAll].aKey, info.aKey, sizeof(info.aKey));
 
@@ -509,7 +506,6 @@ void CMotion::Update(float fBuff)
 		// パターンNO.更新
 		m_nPatternKey = (m_nPatternKey + 1) % m_aInfo[m_nType].nNumKey;
 
-
 		int nStartIdx = m_pObjChara->GetMotionStartIdx();
 		for (int nCntParts = nStartIdx; nCntParts < m_nNumModel + nStartIdx + 1; nCntParts++)
 		{// 全パーツ分繰り返す
@@ -540,89 +536,74 @@ void CMotion::Update(float fBuff)
 void CMotion::Set(int nType, bool bBlend)
 {
 	// デバッグ用処理
-#ifdef _DEBUG
-	if (nType == 15)
-	{
-		int n = 0;
-	}
-#endif
-
 	if (nType > m_nNumAll)
 	{// 総数を超えていたら
 		return;
 	}
 
-	if (m_nType != nType)
-	{// 現在の種類と同じじゃなかったら
-
-		m_nOldType = m_nType;	// 前回のモーションの種類
-		m_nType = nType;		// 種類設定
-		m_nPatternKey = 0;		// 何個目のキーか
-		m_fCntFrame = 0.0f;		// フレームのカウント
-		m_fCntAllFrame = 0.0f;	// 全てのカウント
-		m_fMaxAllFrame = 0.0f;	// 全てのカウントの最大値
-		m_bFinish = false;		// 終了したかどうか
-
-		for (int nCntKey = 0; nCntKey < m_aInfo[m_nPatternKey].nNumKey; nCntKey++)
-		{
-			m_fMaxAllFrame += m_aInfo[m_nPatternKey].aKey[nCntKey].nFrame;	// 全てのカウントの最大値
-		}
-
-		// 攻撃情報の総数取得
-		int nNumAttackInfo = m_aInfo[m_nType].nNumAttackInfo;
-		for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
-		{
-			if (m_aInfo[m_nType].AttackInfo[nCntAttack] == NULL)
-			{// NULLだったら
-				continue;
-			}
-
-			// まだ衝撃カウントの行動をしてない状態にする
-			m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactAct = false;
-			m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactActSet = false;
-		}
-
-		int nStartIdx = m_pObjChara->GetMotionStartIdx();
-		for (int nCntParts = nStartIdx; nCntParts < m_nNumModel + nStartIdx + 1; nCntParts++)
-		{// 全パーツ分繰り返す
-
-			int nCntModel = nCntParts;
-			if (nStartIdx != 0)
-			{
-				nCntModel = nCntParts - nStartIdx;
-			}
-
-			if (nCntModel >= m_nNumModel)
-			{
-				break;
-			}
-
-			if (m_ppModel[nCntModel] == NULL)
-			{// NULLだったら
-				continue;
-			}
-
-			// 過去の位置・向きを保存
-			if (bBlend == true)
-			{
-				aPartsOld[nCntParts].rot = m_ppModel[nCntModel]->GetRotation();
-				aPartsOld[nCntParts].pos = m_ppModel[nCntModel]->GetPosition() - m_pObjChara->GetOriginPosition();
-			}
-			else
-			{
-				aPartsOld[nCntParts].rot = m_aInfo[m_nType].aKey[0].aParts[nCntParts].rot;
-				aPartsOld[nCntParts].pos = m_aInfo[m_nType].aKey[0].aParts[nCntParts].pos + m_pObjChara->GetOriginPosition();
-			}
-
-
-		}
+	if (m_nType == nType)
+	{// 現在の種類と同じだったら
+		return;
 	}
-	else
+
+	m_nOldType = m_nType;	// 前回のモーションの種類
+	m_nType = nType;		// 種類設定
+	m_nPatternKey = 0;		// 何個目のキーか
+	m_fCntFrame = 0.0f;		// フレームのカウント
+	m_fCntAllFrame = 0.0f;	// 全てのカウント
+	m_fMaxAllFrame = 0.0f;	// 全てのカウントの最大値
+	m_bFinish = false;		// 終了したかどうか
+
+	for (int nCntKey = 0; nCntKey < m_aInfo[m_nPatternKey].nNumKey; nCntKey++)
 	{
-		// デバッグ用処理
-#ifdef _DEBUG
-		int n = 0;
-#endif
+		m_fMaxAllFrame += m_aInfo[m_nPatternKey].aKey[nCntKey].nFrame;	// 全てのカウントの最大値
+	}
+
+	// 攻撃情報の総数取得
+	int nNumAttackInfo = m_aInfo[m_nType].nNumAttackInfo;
+	for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
+	{
+		if (m_aInfo[m_nType].AttackInfo[nCntAttack] == NULL)
+		{// NULLだったら
+			continue;
+		}
+
+		// まだ衝撃カウントの行動をしてない状態にする
+		m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactAct = false;
+		m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactActSet = false;
+	}
+
+	int nStartIdx = m_pObjChara->GetMotionStartIdx();
+	for (int nCntParts = nStartIdx; nCntParts < m_nNumModel + nStartIdx + 1; nCntParts++)
+	{// 全パーツ分繰り返す
+
+		int nCntModel = nCntParts;
+		if (nStartIdx != 0)
+		{
+			nCntModel = nCntParts - nStartIdx;
+		}
+
+		if (nCntModel >= m_nNumModel)
+		{
+			break;
+		}
+
+		if (m_ppModel[nCntModel] == NULL)
+		{// NULLだったら
+			continue;
+		}
+
+		// 過去の位置・向きを保存
+		if (bBlend == true)
+		{
+			aPartsOld[nCntParts].rot = m_ppModel[nCntModel]->GetRotation();
+			aPartsOld[nCntParts].pos = m_ppModel[nCntModel]->GetPosition() - m_pObjChara->GetOriginPosition();
+		}
+		else
+		{
+			aPartsOld[nCntParts].rot = m_aInfo[m_nType].aKey[0].aParts[nCntParts].rot;
+			aPartsOld[nCntParts].pos = m_aInfo[m_nType].aKey[0].aParts[nCntParts].pos + m_pObjChara->GetOriginPosition();
+		}
 	}
 }
 

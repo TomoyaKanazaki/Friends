@@ -9,6 +9,7 @@
 #include "manager.h"
 #include "debugproc.h"
 #include "calculation.h"
+#include "hp_gauge.h"
 
 //==========================================
 //  “G‚É‚Â‚¢‚Ä‚Ìà–¾
@@ -61,6 +62,9 @@ HRESULT CEnemyTest::Init(void)
 {
 	//‰Šú‰»ˆ—
 	CEnemy::Init();
+
+	// HP‚Ìİ’è
+	//m_pHPGauge = CHP_Gauge::Create();
 
 	return S_OK;
 }

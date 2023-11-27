@@ -59,6 +59,8 @@ private:
 
 	// メンバ関数
 	void ActionSet(void); // 行動の設定
+	void SpinRotation(void); // その場で回転する処理
+	void RotationDefault(void); // 初期位置を向く処理
 	bool CalcLenDefault(void); //初期位置に戻る処理
 	void RotationPlayer(void); // プレイヤーを向く処理
 	bool CalcLenPlayer(float fLen); // プレイヤーとの距離判定

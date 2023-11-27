@@ -16,7 +16,7 @@
 /*
 	※このファイルに記述されているコードは敵を動かす最低限です。消さないでください。※
 
-	1.[enemydata ]フォルダ内の[ manager.txt ]に使用したいモデルのテキストファイルを追加する
+	1.[ enemydata ]フォルダ内の[ manager.txt ]に使用したいモデルのテキストファイルを追加する
 	2.[ enemy.h ]のTYPE列挙に新しいタイプを追加する
 	3.[ enemydata ]フォルダ内の[ base.txt ]で追加したタイプを呼び出す
 	4.実行したらいる！！！
@@ -27,7 +27,9 @@
 //==========================================
 namespace
 {
-	const float JUDGMENT_LENGTH = 150.0f;
+	const float SEARCH_LENGTH = 500.0f;
+	const float ATTACK_LENGTH = 50.0f;
+	const float SPIN_ROTATION = 0.03f;
 }
 
 //==========================================
@@ -87,8 +89,46 @@ void CEnemyTest::Update(void)
 		return;
 	}
 
-	// プレイヤーを向く
-	RotationPlayer();
+	// 行動ごとの行動
+	switch (m_Act)
+	{
+	case CEnemyTest::ACTION_RETURN:
+
+		// 初期位置を向く
+		RotationDefault();
+
+		break;
+
+	case CEnemyTest::ACTION_ATTACK:
+
+		// プレイヤーを向く
+		RotationPlayer();
+
+		break;
+
+	case CEnemyTest::ACTION_SEARCH:
+
+		// くるくるする
+		SpinRotation();
+
+		break;
+
+	case CEnemyTest::ACTION_CHASE:
+
+		// プレイヤーを向く
+		RotationPlayer();
+
+		break;
+
+	default:
+		break;
+	}
+
+	// 行動状態の更新
+	ActionSet();
+
+	// モーションの更新
+	MotionSet();
 }
 
 //==========================================
@@ -164,7 +204,18 @@ void CEnemyTest::SetDefaultPos(const D3DXVECTOR3 pos)
 //==========================================
 void CEnemyTest::ActionSet(void)
 {
-	if (CalcLenPlayer(JUDGMENT_LENGTH))
+	if (CalcLenPlayer(ATTACK_LENGTH))
+	{
+		// 攻撃フラグを立てる
+		if (m_Act != ACTION_ATTACK)
+		{
+			m_sMotionFrag.bATK = true;
+		}
+
+		// 距離が近いと攻撃状態になる
+		m_Act = ACTION_ATTACK;
+	}
+	else if (CalcLenPlayer(SEARCH_LENGTH))
 	{
 		// 距離が近いと追跡状態になる
 		m_Act = ACTION_CHASE;
@@ -181,6 +232,61 @@ void CEnemyTest::ActionSet(void)
 }
 
 //==========================================
+//  その場で回転する処理
+//==========================================
+void CEnemyTest::SpinRotation(void)
+{
+	// 角度を取得
+	D3DXVECTOR3 rot = GetRotation();
+
+	// 目標との差分
+	float fRotDiff = rot.y + SPIN_ROTATION;
+
+	//角度の正規化
+	RotNormalize(fRotDiff);
+
+	//角度の補正をする
+	rot.y += fRotDiff * 0.025f;
+
+	// 角度の正規化
+	RotNormalize(rot.y);
+
+	// 向き設定
+	SetRotation(rot);
+}
+
+//==========================================
+//  初期位置を向く処理
+//==========================================
+void CEnemyTest::RotationDefault(void)
+{
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
+	// 目標の角度を求める
+	float fRotDest = atan2f((pos.x - m_posDefault.x), (pos.z - m_posDefault.z));
+
+	// 目標との差分
+	float fRotDiff = fRotDest - rot.y;
+
+	//角度の正規化
+	RotNormalize(fRotDiff);
+
+	//角度の補正をする
+	rot.y += fRotDiff * 0.025f;
+
+	// 角度の正規化
+	RotNormalize(rot.y);
+
+	// 向き設定
+	SetRotation(rot);
+
+	// 目標の向き設定
+	SetRotDest(fRotDest);
+}
+
+//==========================================
 //  初期位置に戻る処理
 //==========================================
 bool CEnemyTest::CalcLenDefault(void)
@@ -192,7 +298,7 @@ bool CEnemyTest::CalcLenDefault(void)
 	float fLength = vecToPlayer.x * vecToPlayer.x + vecToPlayer.z * vecToPlayer.z;
 
 	// 一定範囲内の判定
-	if (JUDGMENT_LENGTH >= fLength)
+	if (SEARCH_LENGTH * SEARCH_LENGTH >= fLength)
 	{
 		return false;
 	}
@@ -209,9 +315,6 @@ void CEnemyTest::RotationPlayer(void)
 	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 rot = GetRotation();
 
-	// 目標の向き取得
-	float fRotDest = GetRotDest();
-
 	// プレイヤー情報
 	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
 	if (pPlayer == NULL)
@@ -223,7 +326,7 @@ void CEnemyTest::RotationPlayer(void)
 	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 
 	// 目標の角度を求める
-	fRotDest = atan2f((pos.x - posPlayer.x), (pos.z - posPlayer.z));
+	float fRotDest = atan2f((pos.x - posPlayer.x), (pos.z - posPlayer.z));
 
 	// 目標との差分
 	float fRotDiff = fRotDest - rot.y;

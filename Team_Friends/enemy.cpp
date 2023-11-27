@@ -664,11 +664,6 @@ bool CEnemy::Hit(const int nValue)
 			{
 				// ‘Ì—ÍƒQ[ƒW
 				m_pHPGauge = CHP_Gauge::Create(50.0f, GetLifeOrigin(), 3.0f);
-
-				if (m_pHPGauge == NULL)
-				{// NULL‚¾‚Á‚½‚ç
-					m_pHPGauge = NULL;
-				}
 			}
 		}
 

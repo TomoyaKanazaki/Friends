@@ -64,7 +64,7 @@ HRESULT CEnemyTest::Init(void)
 	CEnemy::Init();
 
 	// HP‚Ìİ’è
-	//m_pHPGauge = CHP_Gauge::Create();
+	m_pHPGauge = CHP_Gauge::Create(100.0f, 100);
 
 	return S_OK;
 }

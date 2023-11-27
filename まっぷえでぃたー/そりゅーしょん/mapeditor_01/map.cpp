@@ -290,7 +290,7 @@ HRESULT map::SaveText(void)
 					"\tSIZE = %.0f %.0f\n"
 					"END_FIELDSET\n\n",
 					nType, pos.x, pos.y, pos.z,
-					rot.x, rot.y, rot.z,
+					D3DXToDegree(rot.x), D3DXToDegree(rot.y), D3DXToDegree(rot.z),
 					nWidth, nHeight,
 					fWidthLen, fHeightLen);
 			}

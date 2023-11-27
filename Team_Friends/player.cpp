@@ -99,8 +99,6 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 	m_posKnokBack = mylib_const::DEFAULT_VECTOR3;	// ノックバックの位置
 	m_KnokBackMove = mylib_const::DEFAULT_VECTOR3;	// ノックバックの移動量
 	m_nCntState = 0;								// 状態遷移カウンター
-	m_nTexIdx = 0;									// テクスチャのインデックス番号
-	m_nIdxXFile = 0;								// Xファイルのインデックス番号
 	m_nMyPlayerIdx = 0;								// プレイヤーインデックス番号
 	m_pShadow = NULL;								// 影の情報
 	m_pTargetP = NULL;								// 目標の地点
@@ -213,6 +211,28 @@ HRESULT CPlayer::Init(void)
 	{// 胴
 		SetEvolusion(CGameManager::STATUS_SPEED);
 	}
+
+#if 0
+	// モデル取得
+	CModel **ppModel = GetModel();
+
+	// Xファイルのデータ取得
+	for (int i = 0; i < GetNumModel(); i++)
+	{
+		if (ppModel[i] == NULL)
+		{
+			continue;
+		}
+
+		// Xファイルのデータ取得
+		CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());
+
+		for (int nMat = 0; nMat < pXData->dwNumMat; nMat++)
+		{
+			pXData->nIdxTexture[nMat] = ここにプレイヤーテクスチャインデックス番号;
+		}
+	}
+#endif
 
 	// バフ計算
 	m_sStatus.fPowerBuff = 1.0f;

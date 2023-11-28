@@ -1,23 +1,23 @@
 //==========================================
 //
-//  コピペ用の敵(enemy_test.h)
+//  コピペ用の敵(enemy_roaming.h)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
-#ifndef _ENEMY_TEST_H_
-#define _ENEMY_TEST_H_
+#ifndef _ENEMY_ROAMING_H_
+#define _ENEMY_ROSMING_H_
 #include "enemy.h"
 
 //==========================================
 //  クラス定義
 //==========================================
-class CEnemyTest : public CEnemy
+class CEnemyRoaming : public CEnemy
 {
 public:
 
 	// オーバーライドされた関数
-	CEnemyTest(int nPriority = mylib_const::ENEMY_PRIORITY);
-	~CEnemyTest();
+	CEnemyRoaming(int nPriority = mylib_const::ENEMY_PRIORITY);
+	~CEnemyRoaming();
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;
@@ -45,11 +45,8 @@ private:
 	// 行動列挙
 	enum ACTION
 	{
-		ACTION_DEF = 0, //待機行動
-		ACTION_RETURN, //帰還行動
+		ACTION_ROAMING = 0, //徘徊行動
 		ACTION_ATTACK, //攻撃行動
-		ACTION_SEARCH, //索敵行動
-		ACTION_CHASE, //追跡行動
 		MAX
 	};
 
@@ -59,9 +56,7 @@ private:
 
 	// メンバ関数
 	void ActionSet(void); // 行動の設定
-	void SpinRotation(void); // その場で回転する処理
-	void RotationDefault(void); // 初期位置を向く処理
-	bool CalcLenDefault(void); //初期位置に戻る処理
+	void Attack(void); // 攻撃
 	void RotationPlayer(void); // プレイヤーを向く処理
 	bool CalcLenPlayer(float fLen); // プレイヤーとの距離判定
 

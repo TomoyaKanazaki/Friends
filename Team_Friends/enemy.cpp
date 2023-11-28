@@ -35,7 +35,7 @@
 // 子クラス
 #include "enemy_boss.h"
 #include "enemy_fly.h"
-#include "enemy_test.h"
+#include "enemy_roaming.h"
 
 //==========================================================================
 // マクロ定義
@@ -118,7 +118,7 @@ CEnemy *CEnemy::Create(int nIdx, const char *pFileName, D3DXVECTOR3 pos, TYPE ty
 			break;
 
 		case TYPE_TEST:
-			pEnemy = DEBUG_NEW CEnemyTest;
+			pEnemy = DEBUG_NEW CEnemyRoaming;
 			break;
 
 		case TYPE_FLY:

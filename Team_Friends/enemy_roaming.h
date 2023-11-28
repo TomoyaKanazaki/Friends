@@ -1,23 +1,23 @@
 //==========================================
 //
-//  コピペ用の敵(enemy_test.h)
+//  コピペ用の敵(enemy_roaming.h)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
-#ifndef _ENEMY_TEST_H_
-#define _ENEMY_TEST_H_
+#ifndef _ENEMY_ROAMING_H_
+#define _ENEMY_ROSMING_H_
 #include "enemy.h"
 
 //==========================================
 //  クラス定義
 //==========================================
-class CEnemyTest : public CEnemy
+class CEnemyRoaming : public CEnemy
 {
 public:
 
 	// オーバーライドされた関数
-	CEnemyTest(int nPriority = mylib_const::ENEMY_PRIORITY);
-	~CEnemyTest();
+	CEnemyRoaming(int nPriority = mylib_const::ENEMY_PRIORITY);
+	~CEnemyRoaming();
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;
@@ -61,7 +61,7 @@ private:
 	void ActionSet(void); // 行動の設定
 	void SpinRotation(void); // その場で回転する処理
 	void RotationDefault(void); // 初期位置を向く処理
-	bool CalcLenDefault(void); //初期位置に戻る処理
+	bool CalcLenDefault(void); // 初期位置に戻る処理
 	void RotationPlayer(void); // プレイヤーを向く処理
 	bool CalcLenPlayer(float fLen); // プレイヤーとの距離判定
 

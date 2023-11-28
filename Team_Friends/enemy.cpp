@@ -1037,6 +1037,9 @@ void CEnemy::FadeOut(void)
 	// 遷移カウンター加算
 	m_nCntState++;
 
+	// 色設定
+	m_mMatcol.a = (float)m_nCntState / (float)nAllFrame;
+
 	if (m_nCntState >= nAllFrame)
 	{// 遷移カウンターがモーションを超えたら
 

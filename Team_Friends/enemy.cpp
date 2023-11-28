@@ -36,6 +36,7 @@
 #include "enemy_boss.h"
 #include "enemy_fly.h"
 #include "enemy_roaming.h"
+#include "enemy_escape.h"
 
 //==========================================================================
 // マクロ定義
@@ -117,8 +118,12 @@ CEnemy *CEnemy::Create(int nIdx, const char *pFileName, D3DXVECTOR3 pos, TYPE ty
 			//pEnemy = DEBUG_NEW CEnemyBoss;
 			break;
 
-		case TYPE_TEST:
+		case TYPE_ROAMING:
 			pEnemy = DEBUG_NEW CEnemyRoaming;
+			break;
+
+		case TYPE_ESCAPE:
+			pEnemy = DEBUG_NEW CEnemyEscape;
 			break;
 
 		case TYPE_FLY:
@@ -1438,12 +1443,6 @@ void CEnemy::StateAttack(void)
 
 	// 目標の向き設定
 	SetRotDest(fRotDest);
-
-
-	// 色設定
-#if _DEBUG
-	m_mMatcol = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);
-#endif
 }
 
 //==========================================================================

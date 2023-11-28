@@ -201,7 +201,7 @@ HRESULT CPlayerUnion::Init(void)
 	// 影の生成
 	m_pShadow = CShadow::Create(pos, 50.0f);
 
-	SetPosition(D3DXVECTOR3(-600.0f, 0.0f, 0.0f));
+	SetPosition(D3DXVECTOR3(-600.0f, 500.0f, 0.0f));
 	return S_OK;
 }
 
@@ -1900,7 +1900,7 @@ void CPlayerUnion::ReadMultiCharacter(const char *pTextFile)
 	std::string CharacterFile[mylib_const::MAX_PLAYER];
 	std::string MotionFile;
 	int nCntFileName = 0;
-	int nNumModel = 0;
+	int nNumParts = 0;
 
 	while (1)
 	{// END_SCRIPTが来るまで繰り返す
@@ -1908,12 +1908,12 @@ void CPlayerUnion::ReadMultiCharacter(const char *pTextFile)
 		// 文字列の読み込み
 		fscanf(pFile, "%s", &aComment[0]);
 
-		// モデル数の設定
-		if (strcmp(aComment, "NUM_MODEL") == 0)
-		{// NUM_MODELがきたら
+		// パーツ数の設定
+		if (strcmp(aComment, "NUM_PARTS") == 0)
+		{// NUM_PARTSがきたら
 
 			fscanf(pFile, "%s", &aComment[0]);	// =の分
-			fscanf(pFile, "%d", &nNumModel);	// モデル数
+			fscanf(pFile, "%d", &nNumParts);	// パーツ数
 		}
 
 		// モーションファイル名
@@ -1927,7 +1927,7 @@ void CPlayerUnion::ReadMultiCharacter(const char *pTextFile)
 			MotionFile = aComment;
 
 			// セットアップ情報
-			while (nCntFileName != nNumModel)
+			while (nCntFileName != nNumParts)
 			{// モデルの数分読み込むまで繰り返し
 
 				// 文字列の読み込み

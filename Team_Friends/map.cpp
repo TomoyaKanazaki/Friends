@@ -89,6 +89,8 @@ void map::Release(void)
 			mapdate::pObj3DMesh[nCntObj] = NULL;
 		}
 	}
+
+	ModelFile.clear();		// モデルファイル名
 }
 
 //==========================================================================
@@ -461,7 +463,7 @@ HRESULT map::ReadTexture(void)
 //==========================================================================
 // モデル読み込み処理
 //==========================================================================
-HRESULT map::ReadXFile(void)
+HRESULT map::ReadXFile(const char *pTextFile)
 {
 	// リセット
 	mapdate::nNumModelAll = 0;
@@ -475,35 +477,7 @@ HRESULT map::ReadXFile(void)
 	FILE *pFile = NULL;
 
 	//ファイルを開く
-	pFile = fopen("data\\TEXT\\map\\info.txt", "r");
-
-	// 後で使う
-	/*switch (CManager::GetInstance()->GetMode())
-	{
-	case CScene::MODE_TITLE:
-		pFile = fopen("data\\TEXT\\edit_info.txt", "r");
-		break;
-
-	case CScene::MODE_TUTORIAL:
-		pFile = fopen("data\\TEXT\\edit_info.txt", "r");
-		break;
-
-	case CScene::MODE_GAME:
-		pFile = fopen("data\\TEXT\\edit_info.txt", "r");
-		break;
-
-	case CScene::MODE_RESULT:
-		pFile = fopen("data\\TEXT\\edit_info.txt", "r");
-		break;
-
-	case CScene::MODE_RANKING:
-		pFile = fopen("data\\TEXT\\edit_info.txt", "r");
-		break;
-
-	default:
-		return E_FAIL;
-		break;
-	}*/
+	pFile = fopen(pTextFile, "r");
 
 	if (pFile == NULL)
 	{//ファイルが開けた場合
@@ -568,6 +542,7 @@ HRESULT map::ReadXFile(void)
 //==========================================================================
 HRESULT map::ReadText(const char *pTextFile)
 {
+	std::string FileName;	// ファイル名
 	char aComment[MAX_COMMENT] = {};	//コメント用
 	int nFileNum = 0;					// ファイルの数
 	int nCntTexture = 0;				// テクスチャ読み込みカウント
@@ -579,24 +554,23 @@ HRESULT map::ReadText(const char *pTextFile)
 	switch (CManager::GetInstance()->GetMode())
 	{
 	case CScene::MODE_TITLE:
-		pFile = fopen("data\\TEXT\\map\\info_title.txt", "r");
+		FileName = "data\\TEXT\\map\\info_title.txt";
 		break;
 
 	case CScene::MODE_TUTORIAL:
-		pFile = fopen("data\\TEXT\\map\\info_title.txt", "r");
+		FileName = "data\\TEXT\\map\\info_title.txt";
 		break;
 
 	case CScene::MODE_GAME:
-		pFile = fopen(pTextFile, "r");
+		FileName = pTextFile;
 		break;
 
 	case CScene::MODE_RESULT:
-		pFile = fopen("data\\TEXT\\map\\info_title.txt", "r");
+		FileName = "data\\TEXT\\map\\info_title.txt";
 		break;
 
 	case CScene::MODE_RANKING:
- 		pFile = fopen("data\\TEXT\\map\\info_ranking.txt", "r");
-		//pFile = fopen("data\\TEXT\\map\\info_ranking.txt", "r");
+		FileName = "data\\TEXT\\map\\info_ranking.txt";
 		break;
 
 	default:
@@ -604,6 +578,13 @@ HRESULT map::ReadText(const char *pTextFile)
 		return S_OK;
 		break;
 	}
+
+
+	// Xファイル読み込み
+	ReadXFile(FileName.c_str());
+
+	// マップファイルを開く
+	pFile = fopen(FileName.c_str(), "r");
 
 	if (pFile == NULL)
 	{//ファイルが開けた場合

@@ -1297,10 +1297,8 @@ void CEnemy::StateAttack(void)
 	// 距離の判定
 	bool bLen = false;
 
-
 	// オブジェクト情報
 	CObject *pObj = NULL;
-
 
 	// 現在の種類取得
 	int nType = m_pMotion->GetType();
@@ -1440,12 +1438,6 @@ void CEnemy::StateAttack(void)
 
 	// 目標の向き設定
 	SetRotDest(fRotDest);
-
-
-	// 色設定
-#if _DEBUG
-	m_mMatcol = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);
-#endif
 }
 
 //==========================================================================

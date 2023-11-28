@@ -45,23 +45,21 @@ private:
 	// 行動列挙
 	enum ACTION
 	{
-		ACTION_DEF = 0, //待機行動
-		ACTION_RETURN, //帰還行動
+		ACTION_ROAMING = 0, //徘徊行動
 		ACTION_ATTACK, //攻撃行動
-		ACTION_SEARCH, //索敵行動
-		ACTION_CHASE, //追跡行動
 		MAX
 	};
 
 	// メンバ変数
 	ACTION m_Act; //行動状態
 	D3DXVECTOR3 m_posDefault; //初期位置
+	float m_fMoveCount; // 移動カウンター
 
 	// メンバ関数
 	void ActionSet(void); // 行動の設定
-	void SpinRotation(void); // その場で回転する処理
-	void RotationDefault(void); // 初期位置を向く処理
-	bool CalcLenDefault(void); // 初期位置に戻る処理
+	void Move(void); // 移動
+	void MoveRotation(void); // 移動方向を向く
+	void Attack(void); // 攻撃
 	void RotationPlayer(void); // プレイヤーを向く処理
 	bool CalcLenPlayer(float fLen); // プレイヤーとの距離判定
 

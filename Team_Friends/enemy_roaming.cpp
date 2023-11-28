@@ -12,37 +12,23 @@
 #include "hp_gauge.h"
 
 //==========================================
-//  敵についての説明
-//==========================================
-/*
-
-	※このファイルに記述されているコードは敵を動かす最低限です。消さないでください。※
-
-	0.このファイルをコピーする
-	1.[ enemydata ]フォルダ内の[ manager.txt ]に使用したいモデルのテキストファイルを追加する
-	2.[ enemy.h ]のTYPE列挙に新しいタイプを追加する
-	3.[ enemydata ]フォルダ内の[ base.txt ]で追加したタイプを呼び出す
-	4.実行したらいる！！！
-	5.それぞれたくさん処理を追加する
-
-*/
-
-//==========================================
 //  定数定義
 //==========================================
 namespace
 {
-	const float SEARCH_LENGTH = 500.0f;
-	const float ATTACK_LENGTH = 50.0f;
-	const float SPIN_ROTATION = 0.03f;
+	const float ATTACK_LENGTH = 200.0f;
+	const float MOVE_SPEED = 0.01f;
+	const float MOVE_X = 2.0f;
+	const float MOVE_Z = 2.0f;
 }
 
 //==========================================
 //  コンストラクタ
 //==========================================
 CEnemyRoaming::CEnemyRoaming(int nPriority) :
-	m_Act(ACTION_DEF),
-	m_posDefault(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
+	m_Act(ACTION_ROAMING),
+	m_posDefault(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_fMoveCount(0.0f)
 {
 
 }
@@ -64,7 +50,7 @@ HRESULT CEnemyRoaming::Init(void)
 	CEnemy::Init();
 
 	// HPの設定
-	m_pHPGauge = CHP_Gauge::Create(100.0f, 100);
+	m_pHPGauge = CHP_Gauge::Create(100.0f, GetLifeOrigin());
 
 	return S_OK;
 }
@@ -100,10 +86,10 @@ void CEnemyRoaming::Update(void)
 	// 行動ごとの行動
 	switch (m_Act)
 	{
-	case CEnemyRoaming::ACTION_RETURN:
+	case CEnemyRoaming::ACTION_ROAMING:
 
-		// 初期位置を向く
-		RotationDefault();
+		// 移動
+		Move();
 
 		break;
 
@@ -112,19 +98,8 @@ void CEnemyRoaming::Update(void)
 		// プレイヤーを向く
 		RotationPlayer();
 
-		break;
-
-	case CEnemyRoaming::ACTION_SEARCH:
-
-		// くるくるする
-		SpinRotation();
-
-		break;
-
-	case CEnemyRoaming::ACTION_CHASE:
-
-		// プレイヤーを向く
-		RotationPlayer();
+		// 攻撃
+		Attack();
 
 		break;
 
@@ -137,6 +112,14 @@ void CEnemyRoaming::Update(void)
 
 	// モーションの更新
 	MotionSet();
+
+	// デバッグ表示
+	CManager::GetInstance()->GetDebugProc()->Print
+	(
+		"アクション情報 : %d\n"
+		"モーション情報 : %d\n",
+		(int)m_Act, (int)m_pMotion->GetType()
+	);
 }
 
 //==========================================
@@ -170,8 +153,8 @@ void CEnemyRoaming::MotionSet(void)
 
 		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockback == false)
 		{// 移動していたら
-
-			m_sMotionFrag.bMove = false;	// 移動判定OFF
+			// 攻撃していない
+			m_sMotionFrag.bATK = false;
 
 			// 移動モーション
 			m_pMotion->Set(MOTION_WALK);
@@ -223,95 +206,92 @@ void CEnemyRoaming::ActionSet(void)
 		// 距離が近いと攻撃状態になる
 		m_Act = ACTION_ATTACK;
 	}
-	else if (CalcLenPlayer(SEARCH_LENGTH))
-	{
-		// 距離が近いと追跡状態になる
-		m_Act = ACTION_CHASE;
-	}
-	else if(CalcLenDefault())
-	{
-		// プレイヤーが近くにいなかったら元の位置に帰る
-		m_Act = ACTION_RETURN;
-	}
 	else // 上記以外なら待機状態
 	{
-		m_Act = ACTION_DEF;
+		m_Act = ACTION_ROAMING;
 	}
 }
 
 //==========================================
-//  その場で回転する処理
+//  移動
 //==========================================
-void CEnemyRoaming::SpinRotation(void)
+void CEnemyRoaming::Move(void)
 {
-	// 角度を取得
-	D3DXVECTOR3 rot = GetRotation();
+	// 移動フラグを立てる
+	m_sMotionFrag.bMove = true;
 
-	// 目標との差分
-	float fRotDiff = rot.y + SPIN_ROTATION;
+	// 移動カウンターを加算
+	m_fMoveCount += MOVE_SPEED;
 
-	//角度の正規化
-	RotNormalize(fRotDiff);
+	// 移動量を適用
+	D3DXVECTOR3 move = GetMove();
+	move.x = sinf(m_fMoveCount) * MOVE_X;
+	move.z = cosf(m_fMoveCount) * MOVE_Z;
+	SetMove(move);
 
-	//角度の補正をする
-	rot.y += fRotDiff * 0.025f;
-
-	// 角度の正規化
-	RotNormalize(rot.y);
-
-	// 向き設定
-	SetRotation(rot);
+	// 方向転換
+	MoveRotation();
 }
 
 //==========================================
-//  初期位置を向く処理
+//  移動方向を向く処理
 //==========================================
-void CEnemyRoaming::RotationDefault(void)
+void CEnemyRoaming::MoveRotation(void)
 {
-	// 位置取得
+	// 必要な値を取得
+	D3DXVECTOR3 rot = GetRotation();
 	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 rot = GetRotation();
+	D3DXVECTOR3 move = GetMove();
+	D3DXVECTOR3 posDest = pos + move;
+	D3DXVECTOR3 posDiff = posDest - pos;
 
-	// 目標の角度を求める
-	float fRotDest = atan2f((pos.x - m_posDefault.x), (pos.z - m_posDefault.z));
-
-	// 目標との差分
-	float fRotDiff = fRotDest - rot.y;
+	// 方向を算出
+	float fRot = atan2f(-posDiff.x, -posDiff.z);
 
 	//角度の正規化
-	RotNormalize(fRotDiff);
+	RotNormalize(fRot);
 
 	//角度の補正をする
-	rot.y += fRotDiff * 0.025f;
-
-	// 角度の正規化
-	RotNormalize(rot.y);
+	rot.y = fRot;
 
 	// 向き設定
 	SetRotation(rot);
-
-	// 目標の向き設定
-	SetRotDest(fRotDest);
 }
 
 //==========================================
-//  初期位置に戻る処理
+//  攻撃
 //==========================================
-bool CEnemyRoaming::CalcLenDefault(void)
+void CEnemyRoaming::Attack(void)
 {
-	// 二点間を繋ぐベクトルの算出
-	D3DXVECTOR3 vecToPlayer = GetPosition() - m_posDefault;
+	// 攻撃処理
+	CEnemy::StateAttack();
 
-	// ベクトルの大きさの2乗を算出
-	float fLength = vecToPlayer.x * vecToPlayer.x + vecToPlayer.z * vecToPlayer.z;
+	// モーションの情報取得
+	CMotion::Info aInfo = m_pMotion->GetInfo(m_pMotion->GetType());
 
-	// 一定範囲内の判定
-	if (SEARCH_LENGTH * SEARCH_LENGTH >= fLength)
+	// 攻撃情報の総数取得
+	int nNumAttackInfo = aInfo.nNumAttackInfo;
+
+	bool bAtkWait = true;	// 攻撃待機中
+	for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
 	{
-		return false;
+		if (aInfo.AttackInfo[nCntAttack] == NULL)
+		{// NULLだったら
+			continue;
+		}
+
+		// モーションカウンター取得
+		if (m_pMotion->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt)
+		{// 攻撃判定中
+			// 攻撃判定中にする
+			bAtkWait = false;
+		}
 	}
 
-	return true;
+	if (bAtkWait == false)
+	{// 判定中の時
+		return;
+	}
 }
 
 //==========================================

@@ -1,10 +1,10 @@
 //==========================================
 //
-//  コピペ用の敵(enemy_test.cpp)
+//  コピペ用の敵(enemy_roaming.cpp)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
-#include "enemy_test.h"
+#include "enemy_roaming.h"
 #include "player.h"
 #include "manager.h"
 #include "debugproc.h"
@@ -40,7 +40,7 @@ namespace
 //==========================================
 //  コンストラクタ
 //==========================================
-CEnemyTest::CEnemyTest(int nPriority) :
+CEnemyRoaming::CEnemyRoaming(int nPriority) :
 	m_Act(ACTION_DEF),
 	m_posDefault(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
 {
@@ -50,7 +50,7 @@ CEnemyTest::CEnemyTest(int nPriority) :
 //==========================================
 //  デストラクタ
 //==========================================
-CEnemyTest::~CEnemyTest()
+CEnemyRoaming::~CEnemyRoaming()
 {
 
 }
@@ -58,7 +58,7 @@ CEnemyTest::~CEnemyTest()
 //==========================================
 //  初期化処理
 //==========================================
-HRESULT CEnemyTest::Init(void)
+HRESULT CEnemyRoaming::Init(void)
 {
 	//初期化処理
 	CEnemy::Init();
@@ -72,7 +72,7 @@ HRESULT CEnemyTest::Init(void)
 //==========================================
 //  終了処理
 //==========================================
-void CEnemyTest::Uninit(void)
+void CEnemyRoaming::Uninit(void)
 {
 	// 終了処理
 	CEnemy::Uninit();
@@ -81,7 +81,7 @@ void CEnemyTest::Uninit(void)
 //==========================================
 //  更新処理
 //==========================================
-void CEnemyTest::Update(void)
+void CEnemyRoaming::Update(void)
 {
 	// 死亡の判定
 	if (IsDeath() == true)
@@ -100,28 +100,28 @@ void CEnemyTest::Update(void)
 	// 行動ごとの行動
 	switch (m_Act)
 	{
-	case CEnemyTest::ACTION_RETURN:
+	case CEnemyRoaming::ACTION_RETURN:
 
 		// 初期位置を向く
 		RotationDefault();
 
 		break;
 
-	case CEnemyTest::ACTION_ATTACK:
+	case CEnemyRoaming::ACTION_ATTACK:
 
 		// プレイヤーを向く
 		RotationPlayer();
 
 		break;
 
-	case CEnemyTest::ACTION_SEARCH:
+	case CEnemyRoaming::ACTION_SEARCH:
 
 		// くるくるする
 		SpinRotation();
 
 		break;
 
-	case CEnemyTest::ACTION_CHASE:
+	case CEnemyRoaming::ACTION_CHASE:
 
 		// プレイヤーを向く
 		RotationPlayer();
@@ -142,7 +142,7 @@ void CEnemyTest::Update(void)
 //==========================================
 //  描画処理
 //==========================================
-void CEnemyTest::Draw(void)
+void CEnemyRoaming::Draw(void)
 {
 	// 描画処理
 	CEnemy::Draw();
@@ -151,7 +151,7 @@ void CEnemyTest::Draw(void)
 //==========================================
 //  殺す
 //==========================================
-void CEnemyTest::Kill(void)
+void CEnemyRoaming::Kill(void)
 {
 	// 死亡処理
 	CEnemy::Kill();
@@ -160,7 +160,7 @@ void CEnemyTest::Kill(void)
 //==========================================
 //  モーションセット
 //==========================================
-void CEnemyTest::MotionSet(void)
+void CEnemyRoaming::MotionSet(void)
 {
 	if (m_pMotion->IsFinish() == true)
 	{// 終了していたら
@@ -201,7 +201,7 @@ void CEnemyTest::MotionSet(void)
 //==========================================
 //  初期位置の設定
 //==========================================
-void CEnemyTest::SetDefaultPos(const D3DXVECTOR3 pos)
+void CEnemyRoaming::SetDefaultPos(const D3DXVECTOR3 pos)
 {
 	//数値を設定
 	m_posDefault = pos;
@@ -210,7 +210,7 @@ void CEnemyTest::SetDefaultPos(const D3DXVECTOR3 pos)
 //==========================================
 //  行動設定
 //==========================================
-void CEnemyTest::ActionSet(void)
+void CEnemyRoaming::ActionSet(void)
 {
 	if (CalcLenPlayer(ATTACK_LENGTH))
 	{
@@ -242,7 +242,7 @@ void CEnemyTest::ActionSet(void)
 //==========================================
 //  その場で回転する処理
 //==========================================
-void CEnemyTest::SpinRotation(void)
+void CEnemyRoaming::SpinRotation(void)
 {
 	// 角度を取得
 	D3DXVECTOR3 rot = GetRotation();
@@ -266,7 +266,7 @@ void CEnemyTest::SpinRotation(void)
 //==========================================
 //  初期位置を向く処理
 //==========================================
-void CEnemyTest::RotationDefault(void)
+void CEnemyRoaming::RotationDefault(void)
 {
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
@@ -297,7 +297,7 @@ void CEnemyTest::RotationDefault(void)
 //==========================================
 //  初期位置に戻る処理
 //==========================================
-bool CEnemyTest::CalcLenDefault(void)
+bool CEnemyRoaming::CalcLenDefault(void)
 {
 	// 二点間を繋ぐベクトルの算出
 	D3DXVECTOR3 vecToPlayer = GetPosition() - m_posDefault;
@@ -317,7 +317,7 @@ bool CEnemyTest::CalcLenDefault(void)
 //==========================================
 //  プレイヤーを向く処理
 //==========================================
-void CEnemyTest::RotationPlayer(void)
+void CEnemyRoaming::RotationPlayer(void)
 {
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
@@ -358,7 +358,7 @@ void CEnemyTest::RotationPlayer(void)
 //==========================================
 //  プレイヤーとの距離を判定
 //==========================================
-bool CEnemyTest::CalcLenPlayer(float fLen)
+bool CEnemyRoaming::CalcLenPlayer(float fLen)
 {
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();

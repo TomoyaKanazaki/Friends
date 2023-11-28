@@ -1898,6 +1898,7 @@ void CPlayerUnion::ReadMultiCharacter(const char *pTextFile)
 	char aComment[MAX_COMMENT];	// コメント
 
 	std::string CharacterFile[mylib_const::MAX_PLAYER];
+	std::string MotionFile;
 	int nCntFileName = 0;
 	int nNumModel = 0;
 
@@ -1915,47 +1916,59 @@ void CPlayerUnion::ReadMultiCharacter(const char *pTextFile)
 			fscanf(pFile, "%d", &nNumModel);	// モデル数
 		}
 
-		while (nCntFileName != nNumModel)
-		{// モデルの数分読み込むまで繰り返し
+		// モーションファイル名
+		if (strcmp(aComment, "MOTION_FILENAME") == 0)
+		{// MOTION_FILENAMEがきたら
 
-			// 文字列の読み込み
-			fscanf(pFile, "%s", &aComment[0]);
+			fscanf(pFile, "%s", &aComment[0]);	// =の分
+			fscanf(pFile, "%s", &aComment[0]);	// ファイル名
 
-			// モデル名の設定
-			if (strcmp(aComment, "MOTION_FILENAME") == 0)
-			{// NUM_MODELがきたら
+			// ファイル名保存
+			MotionFile = aComment;
 
-				fscanf(pFile, "%s", &aComment[0]);	// =の分
-				fscanf(pFile, "%s", &aComment[0]);	// ファイル名
+			// セットアップ情報
+			while (nCntFileName != nNumModel)
+			{// モデルの数分読み込むまで繰り返し
 
-				// ファイル名保存
-				CharacterFile[nCntFileName] = aComment;
+				// 文字列の読み込み
+				fscanf(pFile, "%s", &aComment[0]);
+
+				// セットアップの設定
+				if (strcmp(aComment, "SETUP_FILENAME") == 0)
+				{// SETUP_FILENAMEがきたら
+
+					fscanf(pFile, "%s", &aComment[0]);	// =の分
+					fscanf(pFile, "%s", &aComment[0]);	// ファイル名
+
+					// ファイル名保存
+					CharacterFile[nCntFileName] = aComment;
 
 
-				//**********************************
-				// キャラクター生成
-				//**********************************
-				m_pObjChara[nCntFileName] = CObjectChara::Create(CharacterFile[nCntFileName]);
-				if (m_pObjChara[nCntFileName] == NULL)
-				{// 失敗していたら
-					return;
+					//**********************************
+					// キャラクター生成
+					//**********************************
+					m_pObjChara[nCntFileName] = CObjectChara::Create(CharacterFile[nCntFileName]);
+					if (m_pObjChara[nCntFileName] == NULL)
+					{// 失敗していたら
+						return;
+					}
+					m_pObjChara[nCntFileName]->SetType(CObject::TYPE_OBJECTX);
+
+					// モーションの生成処理
+					m_pMotion[nCntFileName] = CMotion::Create(MotionFile);
+
+					// オブジェクトキャラクターの情報取得
+					CObjectChara *pObjChar = m_pObjChara[nCntFileName]->GetObjectChara();
+
+					// モーションの設定
+					m_pMotion[nCntFileName]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
+
+					// ポーズのリセット
+					m_pMotion[nCntFileName]->ResetPose(MOTION_DEF);
+
+
+					nCntFileName++;	// ファイル数加算
 				}
-				m_pObjChara[nCntFileName]->SetType(CObject::TYPE_OBJECTX);
-
-				// モーションの生成処理
-				m_pMotion[nCntFileName] = CMotion::Create(CharacterFile[nCntFileName]);
-
-				// オブジェクトキャラクターの情報取得
-				CObjectChara *pObjChar = m_pObjChara[nCntFileName]->GetObjectChara();
-
-				// モーションの設定
-				m_pMotion[nCntFileName]->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), pObjChar);
-
-				// ポーズのリセット
-				m_pMotion[nCntFileName]->ResetPose(MOTION_DEF);
-
-
-				nCntFileName++;	// ファイル数加算
 			}
 		}
 

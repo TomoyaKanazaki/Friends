@@ -12,10 +12,15 @@ SCRIPT			# この行は絶対消さないこと！
 NUM_MODEL = 2
 
 #------------------------------------------------------------------------------
+# モーションファイル名
+#------------------------------------------------------------------------------
+MOTION_FILENAME = data/TEXT/multicharacter/parts/union_sample/motion_Sample.txt	
+
+#------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-MOTION_FILENAME = data/TEXT/parts/union_sample/motion_body.txt	# [0]体モーションファイル
-MOTION_FILENAME = data/TEXT/parts/union_sample/motion_leg.txt		# [1]脚モーションファイル
+SETUP_FILENAME = data/TEXT/multicharacter/parts/union_sample/setup_body.txt	# [0]体モーションファイル
+SETUP_FILENAME = data/TEXT/multicharacter/parts/union_sample/setup_leg.txt		# [1]脚モーションファイル
 
 #------------------------------------------------------------------------------
 # キャラクター情報

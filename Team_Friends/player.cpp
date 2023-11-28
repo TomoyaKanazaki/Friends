@@ -474,7 +474,8 @@ void CPlayer::Controll(void)
 		if (m_pMotion->IsGetMove(nMotionType) == 1 &&
 			m_state != STATE_DEAD &&
 			m_state != STATE_FADEOUT &&
-			m_state != STATE_COMPACTUNION)
+			m_state != STATE_COMPACTUNION &&
+			m_state != STATE_RELEASEUNION)
 		{// 移動可能モーションの時
 
 			if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).x < 0)
@@ -571,7 +572,8 @@ void CPlayer::Controll(void)
 		}
 	}
 
-	//if (m_pMotion->GetType() == MOTION_WALK)
+	if (m_state != STATE_COMPACTUNION &&
+		m_state != STATE_RELEASEUNION)
 	{// 移動中
 		m_nCntWalk = (m_nCntWalk + 1) % 4;
 
@@ -1353,7 +1355,13 @@ bool CPlayer::Hit(const int nValue)
 	//	return true;
 	//}
 
-	if (m_state != STATE_DMG && m_state != STATE_KNOCKBACK && m_state != STATE_INVINCIBLE && m_state != STATE_DEAD && m_state != STATE_FADEOUT)
+	if (m_state != STATE_DMG &&
+		m_state != STATE_KNOCKBACK &&
+		m_state != STATE_INVINCIBLE &&
+		m_state != STATE_DEAD &&
+		m_state != STATE_FADEOUT &&
+		m_state != STATE_COMPACTUNION &&
+		m_state != STATE_RELEASEUNION)
 	{// ダメージ受付状態の時
 
 		// 体力減らす

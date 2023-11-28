@@ -27,7 +27,6 @@ namespace
 //==========================================
 CEnemyRoaming::CEnemyRoaming(int nPriority) :
 	m_Act(ACTION_ROAMING),
-	m_posDefault(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_fMoveCount(0.0f)
 {
 
@@ -112,14 +111,6 @@ void CEnemyRoaming::Update(void)
 
 	// モーションの更新
 	MotionSet();
-
-	// デバッグ表示
-	CManager::GetInstance()->GetDebugProc()->Print
-	(
-		"アクション情報 : %d\n"
-		"モーション情報 : %d\n",
-		(int)m_Act, (int)m_pMotion->GetType()
-	);
 }
 
 //==========================================
@@ -179,15 +170,6 @@ void CEnemyRoaming::MotionSet(void)
 			m_pMotion->Set(MOTION_DEF);
 		}
 	}
-}
-
-//==========================================
-//  初期位置の設定
-//==========================================
-void CEnemyRoaming::SetDefaultPos(const D3DXVECTOR3 pos)
-{
-	//数値を設定
-	m_posDefault = pos;
 }
 
 //==========================================

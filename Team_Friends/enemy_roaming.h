@@ -26,9 +26,6 @@ public:
 	void Kill(void) override;
 	void MotionSet(void) override;		// モーションの設定
 
-	// メンバ関数
-	void SetDefaultPos(const D3DXVECTOR3 pos);
-
 private:
 
 	//モーション列挙
@@ -52,7 +49,6 @@ private:
 
 	// メンバ変数
 	ACTION m_Act; //行動状態
-	D3DXVECTOR3 m_posDefault; //初期位置
 	float m_fMoveCount; // 移動カウンター
 
 	// メンバ関数

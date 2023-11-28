@@ -36,6 +36,7 @@
 #include "enemy_boss.h"
 #include "enemy_fly.h"
 #include "enemy_roaming.h"
+#include "enemy_escape.h"
 
 //==========================================================================
 // É}ÉNÉçíËã`
@@ -117,8 +118,12 @@ CEnemy *CEnemy::Create(int nIdx, const char *pFileName, D3DXVECTOR3 pos, TYPE ty
 			//pEnemy = DEBUG_NEW CEnemyBoss;
 			break;
 
-		case TYPE_TEST:
+		case TYPE_ROAMING:
 			pEnemy = DEBUG_NEW CEnemyRoaming;
+			break;
+
+		case TYPE_ESCAPE:
+			pEnemy = DEBUG_NEW CEnemyEscape;
 			break;
 
 		case TYPE_FLY:

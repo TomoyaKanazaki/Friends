@@ -189,6 +189,7 @@
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemybase.cpp" />
     <ClCompile Include="enemymanager.cpp" />
+    <ClCompile Include="enemy_escape.cpp" />
     <ClCompile Include="enemy_fly.cpp" />
     <ClCompile Include="enemy_papion.cpp" />
     <ClCompile Include="enemy_roaming.cpp" />
@@ -307,6 +308,7 @@
     <ClInclude Include="enemy.h" />
     <ClInclude Include="enemybase.h" />
     <ClInclude Include="enemymanager.h" />
+    <ClInclude Include="enemy_escape.h" />
     <ClInclude Include="enemy_fly.h" />
     <ClInclude Include="enemy_papion.h" />
     <ClInclude Include="enemy_roaming.h" />

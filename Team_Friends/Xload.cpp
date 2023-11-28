@@ -67,12 +67,7 @@ CXLoad::~CXLoad()
 //==========================================================================
 HRESULT CXLoad::Init(void)
 {
-	// ƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İ
-	if (FAILED(map::ReadXFile()))
-	{// ¸”s‚µ‚½ê‡
-		return E_FAIL;
-	}
-
+	
 	//// Š¢âI‚Ì“Ç‚İ‚İ
 	//if (FAILED(CBallast::Load()))
 	//{// ¸”s‚µ‚½ê‡

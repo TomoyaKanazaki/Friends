@@ -34,7 +34,8 @@ public:
 	{
 		TYPE_BOSS = 0,	// ボス
 		TYPE_FLY,
-		TYPE_TEST, //試験
+		TYPE_ROAMING, // 徘徊
+		TYPE_ESCAPE, // メタルスライム
 		TYPE_MAX
 	}TYPE;
 

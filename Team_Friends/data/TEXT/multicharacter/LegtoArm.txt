@@ -1,22 +1,27 @@
 #==============================================================================
 #
-# 『複数モデルキャラクター』スクリプトファイル [multicharacter_LegtoArm.txt]
+# 『複数モデルキャラクター』スクリプトファイル [LegtoArm.txt]
 # Author : 相馬 靜雅
 #
 #==============================================================================
 SCRIPT			# この行は絶対消さないこと！
 
 #------------------------------------------------------------------------------
-# モデル数
+# パーツ数
 #------------------------------------------------------------------------------
-NUM_MODEL = 3
+NUM_PARTS = 3
 
 #------------------------------------------------------------------------------
-# モデルファイル名
+# モーションファイル名
 #------------------------------------------------------------------------------
-MOTION_FILENAME = data/TEXT/parts/union_sample/motion_leg.txt		# [0]脚モーションファイル
-MOTION_FILENAME = data/TEXT/parts/union_sample/motion_RArm.txt	# [1]腕モーションファイル
-MOTION_FILENAME = data/TEXT/parts/union_sample/motion_body.txt	# [2]体モーションファイル
+MOTION_FILENAME = data/TEXT/multicharacter/parts/union_sample/motion_Sample.txt	
+
+#------------------------------------------------------------------------------
+# セットアップファイル名
+#------------------------------------------------------------------------------
+SETUP_FILENAME = data/TEXT/multicharacter/parts/union_sample/setup_leg.txt		# [0]脚モーションファイル
+SETUP_FILENAME = data/TEXT/multicharacter/parts/union_sample/setup_RArm.txt	# [1]腕モーションファイル
+SETUP_FILENAME = data/TEXT/multicharacter/parts/union_sample/setup_body.txt	# [2]体モーションファイル
 
 #------------------------------------------------------------------------------
 # キャラクター情報

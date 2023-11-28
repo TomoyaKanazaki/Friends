@@ -13,7 +13,8 @@
 #include "rankingscore.h"
 #include "enemymanager.h"
 #include "objectX.h"
-#include "union_bodytoleg.h"
+#include "player_ranking.h"
+#include "player_union.h"
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -59,7 +60,7 @@ HRESULT CRanking::Init(void)
 	CObjectX *p = CObjectX::Create(m_apModelFile, D3DXVECTOR3(0.0f, 1000.0f, 0.0f));
 	p->SetType(CObject::TYPE_OBJECTX);
 
-	//CUnion_BodytoLeg::Create(CPlayerUnion::TYPE_BODYtoLEG);
+	CPlayerRanking::Create(D3DXVECTOR3(-200.0f, 900.0f, 1300.0f), D3DXVECTOR3(0.0f, 1.57f, 0.0f), CPlayerRanking::BODYtoLEG);
 
 	// ランキングのスコア生成
 	m_pRankingScore = CRankingScore::Create();
@@ -98,7 +99,7 @@ void CRanking::Update(void)
 	// 切り替えのカウンター加算
 	m_nCntSwitch++;
 
-	if (m_nCntSwitch >= 60 * 60)
+	if (m_nCntSwitch >= 60 * 3600)
 	{
 		// モード設定
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);

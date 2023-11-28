@@ -73,6 +73,7 @@ public:
 	int GetState(void);
 
 	static CPlayerUnion *Create(eType type);	// 生成
+	static CPlayerUnion *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, eType type);	// 生成
 	void UninitByMode(void);
 	void Kill(void);	// 死亡処理
 	void SetPlayerByPartsIdx(int nPartsIdx, int nPlayerIdx);	// プレイヤー毎のパーツインデックス番号設定
@@ -110,7 +111,7 @@ protected:
 	virtual void MotionSet(int nIdx);	// モーションの設定
 	bool ControllMove(int nIdx);	// 移動操作
 	virtual HRESULT CreateParts(void);	// パーツの設定
-
+	
 	bool m_bJump;				// ジャンプ中かどうか
 	bool m_bLandOld;			// 過去の着地情報
 	bool m_bHitStage;			// ステージの当たり判定

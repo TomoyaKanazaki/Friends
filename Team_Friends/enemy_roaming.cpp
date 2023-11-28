@@ -16,7 +16,10 @@
 //==========================================
 namespace
 {
-	const float ATTACK_LENGTH = 50.0f;
+	const float ATTACK_LENGTH = 200.0f;
+	const float MOVE_SPEED = 0.01f;
+	const float MOVE_X = 2.0f;
+	const float MOVE_Z = 2.0f;
 }
 
 //==========================================
@@ -24,7 +27,8 @@ namespace
 //==========================================
 CEnemyRoaming::CEnemyRoaming(int nPriority) :
 	m_Act(ACTION_ROAMING),
-	m_posDefault(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
+	m_posDefault(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_fMoveCount(0.0f)
 {
 
 }
@@ -46,7 +50,7 @@ HRESULT CEnemyRoaming::Init(void)
 	CEnemy::Init();
 
 	// HPの設定
-	m_pHPGauge = CHP_Gauge::Create(100.0f, 100);
+	m_pHPGauge = CHP_Gauge::Create(100.0f, GetLifeOrigin());
 
 	return S_OK;
 }
@@ -84,6 +88,9 @@ void CEnemyRoaming::Update(void)
 	{
 	case CEnemyRoaming::ACTION_ROAMING:
 
+		// 移動
+		Move();
+
 		break;
 
 	case CEnemyRoaming::ACTION_ATTACK:
@@ -105,6 +112,14 @@ void CEnemyRoaming::Update(void)
 
 	// モーションの更新
 	MotionSet();
+
+	// デバッグ表示
+	CManager::GetInstance()->GetDebugProc()->Print
+	(
+		"アクション情報 : %d\n"
+		"モーション情報 : %d\n",
+		(int)m_Act, (int)m_pMotion->GetType()
+	);
 }
 
 //==========================================
@@ -138,8 +153,8 @@ void CEnemyRoaming::MotionSet(void)
 
 		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockback == false)
 		{// 移動していたら
-
-			m_sMotionFrag.bMove = false;	// 移動判定OFF
+			// 攻撃していない
+			m_sMotionFrag.bATK = false;
 
 			// 移動モーション
 			m_pMotion->Set(MOTION_WALK);
@@ -195,6 +210,52 @@ void CEnemyRoaming::ActionSet(void)
 	{
 		m_Act = ACTION_ROAMING;
 	}
+}
+
+//==========================================
+//  移動
+//==========================================
+void CEnemyRoaming::Move(void)
+{
+	// 移動フラグを立てる
+	m_sMotionFrag.bMove = true;
+
+	// 移動カウンターを加算
+	m_fMoveCount += MOVE_SPEED;
+
+	// 移動量を適用
+	D3DXVECTOR3 move = GetMove();
+	move.x = sinf(m_fMoveCount) * MOVE_X;
+	move.z = cosf(m_fMoveCount) * MOVE_Z;
+	SetMove(move);
+
+	// 方向転換
+	MoveRotation();
+}
+
+//==========================================
+//  移動方向を向く処理
+//==========================================
+void CEnemyRoaming::MoveRotation(void)
+{
+	// 必要な値を取得
+	D3DXVECTOR3 rot = GetRotation();
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 move = GetMove();
+	D3DXVECTOR3 posDest = pos + move;
+	D3DXVECTOR3 posDiff = posDest - pos;
+
+	// 方向を算出
+	float fRot = atan2f(-posDiff.x, -posDiff.z);
+
+	//角度の正規化
+	RotNormalize(fRot);
+
+	//角度の補正をする
+	rot.y = fRot;
+
+	// 向き設定
+	SetRotation(rot);
 }
 
 //==========================================

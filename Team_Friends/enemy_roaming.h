@@ -53,9 +53,12 @@ private:
 	// メンバ変数
 	ACTION m_Act; //行動状態
 	D3DXVECTOR3 m_posDefault; //初期位置
+	float m_fMoveCount; // 移動カウンター
 
 	// メンバ関数
 	void ActionSet(void); // 行動の設定
+	void Move(void); // 移動
+	void MoveRotation(void); // 移動方向を向く
 	void Attack(void); // 攻撃
 	void RotationPlayer(void); // プレイヤーを向く処理
 	bool CalcLenPlayer(float fLen); // プレイヤーとの距離判定

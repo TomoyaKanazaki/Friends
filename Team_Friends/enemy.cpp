@@ -1438,12 +1438,6 @@ void CEnemy::StateAttack(void)
 
 	// –Ú•W‚ÌŒü‚«İ’è
 	SetRotDest(fRotDest);
-
-
-	// Fİ’è
-#if _DEBUG
-	m_mMatcol = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);
-#endif
 }
 
 //==========================================================================

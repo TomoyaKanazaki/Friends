@@ -11,12 +11,18 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------------------
 NUM_MODEL = 3
 
+
 #------------------------------------------------------------------------------
-# モデルファイル名
+# モーションファイル名
 #------------------------------------------------------------------------------
-MOTION_FILENAME = data/TEXT/multicharacter/parts/union_ArmtoArm/motion_RArm.txt	# [0]腕モーションファイル
-MOTION_FILENAME = data/TEXT/multicharacter/parts/union_ArmtoArm/motion_LArm.txt	# [1]腕モーションファイル
-MOTION_FILENAME = data/TEXT/multicharacter/parts/union_ArmtoArm/motion_body.txt	# [2]体モーションファイル
+MOTION_FILENAME = data/TEXT/multicharacter/parts/union_ArmtoArm/motion_ArmToArm.txt		# モーションファイル
+
+#------------------------------------------------------------------------------
+# セットアップファイル名
+#------------------------------------------------------------------------------
+SETUP_FILENAME = data/TEXT/multicharacter/parts/union_ArmtoArm/setup_RArm.txt	# [0]腕セットアップファイル
+SETUP_FILENAME = data/TEXT/multicharacter/parts/union_ArmtoArm/setup_LArm.txt	# [1]腕セットアップファイル
+SETUP_FILENAME = data/TEXT/multicharacter/parts/union_ArmtoArm/setup_body.txt	# [2]体セットアップファイル
 
 #------------------------------------------------------------------------------
 # キャラクター情報

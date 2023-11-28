@@ -1,0 +1,86 @@
+Metasequoia Document
+Format Text Ver 1.0
+
+Scene {
+	pos -1089.5564 3110.1641 39062.5000
+	lookat -968.3018 843.2941 -3147.3162
+	head 18.7567
+	pich 1.0708
+	bank 0.0000
+	ortho 0
+	zoom2 0.1920
+	amb 0.250 0.250 0.250
+	dirlights 1 {
+		light {
+			dir 0.408 0.408 0.816
+			color 1.000 1.000 1.000
+		}
+	}
+}
+Material 13 {
+	"mat2" col(0.576 0.576 0.576 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"mat1" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("data\TEXTURE\building002.jpg")
+	"mat4" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"mat5" col(0.161 0.161 0.161 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"uv" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("data\TEXTURE\wall.jpg")
+	"‚š" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("data\TEXTURE\wall.jpg") proj_type(1) proj_pos(-73.312 595.206 -239.141) proj_scale(307.041 597.596 114.987) proj_angle(0.000 0.000 0.000)
+	"‚˜" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("data\TEXTURE\wall.jpg") proj_type(1) proj_pos(-762.200 598.560 -84.161) proj_scale(314.796 612.689 117.886) proj_angle(90.000 0.000 0.000)
+	"mat6" col(0.643 0.922 0.910 0.700) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"mat3" col(0.914 0.914 0.914 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"uv1" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("data\TEXTURE\wall.jpg")
+	"bill02" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("data\TEXTURE\building002.jpg")
+	"white" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"bill01" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("data\TEXTURE\building001.jpg")
+}
+Object "‹æ‰æ" {
+	visible 15
+	locking 1
+	shading 1
+	facet 59.5
+	color 0.898 0.498 0.698
+	color_type 0
+	vertex 4 {
+		-4080.0000 0.0000 -4080.0000
+		4080.0000 0.0000 -4080.0000
+		-4080.0000 0.0000 4080.0000
+		4080.0000 0.0000 4080.0000
+	}
+	face 1 {
+		4 V(0 1 3 2) M(0) UV(0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 0.00000 1.00000)
+	}
+}
+Object "“¹˜H”²‚«" {
+	visible 15
+	locking 1
+	shading 1
+	facet 59.5
+	color 0.898 0.498 0.698
+	color_type 0
+	vertex 4 {
+		-4800.0000 0.0000 -4800.0000
+		4800.0000 0.0000 -4800.0000
+		-4800.0000 0.0000 4800.0000
+		4800.0000 0.0000 4800.0000
+	}
+	face 1 {
+		4 V(0 1 3 2) M(0) UV(0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 0.00000 1.00000)
+	}
+}
+Object "•à“¹”²‚«" {
+	visible 15
+	locking 1
+	shading 1
+	facet 59.5
+	color 0.898 0.498 0.698
+	color_type 0
+	vertex 4 {
+		-3485.2654 0.0000 -3485.2654
+		3485.2654 0.0000 -3485.2654
+		-3485.2654 0.0000 3485.2654
+		3485.2654 0.0000 3485.2654
+	}
+	face 1 {
+		4 V(0 1 3 2) M(0) UV(0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 0.00000 1.00000)
+	}
+}
+Eof

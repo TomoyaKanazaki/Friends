@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
 # テクスチャ数
 #------------------------------------------------------------------------------
-NUM_TEXTURE = 19
+NUM_TEXTURE = 21
 
 #------------------------------------------------------------------------------
 # テクスチャファイル名
@@ -25,11 +25,13 @@ TEXTURE_FILENAME = data/TEXTURE/FIELD/soil.jpg		# [15]
 TEXTURE_FILENAME = data/TEXTURE/FIELD/douro_01.png		# [16]
 TEXTURE_FILENAME = data/TEXTURE/FIELD/kousaten_01.png		# [17]
 TEXTURE_FILENAME = data/TEXTURE/FIELD/stop.png		# [18]
+TEXTURE_FILENAME = data/TEXTURE/FIELD/forest.png		# [19]
+TEXTURE_FILENAME = data/TEXTURE/FIELD/forest_01.png		# [20]
 
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 60
+NUM_MODEL = 62
 
 #------------------------------------------------------------------------------
 # モデルファイル名
@@ -94,6 +96,8 @@ MODEL_FILENAME = data/MODEL/bill/building003_group_normal.x		# [56]
 MODEL_FILENAME = data/MODEL/bill/building003_group_big.x		# [57]
 MODEL_FILENAME = data/MODEL/bill/building003_big_circle.x		# [58]
 MODEL_FILENAME = data/MODEL/city/size_city/building_group15.x		# [59]
+MODEL_FILENAME = data/MODEL/tree/treegroup_05.x		# [60]
+MODEL_FILENAME = data/MODEL/tree/treegroup_06.x		# [61]
 
 #==============================================================================
 # 空情報
@@ -191,7 +195,6 @@ FIELDSET
 	SIZE = 200 200
 END_FIELDSET
 
-#縦
 FIELDSET
 	TEXTYPE = 16
 	POS = 1430 1 -2250
@@ -664,7 +667,6 @@ FIELDSET
 	SIZE = 200 200
 END_FIELDSET
 
-#外側
 FIELDSET
 	TEXTYPE = 18
 	POS = -4100 1 -5050
@@ -705,7 +707,6 @@ FIELDSET
 	SIZE = 200 200
 END_FIELDSET
 
-#右
 FIELDSET
 	TEXTYPE = 18
 	POS = 4100 1 -5050
@@ -746,7 +747,6 @@ FIELDSET
 	SIZE = 200 200
 END_FIELDSET
 
-#横
 FIELDSET
 	TEXTYPE = 18
 	POS = -3250 1 -5900
@@ -843,33 +843,35 @@ FIELDSET
 	SIZE = 200 200
 END_FIELDSET
 
+FIELDSET
+	TEXTYPE = 20
+	POS = 7500 150 -2500
+	ROT = 270 90 0
+	BLOCK = 20 1
+	SIZE = 300 300
+END_FIELDSET
+
+
 #==============================================================================
 # モデルの配置
 #==============================================================================
 MODELSET
 	TYPE = 38
-	POS = -4882.51 0.00 -7309.32
+	POS = -4876.10 0.00 -6989.38
 	ROT = 0.00 0.00 0.00
 	SHADOW = 0
 END_MODELSET
 
 MODELSET
 	TYPE = 38
-	POS = -3063.55 0.00 -7301.46
+	POS = -3057.15 0.00 -6981.52
 	ROT = 0.00 -1.57 0.00
 	SHADOW = 0
 END_MODELSET
 
 MODELSET
 	TYPE = 38
-	POS = 4919.69 0.00 -7335.17
-	ROT = 0.00 -1.57 0.00
-	SHADOW = 0
-END_MODELSET
-
-MODELSET
-	TYPE = 38
-	POS = 3092.70 0.00 -7342.76
+	POS = 3106.49 0.00 -7013.02
 	ROT = 0.00 0.00 0.00
 	SHADOW = 0
 END_MODELSET
@@ -4665,6 +4667,13 @@ MODELSET
 	TYPE = 29
 	POS = 3990.63 0.00 754.01
 	ROT = 0.00 1.57 0.00
+	SHADOW = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 38
+	POS = 4928.39 0.00 -7005.58
+	ROT = 0.00 -1.57 0.00
 	SHADOW = 1
 END_MODELSET
 

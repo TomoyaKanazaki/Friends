@@ -215,7 +215,6 @@ void CEnemyPapion::StateAttack(void)
 		// モーションカウンター取得
 		if (m_pMotion->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt)
 		{// 攻撃判定中
-
 			// 攻撃判定中にする
 			bAtkWait = false;
 		}

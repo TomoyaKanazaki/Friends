@@ -417,7 +417,7 @@
     <ClCompile Include="enemymanager.cpp">
       <Filter>enemy</Filter>
     </ClCompile>
-    <ClCompile Include="enemy_test.cpp">
+    <ClCompile Include="enemy_roaming.cpp">
       <Filter>enemy</Filter>
     </ClCompile>
     <ClCompile Include="collisionobject.cpp">
@@ -752,7 +752,7 @@
     <ClInclude Include="enemymanager.h">
       <Filter>enemy</Filter>
     </ClInclude>
-    <ClInclude Include="enemy_test.h">
+    <ClInclude Include="enemy_roaming.h">
       <Filter>enemy</Filter>
     </ClInclude>
     <ClInclude Include="collisionobject.h">

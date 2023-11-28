@@ -35,7 +35,7 @@
 // 子クラス
 #include "enemy_boss.h"
 #include "enemy_fly.h"
-#include "enemy_test.h"
+#include "enemy_roaming.h"
 
 //==========================================================================
 // マクロ定義
@@ -118,7 +118,7 @@ CEnemy *CEnemy::Create(int nIdx, const char *pFileName, D3DXVECTOR3 pos, TYPE ty
 			break;
 
 		case TYPE_TEST:
-			pEnemy = DEBUG_NEW CEnemyTest;
+			pEnemy = DEBUG_NEW CEnemyRoaming;
 			break;
 
 		case TYPE_FLY:
@@ -664,11 +664,6 @@ bool CEnemy::Hit(const int nValue)
 			{
 				// 体力ゲージ
 				m_pHPGauge = CHP_Gauge::Create(50.0f, GetLifeOrigin(), 3.0f);
-
-				if (m_pHPGauge == NULL)
-				{// NULLだったら
-					m_pHPGauge = NULL;
-				}
 			}
 		}
 
@@ -1302,10 +1297,8 @@ void CEnemy::StateAttack(void)
 	// 距離の判定
 	bool bLen = false;
 
-
 	// オブジェクト情報
 	CObject *pObj = NULL;
-
 
 	// 現在の種類取得
 	int nType = m_pMotion->GetType();
@@ -1445,12 +1438,6 @@ void CEnemy::StateAttack(void)
 
 	// 目標の向き設定
 	SetRotDest(fRotDest);
-
-
-	// 色設定
-#if _DEBUG
-	m_mMatcol = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);
-#endif
 }
 
 //==========================================================================

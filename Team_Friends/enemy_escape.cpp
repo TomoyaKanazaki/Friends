@@ -1,10 +1,10 @@
 //==========================================
 //
-//  コピペ用の敵(enemy_roaming.cpp)
+//  コピペ用の敵(enemy_escape.cpp)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
-#include "enemy_roaming.h"
+#include "enemy_escape.h"
 #include "player.h"
 #include "manager.h"
 #include "debugproc.h"
@@ -16,18 +16,23 @@
 //==========================================
 namespace
 {
-	const float ATTACK_LENGTH = 200.0f;
-	const float MOVE_SPEED = 0.01f;
+	const float SEARCH_LENGTH = 400.0f;
+	const float MOVE_SPEED = 0.03f;
+	const float ESCAPE_SPEED = 10.0f;
 	const float MOVE_X = 2.0f;
 	const float MOVE_Z = 2.0f;
+	const float FIND_TIME = 0.5f;
+	const float ESCAPE_TIME = 3.0f;
 }
 
 //==========================================
 //  コンストラクタ
 //==========================================
-CEnemyRoaming::CEnemyRoaming(int nPriority) :
+CEnemyEscape::CEnemyEscape(int nPriority) :
 	m_Act(ACTION_ROAMING),
-	m_fMoveCount(0.0f)
+	m_fMoveCount(0.0f),
+	m_fCntFind(0.0f),
+	m_fCntEscape(0.0f)
 {
 
 }
@@ -35,7 +40,7 @@ CEnemyRoaming::CEnemyRoaming(int nPriority) :
 //==========================================
 //  デストラクタ
 //==========================================
-CEnemyRoaming::~CEnemyRoaming()
+CEnemyEscape::~CEnemyEscape()
 {
 
 }
@@ -43,7 +48,7 @@ CEnemyRoaming::~CEnemyRoaming()
 //==========================================
 //  初期化処理
 //==========================================
-HRESULT CEnemyRoaming::Init(void)
+HRESULT CEnemyEscape::Init(void)
 {
 	//初期化処理
 	CEnemy::Init();
@@ -57,7 +62,7 @@ HRESULT CEnemyRoaming::Init(void)
 //==========================================
 //  終了処理
 //==========================================
-void CEnemyRoaming::Uninit(void)
+void CEnemyEscape::Uninit(void)
 {
 	// 終了処理
 	CEnemy::Uninit();
@@ -66,7 +71,7 @@ void CEnemyRoaming::Uninit(void)
 //==========================================
 //  更新処理
 //==========================================
-void CEnemyRoaming::Update(void)
+void CEnemyEscape::Update(void)
 {
 	// 死亡の判定
 	if (IsDeath() == true)
@@ -85,20 +90,40 @@ void CEnemyRoaming::Update(void)
 	// 行動ごとの行動
 	switch (m_Act)
 	{
-	case CEnemyRoaming::ACTION_ROAMING:
+	case CEnemyEscape::ACTION_ROAMING:
 
 		// 移動
 		Move();
 
 		break;
 
-	case CEnemyRoaming::ACTION_ATTACK:
+	case CEnemyEscape::ACTION_FIND:
 
 		// プレイヤーを向く
 		RotationPlayer();
 
-		// 攻撃
-		Attack();
+		// カウンターを加算
+		m_fCntFind += CManager::GetInstance()->GetDeltaTime();
+
+		break;
+
+	case CEnemyEscape::ACTION_ESCAPE:
+
+		// 逃走
+		Escape();
+
+		// カウンターを加算
+		m_fCntEscape += CManager::GetInstance()->GetDeltaTime();
+
+		break;
+
+	case CEnemyEscape::ACTION_FADE:
+
+		// 逃走
+		Escape();
+
+		// 消えてくれ
+		//SetState(STATE_FADEOUT);
 
 		break;
 
@@ -116,7 +141,7 @@ void CEnemyRoaming::Update(void)
 //==========================================
 //  描画処理
 //==========================================
-void CEnemyRoaming::Draw(void)
+void CEnemyEscape::Draw(void)
 {
 	// 描画処理
 	CEnemy::Draw();
@@ -125,7 +150,7 @@ void CEnemyRoaming::Draw(void)
 //==========================================
 //  殺す
 //==========================================
-void CEnemyRoaming::Kill(void)
+void CEnemyEscape::Kill(void)
 {
 	// 死亡処理
 	CEnemy::Kill();
@@ -134,7 +159,7 @@ void CEnemyRoaming::Kill(void)
 //==========================================
 //  モーションセット
 //==========================================
-void CEnemyRoaming::MotionSet(void)
+void CEnemyEscape::MotionSet(void)
 {
 	if (m_pMotion->IsFinish() == true)
 	{// 終了していたら
@@ -175,18 +200,32 @@ void CEnemyRoaming::MotionSet(void)
 //==========================================
 //  行動設定
 //==========================================
-void CEnemyRoaming::ActionSet(void)
+void CEnemyEscape::ActionSet(void)
 {
-	if (CalcLenPlayer(ATTACK_LENGTH))
+	// 逃走状態から消滅する
+	if (m_Act == ACTION_ESCAPE)
 	{
-		// 攻撃フラグを立てる
-		if (m_Act != ACTION_ATTACK)
+		if (m_fCntEscape >= ESCAPE_TIME)
 		{
-			m_sMotionFrag.bATK = true;
+			m_Act = ACTION_FADE;
 		}
+		return;
+	}
 
-		// 距離が近いと攻撃状態になる
-		m_Act = ACTION_ATTACK;
+	// 発見状態から逃走状態へ移行する
+	if (m_Act == ACTION_FIND)
+	{
+		if (m_fCntFind >= FIND_TIME)
+		{
+			m_Act = ACTION_ESCAPE;
+		}
+		return;
+	}
+
+	if (CalcLenPlayer(SEARCH_LENGTH))
+	{
+		// 距離が近いと発見状態になる
+		m_Act = ACTION_FIND;
 	}
 	else // 上記以外なら待機状態
 	{
@@ -197,7 +236,7 @@ void CEnemyRoaming::ActionSet(void)
 //==========================================
 //  移動
 //==========================================
-void CEnemyRoaming::Move(void)
+void CEnemyEscape::Move(void)
 {
 	// 移動フラグを立てる
 	m_sMotionFrag.bMove = true;
@@ -216,9 +255,47 @@ void CEnemyRoaming::Move(void)
 }
 
 //==========================================
+//  逃走
+//==========================================
+void CEnemyEscape::Escape(void)
+{
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+
+	// プレイヤー情報
+	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
+	if (pPlayer == NULL)
+	{
+		return;
+	}
+
+	// プレイヤーの位置取得
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+
+	// プレイヤーから自身に向かうベクトルを算出
+	D3DXVECTOR3 vecToPlayer = pos - posPlayer;
+
+	// ベクトルの正規化
+	vecToPlayer.y = 0.0f;
+	D3DXVec3Normalize(&vecToPlayer, &vecToPlayer);
+	vecToPlayer *= ESCAPE_SPEED;
+
+	// 移動量の取得
+	D3DXVECTOR3 move = GetMove();
+
+	// 移動量の設定
+	move.x = vecToPlayer.x;
+	move.z = vecToPlayer.z;
+	SetMove(move);
+
+	// 方向転換
+	MoveRotation();
+}
+
+//==========================================
 //  移動方向を向く処理
 //==========================================
-void CEnemyRoaming::MoveRotation(void)
+void CEnemyEscape::MoveRotation(void)
 {
 	// 必要な値を取得
 	D3DXVECTOR3 rot = GetRotation();
@@ -241,45 +318,9 @@ void CEnemyRoaming::MoveRotation(void)
 }
 
 //==========================================
-//  攻撃
-//==========================================
-void CEnemyRoaming::Attack(void)
-{
-	// 攻撃処理
-	CEnemy::StateAttack();
-
-	// モーションの情報取得
-	CMotion::Info aInfo = m_pMotion->GetInfo(m_pMotion->GetType());
-
-	// 攻撃情報の総数取得
-	int nNumAttackInfo = aInfo.nNumAttackInfo;
-
-	bool bAtkWait = true;	// 攻撃待機中
-	for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
-	{
-		if (aInfo.AttackInfo[nCntAttack] == NULL)
-		{// NULLだったら
-			continue;
-		}
-
-		// モーションカウンター取得
-		if (m_pMotion->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt)
-		{// 攻撃判定中
-			// 攻撃判定中にする
-			bAtkWait = false;
-		}
-	}
-
-	if (bAtkWait == false)
-	{// 判定中の時
-		return;
-	}
-}
-
-//==========================================
 //  プレイヤーを向く処理
 //==========================================
-void CEnemyRoaming::RotationPlayer(void)
+void CEnemyEscape::RotationPlayer(void)
 {
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
@@ -305,7 +346,7 @@ void CEnemyRoaming::RotationPlayer(void)
 	RotNormalize(fRotDiff);
 
 	//角度の補正をする
-	rot.y += fRotDiff * 0.025f;
+	rot.y += fRotDiff * 0.1f;
 
 	// 角度の正規化
 	RotNormalize(rot.y);
@@ -320,7 +361,7 @@ void CEnemyRoaming::RotationPlayer(void)
 //==========================================
 //  プレイヤーとの距離を判定
 //==========================================
-bool CEnemyRoaming::CalcLenPlayer(float fLen)
+bool CEnemyEscape::CalcLenPlayer(float fLen)
 {
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();

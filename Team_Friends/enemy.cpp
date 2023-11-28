@@ -1297,10 +1297,8 @@ void CEnemy::StateAttack(void)
 	// 距離の判定
 	bool bLen = false;
 
-
 	// オブジェクト情報
 	CObject *pObj = NULL;
-
 
 	// 現在の種類取得
 	int nType = m_pMotion->GetType();

@@ -73,7 +73,6 @@ public:
 	int GetState(void);
 
 	static CPlayerUnion *Create(eType type);	// 生成
-	static CPlayerUnion *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, eType type);	// 生成
 	void UninitByMode(void);
 	void Kill(void);	// 死亡処理
 	void SetPlayerByPartsIdx(int nPartsIdx, int nPlayerIdx);	// プレイヤー毎のパーツインデックス番号設定

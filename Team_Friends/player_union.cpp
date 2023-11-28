@@ -338,16 +338,22 @@ void CPlayerUnion::Update(void)
 	}
 
 	// コンボ演出中は抜ける
-	if (CGame::GetEnemyManager()->GetState() == CEnemyManager::STATE_COMBOANIM)
+	if (CManager::GetInstance()->GetScene()->GetMode() != CScene::MODE_RANKING)
 	{
-		return;
+		if (CGame::GetEnemyManager()->GetState() == CEnemyManager::STATE_COMBOANIM)
+		{
+			return;
+		}
 	}
 
 	// 過去の位置保存
 	SetOldPosition(GetPosition());
 
 	// 操作
-	Controll();
+	if (CManager::GetInstance()->GetScene()->GetMode() != CScene::MODE_RANKING)
+	{
+		Controll();
+	}
 
 	for (int i = 0; i < PARTS_MAX; i++)
 	{

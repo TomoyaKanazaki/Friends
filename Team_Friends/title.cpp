@@ -158,7 +158,7 @@ void CTitle::Update(void)
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDEPLAYER);
 	}
 
-	if (m_nCntSwitch >= 60 * 40)
+	if (m_nCntSwitch >= 60 * 5)
 	{// Ž©“®‘JˆÚ
 		// ƒ‚[ƒhÝ’è
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);

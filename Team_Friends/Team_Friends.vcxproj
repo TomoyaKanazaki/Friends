@@ -238,6 +238,7 @@
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="pause.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="player_ranking.cpp" />
     <ClCompile Include="player_title.cpp" />
     <ClCompile Include="player_union.cpp" />
     <ClCompile Include="precompile.cpp">
@@ -356,6 +357,7 @@
     <ClInclude Include="particle.h" />
     <ClInclude Include="pause.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="player_ranking.h" />
     <ClInclude Include="player_title.h" />
     <ClInclude Include="player_union.h" />
     <ClInclude Include="precompile.h" />

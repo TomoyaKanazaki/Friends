@@ -9,6 +9,7 @@
 #define _UNION_BODYTOARM_H_	// 二重インクルード防止
 
 #include "player_union.h"
+#include "player_ranking.h"
 
 // 前方宣言
 
@@ -16,7 +17,7 @@
 // クラス定義
 //==========================================================================
 // プレイヤークラス定義
-class CUnion_BodytoArm : public CPlayerUnion
+class CUnion_BodytoArm : public CPlayerUnion 
 {
 public:
 

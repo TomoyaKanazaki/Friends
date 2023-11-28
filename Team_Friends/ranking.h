@@ -10,6 +10,7 @@
 
 #include "main.h"
 #include "manager.h"
+#include "player_ranking.h"
 
 //==========================================================================
 // 前方宣言
@@ -35,13 +36,21 @@ public:
 
 	static void SetEnableArrival(void);
 	static int GetRandStage(void) { return m_nRandStage; }
+
 private:
+	void UniCharCreate(D3DXVECTOR3 pos, D3DXVECTOR3 rot);		//合体キャラの生成
+
 	int m_nCntSwitch;		// 切り替えのカウンター
+	int m_nCntUniCharCre;		// 合体キャラの生成カウンター
+	int m_nCntUniCharDel;		// 合体キャラの生成カウンター
 	static bool m_bAllArrival;		// 全て到着した判定
-	static int m_nRandStage;	// ステージのランダムインデックス番号
-	static CRankingScore *m_pRankingScore;	// ランキングスコアのオブジェクト
+	static int m_nRandStage;		// ステージのランダムインデックス番号
+	static CRankingScore *m_pRankingScore;		// ランキングスコアのオブジェクト
+	static CPlayerUnion *m_pPlayerUnion;		// 合体プレイヤーのオブジェクト
 
 	static const char *m_apModelFile;		// モデルのファイル
+
+	CPlayerRanking::MODEL m_nType;
 };
 
 

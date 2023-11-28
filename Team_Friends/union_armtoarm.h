@@ -9,6 +9,7 @@
 #define _UNION_ARMTOARM_H_	// 二重インクルード防止
 
 #include "player_union.h"
+#include "player_ranking.h"
 
 // 前方宣言
 

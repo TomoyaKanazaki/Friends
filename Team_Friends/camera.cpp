@@ -38,9 +38,9 @@
 #define TITLESTATE_CHASE	(60 * 20)
 #define RESULT_LEN	(280.0f)
 #define RANKING_LEN_DEST	(1000.0f)
-#define RANKING_POS_V	(D3DXVECTOR3(180.0f, 880.0f, -450.0f))
+#define RANKING_POS_V	(D3DXVECTOR3(70.0f, 960.0f, -160.0f))
 //#define RESULT_LEN	(1000.0f)
-#define RANKINGROT_NONE		(D3DXVECTOR3(0.0f, 0.09f, 0.05f))
+#define RANKINGROT_NONE		(D3DXVECTOR3(0.0f, 0.15f, 0.06f))
 
 //==========================================================================
 // コンストラクタ
@@ -532,6 +532,7 @@ void CCamera::SetCameraV(void)
 
 	case CScene::MODE_RANKING:
 		SetCameraVRanking();
+		SetCameraVTitle();
 		break;
 
 	default:
@@ -734,6 +735,7 @@ void CCamera::SetCameraR(void)
 
 	case CScene::MODE_RANKING:
 		SetCameraRRanking();
+		SetCameraRTitle();
 		break;
 
 	default:

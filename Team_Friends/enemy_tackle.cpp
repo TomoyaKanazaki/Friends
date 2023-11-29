@@ -16,8 +16,10 @@
 //==========================================
 namespace
 {
+	const float SEARCH_LENGTH = 400.0f;
 	const float ATTACK_LENGTH = 200.0f;
 	const float MOVE_SPEED = 0.01f;
+	const float ATTACK_SPEED = 0.01f;
 	const float MOVE_X = 2.0f;
 	const float MOVE_Z = 2.0f;
 }

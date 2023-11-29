@@ -87,6 +87,23 @@ void CEnemyEscape::Update(void)
 		return;
 	}
 
+	// 行動状態の更新
+	ActionSet();
+
+	// モーションの更新
+	MotionSet();
+
+	CManager::GetInstance()->GetDebugProc()->Print
+	(
+		"モーション : %d\n", m_pMotion->GetType()
+	);
+}
+
+//==========================================
+// 行動更新
+//==========================================
+void CEnemyEscape::UpdateAction(void)
+{
 	// 行動ごとの行動
 	switch (m_Act)
 	{
@@ -130,17 +147,6 @@ void CEnemyEscape::Update(void)
 	default:
 		break;
 	}
-
-	// 行動状態の更新
-	ActionSet();
-
-	// モーションの更新
-	MotionSet();
-
-	CManager::GetInstance()->GetDebugProc()->Print
-	(
-		"モーション : %d\n", m_pMotion->GetType()
-	);
 }
 
 //==========================================

@@ -82,6 +82,18 @@ void CEnemyRoaming::Update(void)
 		return;
 	}
 
+	// 行動状態の更新
+	ActionSet();
+
+	// モーションの更新
+	MotionSet();
+}
+
+//==========================================
+// 行動更新
+//==========================================
+void CEnemyRoaming::UpdateAction(void)
+{
 	// 行動ごとの行動
 	switch (m_Act)
 	{
@@ -105,12 +117,6 @@ void CEnemyRoaming::Update(void)
 	default:
 		break;
 	}
-
-	// 行動状態の更新
-	ActionSet();
-
-	// モーションの更新
-	MotionSet();
 }
 
 //==========================================

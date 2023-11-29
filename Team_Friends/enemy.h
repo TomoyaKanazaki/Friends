@@ -134,6 +134,8 @@ protected:
 	virtual void AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo);	// 攻撃時処理
 	virtual void ChaseMove(float fMove);	// 追い掛け移動
 
+	virtual void UpdateAction(void);		// 行動更新
+
 	// 状態更新系
 	virtual void StateNone(void);			// 何もない状態
 	virtual void Spawn(void);				// スポーン

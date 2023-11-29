@@ -55,6 +55,7 @@ private:
 	float m_fAfterCount; // 硬直カウンター
 
 	// メンバ関数
+	void UpdateAction(void) override;	// 行動更新
 	void ActionSet(void); // 行動の設定
 	void Move(void); // 移動
 	void MoveRotation(void); // 移動方向を向く

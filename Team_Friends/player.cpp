@@ -774,9 +774,15 @@ void CPlayer::Controll(void)
 		}
 	}
 
+	static CGameManager::eStatus s_statusType;
+	if (pInputKeyboard->GetTrigger(DIK_RIGHT) == true)
+	{// ←キーが押された,左移動
+		s_statusType = (CGameManager::eStatus)(((int)s_statusType + 1) % (int)CGameManager::STATUS_MAX);
+		SetEvolusion(s_statusType);
+	}
 
 	if (pInputKeyboard->GetPress(DIK_UP) == true)
-	{//SPACEが押された,ジャンプ
+	{// SPACEが押された,ジャンプ
 
 		// アイテムドロップ
 		CItem::Create(D3DXVECTOR3(pos.x, pos.y + 100.0f, pos.z), D3DXVECTOR3(0.0f, Random(-31, 31) * 0.1f, 0.0f));
@@ -1533,6 +1539,7 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 			}
 		}
 
+		// 腕の使用状況別設定
 		if (bR_Arm == false && bL_Arm == false)
 		{
 			CManager::GetInstance()->SetByPlayerPartsType(m_nMyPlayerIdx, CPlayerUnion::PARTS_R_ARM);
@@ -1560,8 +1567,10 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 	// パーツ変更
 	ChangeObject((int)statusType + 1);
 
+#ifdef _DEBUG
 	// モーション切り替え
 	ChangeMotion(EVOLUSIONFILE[(int)statusType]);
+#endif
 
 	// プレイヤー毎のインデックス追加
 	BindByPlayerIdxTexture();

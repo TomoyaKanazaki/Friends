@@ -101,6 +101,7 @@ protected:
 
 	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
 	void SetEvolusion(CGameManager::eStatus statusType);	// 進化先設定
+	void BindByPlayerIdxTexture(void);	// プレイヤーインデックス毎のテクスチャ設定
 
 	bool m_bJump;				// ジャンプ中かどうか
 	bool m_bLandOld;			// 過去の着地情報

@@ -55,7 +55,7 @@ PATTERNSET
 END_PATTERNSET
 
 #------------------------------------------------------------------
-# [2]徘徊
+# [2]全配置
 #------------------------------------------------------------------
 PATTERNSET
 	
@@ -65,6 +65,15 @@ PATTERNSET
 		TYPE = 2		# キャラの種類
 		INDEX = 0
 		POS = 0.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+	
+		FIXEDMOVE = 0		# 一定の動きの種類
+	
+	ENEMYSET
+		TYPE = 3		# キャラの種類
+		INDEX = 0
+		POS = 100.00 0.00 0.00
 		STARTFRAME = 0		# 初期フレーム
 	END_ENEMYSET
 	

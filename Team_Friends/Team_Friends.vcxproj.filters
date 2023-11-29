@@ -429,6 +429,9 @@
     <ClCompile Include="player_ranking.cpp">
       <Filter>ランキング触るよ</Filter>
     </ClCompile>
+    <ClCompile Include="enemy_tackle.cpp">
+      <Filter>enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -769,6 +772,9 @@
     </ClInclude>
     <ClInclude Include="player_ranking.h">
       <Filter>ランキング触るよ</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_tackle.h">
+      <Filter>enemy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

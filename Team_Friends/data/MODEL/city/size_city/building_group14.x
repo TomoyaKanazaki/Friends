@@ -9206,7 +9206,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\ƒtƒŒƒ“ƒY\\‚Ü‚Á‚Õ‚¦‚Å‚¡‚½[\\data\\TEXTURE\\building002.jpg";
+    "data\\TEXTURE\\building002.jpg";
    }
   }
   Material {

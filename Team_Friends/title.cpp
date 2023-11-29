@@ -15,6 +15,7 @@
 #include "title_logo.h"
 #include "fog.h"
 #include "player_title.h"
+#include "union_title.h"
 #include "enemy.h"
 
 //==========================================
@@ -26,9 +27,10 @@ namespace
 	const float START_LENGTH = 300.0f; // 初期距離
 	const float END_LENGTH = 3000.0f; // 目標距離
 	const float FUNCTION = 0.01f; //倍率
+	const float SWITCH_TIME = 20.0f;
 
 	//モデルの配置位置
-	const D3DXVECTOR3 CENTER	= D3DXVECTOR3(0.0f, 100.0f, -3000.0f);
+	const D3DXVECTOR3 CENTER	= D3DXVECTOR3(0.0f, 0.0f, -3000.0f);
 	const D3DXVECTOR3 IN_LEFT	= D3DXVECTOR3(-160.0f, 0.0f, -2900.0f);
 	const D3DXVECTOR3 IN_RIGHT	= D3DXVECTOR3(160.0f, 0.0f, -2900.0f);
 	const D3DXVECTOR3 OUT_LEFT	= D3DXVECTOR3(-300.0f, 0.0f, -3000.0f);
@@ -43,7 +45,7 @@ m_col(D3DXCOLOR(0.0f, 0.0, 0.0f, 1.0f)),
 m_fLength(START_LENGTH)
 {
 	// 値のクリア
-	m_nCntSwitch = 0;		// 切り替えのカウンター
+	m_fCnt = 0.0f;		// 切り替えのカウンター
 	m_pLogo = nullptr;
 }
 
@@ -87,7 +89,7 @@ HRESULT CTitle::Init(void)
 	Fog::SetCol(m_col);
 
 	// プレイヤーを置いてみる
-	//CPlayerTitle::Create(CENTER, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_UNION);
+	CUnionTitle::Create(CENTER);
 	CPlayerTitle::Create(IN_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
 	CPlayerTitle::Create(IN_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
 	CPlayerTitle::Create(OUT_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
@@ -130,16 +132,8 @@ void CTitle::Update(void)
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
-	// 切り替えのカウンター加算
-	m_nCntSwitch++;
-
 	if (CManager::GetInstance()->GetFade()->GetState() != CFade::STATE_NONE)
 	{// フェード中は抜ける
-		return;
-	}
-
-	if (m_nCntSwitch <= 120)
-	{
 		return;
 	}
 
@@ -152,13 +146,16 @@ void CTitle::Update(void)
 	//フォグを引く
 	WhiteOut();
 
+	// 切り替えのカウンター加算
+	m_fCnt += CManager::GetInstance()->GetDeltaTime();
+
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
 	{
 		// モード設定
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDEPLAYER);
 	}
 
-	if (m_nCntSwitch >= 60 * 5)
+	if (m_fCnt >= SWITCH_TIME)
 	{// 自動遷移
 		// モード設定
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);

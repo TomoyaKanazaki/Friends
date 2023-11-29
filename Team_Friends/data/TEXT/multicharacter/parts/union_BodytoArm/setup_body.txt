@@ -9,15 +9,14 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 4
+NUM_MODEL = 3
 
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-MODEL_FILENAME = data\MODEL\union_ArmToArm\Rshoulder.x	# [7]右肩
-MODEL_FILENAME = data\MODEL\union_ArmToArm\Rarm.x		# [8]右腕
-MODEL_FILENAME = data\MODEL\union_ArmToArm\Rwrist.x		# [9]右手首
-MODEL_FILENAME = data\MODEL\union_ArmToArm\Rhand.x		# [10]右手
+MODEL_FILENAME = data\MODEL\union_ArmToArm\waist.x		# [0]腰
+MODEL_FILENAME = data\MODEL\union_ArmToArm\body.x		# [1]胴
+MODEL_FILENAME = data\MODEL\union_ArmToArm\head.x		# [2]頭
 
 #------------------------------------------------------------------------------
 # キャラクター情報
@@ -28,12 +27,12 @@ CHARACTERSET
 	RADIUS = 60.00		
 	HEIGHT = 0.00		
 	LIFE = 5		
-	MOTION_STARTPARTS = 7		
+	MOTION_STARTPARTS = 0		
 
 	PARTSSET
 		INDEX = 0
-		PARENT = 0
-		POS = -30.30 32.30 0.00
+		PARENT = -1
+		POS = 0.00 140.60 0.00
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -41,7 +40,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 1
 		PARENT = 0
-		POS = -69.60 -4.50 3.60
+		POS = 0.00 0.00 0.00
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -49,19 +48,12 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 2
 		PARENT = 1
-		POS = -58.7 -0.7 1.80
-		ROT = 0.00 0.00 0.00
-		START = 1
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 3
-		PARENT = 2
-		POS = -16.9 -10.90 -1.7
+		POS = 0.00 46.70 -2.00
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
 END_CHARACTERSET
+
 
 #------------------------------------------------------------------------------
 # モーション情報
@@ -2362,6 +2354,7 @@ MOTIONSET
 	END_KEYSET
 
 END_MOTIONSET
+
 
 
 END_SCRIPT		# この行は絶対消さないこと！

@@ -227,7 +227,24 @@ void CDecidePlayerScreen::Update(void)
 		m_pObj2D[nCntSelect]->SetVtx();
 	}
 
+	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
+	{
+		if (m_pSelect2D[nCntSelect] == NULL)
+		{// NULLだったら
+			continue;
+		}
 
+		// 選択肢の更新処理
+		UpdateSelect(nCntSelect);
+
+		// 頂点情報設定
+		m_pSelect2D[nCntSelect]->SetVtx();
+	}
+
+	if (CManager::GetInstance()->GetFade()->GetState() != CFade::STATE_NONE)
+	{// フェード中は抜ける
+		return;
+	}
 
 
 	// キーボード情報取得
@@ -275,26 +292,18 @@ void CDecidePlayerScreen::Update(void)
 		CManager::GetInstance()->SetNumPlayer(m_nNowSelect + 1);
 		//CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_GAME);
 
+
+		// ゲームに遷移する
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_GAME);
+
+		// キャラ決めしたい時
+#if 0
 		// キャラ決め画面生成
 		CDecideCharacter::Create();
+#endif
 
 		Delete();
 		return;
-	}
-
-
-	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
-	{
-		if (m_pSelect2D[nCntSelect] == NULL)
-		{// NULLだったら
-			continue;
-		}
-
-		// 選択肢の更新処理
-		UpdateSelect(nCntSelect);
-
-		// 頂点情報設定
-		m_pSelect2D[nCntSelect]->SetVtx();
 	}
 }
 

@@ -110,7 +110,7 @@ protected:
 	virtual void MotionSet(int nIdx);	// モーションの設定
 	bool ControllMove(int nIdx);	// 移動操作
 	virtual HRESULT CreateParts(void);	// パーツの設定
-
+	
 	bool m_bJump;				// ジャンプ中かどうか
 	bool m_bLandOld;			// 過去の着地情報
 	bool m_bHitStage;			// ステージの当たり判定

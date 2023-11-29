@@ -18,7 +18,7 @@ namespace
 {
 	const float SEARCH_LENGTH = 400.0f;
 	const float MOVE_SPEED = 0.03f;
-	const float ESCAPE_SPEED = 10.0f;
+	const float ESCAPE_SPEED = 0.0f;
 	const float MOVE_X = 2.0f;
 	const float MOVE_Z = 2.0f;
 	const float FIND_TIME = 0.5f;
@@ -123,7 +123,7 @@ void CEnemyEscape::Update(void)
 		Escape();
 
 		// 消えてくれ
-		//SetState(STATE_FADEOUT);
+		SetState(STATE_FADEOUT);
 
 		break;
 
@@ -136,6 +136,11 @@ void CEnemyEscape::Update(void)
 
 	// モーションの更新
 	MotionSet();
+
+	CManager::GetInstance()->GetDebugProc()->Print
+	(
+		"モーション : %d\n", m_pMotion->GetType()
+	);
 }
 
 //==========================================
@@ -202,6 +207,12 @@ void CEnemyEscape::MotionSet(void)
 //==========================================
 void CEnemyEscape::ActionSet(void)
 {
+	// 消滅状態の場合は抜ける
+	if (m_Act == ACTION_FADE)
+	{
+		return;
+	}
+
 	// 逃走状態から消滅する
 	if (m_Act == ACTION_ESCAPE)
 	{

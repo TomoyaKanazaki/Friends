@@ -27,6 +27,7 @@ CHARACTERSET
 	RADIUS = 60.0					# îºåa
 	HEIGHT = 80.0					# çÇÇ≥
 	LIFE = 28						# ëÃóÕ
+	MOTION_STARTPARTS = 7
 
 	PARTSSET						# [7]âEè„òr
 		INDEX = 0

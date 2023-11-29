@@ -56,6 +56,13 @@ namespace
 		"data\\TEXT\\character\\player\\motion_pUPLeg.txt",		// 駆動性
 		"data\\TEXT\\character\\player\\motion_pUPBody.txt",	// 耐久
 	};
+	const char* TEXTURE_INITPLAYER[mylib_const::MAX_PLAYER] =	// 初期プレイヤーのテクスチャ
+	{
+		"data\\TEXTURE\\player\\init\\init_UV.jpg",
+		"data\\TEXTURE\\player\\init\\init_UV_Blue.jpg",
+		"data\\TEXTURE\\player\\init\\init_UV_Green.jpg",
+		"data\\TEXTURE\\player\\init\\init_UV_Yellow.jpg",
+	};
 	const float JUMP = 20.0f * 1.5f;	// ジャンプ力初期値
 	const int INVINCIBLE_INT = 2;		// 無敵の間隔
 	const int INVINCIBLE_TIME = 90;		// 無敵の時間
@@ -196,23 +203,23 @@ HRESULT CPlayer::Init(void)
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);
 
-	if (m_nMyPlayerIdx == 2 ||
-		m_nMyPlayerIdx == 3)
-	{// うで
-		SetEvolusion(CGameManager::STATUS_POWER);
-	}
+	//if (m_nMyPlayerIdx == 2 ||
+	//	m_nMyPlayerIdx == 3)
+	//{// うで
+	//	SetEvolusion(CGameManager::STATUS_POWER);
+	//}
 
-	if (m_nMyPlayerIdx == 0)
-	{// 胴
-		SetEvolusion(CGameManager::STATUS_LIFE);
-	}
+	//if (m_nMyPlayerIdx == 0)
+	//{// 胴
+	//	SetEvolusion(CGameManager::STATUS_LIFE);
+	//}
 
-	if (m_nMyPlayerIdx == 1)
-	{// 胴
-		SetEvolusion(CGameManager::STATUS_SPEED);
-	}
+	//if (m_nMyPlayerIdx == 1)
+	//{// 胴
+	//	SetEvolusion(CGameManager::STATUS_SPEED);
+	//}
 
-#if 0
+#if 1
 	// モデル取得
 	CModel **ppModel = GetModel();
 
@@ -227,9 +234,11 @@ HRESULT CPlayer::Init(void)
 		// Xファイルのデータ取得
 		CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());
 
+		// テクスチャ読み込み
+		int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[m_nMyPlayerIdx]);
 		for (int nMat = 0; nMat < pXData->dwNumMat; nMat++)
 		{
-			pXData->nIdxTexture[nMat] = ここにプレイヤーテクスチャインデックス番号;
+			pXData->nIdxTexture[nMat] = nIdxTex;
 		}
 	}
 #endif
@@ -474,7 +483,8 @@ void CPlayer::Controll(void)
 		if (m_pMotion->IsGetMove(nMotionType) == 1 &&
 			m_state != STATE_DEAD &&
 			m_state != STATE_FADEOUT &&
-			m_state != STATE_COMPACTUNION)
+			m_state != STATE_COMPACTUNION &&
+			m_state != STATE_RELEASEUNION)
 		{// 移動可能モーションの時
 
 			if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).x < 0)
@@ -571,7 +581,8 @@ void CPlayer::Controll(void)
 		}
 	}
 
-	//if (m_pMotion->GetType() == MOTION_WALK)
+	if (m_state != STATE_COMPACTUNION &&
+		m_state != STATE_RELEASEUNION)
 	{// 移動中
 		m_nCntWalk = (m_nCntWalk + 1) % 4;
 
@@ -1353,7 +1364,13 @@ bool CPlayer::Hit(const int nValue)
 	//	return true;
 	//}
 
-	if (m_state != STATE_DMG && m_state != STATE_KNOCKBACK && m_state != STATE_INVINCIBLE && m_state != STATE_DEAD && m_state != STATE_FADEOUT)
+	if (m_state != STATE_DMG &&
+		m_state != STATE_KNOCKBACK &&
+		m_state != STATE_INVINCIBLE &&
+		m_state != STATE_DEAD &&
+		m_state != STATE_FADEOUT &&
+		m_state != STATE_COMPACTUNION &&
+		m_state != STATE_RELEASEUNION)
 	{// ダメージ受付状態の時
 
 		// 体力減らす

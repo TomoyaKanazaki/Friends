@@ -222,13 +222,10 @@ void CEnemyRoaming::MoveRotation(void)
 {
 	// 必要な値を取得
 	D3DXVECTOR3 rot = GetRotation();
-	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 move = GetMove();
-	D3DXVECTOR3 posDest = pos + move;
-	D3DXVECTOR3 posDiff = posDest - pos;
 
 	// 方向を算出
-	float fRot = atan2f(-posDiff.x, -posDiff.z);
+	float fRot = atan2f(-move.x, -move.z);
 
 	//角度の正規化
 	RotNormalize(fRot);

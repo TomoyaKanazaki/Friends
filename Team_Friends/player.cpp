@@ -126,6 +126,7 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 	m_posKnokBack = mylib_const::DEFAULT_VECTOR3;	// ノックバックの位置
 	m_KnokBackMove = mylib_const::DEFAULT_VECTOR3;	// ノックバックの移動量
 	m_nCntState = 0;								// 状態遷移カウンター
+	m_nEvolveType = 0;								// 進化先の種類
 	m_nMyPlayerIdx = 0;								// プレイヤーインデックス番号
 	m_pShadow = NULL;								// 影の情報
 	m_pTargetP = NULL;								// 目標の地点
@@ -1612,11 +1613,11 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 		break;
 	}
 
-	// 変更タグ
-	int nChangeTag = (int)statusType + 1;
+	// 進化先の種類
+	m_nEvolveType = (int)statusType + 1;
 
 	// パーツ変更
-	ChangeObject(nChangeTag);
+	ChangeObject(m_nEvolveType);
 
 #ifndef _DEBUG
 	// モーション切り替え
@@ -1635,8 +1636,6 @@ void CPlayer::BindByPlayerIdxTexture(void)
 	// ファイルインデックス番号取得
 	int nIdxXFile = GetIdxFile();
 	CObjectChara::Load LoadData = GetLoadData(nIdxXFile);
-
-	int nEvolveType = CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx) + 1;
 
 	// モデル取得
 	CModel **ppModel = GetModel();
@@ -1660,27 +1659,45 @@ void CPlayer::BindByPlayerIdxTexture(void)
 	}
 
 	// 種類別テクスチャ切り替え
-	for (int i = 0; i < GetNumModel(); i++)
+	for (int i = 0; i < LoadData.nNumModel; i++)
 	{
-		if (ppModel[i] == NULL)
-		{
+		if (LoadData.LoadData[i].nSwitchType != m_nEvolveType)
+		{// 変更のタグと違うもの
 			continue;
 		}
 
-		if (LoadData.LoadData[i].nSwitchType <= 0)
-		{
-			continue;
+		if (LoadData.LoadData[i].nIDSwitchModel < 0)
+		{// 新しいパーツ
+
+			// テクスチャ読み込み
+			int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[m_nEvolveType][m_nMyPlayerIdx]);
+
+			// Xファイルのデータ取得
+			CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());
+
+			for (int nMat = 0; nMat < (int)pXData->dwNumMat; nMat++)
+			{
+				ppModel[i]->SetIdxTexture(nMat, nIdxTex);
+			}
 		}
+		else
+		{// 切り替えの場合
 
-		// テクスチャ読み込み
-		int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[nEvolveType][m_nMyPlayerIdx]);
+			if (ppModel[LoadData.LoadData[i].nIDSwitchModel] == NULL)
+			{
+				continue;
+			}
 
-		// Xファイルのデータ取得
-		CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());
+			// テクスチャ読み込み
+			int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[m_nEvolveType][m_nMyPlayerIdx]);
 
-		for (int nMat = 0; nMat < (int)pXData->dwNumMat; nMat++)
-		{
-			ppModel[i]->SetIdxTexture(nMat, nIdxTex);
+			// Xファイルのデータ取得
+			CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[LoadData.LoadData[i].nIDSwitchModel]->GetIdxXFile());
+
+			for (int nMat = 0; nMat < (int)pXData->dwNumMat; nMat++)
+			{
+				ppModel[LoadData.LoadData[i].nIDSwitchModel]->SetIdxTexture(nMat, nIdxTex);
+			}
 		}
 	}
 }

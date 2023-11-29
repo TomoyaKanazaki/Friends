@@ -22,6 +22,10 @@ namespace
 	const float ATTACK_SPEED = 0.01f;
 	const float MOVE_X = 2.0f;
 	const float MOVE_Z = 2.0f;
+	const float ATTACK_TIME = 3.0f;
+	const float READY_TIME = 3.0f;
+	const float AFTER_TIME = 3.0f;
+	const float SEARCH_ROT = 45.0f;
 }
 
 //==========================================
@@ -102,14 +106,14 @@ void CEnemyTackle::UpdateAction(void)
 	case CEnemyTackle::ACTION_ROAMING:
 
 		// 移動
-		Move();
+		//Move();
 
 		break;
 
 	case CEnemyTackle::ACTION_ATTACK:
 
 		// プレイヤーを向く
-		RotationPlayer();
+		//RotationPlayer();
 
 		// 攻撃
 		Attack();
@@ -185,20 +189,48 @@ void CEnemyTackle::MotionSet(void)
 //==========================================
 void CEnemyTackle::ActionSet(void)
 {
-	if (CalcLenPlayer(SEARCH_LENGTH))
+	// 逃走状態から消滅する
+	if (m_Act == ACTION_READY)
 	{
-		// 攻撃フラグを立てる
-		if (m_Act != ACTION_ATTACK)
+		if (m_fActionCount >= READY_TIME)
 		{
-			m_sMotionFrag.bATK = true;
+			m_Act = ACTION_ATTACK;
 		}
 
-		// 距離が近いと攻撃状態になる
-		m_Act = ACTION_ATTACK;
+		return;
 	}
-	else // 上記以外なら待機状態
+
+	// 逃走状態から消滅する
+	if (m_Act == ACTION_ATTACK)
 	{
-		m_Act = ACTION_ROAMING;
+		if (m_fActionCount >= ATTACK_TIME)
+		{
+			m_Act = ACTION_AFTER;
+		}
+
+		return;
+	}
+
+	// 逃走状態から消滅する
+	if (m_Act == ACTION_AFTER)
+	{
+		if (m_fActionCount >= ATTACK_TIME)
+		{
+			m_Act = ACTION_ROAMING;
+		}
+
+		return;
+	}
+
+	if (SearchPlayer(SEARCH_LENGTH))
+	{// 索敵
+
+		// 攻撃フラグを立てる
+		if (m_Act == ACTION_ROAMING)
+		{
+			// 距離が近いと攻撃状態になる
+			m_Act = ACTION_ATTACK;
+		}
 	}
 }
 
@@ -280,6 +312,48 @@ void CEnemyTackle::Attack(void)
 
 	if (bAtkWait == false)
 	{// 判定中の時
+	 // 位置取得
+		D3DXVECTOR3 pos = GetPosition();
+
+		// プレイヤー情報
+		CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
+		if (pPlayer == NULL)
+		{
+			return;
+		}
+
+		// プレイヤーの位置取得
+		D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+
+		// プレイヤーから自身に向かうベクトルを算出
+		D3DXVECTOR3 vecToPlayer = pos - posPlayer;
+
+		// ベクトルの正規化
+		vecToPlayer.y = 0.0f;
+		D3DXVec3Normalize(&vecToPlayer, &vecToPlayer);
+		vecToPlayer *= ATTACK_SPEED;
+
+		// 移動量の取得
+		D3DXVECTOR3 move = GetMove();
+
+		// 移動量の設定
+		move.x = vecToPlayer.x;
+		move.z = vecToPlayer.z;
+		SetMove(move);
+
+		// 方向転換
+		MoveRotation();
+
+		//攻撃判定アリ凸
+
+		return;
+	}
+	else
+	{//準備中
+
+		//プレイヤーの方を向く
+		RotationPlayer();
+
 		return;
 	}
 }
@@ -328,10 +402,20 @@ void CEnemyTackle::RotationPlayer(void)
 //==========================================
 //  プレイヤーとの距離を判定
 //==========================================
-bool CEnemyTackle::CalcLenPlayer(float fLen)
+bool CEnemyTackle::SearchPlayer(float fLen)
 {
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 posL = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//索敵扇の左点
+	D3DXVECTOR3 posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//索敵扇の右点
+
+	//float fRot = SEARCH_ROT * D3DX_PI / 180;
+	float fRot = 0.7f;
+
+	posL.x = pos.x + sinf(fRot) * SEARCH_LENGTH;
+	posL.z = pos.z + cosf(fRot) * SEARCH_LENGTH;
+	posR.x = pos.x + sinf(-fRot) * SEARCH_LENGTH;
+	posR.z = pos.z + cosf(-fRot) * SEARCH_LENGTH;
 
 	// プレイヤー情報
 	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
@@ -343,14 +427,8 @@ bool CEnemyTackle::CalcLenPlayer(float fLen)
 	// プレイヤーの位置取得
 	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 
-	// 二点間を繋ぐベクトルの算出
-	D3DXVECTOR3 vecToPlayer = pos - posPlayer;
-
-	// ベクトルの大きさの2乗を算出
-	float fLength = vecToPlayer.x * vecToPlayer.x + vecToPlayer.z * vecToPlayer.z;
-
 	// 一定範囲内の判定
-	if (fLen * fLen >= fLength)
+	if (CollisionFan(pos, posL, posR, posPlayer, fRot))
 	{
 		return true;
 	}

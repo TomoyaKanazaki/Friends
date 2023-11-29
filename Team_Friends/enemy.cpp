@@ -127,6 +127,10 @@ CEnemy *CEnemy::Create(int nIdx, const char *pFileName, D3DXVECTOR3 pos, TYPE ty
 			pEnemy = DEBUG_NEW CEnemyEscape;
 			break;
 
+		case TYPE_TACKLE:
+			pEnemy = DEBUG_NEW CEnemyTackle;
+			break;
+
 		case TYPE_FLY:
 			pEnemy = DEBUG_NEW CEnemyFly;
 			break;

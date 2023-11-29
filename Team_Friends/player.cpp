@@ -203,45 +203,24 @@ HRESULT CPlayer::Init(void)
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);
 
-	//if (m_nMyPlayerIdx == 2 ||
-	//	m_nMyPlayerIdx == 3)
-	//{// うで
-	//	SetEvolusion(CGameManager::STATUS_POWER);
-	//}
-
-	//if (m_nMyPlayerIdx == 0)
-	//{// 胴
-	//	SetEvolusion(CGameManager::STATUS_LIFE);
-	//}
-
-	//if (m_nMyPlayerIdx == 1)
-	//{// 胴
-	//	SetEvolusion(CGameManager::STATUS_SPEED);
-	//}
-
-#if 1
-	// モデル取得
-	CModel **ppModel = GetModel();
-
-	// Xファイルのデータ取得
-	for (int i = 0; i < GetNumModel(); i++)
-	{
-		if (ppModel[i] == NULL)
-		{
-			continue;
-		}
-
-		// Xファイルのデータ取得
-		CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());
-
-		// テクスチャ読み込み
-		int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[m_nMyPlayerIdx]);
-		for (int nMat = 0; nMat < pXData->dwNumMat; nMat++)
-		{
-			pXData->nIdxTexture[nMat] = nIdxTex;
-		}
+	if (m_nMyPlayerIdx == 2 ||
+		m_nMyPlayerIdx == 3)
+	{// うで
+		SetEvolusion(CGameManager::STATUS_POWER);
 	}
-#endif
+
+	if (m_nMyPlayerIdx == 0)
+	{// 胴
+		SetEvolusion(CGameManager::STATUS_LIFE);
+	}
+
+	if (m_nMyPlayerIdx == 1)
+	{// 胴
+		SetEvolusion(CGameManager::STATUS_SPEED);
+	}
+
+	// プレイヤー毎のインデックス追加
+	BindByPlayerIdxTexture();
 
 	// バフ計算
 	m_sStatus.fPowerBuff = 1.0f;
@@ -1583,6 +1562,38 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 
 	// モーション切り替え
 	ChangeMotion(EVOLUSIONFILE[(int)statusType]);
+
+	// プレイヤー毎のインデックス追加
+	BindByPlayerIdxTexture();
+}
+
+//==========================================================================
+// プレイヤーインデックス毎のテクスチャ設定
+//==========================================================================
+void CPlayer::BindByPlayerIdxTexture(void)
+{
+	// テクスチャ読み込み
+	int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[m_nMyPlayerIdx]);
+
+	// モデル取得
+	CModel **ppModel = GetModel();
+
+	// Xファイルのデータ取得
+	for (int i = 0; i < GetNumModel(); i++)
+	{
+		if (ppModel[i] == NULL)
+		{
+			continue;
+		}
+
+		// Xファイルのデータ取得
+		CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());
+
+		for (int nMat = 0; nMat < (int)pXData->dwNumMat; nMat++)
+		{
+			ppModel[i]->SetIdxTexture(nMat, nIdxTex);
+		}
+	}
 }
 
 //==========================================================================

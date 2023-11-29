@@ -1174,7 +1174,7 @@ bool CPlayerUnion::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 	if (fHeight > pos.y)
 	{// ’n–Ê‚Ì•û‚ªŽ©•ª‚æ‚è‚‚©‚Á‚½‚ç
 
-	 // ’n–Ê‚Ì‚‚³‚É•â³
+		// ’n–Ê‚Ì‚‚³‚É•â³
 		pos.y = fHeight;
 		m_bLandField = true;
 

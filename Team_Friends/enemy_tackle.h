@@ -43,13 +43,16 @@ private:
 	enum ACTION
 	{
 		ACTION_ROAMING = 0, //徘徊行動
+		ACTION_FIND, //発見行動
 		ACTION_ATTACK, //攻撃行動
+		ACTION_AFTER, //攻撃硬直
 		MAX
 	};
 
 	// メンバ変数
 	ACTION m_Act; //行動状態
 	float m_fMoveCount; // 移動カウンター
+	float m_fAfterCount; // 硬直カウンター
 
 	// メンバ関数
 	void ActionSet(void); // 行動の設定

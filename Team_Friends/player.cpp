@@ -56,12 +56,32 @@ namespace
 		"data\\TEXT\\character\\player\\motion_pUPLeg.txt",		// 駆動性
 		"data\\TEXT\\character\\player\\motion_pUPBody.txt",	// 耐久
 	};
-	const char* TEXTURE_INITPLAYER[mylib_const::MAX_PLAYER] =	// 初期プレイヤーのテクスチャ
+	const char* TEXTURE_INITPLAYER[mylib_const::MAX_PLAYER][mylib_const::MAX_PLAYER] =	// 初期プレイヤーのテクスチャ
 	{
-		"data\\TEXTURE\\player\\init\\init_UV.jpg",
-		"data\\TEXTURE\\player\\init\\init_UV_Blue.jpg",
-		"data\\TEXTURE\\player\\init\\init_UV_Green.jpg",
-		"data\\TEXTURE\\player\\init\\init_UV_Yellow.jpg",
+		{// 初期プレイヤー
+			"data\\TEXTURE\\player\\init\\init_UV.jpg",
+			"data\\TEXTURE\\player\\init\\init_UV_Blue.jpg",
+			"data\\TEXTURE\\player\\init\\init_UV_Green.jpg",
+			"data\\TEXTURE\\player\\init\\init_UV_Yellow.jpg",
+		},
+		{// 変更タグ1(腕)
+			"data\\TEXTURE\\player\\pUP_arm01\\init_UV.jpg",
+			"data\\TEXTURE\\player\\pUP_arm01\\init_UV_Blue.jpg",
+			"data\\TEXTURE\\player\\pUP_arm01\\init_UV_Green.jpg",
+			"data\\TEXTURE\\player\\pUP_arm01\\init_UV_Yellow.jpg",
+		},
+		{// 変更タグ2(脚)
+			"data\\TEXTURE\\player\\pUP_leg01\\feet_UV_Red.jpg",
+			"data\\TEXTURE\\player\\pUP_leg01\\feet_UV_Blue.jpg",
+			"data\\TEXTURE\\player\\pUP_leg01\\feet_UV_Green.jpg",
+			"data\\TEXTURE\\player\\pUP_leg01\\feet_UV_Yellow.jpg",
+		},
+		{// 変更タグ3(胴)
+			"data\\TEXTURE\\player\\pUP_body01\\body_UV_Red.jpg",
+			"data\\TEXTURE\\player\\pUP_body01\\body_UV_Blue.jpg",
+			"data\\TEXTURE\\player\\pUP_body01\\body_UV_Green.jpg",
+			"data\\TEXTURE\\player\\pUP_body01\\body_UV_Yellow.jpg",
+		}
 	};
 	const float JUMP = 20.0f * 1.5f;	// ジャンプ力初期値
 	const int INVINCIBLE_INT = 2;		// 無敵の間隔
@@ -775,6 +795,7 @@ void CPlayer::Controll(void)
 		}
 	}
 
+#if _DEBUG
 	static CGameManager::eStatus s_statusType;
 	if (pInputKeyboard->GetTrigger(DIK_RIGHT) == true)
 	{// ←キーが押された,左移動
@@ -788,6 +809,7 @@ void CPlayer::Controll(void)
 		// アイテムドロップ
 		CItem::Create(D3DXVECTOR3(pos.x, pos.y + 100.0f, pos.z), D3DXVECTOR3(0.0f, Random(-31, 31) * 0.1f, 0.0f));
 	}
+#endif
 }
 
 //==========================================================================
@@ -1565,10 +1587,13 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 		break;
 	}
 
-	// パーツ変更
-	ChangeObject((int)statusType + 1);
+	// 変更タグ
+	int nChangeTag = (int)statusType + 1;
 
-#ifdef _DEBUG
+	// パーツ変更
+	ChangeObject(nChangeTag);
+
+#ifndef _DEBUG
 	// モーション切り替え
 	ChangeMotion(EVOLUSIONFILE[(int)statusType]);
 #endif
@@ -1582,19 +1607,48 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 //==========================================================================
 void CPlayer::BindByPlayerIdxTexture(void)
 {
-	// テクスチャ読み込み
-	int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[m_nMyPlayerIdx]);
+	// ファイルインデックス番号取得
+	int nIdxXFile = GetIdxFile();
+	CObjectChara::Load LoadData = GetLoadData(nIdxXFile);
+
+	int nEvolveType = CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx) + 1;
 
 	// モデル取得
 	CModel **ppModel = GetModel();
 
-	// Xファイルのデータ取得
+	// 初期テクスチャ
+	int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[0][m_nMyPlayerIdx]);
 	for (int i = 0; i < GetNumModel(); i++)
 	{
 		if (ppModel[i] == NULL)
 		{
 			continue;
 		}
+
+		// Xファイルのデータ取得
+		CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());
+
+		for (int nMat = 0; nMat < (int)pXData->dwNumMat; nMat++)
+		{
+			ppModel[i]->SetIdxTexture(nMat, nIdxTex);
+		}
+	}
+
+	// 種類別テクスチャ切り替え
+	for (int i = 0; i < GetNumModel(); i++)
+	{
+		if (ppModel[i] == NULL)
+		{
+			continue;
+		}
+
+		if (LoadData.LoadData[i].nSwitchType <= 0)
+		{
+			continue;
+		}
+
+		// テクスチャ読み込み
+		int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[nEvolveType][m_nMyPlayerIdx]);
 
 		// Xファイルのデータ取得
 		CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());

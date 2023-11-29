@@ -46,12 +46,14 @@ CCompactCore::STATE_FUNC CCompactCore::m_StateFuncList[] =
 CCompactCore::CCompactCore(int nPriority) : CObjectX(nPriority)
 {
 	// 値のクリア
-	m_state = STATE_NONE;		// 状態
-	m_nCntState = 0;			// 状態遷移カウンター
-	m_nLife = 0;				// 寿命
-	m_nLifeMax = 0;				// 寿命の最大値
-	m_nCntEmission = 0;			// 発生物のカウンター
-	m_nNumGetPlayer = 0;		// 取得してるプレイヤーの数
+	m_state = STATE_NONE;	// 状態
+	m_nCntState = 0;		// 状態遷移カウンター
+	m_nLife = 0;			// 寿命
+	m_nLifeMax = 0;			// 寿命の最大値
+	m_nCntEmission = 0;		// 発生物のカウンター
+	m_nNumGetPlayer = 0;	// 取得してるプレイヤーの数
+	m_nIdxParent = 0;		// 親になるプレイヤーのインデックス番号
+	m_nIdxExcept = 0;		// 次のプレイヤーのインデックス番号
 
 	// 総数加算
 	m_nNumAll++;
@@ -214,6 +216,63 @@ void CCompactCore::StateGet(void)
 	{
 		m_nCntState = 0;
 
+		D3DXVECTOR3 pos = GetPosition();
+
+		// 各インデックスの種類取得
+		int nParentType = CManager::GetInstance()->GetByPlayerPartsType(m_nIdxParent);
+		int nExceptType = CManager::GetInstance()->GetByPlayerPartsType(m_nIdxExcept);
+
+		CPlayerUnion *pPlayerUnion = NULL;
+
+		// 種類取得してその種類に該当する合体先を生成する
+		if (nParentType == CPlayerUnion::PARTS_LEG ||
+			nExceptType == CPlayerUnion::PARTS_LEG)
+		{// 脚があるやつ
+
+			if ((nParentType == CPlayerUnion::PARTS_LEG && nExceptType == CPlayerUnion::PARTS_BODY) ||
+				(nParentType == CPlayerUnion::PARTS_BODY && nExceptType == CPlayerUnion::PARTS_LEG))
+			{
+				// 体と脚
+				pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_BODYtoLEG);
+			}
+			else if ((nParentType == CPlayerUnion::PARTS_LEG && (nExceptType == CPlayerUnion::PARTS_L_ARM || nExceptType == CPlayerUnion::PARTS_R_ARM)) ||
+				((nParentType == CPlayerUnion::PARTS_L_ARM || nParentType == CPlayerUnion::PARTS_R_ARM) && nExceptType == CPlayerUnion::PARTS_LEG))
+			{
+				// 腕と脚
+				pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_LEGtoARM);
+			}
+
+			int nControllIdx = nParentType;
+			if (nExceptType == CPlayerUnion::PARTS_LEG)
+			{
+				nControllIdx = nExceptType;
+			}
+			pPlayerUnion->SetControllMoveIdx(m_nIdxParent);
+		}
+		else
+		{// 脚なしでの合体
+
+			if ((nParentType == CPlayerUnion::PARTS_BODY && (nExceptType == CPlayerUnion::PARTS_L_ARM || nExceptType == CPlayerUnion::PARTS_R_ARM)) ||
+				((nParentType == CPlayerUnion::PARTS_L_ARM || nParentType == CPlayerUnion::PARTS_R_ARM) && nExceptType == CPlayerUnion::PARTS_BODY))
+			{
+				// 体と腕
+				pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_BODYtoARM);
+			}
+			else if (
+				((nParentType == CPlayerUnion::PARTS_L_ARM || nParentType == CPlayerUnion::PARTS_R_ARM) && (nExceptType == CPlayerUnion::PARTS_L_ARM || nExceptType == CPlayerUnion::PARTS_R_ARM)) ||
+				((nParentType == CPlayerUnion::PARTS_L_ARM || nParentType == CPlayerUnion::PARTS_R_ARM) && (nExceptType == CPlayerUnion::PARTS_L_ARM || nExceptType == CPlayerUnion::PARTS_R_ARM)))
+			{
+				// 腕と腕
+				pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_ARMtoARM);
+			}
+			pPlayerUnion->SetControllMoveIdx(m_nIdxParent);
+		}
+
+		// プレイヤー毎のパーツインデックス番号
+		pPlayerUnion->SetPlayerByPartsIdx(0, m_nIdxParent);
+		pPlayerUnion->SetPlayerByPartsIdx(1, m_nIdxExcept);
+		pPlayerUnion->SetPosition(pos);
+
 		// 終了処理
 		Uninit();
 		return;
@@ -301,69 +360,13 @@ void CCompactCore::CollisionPlayer(void)
 				m_state = STATE_GET;
 				m_nCntState = TIME_GET;
 
+				m_nIdxParent = nGetPlayerIdx[0];	// 親になるプレイヤーのインデックス番号
+				m_nIdxExcept = nGetPlayerIdx[1];	// 次のプレイヤーのインデックス番号
+
 				// プレイヤーを簡易合体状態に設定
-				int nParent = nGetPlayerIdx[0];
-				int nExcept = nGetPlayerIdx[1];
-
 				CPlayer **ppPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-				ppPlayer[nParent]->SetState(CPlayer::STATE_COMPACTUNION);
-				ppPlayer[nExcept]->SetState(CPlayer::STATE_COMPACTUNION);
-				
-
-				// 各インデックスの種類取得
-				int nParentType = CManager::GetInstance()->GetByPlayerPartsType(nParent);
-				int nExceptType = CManager::GetInstance()->GetByPlayerPartsType(nExcept);
-
-				CPlayerUnion *pPlayerUnion = NULL;
-
-				// 種類取得してその種類に該当する合体先を生成する
-				if (nParentType == CPlayerUnion::PARTS_LEG ||
-					nExceptType == CPlayerUnion::PARTS_LEG)
-				{// 脚があるやつ
-
-					if ((nParentType == CPlayerUnion::PARTS_LEG && nExceptType == CPlayerUnion::PARTS_BODY) ||
-						(nParentType == CPlayerUnion::PARTS_BODY && nExceptType == CPlayerUnion::PARTS_LEG))
-					{
-						// 体と脚
-						pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_BODYtoLEG);
-					}
-					else if ((nParentType == CPlayerUnion::PARTS_LEG && (nExceptType == CPlayerUnion::PARTS_L_ARM || nExceptType == CPlayerUnion::PARTS_R_ARM)) ||
-						((nParentType == CPlayerUnion::PARTS_L_ARM || nParentType == CPlayerUnion::PARTS_R_ARM) && nExceptType == CPlayerUnion::PARTS_LEG))
-					{
-						// 腕と脚
-						pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_LEGtoARM);
-					}
-
-					int nControllIdx = nParentType;
-					if (nExceptType == CPlayerUnion::PARTS_LEG)
-					{
-						nControllIdx = nExceptType;
-					}
-					pPlayerUnion->SetControllMoveIdx(nParent);
-				}
-				else
-				{// 脚なしでの合体
-
-					if ((nParentType == CPlayerUnion::PARTS_BODY && (nExceptType == CPlayerUnion::PARTS_L_ARM || nExceptType == CPlayerUnion::PARTS_R_ARM)) ||
-						((nParentType == CPlayerUnion::PARTS_L_ARM || nParentType == CPlayerUnion::PARTS_R_ARM) && nExceptType == CPlayerUnion::PARTS_BODY))
-					{
-						// 体と腕
-						pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_BODYtoARM);
-					}
-					else if (
-						((nParentType == CPlayerUnion::PARTS_L_ARM || nParentType == CPlayerUnion::PARTS_R_ARM) && (nExceptType == CPlayerUnion::PARTS_L_ARM || nExceptType == CPlayerUnion::PARTS_R_ARM)) ||
-						((nParentType == CPlayerUnion::PARTS_L_ARM || nParentType == CPlayerUnion::PARTS_R_ARM) && (nExceptType == CPlayerUnion::PARTS_L_ARM || nExceptType == CPlayerUnion::PARTS_R_ARM)))
-					{
-						// 腕と腕
-						pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_ARMtoARM);
-					}
-					pPlayerUnion->SetControllMoveIdx(nParent);
-				}
-
-				// プレイヤー毎のパーツインデックス番号
-				pPlayerUnion->SetPlayerByPartsIdx(0, nParent);
-				pPlayerUnion->SetPlayerByPartsIdx(1, nExcept);
-				pPlayerUnion->SetPosition(pos);
+				ppPlayer[m_nIdxParent]->SetState(CPlayer::STATE_COMPACTUNION);
+				ppPlayer[m_nIdxExcept]->SetState(CPlayer::STATE_COMPACTUNION);
 				return;
 			}
 			continue;

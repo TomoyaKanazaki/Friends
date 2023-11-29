@@ -58,6 +58,8 @@ private:
 	static int m_nNumAll;		// 弾の総数
 	int m_nCntEmission;			// 発生物のカウンター
 	int m_nNumGetPlayer;		// 取得してるプレイヤーの数
+	int m_nIdxParent;			// 親になるプレイヤーのインデックス番号
+	int m_nIdxExcept;			// 次のプレイヤーのインデックス番号
 
 	typedef void(CCompactCore::*STATE_FUNC)(void);
 	static STATE_FUNC m_StateFuncList[];

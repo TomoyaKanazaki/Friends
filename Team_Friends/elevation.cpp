@@ -121,25 +121,21 @@ HRESULT CElevation::Init(const char *pText)
 {
 	HRESULT hr;
 
-	// デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
+	// ロード処理
+	hr = Load(pText);
+	if (FAILED(hr))
+	{// 失敗していたら
+		return E_FAIL;
+	}
 
 	// テクスチャの割り当て
-	m_nTexIdx = CManager::GetInstance()->GetTexture()->Regist(TEXTURE);
+	m_nTexIdx = CManager::GetInstance()->GetTexture()->Regist(m_aInfo.TextureFileName.c_str());
 
 	// テクスチャの割り当て
 	BindTexture(m_nTexIdx);
 
 	// 種類設定
 	SetType(TYPE_ELEVATION);
-
-	// ロード処理
-	hr = Load(pText);
-
-	if (FAILED(hr))
-	{// 失敗していたら
-		return E_FAIL;
-	}
 
 	// 各種変数初期化
 	SetPosition(m_aInfo.pos);				// 位置
@@ -842,7 +838,6 @@ HRESULT CElevation::Load(const char *pText)
 	FILE *pFile = NULL;	// ファイルポインタを宣言
 
 	// ファイルを開く
-	//ファイルを開く
 	switch (CManager::GetInstance()->GetMode())
 	{
 	case CScene::MODE_GAME:

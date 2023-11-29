@@ -272,19 +272,46 @@ void CMotion::SetModel(CModel **pModel, int nNumModel, CObjectChara *pObjChara)
 //==========================================================================
 void CMotion::ResetPose(int nType)
 {
-	for (int nCntParts = 0; nCntParts < m_nNumModel; nCntParts++)
+
+	int nStartIdx = m_pObjChara->GetMotionStartIdx();
+	for (int nCntParts = nStartIdx; nCntParts < m_nNumModel + nStartIdx + 1; nCntParts++)
 	{// 全パーツ分繰り返す
 
-		if (m_ppModel[nCntParts] == NULL)
+		int nCntModel = nCntParts;
+		if (nStartIdx != 0)
+		{
+			nCntModel = nCntParts - nStartIdx;
+		}
+
+		if (nCntModel >= m_nNumModel)
+		{
+			break;
+		}
+
+		if (m_ppModel[nCntModel] == NULL)
 		{// NULLだったら
 			continue;
 		}
 
 		// 向き設定
-		m_ppModel[nCntParts]->SetRotation(m_aInfo[nType].aKey[0].aParts[nCntParts].rot);
+		m_ppModel[nCntModel]->SetRotation(m_aInfo[nType].aKey[0].aParts[nCntParts].rot);
 		aPartsOld[nCntParts].rot = m_aInfo[nType].aKey[0].aParts[nCntParts].rot;
 	}
-	aPartsOld[0].pos = m_pObjChara->GetOriginPosition() + m_aInfo[nType].aKey[0].aParts[0].pos;
+
+
+	//for (int nCntParts = 0; nCntParts < m_nNumModel; nCntParts++)
+	//{// 全パーツ分繰り返す
+
+	//	if (m_ppModel[nCntParts] == NULL)
+	//	{// NULLだったら
+	//		continue;
+	//	}
+
+	//	// 向き設定
+	//	m_ppModel[nCntParts]->SetRotation(m_aInfo[nType].aKey[0].aParts[nCntParts].rot);
+	//	aPartsOld[nCntParts].rot = m_aInfo[nType].aKey[0].aParts[nCntParts].rot;
+	//}
+	aPartsOld[0].pos = /*m_pObjChara->GetOriginPosition() + */m_aInfo[nType].aKey[0].aParts[0].pos;
 }
 
 //==========================================================================

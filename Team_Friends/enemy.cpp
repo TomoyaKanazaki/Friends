@@ -430,14 +430,14 @@ void CEnemy::Update(void)
 	// 状態更新
 	UpdateState();
 
-	// 行動更新
-	UpdateAction();
-
 	// 死亡の判定
 	if (IsDeath() == true)
 	{// 死亡フラグが立っていたら
 		return;
 	}
+
+	// 行動更新
+	UpdateAction();
 
 	// 攻撃処理
 	Atack();

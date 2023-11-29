@@ -191,7 +191,6 @@ HRESULT CPlayerUnion::Init(void)
 	// キャラ作成
 	CreateParts();
 
-
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
 
@@ -202,6 +201,7 @@ HRESULT CPlayerUnion::Init(void)
 	m_pShadow = CShadow::Create(pos, 50.0f);
 
 	SetPosition(D3DXVECTOR3(-600.0f, 500.0f, 0.0f));
+
 	return S_OK;
 }
 
@@ -210,11 +210,9 @@ HRESULT CPlayerUnion::Init(void)
 //==========================================================================
 HRESULT CPlayerUnion::CreateParts(void)
 {
-	HRESULT hr;
-
-
 	// 複数キャラ読み込み
 	ReadMultiCharacter("data\\TEXT\\multicharacter\\SuperUnion.txt");
+
 	return S_OK;
 }
 
@@ -360,7 +358,6 @@ void CPlayerUnion::Update(void)
 		// モーションの設定処理
 		MotionSet(i);
 	}
-
 
 	// モーション更新
 	for (int i = 0; i < PARTS_MAX; i++)

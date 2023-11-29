@@ -432,6 +432,9 @@
     <ClCompile Include="enemy_tackle.cpp">
       <Filter>enemy</Filter>
     </ClCompile>
+    <ClCompile Include="union_title.cpp">
+      <Filter>ソース ファイル\mode\title</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -775,6 +778,9 @@
     </ClInclude>
     <ClInclude Include="enemy_tackle.h">
       <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="union_title.h">
+      <Filter>ヘッダー ファイル\mode\title</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

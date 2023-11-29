@@ -36,6 +36,8 @@ private:
 		MOTION_ATK,			// 攻撃モーション
 		MOTION_KNOCKBACK,	// やられモーション
 		MOTION_FADEOUT,		// 帰還モーション
+		MOTION_READY,		// 準備モーション
+		MOTION_AFTER,		// 硬直モーション
 		MOTION_MAX
 	};
 
@@ -60,7 +62,7 @@ private:
 	void MoveRotation(void); // 移動方向を向く
 	void Attack(void); // 攻撃
 	void RotationPlayer(void); // プレイヤーを向く処理
-	bool CalcLenPlayer(float fLen); // プレイヤーとの距離判定
+	bool SearchPlayer(float fLen); // プレイヤーとの距離判定
 
 };
 

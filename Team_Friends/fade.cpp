@@ -94,7 +94,7 @@ HRESULT CFade::Init(void)
 
 #else
 	m_ModeNext = CScene::MODE_TITLE;	// 次のモード
-	m_ModeNext = CScene::MODE_DECIDEPLAYER;	// 次のモード
+	//m_ModeNext = CScene::MODE_DECIDEPLAYER;	// 次のモード
 #endif
 	
 	m_aObject2D->SetSize(D3DXVECTOR2(640.0f, 360.0f));	// サイズ

@@ -22,9 +22,9 @@ namespace
 	const float ATTACK_SPEED = 0.01f;
 	const float MOVE_X = 2.0f;
 	const float MOVE_Z = 2.0f;
+	const float READY_TIME = 5.0f;
 	const float ATTACK_TIME = 3.0f;
-	const float READY_TIME = 3.0f;
-	const float AFTER_TIME = 3.0f;
+	const float AFTER_TIME = 10.0f;
 	const float SEARCH_ROT = 45.0f;
 }
 
@@ -123,6 +123,12 @@ void CEnemyTackle::UpdateAction(void)
 	default:
 		break;
 	}
+
+	if (m_Act != ACTION_ROAMING)
+	{
+		// ƒJƒEƒ“ƒ^[‚ð‰ÁŽZ
+		m_fActionCount += CManager::GetInstance()->GetDeltaTime();
+	}
 }
 
 //==========================================
@@ -189,47 +195,45 @@ void CEnemyTackle::MotionSet(void)
 //==========================================
 void CEnemyTackle::ActionSet(void)
 {
-	// “¦‘–ó‘Ô‚©‚çÁ–Å‚·‚é
 	if (m_Act == ACTION_READY)
 	{
 		if (m_fActionCount >= READY_TIME)
 		{
 			m_Act = ACTION_ATTACK;
+			m_fActionCount = 0.0f;
 		}
 
 		return;
 	}
-
-	// “¦‘–ó‘Ô‚©‚çÁ–Å‚·‚é
-	if (m_Act == ACTION_ATTACK)
+	else if (m_Act == ACTION_ATTACK)
 	{
 		if (m_fActionCount >= ATTACK_TIME)
 		{
 			m_Act = ACTION_AFTER;
+			m_fActionCount = 0.0f;
 		}
 
 		return;
 	}
-
-	// “¦‘–ó‘Ô‚©‚çÁ–Å‚·‚é
-	if (m_Act == ACTION_AFTER)
+	else if (m_Act == ACTION_AFTER)
 	{
-		if (m_fActionCount >= ATTACK_TIME)
+		if (m_fActionCount >= AFTER_TIME)
 		{
 			m_Act = ACTION_ROAMING;
+			m_fActionCount = 0.0f;
 		}
 
 		return;
 	}
 
-	if (SearchPlayer(SEARCH_LENGTH))
-	{// õ“G
+	if (m_Act == ACTION_ROAMING)
+	{
+		if (SearchPlayer(SEARCH_LENGTH))
+		{// õ“G
 
-		// UŒ‚ƒtƒ‰ƒO‚ð—§‚Ä‚é
-		if (m_Act == ACTION_ROAMING)
-		{
 			// ‹——£‚ª‹ß‚¢‚ÆUŒ‚ó‘Ô‚É‚È‚é
 			m_Act = ACTION_ATTACK;
+			m_fActionCount = 0.0f;
 		}
 	}
 }
@@ -406,16 +410,17 @@ bool CEnemyTackle::SearchPlayer(float fLen)
 {
 	// ˆÊ’uŽæ“¾
 	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
 	D3DXVECTOR3 posL = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//õ“Gî‚Ì¶“_
 	D3DXVECTOR3 posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//õ“Gî‚Ì‰E“_
 
 	//float fRot = SEARCH_ROT * D3DX_PI / 180;
-	float fRot = 0.7f;
+	float fRot = 0.785f;
 
-	posL.x = pos.x + sinf(fRot) * SEARCH_LENGTH;
-	posL.z = pos.z + cosf(fRot) * SEARCH_LENGTH;
-	posR.x = pos.x + sinf(-fRot) * SEARCH_LENGTH;
-	posR.z = pos.z + cosf(-fRot) * SEARCH_LENGTH;
+	posL.x = pos.x + sinf(rot.y + fRot) * SEARCH_LENGTH;
+	posL.z = pos.z + cosf(rot.y + fRot) * SEARCH_LENGTH;
+	posR.x = pos.x + sinf(rot.y + -fRot) * SEARCH_LENGTH;
+	posR.z = pos.z + cosf(rot.y + -fRot) * SEARCH_LENGTH;
 
 	// ƒvƒŒƒCƒ„[î•ñ
 	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);

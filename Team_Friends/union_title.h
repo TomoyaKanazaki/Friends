@@ -23,6 +23,7 @@ public:
 	void Uninit(void) override;
 	void Update(void) override;
 	void Draw(void) override;
+	HRESULT CreateParts(void) override;	// パーツの設定
 
 	//静的メンバ関数
 	static CUnionTitle* Create(D3DXVECTOR3 pos);

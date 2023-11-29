@@ -60,6 +60,8 @@ HRESULT CInput::Init(HINSTANCE hInstance, HWND hWnd)
 		}
 	}
 
+	ShowCursor(false);
+
 	return S_OK;
 }
 

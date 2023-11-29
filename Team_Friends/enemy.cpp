@@ -37,6 +37,7 @@
 #include "enemy_fly.h"
 #include "enemy_roaming.h"
 #include "enemy_escape.h"
+#include "enemy_tackle.h"
 
 //==========================================================================
 // ƒ}ƒNƒ’è‹`

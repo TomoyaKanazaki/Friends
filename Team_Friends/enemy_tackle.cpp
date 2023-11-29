@@ -29,7 +29,7 @@ namespace
 //==========================================
 CEnemyTackle::CEnemyTackle(int nPriority) :
 	m_Act(ACTION_ROAMING),
-	m_fMoveCount(0.0f)
+	m_fActionCount(0.0f)
 {
 
 }
@@ -185,7 +185,7 @@ void CEnemyTackle::MotionSet(void)
 //==========================================
 void CEnemyTackle::ActionSet(void)
 {
-	if (CalcLenPlayer(ATTACK_LENGTH))
+	if (CalcLenPlayer(SEARCH_LENGTH))
 	{
 		// 攻撃フラグを立てる
 		if (m_Act != ACTION_ATTACK)
@@ -211,12 +211,12 @@ void CEnemyTackle::Move(void)
 	m_sMotionFrag.bMove = true;
 
 	// 移動カウンターを加算
-	m_fMoveCount += MOVE_SPEED;
+	m_fActionCount += MOVE_SPEED;
 
 	// 移動量を適用
 	D3DXVECTOR3 move = GetMove();
-	move.x = sinf(m_fMoveCount) * MOVE_X;
-	move.z = cosf(m_fMoveCount) * MOVE_Z;
+	move.x = sinf(m_fActionCount) * MOVE_X;
+	move.z = cosf(m_fActionCount) * MOVE_Z;
 	SetMove(move);
 
 	// 方向転換

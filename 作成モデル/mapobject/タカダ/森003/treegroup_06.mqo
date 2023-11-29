@@ -2,13 +2,13 @@ Metasequoia Document
 Format Text Ver 1.0
 
 Scene {
-	pos 2129.6589 1385.8109 15258.7891
+	pos -622.7877 1109.2582 24414.0625
 	lookat 0.0000 0.0000 0.0000
-	head -6.2735
-	pich 1.5708
+	head -6.0735
+	pich 0.5208
 	bank 0.0000
 	ortho 0
-	zoom2 0.4915
+	zoom2 0.3072
 	amb 0.250 0.250 0.250
 	dirlights 1 {
 		light {
@@ -17,15 +17,11 @@ Scene {
 		}
 	}
 }
-Material 8 {
-	"tree2SG" col(0.043 0.529 0.075 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"tree2SG1" col(0.310 0.071 0.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"tree1SG" col(0.055 0.427 0.055 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+Material 4 {
+	"tree2SG" col(0.031 0.404 0.059 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"tree2SG1" col(0.043 0.529 0.075 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"tree1SG" col(0.310 0.071 0.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
 	"tree1SG1" col(0.408 0.251 0.251 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"mat3" col(0.541 0.349 0.169 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"mat2" col(0.137 0.518 0.090 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"mat1" col(0.329 0.671 0.176 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"mat4" col(0.243 0.608 0.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
 }
 Object "obj1" {
 	visible 15

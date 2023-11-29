@@ -227,7 +227,7 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 4 ] -----
-			ROT = 0.00 0.00 -0.57
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 
@@ -242,7 +242,7 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 7 ] -----
-			ROT = 0.00 0.00 0.57
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 		END_PARTS
 

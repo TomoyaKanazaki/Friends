@@ -432,6 +432,12 @@
     <ClCompile Include="enemy_tackle.cpp">
       <Filter>enemy</Filter>
     </ClCompile>
+    <ClCompile Include="union_title.cpp">
+      <Filter>ソース ファイル\mode\title</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_boss.cpp">
+      <Filter>enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -774,6 +780,12 @@
       <Filter>ランキング触るよ</Filter>
     </ClInclude>
     <ClInclude Include="enemy_tackle.h">
+      <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="union_title.h">
+      <Filter>ヘッダー ファイル\mode\title</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_boss.h">
       <Filter>enemy</Filter>
     </ClInclude>
   </ItemGroup>

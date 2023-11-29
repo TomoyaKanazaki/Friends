@@ -203,45 +203,24 @@ HRESULT CPlayer::Init(void)
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);
 
-	//if (m_nMyPlayerIdx == 2 ||
-	//	m_nMyPlayerIdx == 3)
-	//{// うで
-	//	SetEvolusion(CGameManager::STATUS_POWER);
-	//}
-
-	//if (m_nMyPlayerIdx == 0)
-	//{// 胴
-	//	SetEvolusion(CGameManager::STATUS_LIFE);
-	//}
-
-	//if (m_nMyPlayerIdx == 1)
-	//{// 胴
-	//	SetEvolusion(CGameManager::STATUS_SPEED);
-	//}
-
-#if 1
-	// モデル取得
-	CModel **ppModel = GetModel();
-
-	// Xファイルのデータ取得
-	for (int i = 0; i < GetNumModel(); i++)
-	{
-		if (ppModel[i] == NULL)
-		{
-			continue;
-		}
-
-		// Xファイルのデータ取得
-		CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());
-
-		// テクスチャ読み込み
-		int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[m_nMyPlayerIdx]);
-		for (int nMat = 0; nMat < pXData->dwNumMat; nMat++)
-		{
-			pXData->nIdxTexture[nMat] = nIdxTex;
-		}
+	if (m_nMyPlayerIdx == 2 ||
+		m_nMyPlayerIdx == 3)
+	{// うで
+		SetEvolusion(CGameManager::STATUS_POWER);
 	}
-#endif
+
+	if (m_nMyPlayerIdx == 0)
+	{// 胴
+		SetEvolusion(CGameManager::STATUS_LIFE);
+	}
+
+	if (m_nMyPlayerIdx == 1)
+	{// 胴
+		SetEvolusion(CGameManager::STATUS_SPEED);
+	}
+
+	// プレイヤー毎のインデックス追加
+	BindByPlayerIdxTexture();
 
 	// バフ計算
 	m_sStatus.fPowerBuff = 1.0f;
@@ -795,9 +774,15 @@ void CPlayer::Controll(void)
 		}
 	}
 
+	static CGameManager::eStatus s_statusType;
+	if (pInputKeyboard->GetTrigger(DIK_RIGHT) == true)
+	{// ←キーが押された,左移動
+		s_statusType = (CGameManager::eStatus)(((int)s_statusType + 1) % (int)CGameManager::STATUS_MAX);
+		SetEvolusion(s_statusType);
+	}
 
 	if (pInputKeyboard->GetPress(DIK_UP) == true)
-	{//SPACEが押された,ジャンプ
+	{// SPACEが押された,ジャンプ
 
 		// アイテムドロップ
 		CItem::Create(D3DXVECTOR3(pos.x, pos.y + 100.0f, pos.z), D3DXVECTOR3(0.0f, Random(-31, 31) * 0.1f, 0.0f));
@@ -1554,6 +1539,7 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 			}
 		}
 
+		// 腕の使用状況別設定
 		if (bR_Arm == false && bL_Arm == false)
 		{
 			CManager::GetInstance()->SetByPlayerPartsType(m_nMyPlayerIdx, CPlayerUnion::PARTS_R_ARM);
@@ -1581,8 +1567,42 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 	// パーツ変更
 	ChangeObject((int)statusType + 1);
 
+#ifdef _DEBUG
 	// モーション切り替え
 	ChangeMotion(EVOLUSIONFILE[(int)statusType]);
+#endif
+
+	// プレイヤー毎のインデックス追加
+	BindByPlayerIdxTexture();
+}
+
+//==========================================================================
+// プレイヤーインデックス毎のテクスチャ設定
+//==========================================================================
+void CPlayer::BindByPlayerIdxTexture(void)
+{
+	// テクスチャ読み込み
+	int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[m_nMyPlayerIdx]);
+
+	// モデル取得
+	CModel **ppModel = GetModel();
+
+	// Xファイルのデータ取得
+	for (int i = 0; i < GetNumModel(); i++)
+	{
+		if (ppModel[i] == NULL)
+		{
+			continue;
+		}
+
+		// Xファイルのデータ取得
+		CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());
+
+		for (int nMat = 0; nMat < (int)pXData->dwNumMat; nMat++)
+		{
+			ppModel[i]->SetIdxTexture(nMat, nIdxTex);
+		}
+	}
 }
 
 //==========================================================================

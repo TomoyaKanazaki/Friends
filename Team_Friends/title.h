@@ -42,7 +42,7 @@ private:
 	D3DXCOLOR m_col;
 	float m_fLength;
 
-	int m_nCntSwitch;		// 切り替えのカウンター
+	float m_fCnt;		// 切り替えのカウンター
 	CTitleLogo *m_pLogo;
 
 };

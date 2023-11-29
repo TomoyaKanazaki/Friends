@@ -37,6 +37,7 @@
 #include "enemy_fly.h"
 #include "enemy_roaming.h"
 #include "enemy_escape.h"
+#include "enemy_tackle.h"
 
 //==========================================================================
 // マクロ定義
@@ -431,6 +432,9 @@ void CEnemy::Update(void)
 		return;
 	}
 
+	// 行動更新
+	UpdateAction();
+
 	// 攻撃処理
 	Atack();
 
@@ -755,6 +759,14 @@ bool CEnemy::Hit(const int nValue)
 // 種類別更新処理
 //==========================================================================
 void CEnemy::UpdateByType(void)
+{
+
+}
+
+//==========================================================================
+// 行動更新
+//==========================================================================
+void CEnemy::UpdateAction(void)
 {
 
 }

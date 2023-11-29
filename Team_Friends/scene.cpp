@@ -134,7 +134,7 @@ HRESULT CScene::Init(void)
 	//**********************************
 	// 起伏の地面
 	//**********************************
-	m_pObject3DMesh = CElevation::Create("data\\TEXT\\elevation\\field.txt");
+	m_pObject3DMesh = CElevation::Create("data\\TEXT\\elevation\\field_mountain.txt");
 
 	// 初期化処理
 	hr = m_pXLoad->Init();
@@ -222,6 +222,13 @@ void CScene::ResetScene(void)
 		}
 	}
 
+	// 起伏の地面
+	if (m_pObject3DMesh != NULL)
+	{
+		m_pObject3DMesh->Uninit();
+		m_pObject3DMesh = NULL;
+	}
+
 	// マップ
 	map::Release();
 
@@ -233,6 +240,9 @@ void CScene::ResetScene(void)
 	{// 失敗した場合
 		return;
 	}
+
+	// ボスステージの起伏生成
+	m_pObject3DMesh = CElevation::Create("data\\TEXT\\elevation\\field_city.txt");
 
 
 	// 合体後プレイヤー生成

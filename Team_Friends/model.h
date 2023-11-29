@@ -32,6 +32,9 @@ public:
 	void Draw(float fAlpha);
 	void BindXData(int nIdxXFile);
 
+	int *GetIdxTexture(void) {return m_nIdxTexture; }
+	int GetIdxTexture(int nIdx);	// テクスチャインデックス番号取得
+	void SetIdxTexture(int i, int nIdx);	// テクスチャのインデックス割り当て
 	int GetIdxXFile(void) const { return m_nIdxXFile; }
 	void SetWorldMtx(const D3DXMATRIX mtx);		// マトリックス設定
 	D3DXMATRIX GetWorldMtx(void) const;			// マトリックス取得
@@ -55,6 +58,7 @@ protected:
 
 private:
 
+	void BindTexture(void);	// テクスチャ割り当て
 	void CalWorldMtx(void);	// ワールドマトリックスの計算処理
 
 	D3DXMATRIX	m_mtxWorld;	// ワールドマトリックス
@@ -63,6 +67,7 @@ private:
 	D3DXVECTOR3 m_rot;		// 向き
 	D3DXVECTOR3 m_rotOrigin;// 向き
 	int m_nIdxXFile;		// Xファイルのインデックス番号
+	int *m_nIdxTexture;		// テクスチャのインデックス番号
 	CModel *m_pParent;		// 親モデルのポインタ
 	static int m_nNumAll;	// 総数
 };

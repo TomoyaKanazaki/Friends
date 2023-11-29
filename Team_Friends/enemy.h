@@ -36,6 +36,7 @@ public:
 		TYPE_FLY,
 		TYPE_ROAMING, // 徘徊
 		TYPE_ESCAPE, // メタルスライム
+		TYPE_TACKLE, // 突撃猪
 		TYPE_MAX
 	}TYPE;
 
@@ -133,6 +134,8 @@ protected:
 	virtual void ProcessLanding(void);	// 着地時処理
 	virtual void AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo);	// 攻撃時処理
 	virtual void ChaseMove(float fMove);	// 追い掛け移動
+
+	virtual void UpdateAction(void);		// 行動更新
 
 	// 状態更新系
 	virtual void StateNone(void);			// 何もない状態

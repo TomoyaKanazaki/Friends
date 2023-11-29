@@ -87,6 +87,23 @@ void CEnemyEscape::Update(void)
 		return;
 	}
 
+	// 行動状態の更新
+	ActionSet();
+
+	// モーションの更新
+	MotionSet();
+
+	CManager::GetInstance()->GetDebugProc()->Print
+	(
+		"モーション : %d\n", m_pMotion->GetType()
+	);
+}
+
+//==========================================
+// 行動更新
+//==========================================
+void CEnemyEscape::UpdateAction(void)
+{
 	// 行動ごとの行動
 	switch (m_Act)
 	{
@@ -130,17 +147,6 @@ void CEnemyEscape::Update(void)
 	default:
 		break;
 	}
-
-	// 行動状態の更新
-	ActionSet();
-
-	// モーションの更新
-	MotionSet();
-
-	CManager::GetInstance()->GetDebugProc()->Print
-	(
-		"モーション : %d\n", m_pMotion->GetType()
-	);
 }
 
 //==========================================
@@ -310,13 +316,10 @@ void CEnemyEscape::MoveRotation(void)
 {
 	// 必要な値を取得
 	D3DXVECTOR3 rot = GetRotation();
-	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 move = GetMove();
-	D3DXVECTOR3 posDest = pos + move;
-	D3DXVECTOR3 posDiff = posDest - pos;
 
 	// 方向を算出
-	float fRot = atan2f(-posDiff.x, -posDiff.z);
+	float fRot = atan2f(-move.x, -move.z);
 
 	//角度の正規化
 	RotNormalize(fRot);

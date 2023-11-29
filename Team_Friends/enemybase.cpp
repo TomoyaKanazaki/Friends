@@ -335,7 +335,7 @@ void CEnemyBase::Save(void)
 	FILE *pFile = NULL;	// ファイルポインタを宣言
 
 	// ファイルを開く
-	pFile = fopen("data\\TEXT\\enemybase.txt", "w");
+	pFile = fopen("data\\TEXT\\enemydata\\base.txt", "w");
 
 	if (pFile == NULL)
 	{// ファイルが開けなかった場合

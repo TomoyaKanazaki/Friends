@@ -12,6 +12,19 @@
 #include "hp_gauge.h"
 
 //==========================================
+//  敵についての説明
+//==========================================
+/*
+	※このファイルに記述されているコードは敵を動かす最低限です。消さないでください。※
+	0.このファイルをコピーする
+	1.[ enemydata ]フォルダ内の[ manager.txt ]に使用したいモデルのテキストファイルを追加する
+	2.[ enemy.h ]のTYPE列挙に新しいタイプを追加する
+	3.[ enemydata ]フォルダ内の[ base.txt ]で追加したタイプを呼び出す
+	4.実行したらいる！！！
+	5.それぞれたくさん処理を追加する
+*/
+
+//==========================================
 //  定数定義
 //==========================================
 namespace
@@ -82,6 +95,18 @@ void CEnemyRoaming::Update(void)
 		return;
 	}
 
+	// 行動状態の更新
+	ActionSet();
+
+	// モーションの更新
+	MotionSet();
+}
+
+//==========================================
+// 行動更新
+//==========================================
+void CEnemyRoaming::UpdateAction(void)
+{
 	// 行動ごとの行動
 	switch (m_Act)
 	{
@@ -105,12 +130,6 @@ void CEnemyRoaming::Update(void)
 	default:
 		break;
 	}
-
-	// 行動状態の更新
-	ActionSet();
-
-	// モーションの更新
-	MotionSet();
 }
 
 //==========================================
@@ -222,13 +241,10 @@ void CEnemyRoaming::MoveRotation(void)
 {
 	// 必要な値を取得
 	D3DXVECTOR3 rot = GetRotation();
-	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 move = GetMove();
-	D3DXVECTOR3 posDest = pos + move;
-	D3DXVECTOR3 posDiff = posDest - pos;
 
 	// 方向を算出
-	float fRot = atan2f(-posDiff.x, -posDiff.z);
+	float fRot = atan2f(-move.x, -move.z);
 
 	//角度の正規化
 	RotNormalize(fRot);

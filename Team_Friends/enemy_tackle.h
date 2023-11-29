@@ -42,17 +42,16 @@ private:
 	// 行動列挙
 	enum ACTION
 	{
-		ACTION_ROAMING = 0, //徘徊行動
-		ACTION_FIND, //発見行動
-		ACTION_ATTACK, //攻撃行動
-		ACTION_AFTER, //攻撃硬直
+		ACTION_ROAMING = 0,	//徘徊行動
+		ACTION_READY,		//準備行動
+		ACTION_ATTACK,		//攻撃行動
+		ACTION_AFTER,		//攻撃硬直
 		MAX
 	};
 
 	// メンバ変数
 	ACTION m_Act; //行動状態
-	float m_fMoveCount; // 移動カウンター
-	float m_fAfterCount; // 硬直カウンター
+	float m_fActionCount; // 移動カウンター
 
 	// メンバ関数
 	void UpdateAction(void) override;	// 行動更新

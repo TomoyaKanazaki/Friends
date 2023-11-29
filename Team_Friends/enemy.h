@@ -36,6 +36,7 @@ public:
 		TYPE_FLY,
 		TYPE_ROAMING, // œpœj
 		TYPE_ESCAPE, // ƒƒ^ƒ‹ƒXƒ‰ƒCƒ€
+		TYPE_TACKLE, // “ËŒ‚’–
 		TYPE_MAX
 	}TYPE;
 

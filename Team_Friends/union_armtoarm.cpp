@@ -306,8 +306,17 @@ void CUnion_ArntoArm::ControllATK(int nIdx, int nLoop)
 
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+	// キーボード情報取得
+	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 	
-	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)))
+#if _DEBUG
+
+	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)) || pInputKeyboard->GetPress(DIK_RETURN) == true)
+#else
+	//if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)))
+		if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)) || pInputKeyboard->GetPress(DIK_RETURN) == true)
+#endif
 	{// 攻撃
 
 		// チャージ判定

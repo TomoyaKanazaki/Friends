@@ -123,6 +123,9 @@ HRESULT CObjectChara::SetCharacter(const std::string pTextFile)
 				// スコア加算量
 				m_nAddScore = m_aLoadData[nCntData].nAddScore;
 
+				// モーションスタートのインデックス
+				m_nMotionStartIdx = m_aLoadData[nCntData].nMotionStartIdx;
+
 				// ファイルのインデックス番号
 				m_nIdxFile = nCntData;
 
@@ -785,7 +788,7 @@ HRESULT CObjectChara::ReadText(const std::string pTextFile)
 	fclose(pFile);
 
 	// 読み込んだ数加算
-	//m_nNumLoad++;
+	m_nNumLoad++;
 
 	return S_OK;
 }

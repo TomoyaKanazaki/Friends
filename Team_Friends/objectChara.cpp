@@ -785,7 +785,7 @@ HRESULT CObjectChara::ReadText(const std::string pTextFile)
 	fclose(pFile);
 
 	// “Ç‚İ‚ñ‚¾”‰ÁZ
-	m_nNumLoad++;
+	//m_nNumLoad++;
 
 	return S_OK;
 }

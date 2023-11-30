@@ -9,7 +9,7 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 31
+NUM_MODEL = 27
 
 #------------------------------------------------------------------------------
 # モデルファイル名
@@ -40,21 +40,17 @@ MODEL_FILENAME = data\MODEL\player\pUP_arm01\Rhand.x		# [15]強化[腕]右手
 MODEL_FILENAME = data\MODEL\player\pUP_body01\body.x		# [16]強化[胴]胴
 MODEL_FILENAME = data\MODEL\player\pUP_body01\head.x		# [17]強化[胴]頭
 MODEL_FILENAME = data\MODEL\player\pUP_body01\Lshoulder.x		# [18]強化[胴]左肩
-MODEL_FILENAME = data\MODEL\player\pUP_body01\Larm.x		# [19]強化[胴]左腕
-MODEL_FILENAME = data\MODEL\player\pUP_body01\Lhand.x		# [20]強化[胴]左手
-MODEL_FILENAME = data\MODEL\player\pUP_body01\Rshoulder.x		# [21]強化[胴]右肩
-MODEL_FILENAME = data\MODEL\player\pUP_body01\Rarm.x		# [22]強化[胴]右腕
-MODEL_FILENAME = data\MODEL\player\pUP_body01\Rhand.x		# [23]強化[胴]右手
+MODEL_FILENAME = data\MODEL\player\pUP_body01\Rshoulder.x		# [19]強化[胴]右肩
 
 #強化[脚]01
 #変更タグ＝2
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\thighs.x		# [24]強化[脚]腿
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lleg.x		# [25]強化[脚]左脛
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lankle.x		# [26]強化[脚]左足首
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lfeet.x		# [27]強化[脚]左足
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rleg.x		# [28]強化[脚]右脛
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rankle.x		# [29]強化[脚]右足首
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rfeet.x		# [30]強化[脚]右足
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\thighs.x		# [20]強化[脚]腿
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lleg.x		# [21]強化[脚]左脛
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lankle.x		# [22]強化[脚]左足首
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lfeet.x		# [23]強化[脚]左足
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rleg.x		# [24]強化[脚]右脛
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rankle.x		# [25]強化[脚]右足首
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rfeet.x		# [26]強化[脚]右足
 
 #------------------------------------------------------------------------------
 # キャラクター情報
@@ -237,27 +233,7 @@ CHARACTERSET
 	END_PARTSSET
 
 	PARTSSET
-		INDEX = 19				# [19]強化[胴]左腕
-		PARENT = 4
-		POS = 31.95 6.00 0.00
-		ROT = 0.00 0.00 0.00
-		START = 0
-		SWITCHTYPE = 3			# 切り替えの種類
-		ID_SWITCHMODEL = 5		# 切り替え先のID
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 20				# [20]強化[胴]左手
-		PARENT = 5
-		POS = 14.50 0.00 0.00
-		ROT = 0.00 0.00 0.00
-		START = 0
-		SWITCHTYPE = 3			# 切り替えの種類
-		ID_SWITCHMODEL = 6		# 切り替え先のID
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 21				# [21]強化[胴]右肩
+		INDEX = 19				# [21]強化[胴]右肩
 		PARENT = 1
 		POS = -22.20 42.95 0.00
 		ROT = 0.00 0.00 0.00
@@ -267,27 +243,7 @@ CHARACTERSET
 	END_PARTSSET
 
 	PARTSSET
-		INDEX = 22				# [22]強化[胴]右腕
-		PARENT = 7
-		POS = -31.95 6.00 0.00
-		ROT = 0.00 0.00 0.00
-		START = 0
-		SWITCHTYPE = 3			# 切り替えの種類
-		ID_SWITCHMODEL = 8		# 切り替え先のID
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 23				# [23]強化[胴]右手
-		PARENT = 8
-		POS = -14.50 0.00 0.00
-		ROT = 0.00 0.00 0.00
-		START = 0
-		SWITCHTYPE = 3			# 切り替えの種類
-		ID_SWITCHMODEL = 9		# 切り替え先のID
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 24				# [24]強化[脚]腿
+		INDEX = 20				# [24]強化[脚]腿
 		PARENT = 0
 		POS = 0.00 -1.50 1.50
 		ROT = 0.00 0.00 0.00
@@ -297,7 +253,7 @@ CHARACTERSET
 	END_PARTSSET
 
 	PARTSSET					# [25]強化[脚]左脛
-		INDEX = 25
+		INDEX = 21
 		PARENT = 3
 		POS = 20.00 -38.55 -9.00
 		ROT = 0.00 0.00 0.00
@@ -307,8 +263,8 @@ CHARACTERSET
 	END_PARTSSET
 
 	PARTSSET
-		INDEX = 26				# [26]強化[脚]左足首
-		PARENT = 25
+		INDEX = 22				# [26]強化[脚]左足首
+		PARENT = 21
 		POS = 4.00 -9.54 46.00
 		ROT = 0.00 0.00 0.00
 		START = 0
@@ -317,8 +273,8 @@ CHARACTERSET
 	END_PARTSSET
 
 	PARTSSET
-		INDEX = 27				# [27]強化[脚]左足
-		PARENT = 26
+		INDEX = 23				# [27]強化[脚]左足
+		PARENT = 22
 		POS = 4.00 -27.55 -46.00
 		ROT = 0.00 0.00 0.00
 		START = 0
@@ -327,7 +283,7 @@ CHARACTERSET
 	END_PARTSSET
 
 	PARTSSET
-		INDEX = 28				# [28]強化[脚]右脛
+		INDEX = 24				# [28]強化[脚]右脛
 		PARENT = 3
 		POS = -20.00 -38.55 -9.00
 		ROT = 0.00 0.00 0.00
@@ -337,8 +293,8 @@ CHARACTERSET
 	END_PARTSSET
 
 	PARTSSET
-		INDEX = 29				# [29]強化[脚]右足首
-		PARENT = 28
+		INDEX = 25				# [29]強化[脚]右足首
+		PARENT = 24
 		POS = -4.00 -9.54 46.00
 		ROT = 0.00 0.00 0.00
 		START = 0
@@ -347,8 +303,8 @@ CHARACTERSET
 	END_PARTSSET
 
 	PARTSSET
-		INDEX = 30				# [30]強化[脚]右足
-		PARENT = 29
+		INDEX = 26				# [30]強化[脚]右足
+		PARENT = 25
 		POS = -4.00 -27.55 -46.00
 		ROT = 0.00 0.00 0.00
 		START = 0

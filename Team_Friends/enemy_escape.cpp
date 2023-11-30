@@ -104,6 +104,12 @@ void CEnemyEscape::Update(void)
 //==========================================
 void CEnemyEscape::UpdateAction(void)
 {
+	if (m_state == STATE_DEAD ||
+		m_state == STATE_FADEOUT)
+	{
+		return;
+	}
+
 	// çsìÆÇ≤Ç∆ÇÃçsìÆ
 	switch (m_Act)
 	{

@@ -37,6 +37,7 @@ public:
 		TYPE_SMOKEBLACK,	// 黒煙
 		TYPE_BLACK,			// 黒エフェクト
 		TYPE_JUJI,			// 十字エフェクト
+		TYPE_JUJI2,			// 十字エフェクト
 		TYPE_SAND,			// 砂エフェクト
 		TYPE_SANDBLACK,		// 砂エフェクト
 		TYPE_LINE,			// 線エフェクト
@@ -62,6 +63,8 @@ public:
 	void Draw(void);
 	void SetVtx(void);
 
+	void SetEnableGravity(void) { m_bGravity = true; }	// 重力有効
+	void SetGravityValue(float fValue) { m_fGravity = fValue; }
 	void SetUp(D3DXVECTOR3 setup, CObject *pObj, int nParentIdx);	// セットアップ
 	void UpdatePosition(D3DXVECTOR3 pos, D3DXVECTOR3 rot);	// 位置更新
 	void UninitParent(void);	// 親の破棄
@@ -85,11 +88,13 @@ private:
 	float m_fAddSizeValue;		// サイズ変更量
 	float m_fSetupRotation;		// セットアップの向き
 	float m_fSetupVec;			// セットアップの強さ
+	float m_fGravity;			// 重力
 	int m_nLife;				// 寿命
 	int m_nMaxLife;				// 最大寿命(固定)
 	int m_moveType;				// 移動の種類
 	int m_nParentIdx;			// 親のインデックス番号
 	bool m_bAddAlpha;			// 加算合成の判定
+	bool m_bGravity;			// 重力のフラグ
 	TYPE m_nType;				// 種類
 	CObject *m_pParent;			// 親のポインタ
 	static const char *m_apTextureFile[];			// テクスチャのファイル

@@ -28,8 +28,9 @@ const char *CEffect3D::m_apTextureFile[] =					// ファイル読み込み
 	"data\\TEXTURE\\effect\\smoke_05.tga",	   // 黒煙
 	"data\\TEXTURE\\effect\\effect000.png",	   // 黒エフェクト
 	"data\\TEXTURE\\effect\\effect001.png",		// 十字エフェクト
-	"data\\TEXTURE\\effect\\sand_01.png",		// 十字エフェクト
-	"data\\TEXTURE\\effect\\sand_02.png",		// 十字エフェクト
+	"data\\TEXTURE\\effect\\Star01.png",		// 十字エフェクト
+	"data\\TEXTURE\\effect\\sand_01.png",		// 砂エフェクト
+	"data\\TEXTURE\\effect\\sand_02.png",		// 砂エフェクト
 	"data\\TEXTURE\\effect\\line_02.png",		// 線エフェクト
 	"data\\TEXTURE\\grassblades_01.png",		// 草エフェクト
 	"data\\TEXTURE\\effect\\sweat_01.png",		// 汗エフェクト
@@ -54,12 +55,14 @@ CEffect3D::CEffect3D(int nPriority) : CObjectBillboard(nPriority)
 	m_fAddSizeValue = 0.0f;						// サイズ変更量
 	m_fSetupRotation = 0.0f;					// セットアップの向き
 	m_fSetupVec = 0.0f;							// セットアップの強さ
+	m_fGravity = 0.0f;							// 重力
 	m_nLife = 0;								// 寿命
 	m_nMaxLife = 0;								// 最大寿命(固定)
 	m_moveType = MOVEEFFECT_NONE;				// 移動の種類
 	m_nType = TYPE_NORMAL;						// 種類
 	m_pParent = NULL;							// 親のポインタ
 	m_bAddAlpha = true;							// 加算合成の判定
+	m_bGravity = false;							// 重力のフラグ
 
 	// 総数加算
 	m_nNumAll++;
@@ -164,6 +167,7 @@ HRESULT CEffect3D::Init(void)
 	m_moveType = MOVEEFFECT_NONE;				// 移動の種類
 	m_nType = TYPE_NORMAL;						// 種類
 	m_bAddAlpha = true;							// 加算合成の判定
+	m_fGravity = mylib_const::GRAVITY;
 
 	// 種類の設定
 	SetType(TYPE_EFFECT3D);
@@ -241,6 +245,10 @@ HRESULT CEffect3D::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3D
 		m_bAddAlpha = true;
 		break;
 
+	case TYPE_JUJI2:
+		m_bAddAlpha = true;
+		break;
+
 	case TYPE_SAND:
 		m_bAddAlpha = true;
 		break;
@@ -262,7 +270,7 @@ HRESULT CEffect3D::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3D
 		break;
 
 	case TYPE_THUNDER:
-		m_bAddAlpha = false;
+		m_bAddAlpha = true;
 		break;
 
 	default:
@@ -364,6 +372,11 @@ void CEffect3D::Update(void)
 	D3DXCOLOR col = GetColor();
 
 	// 位置更新
+	if (m_bGravity == true)
+	{
+		move.y -= m_fGravity;
+	}
+
 	m_updatePosition += move;
 	pos = m_posOrigin + m_updatePosition;
 

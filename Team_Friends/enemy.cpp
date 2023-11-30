@@ -416,7 +416,7 @@ void CEnemy::Update(void)
 
 	// “–‚½‚è”»’è
 	Collision();
-	CollisionPlayer();
+	//CollisionPlayer();
 
 	// Ž€–S‚Ì”»’è
 	if (IsDeath() == true)
@@ -712,6 +712,12 @@ bool CEnemy::Hit(const int nValue)
 
 			// ”š”­Ä¶
 			CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_ENEMYEXPLOSION);
+
+			D3DXVECTOR3 move = GetMove();
+			move.x = Random(-5, 5) + 20.0f;
+			move.y = Random(0, 5) + 15.0f;
+			move.z = Random(-5, 5) + 20.0f;
+			SetMove(move);
 
 			// “–‚½‚Á‚½
 			return true;

@@ -38,6 +38,7 @@ public:
 		STATE_DEAD,			// 死
 		STATE_FADEOUT,		// フェードアウト
 		STATE_ATTACK,		// 攻撃処理
+		STATE_APPEARANCE,	// 出現
 		STATE_MAX
 	};
 
@@ -91,6 +92,7 @@ protected:
 		MOTION_DEAD,			// 死亡モーション
 		MOTION_JUMP,			// ジャンプ
 		MOTION_FALL,			// 落下中
+		MOTION_APPEARANCE,		// 出現
 		MOTION_MAX
 	};
 
@@ -102,6 +104,16 @@ protected:
 		bool bCharge;		// チャージ中かどうか
 		bool bMove;			// 移動中かどうか
 	};
+
+
+	// 状態処理
+	virtual void UpdateState(void);	// 状態更新処理
+	virtual void KnockBack(void);	// ノックバック
+	virtual void Damage(void);		// ダメージ
+	virtual void Dead(void);		// 死亡
+	virtual void FadeOut(void);		// フェードアウト
+	virtual void Invincible(void);	// 無敵
+	virtual void Appearance(void);	// 出現
 
 	void ReadMultiCharacter(const char *pTextFile);			// 複数キャラクター読み込み
 	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
@@ -148,12 +160,6 @@ private:
 	};
 
 	// メンバ関数
-	void UpdateState(void);	// 状態更新処理
-	void KnockBack(void);	// ノックバック
-	void Damage(void);		// ダメージ
-	void Dead(void);		// 死亡
-	void FadeOut(void);		// フェードアウト
-	void Invincible(void);	// 無敵
 	void Controll(void);		// 操作
 	void ControllBody(int nIdx);		// 胴操作
 	void ControllLeg(int nIdx);			// 脚操作

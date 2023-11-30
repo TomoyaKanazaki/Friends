@@ -50,6 +50,8 @@ void Move(void);
 void EnemyKillCombo(void);
 void AddScore(void);
 void BrastAttack(void);
+void AppearanceUnion(void);
+void AppearanceArmToArm(void);
 
 //==========================================================================
 // パーティクルの初期化処理
@@ -220,6 +222,16 @@ void my_particle::Create(D3DXVECTOR3 pos, TYPE nType)
 	case TYPE_BRASTATTACK:
 		m_nLife = 40;
 		BrastAttack();
+		break;
+
+	case TYPE_APPEARANCE_UNION:		// 合体の出現時
+		m_nLife = 40;
+		AppearanceUnion();
+		break;
+
+	case TYPE_APPEARANCE_ARMTOARM:
+		m_nLife = 40;
+		AppearanceArmToArm();
 		break;
 
 	}
@@ -1455,5 +1467,110 @@ void BrastAttack(void)
 			m_nLife,
 			CEffect3D::MOVEEFFECT_GENSUI, CEffect3D::TYPE_SMOKE,
 			m_fRadius * 0.1f);
+	}
+}
+
+//==========================================================================
+// 合体の出現
+//==========================================================================
+void AppearanceUnion(void)
+{
+	for (int nCntUse = 0; nCntUse < 10; nCntUse++)
+	{
+		float fMove = (float)Random(150, 250) * 0.01f;		// 移動量
+		float fMoveY = (float)Random(150, 250) * 0.1f;		// 移動量
+
+		// 移動量の設定
+		m_move.x = sinf((float)Random(-314, 314) / 100.0f) * fMove;
+		m_move.y = cosf((float)Random(-314, 314) / 100.0f) * fMoveY;
+		m_move.z = cosf((float)Random(-314, 314) / 100.0f) * fMove;
+
+		m_col = D3DXCOLOR(
+			0.9f + Random(-100, 100) * 0.001f,
+			0.6f + Random(-100, 100) * 0.001f,
+			0.2f + Random(-100, 100) * 0.001f,
+			1.0f);
+
+		// 半径設定
+		m_fRadius = 80.0f;
+
+		// エフェクトの設定
+		CEffect3D::Create(
+			m_pos,
+			m_move,
+			m_col,
+			m_fRadius,
+			m_nLife,
+			CEffect3D::MOVEEFFECT_GENSUI,
+			CEffect3D::TYPE_JUJI2,
+			0.0f);
+	}
+}
+
+//==========================================================================
+// 腕腕合体の出現
+//==========================================================================
+void AppearanceArmToArm(void)
+{
+	for (int nCntUse = 0; nCntUse < 10; nCntUse++)
+	{
+		float fMove = (float)Random(150, 250) * 0.1f;		// 移動量
+		float fMoveY = (float)Random(150, 250) * 0.1f;		// 移動量
+
+		// 移動量の設定
+		m_move.x = sinf((float)Random(-314, 314) / 100.0f) * fMove;
+		m_move.y = cosf((float)Random(-314, 314) / 100.0f) * fMoveY;
+		m_move.z = cosf((float)Random(-314, 314) / 100.0f) * fMove;
+
+		m_col = D3DXCOLOR(
+			0.9f + Random(-100, 100) * 0.001f,
+			0.0f + Random(0, 150) * 0.001f,
+			0.0f + Random(0, 150) * 0.001f,
+			1.0f);
+
+		// 半径設定
+		m_fRadius = 40.0f;
+
+		// エフェクトの設定
+		CEffect3D::Create(
+			m_pos,
+			m_move,
+			m_col,
+			m_fRadius,
+			m_nLife,
+			CEffect3D::MOVEEFFECT_GENSUI,
+			CEffect3D::TYPE_THUNDER,
+			0.0f);
+	}
+
+	for (int nCntUse = 0; nCntUse < 10; nCntUse++)
+	{
+		float fMove = (float)Random(150, 250) * 0.1f;		// 移動量
+		float fMoveY = (float)Random(150, 250) * 0.01f;		// 移動量
+
+		// 移動量の設定
+		m_move.x = sinf((float)Random(-314, 314) / 100.0f) * fMove;
+		m_move.y = cosf((float)Random(-314, 314) / 100.0f) * fMoveY;
+		m_move.z = cosf((float)Random(-314, 314) / 100.0f) * fMove;
+
+		m_col = D3DXCOLOR(
+			0.8f + Random(0, 200) * 0.001f,
+			0.5f + Random(-100, 100) * 0.001f,
+			0.0f + Random(0, 100) * 0.001f,
+			1.0f);
+
+		// 半径設定
+		m_fRadius = 30.0f;
+
+		// エフェクトの設定
+		CEffect3D::Create(
+			m_pos,
+			m_move,
+			m_col,
+			m_fRadius,
+			m_nLife,
+			CEffect3D::MOVEEFFECT_GENSUI,
+			CEffect3D::TYPE_THUNDER,
+			0.0f);
 	}
 }

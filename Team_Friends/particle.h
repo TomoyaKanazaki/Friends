@@ -44,6 +44,8 @@ namespace my_particle
 		TYPE_ENEMYKILL_COMBO,	// コンボ時の敵倒した
 		TYPE_ADDSCORE,			// スコア加算時
 		TYPE_BRASTATTACK,		// ブラストアタック
+		TYPE_APPEARANCE_UNION,		// 合体の出現時
+		TYPE_APPEARANCE_ARMTOARM,	// 腕×腕合体の出現
 		TYPE_MAX
 	}TYPE;
 

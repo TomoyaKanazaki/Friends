@@ -239,7 +239,7 @@ HRESULT CPlayer::Init(void)
 	//{// 胴
 	//	SetEvolusion(CGameManager::STATUS_SPEED);
 	//}
-	SetEvolusion(CGameManager::STATUS_POWER);
+	//SetEvolusion(CGameManager::STATUS_POWER);
 
 	// プレイヤー毎のインデックス追加
 	BindByPlayerIdxTexture();
@@ -935,102 +935,63 @@ void CPlayer::Atack(void)
 			{
 			case MOTION_ATK:
 			case MOTION_ATK2:
-				// パーティクル生成
-				//my_particle::Create(weponpos, my_particle::TYPE_BRASTATTACK);
 
-				// 武器の位置
-				for (int i = 0; i < 4; i++)
+				switch (CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx))
 				{
-					D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
+				case CPlayerUnion::PARTS_BODY:
+					break;
 
-					// 炎
-					float fMove = 6.0f + Random(-2, 5);
-					float fRot = Random(-20, 20) * 0.01f;
-					float fRotMove = Random(-10, 10) * 0.01f;
+				case CPlayerUnion::PARTS_R_ARM:
+				case CPlayerUnion::PARTS_L_ARM:
+					break;
 
-					// 炎
-					CEffect3D *pEffect = CEffect3D::Create(
-						weponpos,
-						D3DXVECTOR3(
-							sinf(D3DX_PI + rot.y + fRotMove) * fMove,
-							fRotMove,
-							cosf(D3DX_PI + rot.y + fRotMove) * fMove),
-						D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
-						60.0f + (float)Random(-10, 10),
-						15,
-						CEffect3D::MOVEEFFECT_ADD,
-						CEffect3D::TYPE_SMOKE);
+				case CPlayerUnion::PARTS_LEG:
+					break;
 
-					// 炎
-					CEffect3D::Create(
-						weponpos,
-						D3DXVECTOR3(
-							sinf(D3DX_PI + rot.y + fRotMove) * fMove,
-							fRotMove,
-							cosf(D3DX_PI + rot.y + fRotMove) * fMove),
-						D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
-						30.0f + (float)Random(-10, 10),
-						15,
-						CEffect3D::MOVEEFFECT_ADD,
-						CEffect3D::TYPE_SMOKE);
+				default:
+					// 武器の位置
+					for (int i = 0; i < 4; i++)
+					{
+						D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
 
-					int nDamage = (int)((float)aInfo.AttackInfo[nCntAttack]->nDamage * m_sStatus.fPowerBuff);
-					CCollisionObject::Create(pEffect->GetPosition(), pEffect->GetMove(), pEffect->GetSize().x, 15, nDamage, CCollisionObject::TAG_PLAYER);
+						// 炎
+						float fMove = 7.0f + Random(-2, 5);
+						float fRot = Random(-20, 20) * 0.01f;
+						float fRotMove = Random(-10, 10) * 0.01f;
+
+						// 炎
+						CEffect3D *pEffect = CEffect3D::Create(
+							weponpos,
+							D3DXVECTOR3(
+								sinf(D3DX_PI + rot.y + fRotMove) * fMove,
+								fRotMove,
+								cosf(D3DX_PI + rot.y + fRotMove) * fMove),
+							D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
+							90.0f + (float)Random(-10, 10),
+							15,
+							CEffect3D::MOVEEFFECT_ADD,
+							CEffect3D::TYPE_SMOKE);
+
+						// 炎
+						CEffect3D::Create(
+							weponpos,
+							D3DXVECTOR3(
+								sinf(D3DX_PI + rot.y + fRotMove) * fMove,
+								fRotMove,
+								cosf(D3DX_PI + rot.y + fRotMove) * fMove),
+							D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
+							60.0f + (float)Random(-10, 10),
+							15,
+							CEffect3D::MOVEEFFECT_ADD,
+							CEffect3D::TYPE_SMOKE);
+
+						int nDamage = (int)((float)aInfo.AttackInfo[nCntAttack]->nDamage * m_sStatus.fPowerBuff);
+						CCollisionObject::Create(pEffect->GetPosition(), pEffect->GetMove(), pEffect->GetSize().x, 15, nDamage, CCollisionObject::TAG_PLAYER);
+					}
+					break;
 				}
 
-				//// チャージカウントリセット
-				////CGame::GetPowerGauge()->SetChargeCount(0);
-
-				// 衝撃波生成
-				//CImpactWave *pWave = CImpactWave::Create
-				//(
-				//	D3DXVECTOR3(pos.x, pos.y + 80.0f, pos.z),	// 位置
-				//	D3DXVECTOR3(D3DX_PI * 0.5f, D3DX_PI + rot.y, 0.0f),				// 向き
-				//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f),			// 色
-				//	150.0f,										// 幅
-				//	150.0f,										// 高さ
-				//	0.0f,										// 中心からの間隔
-				//	8,											// 寿命
-				//	1.0f,										// 幅の移動量
-				//	CImpactWave::TYPE_GIZAWHITE2,					// テクスチャタイプ
-				//	true										// 加算合成するか
-				//);
-				//pWave->SetMove(D3DXVECTOR3(sinf(D3DX_PI + rot.y) * 15.0f, 0.0f, cosf(D3DX_PI + rot.y) * 15.0f));
-
-
-				//CImpactWave::Create
-				//(
-				//	D3DXVECTOR3(pos.x, pos.y + 150.0f, pos.z),	// 位置
-				//	D3DXVECTOR3(0.0f, 0.0f, D3DX_PI),				// 向き
-				//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f),			// 色
-				//	180.0f,										// 幅
-				//	150.0f,										// 高さ
-				//	14,											// 寿命
-				//	4.0f,										// 幅の移動量
-				//	CImpactWave::TYPE_GIZAWHITE,				// テクスチャタイプ
-				//	false										// 加算合成するか
-				//);
-
-				// 振動
-				//CManager::GetInstance()->GetCamera()->SetShake(20, 10.0f, 0.0f);
-
-				// 斬撃生成
-				//CSlash::Create
-				//(
-				//	D3DXVECTOR3(pos.x, pos.y + 50.0f, pos.z),	// 位置
-				//	D3DXVECTOR3(0.0f, 0.0f, 0.0f),		// 向き
-				//	D3DXVECTOR3(m_fAtkStickRot, D3DX_PI + fRotY, 0.0f),		// 向き
-				//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),	// 色
-				//	200.0f,								// 幅
-				//	50.0f,								// 中心からの間隔
-				//	10,									// 寿命
-				//	40.0f,								// 幅の移動量
-				//	CImpactWave::TYPE_PURPLE4,			// テクスチャの種類
-				//	true,								// 加算合成するかどうか
-				//	GetMoveAngle()
-				//);
-
-				// 歩行音再生
+				// スイング音再生
 				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_SWING);
 				break;
 			}
@@ -1594,10 +1555,8 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 	// パーツ変更
 	ChangeObject(m_nEvolveType);
 
-#ifndef _DEBUG
 	// モーション切り替え
 	ChangeMotion(EVOLUSIONFILE[(int)statusType]);
-#endif
 
 	// プレイヤー毎のインデックス追加
 	BindByPlayerIdxTexture();

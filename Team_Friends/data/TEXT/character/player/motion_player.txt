@@ -56,7 +56,7 @@ MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rfeet.x		# [26]強化[脚]右足
 # キャラクター情報
 #------------------------------------------------------------------------------
 CHARACTERSET
-	VELOCITY = 2.50		
+	VELOCITY = 1.50		
 	JUMP = 0.00		
 	RADIUS = 60.00		
 	HEIGHT = 0.00		

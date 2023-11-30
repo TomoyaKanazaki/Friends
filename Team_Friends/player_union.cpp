@@ -176,7 +176,7 @@ HRESULT CPlayerUnion::Init(void)
 	// 種類の設定
 	SetType(TYPE_PLAYER);
 
-	m_state = STATE_NONE;	// 状態
+	m_state = STATE_APPEARANCE;	// 状態
 	m_nCntState = 0;		// 状態遷移カウンター
 	m_bLandOld = true;		// 前回の着地状態
 	m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
@@ -1533,6 +1533,10 @@ void CPlayerUnion::UpdateState(void)
 	case STATE_KNOCKBACK:
 		KnockBack();
 		break;
+
+	case STATE_APPEARANCE:
+		Appearance();
+		break;
 	}
 }
 
@@ -1845,6 +1849,29 @@ void CPlayerUnion::KnockBack(void)
 
 	// 向き設定
 	SetRotation(rot);
+}
+
+//==========================================================================
+// 出現
+//==========================================================================
+void CPlayerUnion::Appearance(void)
+{
+	int nType = m_pMotion[0]->GetType();
+	if (nType == MOTION_APPEARANCE && m_pMotion[0]->IsFinish() == true)
+	{// 登場演出が終わってたら
+		m_nCntState = 0;
+		m_state = STATE_NONE;
+	}
+
+	for (int i = 0; i < PARTS_MAX; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+		// 登場モーション設定
+		m_pMotion[i]->Set(MOTION_APPEARANCE);
+	}
 }
 
 //==========================================================================

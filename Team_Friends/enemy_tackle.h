@@ -54,6 +54,8 @@ private:
 	// メンバ変数
 	ACTION m_Act; //行動状態
 	float m_fActionCount; // 移動カウンター
+	D3DXVECTOR3 m_moveLock;	//固定移動量
+	float m_fRotLock;	//向き保存
 
 	// メンバ関数
 	void UpdateAction(void) override;	// 行動更新
@@ -62,8 +64,9 @@ private:
 	void MoveRotation(void); // 移動方向を向く
 	void Attack(void); // 攻撃
 	void RotationPlayer(void); // プレイヤーを向く処理
+	void SetMoveRotation(void); // 向きから移動量を設定する処理
 	bool SearchPlayer(float fLen); // プレイヤーとの距離判定
-
+	void FixRotation(void); // 指定方向を向く
 };
 
 #endif

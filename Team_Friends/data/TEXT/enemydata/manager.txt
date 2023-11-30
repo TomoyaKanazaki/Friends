@@ -63,25 +63,9 @@ PATTERNSET
 	FIXEDMOVE = 0		# 一定の動きの種類
 	
 	ENEMYSET
-		TYPE = 2		# キャラの種類
-		INDEX = 0
-		POS = 0.00 0.00 0.00
-		STARTFRAME = 0		# 初期フレーム
-	END_ENEMYSET
-	
-		FIXEDMOVE = 0		# 一定の動きの種類
-	
-	ENEMYSET
-		TYPE = 3		# キャラの種類
-		INDEX = 0
-		POS = 100.00 0.00 0.00
-		STARTFRAME = 0		# 初期フレーム
-	END_ENEMYSET
-
-	ENEMYSET
 		TYPE = 4		# キャラの種類
 		INDEX = 0
-		POS = 1200.00 0.00 0.00
+		POS = -400.00 0.00 0.00
 		STARTFRAME = 0		# 初期フレーム
 	END_ENEMYSET
 		

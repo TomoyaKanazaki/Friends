@@ -347,6 +347,33 @@ void CPlayer::Update(void)
 
 	// 操作
 	Controll();
+#ifdef _DEBUG
+
+	if (pInputKeyboard->GetPress(DIK_DOWN))
+	{
+		D3DXVECTOR3 move = GetMove();
+		move.x = 10.0f;
+		SetMove(move);
+		m_sMotionFrag.bMove = true;
+
+		// 必要な値を取得
+		D3DXVECTOR3 rot2 = GetRotation();
+		D3DXVECTOR3 move2 = GetMove();
+
+		// 方向を算出
+		float fRot = atan2f(-move2.x, -move2.z);
+
+		//角度の正規化
+		RotNormalize(fRot);
+
+		//角度の補正をする
+		rot2.y = fRot;
+
+		// 向き設定
+		SetRotation(rot2);
+	}
+
+#endif
 
 	// モーションの設定処理
 	MotionSet();
@@ -394,8 +421,6 @@ void CPlayer::Update(void)
 	{
 		m_pShadow->SetPosition(D3DXVECTOR3(pos.x, m_pShadow->GetPosition().y, pos.z));
 	}
-
-	
 
 	// モーションの情報取得
 	if (m_pMotion != NULL)

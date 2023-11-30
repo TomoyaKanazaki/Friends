@@ -10,6 +10,7 @@
 #include "debugproc.h"
 #include "calculation.h"
 #include "hp_gauge.h"
+#include "particle.h"
 
 //==========================================
 //  定数定義
@@ -19,13 +20,14 @@ namespace
 	const float SEARCH_LENGTH = 400.0f;
 	const float ATTACK_LENGTH = 200.0f;
 	const float MOVE_SPEED = 0.01f;
-	const float ATTACK_SPEED = 0.01f;
+	const float ATTACK_SPEED = 10.0f;
 	const float MOVE_X = 2.0f;
 	const float MOVE_Z = 2.0f;
-	const float READY_TIME = 5.0f;
-	const float ATTACK_TIME = 3.0f;
-	const float AFTER_TIME = 10.0f;
+	const float READY_TIME = 3.0f;
+	const float ATTACK_TIME = 1.0f;
+	const float AFTER_TIME = 2.0f;
 	const float SEARCH_ROT = 45.0f;
+	const float AFTER_FIXROT = 0.07f;
 }
 
 //==========================================
@@ -33,7 +35,9 @@ namespace
 //==========================================
 CEnemyTackle::CEnemyTackle(int nPriority) :
 	m_Act(ACTION_ROAMING),
-	m_fActionCount(0.0f)
+	m_fActionCount(0.0f),
+	m_moveLock(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+	m_fRotLock(0.0f)
 {
 
 }
@@ -100,23 +104,44 @@ void CEnemyTackle::Update(void)
 //==========================================================================
 void CEnemyTackle::UpdateAction(void)
 {
+	D3DXVECTOR3 pos = GetPosition();
+
 	// 行動ごとの行動
 	switch (m_Act)
 	{
 	case CEnemyTackle::ACTION_ROAMING:
 
-		// 移動
-		//Move();
+		//移動
+		Move();
+
+		break;
+
+	case CEnemyTackle::ACTION_READY:
+
+		//デバッグ用
+		my_particle::Create(pos, my_particle::TYPE_SMOKE);
+
+		// 移動量を設定
+		RotationPlayer();
 
 		break;
 
 	case CEnemyTackle::ACTION_ATTACK:
 
-		// プレイヤーを向く
-		//RotationPlayer();
+		//デバッグ用
+		my_particle::Create(pos, my_particle::TYPE_SMOKE_RED);
 
 		// 攻撃
 		Attack();
+
+		break;
+
+	case CEnemyTackle::ACTION_AFTER:
+
+		//デバッグ用
+		my_particle::Create(pos, my_particle::TYPE_SMOKE);
+
+		FixRotation();
 
 		break;
 
@@ -211,6 +236,7 @@ void CEnemyTackle::ActionSet(void)
 		{
 			m_Act = ACTION_AFTER;
 			m_fActionCount = 0.0f;
+			m_moveLock = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		}
 
 		return;
@@ -232,7 +258,7 @@ void CEnemyTackle::ActionSet(void)
 		{// 索敵
 
 			// 距離が近いと攻撃状態になる
-			m_Act = ACTION_ATTACK;
+			m_Act = ACTION_READY;
 			m_fActionCount = 0.0f;
 		}
 	}
@@ -289,35 +315,11 @@ void CEnemyTackle::MoveRotation(void)
 //==========================================
 void CEnemyTackle::Attack(void)
 {
-	// 攻撃処理
-	CEnemy::StateAttack();
+	D3DXVECTOR3 move = GetMove();
 
-	// モーションの情報取得
-	CMotion::Info aInfo = m_pMotion->GetInfo(m_pMotion->GetType());
-
-	// 攻撃情報の総数取得
-	int nNumAttackInfo = aInfo.nNumAttackInfo;
-
-	bool bAtkWait = true;	// 攻撃待機中
-	for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
+	if (m_moveLock == D3DXVECTOR3(0.0f, 0.0f, 0.0f))
 	{
-		if (aInfo.AttackInfo[nCntAttack] == NULL)
-		{// NULLだったら
-			continue;
-		}
-
-		// モーションカウンター取得
-		if (m_pMotion->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt)
-		{// 攻撃判定中
-			// 攻撃判定中にする
-			bAtkWait = false;
-		}
-	}
-
-	if (bAtkWait == false)
-	{// 判定中の時
-	 // 位置取得
-		D3DXVECTOR3 pos = GetPosition();
+		m_sMotionFrag.bATK = true;
 
 		// プレイヤー情報
 		CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
@@ -326,40 +328,35 @@ void CEnemyTackle::Attack(void)
 			return;
 		}
 
-		// プレイヤーの位置取得
+		// 情報取得
 		D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+		D3DXVECTOR3 pos = GetPosition();
+
+		//攻撃判定アリ凸
 
 		// プレイヤーから自身に向かうベクトルを算出
-		D3DXVECTOR3 vecToPlayer = pos - posPlayer;
+		D3DXVECTOR3 vecToPlayer = posPlayer - pos;
 
 		// ベクトルの正規化
 		vecToPlayer.y = 0.0f;
 		D3DXVec3Normalize(&vecToPlayer, &vecToPlayer);
 		vecToPlayer *= ATTACK_SPEED;
 
-		// 移動量の取得
-		D3DXVECTOR3 move = GetMove();
+		//角度を反転
+		m_fRotLock = GetRotation().y + D3DX_PI;
+		RotNormalize(m_fRotLock);
 
 		// 移動量の設定
 		move.x = vecToPlayer.x;
 		move.z = vecToPlayer.z;
 		SetMove(move);
 
-		// 方向転換
-		MoveRotation();
-
-		//攻撃判定アリ凸
+		m_moveLock = move;
 
 		return;
 	}
-	else
-	{//準備中
 
-		//プレイヤーの方を向く
-		RotationPlayer();
-
-		return;
-	}
+	SetMove(m_moveLock);
 }
 
 //==========================================
@@ -404,7 +401,19 @@ void CEnemyTackle::RotationPlayer(void)
 }
 
 //==========================================
-//  プレイヤーとの距離を判定
+//　向きから移動量を設定
+//==========================================
+void CEnemyTackle::SetMoveRotation(void)
+{
+	D3DXVECTOR3 move = GetMove();
+	D3DXVECTOR3 rot = GetRotation();
+	move.x = sinf(rot.y) * MOVE_X * ATTACK_SPEED;
+	move.z = cosf(rot.y) * MOVE_Z * ATTACK_SPEED;
+	SetMove(move);
+}
+
+//==========================================
+//  プレイヤーを探す判定
 //==========================================
 bool CEnemyTackle::SearchPlayer(float fLen)
 {
@@ -439,4 +448,32 @@ bool CEnemyTackle::SearchPlayer(float fLen)
 	}
 
 	return false;
+}
+
+//==========================================
+// 指定方向に向く
+//==========================================
+void CEnemyTackle::FixRotation(void)
+{
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
+	// 目標との差分
+	float fRotDiff = m_fRotLock - rot.y;
+
+	//角度の正規化
+	RotNormalize(fRotDiff);
+
+	//角度の補正をする
+	rot.y += fRotDiff * AFTER_FIXROT;
+
+	// 角度の正規化
+	RotNormalize(rot.y);
+
+	// 向き設定
+	SetRotation(rot);
+
+	// 目標の向き設定
+	SetRotDest(m_fRotLock);
 }

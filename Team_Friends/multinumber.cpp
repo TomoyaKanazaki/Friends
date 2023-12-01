@@ -35,6 +35,7 @@ CMultiNumber::CMultiNumber(int nPriority)
 	m_nPriority = 0;		// 優先順位
 	m_ppMultiNumber = NULL;	// 数字のオブジェクト
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 位置
+	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 位置
 	m_col =mylib_const::DEFAULT_COLOR;		// 色
 	size = D3DXVECTOR2(0.0f, 0.0f);	// 数字のサイズ
 	m_objType = CNumber::OBJECTTYPE_2D;	// オブジェクトの種類
@@ -177,8 +178,17 @@ HRESULT CMultiNumber::Init(void)
 		m_ppMultiNumber[nCntNum]->SetPosition(D3DXVECTOR3(m_pos.x + size.y * nCntNum, m_pos.y, m_pos.z));	// 位置
 
 		// 種類の設定
-		m_ppMultiNumber[nCntNum]->SetType(CObject::TYPE_OBJECT2D);
+		if (m_objType == CNumber::OBJECTTYPE_3D)
+		{
+			m_ppMultiNumber[nCntNum]->SetType(CObject::TYPE_OBJECT3D);
+			m_ppMultiNumber[nCntNum]->SetSize3D(D3DXVECTOR3(size.x, size.y, 0.0f));
+			m_ppMultiNumber[nCntNum]->SetRotation(m_rot);
+		}
 
+		else
+		{
+			m_ppMultiNumber[nCntNum]->SetType(CObject::TYPE_OBJECT2D);
+		}
 		// テクスチャの割り当て
 		m_ppMultiNumber[nCntNum]->BindTexture(m_nTexIdx);
 	}
@@ -264,6 +274,17 @@ void CMultiNumber::Update(void)
 			else
 			{
 				m_ppMultiNumber[nCntNum]->GetObject2D()->SetEnableDisp(false);
+			}
+			break;
+
+		case CNumber::OBJECTTYPE_3D:
+			if (m_nNumNumber - nNumberDigit <= nCntNum)
+			{// 桁数
+				m_ppMultiNumber[nCntNum]->GetObject3D()->SetEnableDisp(false);
+			}
+			else
+			{
+				m_ppMultiNumber[nCntNum]->GetObject3D()->SetEnableDisp(false);
 			}
 			break;
 
@@ -377,7 +398,7 @@ void CMultiNumber::SetPosition(const D3DXVECTOR3 pos)
 	{
 		if (m_ppMultiNumber[nCntNum] != NULL)
 		{
-			m_ppMultiNumber[nCntNum]->SetPosition(D3DXVECTOR3(m_pos.x + size.y * nCntNum, m_pos.y, m_pos.z));	// 位置
+			m_ppMultiNumber[nCntNum]->SetPosition(D3DXVECTOR3(m_pos.x + sinf(D3DX_PI / 2 + m_rot.y) * (size.y * nCntNum), m_pos.y, m_pos.z + cosf(D3DX_PI / 2 + m_rot.y) * (size.y * nCntNum)));	// 位置
 		}
 	}
 }
@@ -388,6 +409,29 @@ void CMultiNumber::SetPosition(const D3DXVECTOR3 pos)
 D3DXVECTOR3 CMultiNumber::GetPosition(void) const
 {
 	return m_pos;
+}
+
+//==========================================================================
+// 向き設定
+//==========================================================================
+void CMultiNumber::SetRotation(const D3DXVECTOR3 rot)
+{
+	m_rot = rot;
+	for (int nCntNum = 0; nCntNum < m_nNumNumber; nCntNum++)
+	{
+		if (m_ppMultiNumber[nCntNum] != NULL)
+		{
+			m_ppMultiNumber[nCntNum]->SetRotation(rot);	// 位置
+		}
+	}
+}
+
+//==========================================================================
+// 向き取得
+//==========================================================================
+D3DXVECTOR3 CMultiNumber::GetRotation(void) const
+{
+	return m_rot;
 }
 
 //==========================================================================

@@ -1,19 +1,20 @@
 //=============================================================================
 // 
-//  数字処理 [number.cpp]
+//  数字(2D)処理 [number_2D.cpp]
 //  Author : 相馬靜雅
 // 
 //=============================================================================
-#include "number.h"
-
-// 派生先
-#include "number_2D.h"
 #include "number_3D.h"
-#include "number_Billboard.h"
+#include "manager.h"
+#include "renderer.h"
+#include "object3D.h"
 
 //==========================================================================
 // マクロ定義
 //==========================================================================
+#define WIDTH			(640.0f)					// 横幅
+#define HEIGHT			(360.0f)					// 縦幅
+#define SCROLL_SPEED	(-0.005f)					// スクロール速度
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -22,212 +23,236 @@
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CNumber::CNumber(int nPriority)
+CNumber3D::CNumber3D(int nPriority) : CNumber(nPriority)
 {
 	// 値のクリア
-	m_objType = OBJECTTYPE_2D;	// オブジェクトの種類
+	m_aObject3D = NULL;			// オブジェクト2Dのオブジェクト
+	m_bAddAlpha = true;
 }
 
 //==========================================================================
 // デストラクタ
 //==========================================================================
-CNumber::~CNumber()
+CNumber3D::~CNumber3D()
 {
 
 }
 
 //==========================================================================
-// 生成処理
+// 初期化処理
 //==========================================================================
-CNumber *CNumber::Create(EObjectType objtype, int nPriority)
+HRESULT CNumber3D::Init(int nPriority)
 {
-	// 生成用のオブジェクト
-	CNumber *pNumber = NULL;
+	// 生成処理
+	m_aObject3D = CObject3D::Create(nPriority);
 
-	if (pNumber == NULL)
-	{// NULLだったら
+	// 種類設定
+	SetType(CObject::TYPE_NUMBER);
 
-		// メモリの確保
-		switch (objtype)
-		{
-		case CNumber::OBJECTTYPE_2D:
-			pNumber = DEBUG_NEW CNumber2D;
-			break;
+	return S_OK;
+}
 
-		case CNumber::OBJECTTYPE_3D:
-			pNumber = DEBUG_NEW CNumber3D(nPriority);
-			break;
-
-		case CNumber::OBJECTTYPE_BILLBOARD:
-			pNumber = DEBUG_NEW CNumberBillboard;
-			break;
-
-		default:
-			return NULL;
-			break;
-		}
-
-		if (pNumber != NULL)
-		{// メモリの確保が出来ていたら
-
-			// オブジェクトの種類
-			pNumber->m_objType = objtype;
-
-			// 初期化処理
-			pNumber->Init(nPriority);
-		}
-		else
-		{
-			delete pNumber;
-			pNumber = NULL;
-		}
-
-		return pNumber;
+//==========================================================================
+// 終了処理
+//==========================================================================
+void CNumber3D::Uninit(void)
+{
+	// 終了処理
+	if (m_aObject3D != NULL)
+	{// NULLじゃなかったら
+		m_aObject3D = NULL;
 	}
-
-	return NULL;
 }
+
+//==========================================================================
+// 解放処理
+//==========================================================================
+void CNumber3D::Release(void)
+{
+	if (m_aObject3D != NULL)
+	{// NULLじゃなかったら
+		m_aObject3D->Uninit();
+		m_aObject3D = NULL;
+	}
+}
+
+//==========================================================================
+// 更新処理
+//==========================================================================
+void CNumber3D::Update(void)
+{
+	// 更新処理
+	if (m_aObject3D != NULL)
+	{
+		m_aObject3D->Update();
+	}
+}
+
+//==========================================================================
+// 描画処理
+//==========================================================================
+void CNumber3D::Draw(void)
+{
+	// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
+
+	// 描画処理
+	if (m_aObject3D != NULL)
+	{
+		// アルファテストを有効にする
+		pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+		pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+		pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+
+		// αブレンディングを加算合成に設定
+		if (m_bAddAlpha == true)
+		{
+			pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+			pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+			pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+		}
+
+		m_aObject3D->Draw();
+
+		// αブレンディングを元に戻す
+		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+		// アルファテストを無効にする
+		pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+		pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
+		pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+	}
+}
+
+//==========================================================================
+// 頂点情報設定処理
+//==========================================================================
+void CNumber3D::SetVtx(void)
+{
+	m_aObject3D->SetVtx();
+}
+
+//==========================================================================
+// テクスチャの割り当て
+//==========================================================================
+void CNumber3D::BindTexture(int nIdx)
+{
+	// 割り当てる
+	m_aObject3D->BindTexture(nIdx);
+}
+
+//==========================================================================
+// 種類設定
+//==========================================================================
+void CNumber3D::SetType(const CObject::TYPE type)
+{
+	m_aObject3D->SetType(type);
+}
+
+
 
 //==========================================================================
 // 位置設定
 //==========================================================================
-void CNumber::SetPosition(const D3DXVECTOR3 pos)
+void CNumber3D::SetPosition(const D3DXVECTOR3 pos)
 {
+	m_aObject3D->SetPosition(pos);
 }
 
 //==========================================================================
 // 位置取得
 //==========================================================================
-D3DXVECTOR3 CNumber::GetPosition(void) const
+D3DXVECTOR3 CNumber3D::GetPosition(void) const
 {
-	return mylib_const::DEFAULT_VECTOR3;
+	return m_aObject3D->GetPosition();
 }
 
 //==========================================================================
 // 移動量設定
 //==========================================================================
-void CNumber::SetMove(const D3DXVECTOR3 move)
+void CNumber3D::SetMove(const D3DXVECTOR3 move)
 {
+	m_aObject3D->SetMove(move);
 }
 
 //==========================================================================
 // 移動量取得
 //==========================================================================
-D3DXVECTOR3 CNumber::GetMove(void) const
+D3DXVECTOR3 CNumber3D::GetMove(void) const
 {
-	return mylib_const::DEFAULT_VECTOR3;
+	return m_aObject3D->GetMove();
 }
 
 //==========================================================================
 // 向き設定
 //==========================================================================
-void CNumber::SetRotation(const D3DXVECTOR3 rot)
+void CNumber3D::SetRotation(const D3DXVECTOR3 rot)
 {
+	m_aObject3D->SetRotation(rot);
 }
 
 //==========================================================================
 // 向き取得
 //==========================================================================
-D3DXVECTOR3 CNumber::GetRotation(void) const
+D3DXVECTOR3 CNumber3D::GetRotation(void) const
 {
-	return mylib_const::DEFAULT_VECTOR3;
+	return m_aObject3D->GetRotation();
 }
 
 //==========================================================================
 // 色設定
 //==========================================================================
-void CNumber::SetColor(const D3DXCOLOR col)
+void CNumber3D::SetColor(const D3DXCOLOR col)
 {
+	m_aObject3D->SetColor(col);
 }
 
 //==========================================================================
 // 色取得
 //==========================================================================
-D3DXCOLOR CNumber::GetColor(void) const
+D3DXCOLOR CNumber3D::GetColor(void) const
 {
-	return mylib_const::DEFAULT_COLOR;
+	return m_aObject3D->GetColor();
 }
 
 //==========================================================================
 // サイズ設定
 //==========================================================================
-void CNumber::SetSize(const D3DXVECTOR2 size)
+void CNumber3D::SetSize3D(const D3DXVECTOR3 size)
 {
+	m_aObject3D->SetSize(size);		// サイズ
 }
 
 //==========================================================================
 // サイズ取得
 //==========================================================================
-D3DXVECTOR2 CNumber::GetSize(void) const
+D3DXVECTOR3 CNumber3D::GetSize3D(void) const
 {
-	return D3DXVECTOR2(0.0f, 0.0f);
-}
-
-//==========================================================================
-// 元のサイズの設定
-//==========================================================================
-void CNumber::SetSizeOrigin(const D3DXVECTOR2 size)
-{
-}
-
-//==========================================================================
-// 元のサイズの取得
-//==========================================================================
-D3DXVECTOR2 CNumber::GetSizeOrigin(void) const
-{
-	return D3DXVECTOR2(0.0f, 0.0f);
-}
-
-//==========================================================================
-// サイズ設定
-//==========================================================================
-void CNumber::SetSize3D(const D3DXVECTOR3 size)
-{
-}
-
-//==========================================================================
-// サイズ取得
-//==========================================================================
-D3DXVECTOR3 CNumber::GetSize3D(void) const
-{
-	return D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	return m_aObject3D->GetSize();
 }
 
 //==========================================================================
 // テクスチャ座標設定
 //==========================================================================
-void CNumber::SetTex(D3DXVECTOR2 *tex)
+void CNumber3D::SetTex(D3DXVECTOR2 *tex)
 {
+	m_aObject3D->SetTex(tex);
 }
 
 //==========================================================================
 // テクスチャ座標取得
 //==========================================================================
-D3DXVECTOR2 *CNumber::GetTex(void)
+D3DXVECTOR2 *CNumber3D::GetTex(void)
 {
-	return NULL;
+	return m_aObject3D->GetTex();
 }
 
 //==========================================================================
-// オブジェクト2Dオブジェクトの取得
+// オブジェクト3Dオブジェクトの取得
 //==========================================================================
-CObject2D *CNumber::GetObject2D(void)
+CObject3D *CNumber3D::GetObject3D(void)
 {
-	return NULL;
-}
-
-//==========================================================================
-// オブジェクト2Dオブジェクトの取得
-//==========================================================================
-CObject3D *CNumber::GetObject3D(void)
-{
-	return NULL;
-}
-
-//==========================================================================
-// オブジェクトビルボードオブジェクトの取得
-//==========================================================================
-CObjectBillboard *CNumber::GetObjectBillboard(void)
-{
-	return NULL;
+	return m_aObject3D;
 }

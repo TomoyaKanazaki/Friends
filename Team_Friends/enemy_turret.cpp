@@ -12,6 +12,7 @@
 #include "hp_gauge.h"
 #include "particle.h"
 #include "particle.h"
+#include "limitarea.h"
 
 //==========================================
 //  定数定義
@@ -38,7 +39,8 @@ CEnemyTurret::CEnemyTurret(int nPriority) :
 	m_Atk(ATTACK_NONE),
 	m_fActionCount(0.0f),
 	m_moveLock(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
-	m_fRotLock(0.0f)
+	m_fRotLock(0.0f),
+	m_pLimitArea(nullptr)
 {
 
 }
@@ -61,6 +63,21 @@ HRESULT CEnemyTurret::Init(void)
 
 	// HPの設定
 	m_pHPGauge = CHP_Gauge::Create(100.0f, GetLifeOrigin());
+
+	D3DXVECTOR3 pos = GetPosition();
+	CLimitErea::sLimitEreaInfo info = {};
+	info.fMinX = pos.x + -2000.0f;
+	info.fMaxX = pos.x + 2000.0f;
+	info.fMinZ = pos.z + -2000.0f;
+	info.fMaxZ = pos.z + 2000.0f;
+
+	if (m_pLimitArea != nullptr)
+	{
+		m_pLimitArea->Uninit();
+		m_pLimitArea = nullptr;
+	}
+
+	m_pLimitArea = CLimitErea::Create(info);
 
 	return S_OK;
 }
@@ -173,6 +190,8 @@ void CEnemyTurret::Kill(void)
 {
 	// 死亡処理
 	CEnemy::Kill();
+
+	m_pLimitArea->SetState(CLimitErea::STATE_FADEOUT);
 }
 
 //==========================================
@@ -415,6 +434,48 @@ void CEnemyTurret::SetMoveRotation(void)
 //  プレイヤーを探す判定
 //==========================================
 bool CEnemyTurret::SearchPlayer(float fLen)
+{
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+	D3DXVECTOR3 posL = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//索敵扇の左点
+	D3DXVECTOR3 posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//索敵扇の右点
+
+														//float fRot = SEARCH_ROT * D3DX_PI / 180;
+	float fRot = 0.785f;
+
+
+	//プレイヤーの人数を把握
+
+	//一番近いやつを標的にする
+	for (int nCnt = 0; nCnt < mylib_const::MAX_PLAYER; nCnt++)
+	{
+		// プレイヤー情報
+		CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCnt);
+		if (pPlayer == NULL)
+		{
+			continue;
+		}
+	}
+
+
+
+	// プレイヤーの位置取得
+	//D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+
+	//// 一定範囲内の判定
+	//if (CollisionFan(pos, posL, posR, posPlayer, fRot))
+	//{
+	//	return true;
+	//}
+
+	return false;
+}
+
+//==========================================
+//  プレイヤーを探す判定
+//==========================================
+bool CEnemyTurret::TargetPlayer(float fLen)
 {
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();

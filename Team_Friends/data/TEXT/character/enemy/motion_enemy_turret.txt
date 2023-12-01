@@ -14,12 +14,12 @@ NUM_MODEL = 6
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-MODEL_FILENAME = data/MODEL/ENEMY/turret/body.x			# [0]体
-MODEL_FILENAME = data/MODEL/ENEMY/turret/head.x			# [1]頭
-MODEL_FILENAME = data/MODEL/ENEMY/turret/leg.x			# [2]前脚
-MODEL_FILENAME = data/MODEL/ENEMY/turret/leg.x			# [3]前脚
-MODEL_FILENAME = data/MODEL/ENEMY/turret/leg.x			# [4]後脚
-MODEL_FILENAME = data/MODEL/ENEMY/turret/leg.x			# [5]後脚
+MODEL_FILENAME = data/MODEL/enemy/turret/body.x			# [0]体
+MODEL_FILENAME = data/MODEL/enemy/turret/head.x			# [1]頭
+MODEL_FILENAME = data/MODEL/enemy/turret/leg.x			# [2]前脚
+MODEL_FILENAME = data/MODEL/enemy/turret/leg.x			# [3]前脚
+MODEL_FILENAME = data/MODEL/enemy/turret/leg.x			# [4]後脚
+MODEL_FILENAME = data/MODEL/enemy/turret/leg.x			# [5]後脚
 
 #------------------------------------------------------------------------------
 # キャラクター情報

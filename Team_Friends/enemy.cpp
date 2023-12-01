@@ -38,6 +38,7 @@
 #include "enemy_roaming.h"
 #include "enemy_escape.h"
 #include "enemy_tackle.h"
+#include "enemy_turret.h"
 
 //==========================================================================
 // É}ÉNÉçíËã`
@@ -129,6 +130,10 @@ CEnemy *CEnemy::Create(int nIdx, const char *pFileName, D3DXVECTOR3 pos, TYPE ty
 
 		case TYPE_TACKLE:
 			pEnemy = DEBUG_NEW CEnemyTackle;
+			break;
+
+		case TYPE_TURRET:
+			pEnemy = DEBUG_NEW CEnemyTurret;
 			break;
 
 		case TYPE_FLY:

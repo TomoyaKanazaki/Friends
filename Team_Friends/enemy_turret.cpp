@@ -19,6 +19,8 @@
 //==========================================
 namespace
 {
+	const float SEARCH_LENGTH = 300.0f;
+	const float AREA_LENGTH = 800.0f;
 	const float ATTACK_LENGTH = 200.0f;
 	const float MOVE_SPEED = 0.01f;
 	const float ATTACK_SPEED = 10.0f;
@@ -40,7 +42,8 @@ CEnemyTurret::CEnemyTurret(int nPriority) :
 	m_fActionCount(0.0f),
 	m_moveLock(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_fRotLock(0.0f),
-	m_pLimitArea(nullptr)
+	m_pLimitArea(nullptr),
+	bArea(false)
 {
 
 }
@@ -64,21 +67,6 @@ HRESULT CEnemyTurret::Init(void)
 	// HPの設定
 	m_pHPGauge = CHP_Gauge::Create(100.0f, GetLifeOrigin());
 
-	D3DXVECTOR3 pos = GetPosition();
-	CLimitErea::sLimitEreaInfo info = {};
-	info.fMinX = pos.x + -2000.0f;
-	info.fMaxX = pos.x + 2000.0f;
-	info.fMinZ = pos.z + -2000.0f;
-	info.fMaxZ = pos.z + 2000.0f;
-
-	if (m_pLimitArea != nullptr)
-	{
-		m_pLimitArea->Uninit();
-		m_pLimitArea = nullptr;
-	}
-
-	m_pLimitArea = CLimitErea::Create(info);
-
 	return S_OK;
 }
 
@@ -87,6 +75,12 @@ HRESULT CEnemyTurret::Init(void)
 //==========================================
 void CEnemyTurret::Uninit(void)
 {
+	//if (m_pLimitArea != nullptr)
+	//{
+	//	m_pLimitArea->Uninit();
+	//	m_pLimitArea = nullptr;
+	//}
+
 	// 終了処理
 	CEnemy::Uninit();
 }
@@ -96,6 +90,29 @@ void CEnemyTurret::Uninit(void)
 //==========================================
 void CEnemyTurret::Update(void)
 {
+	if (bArea == false)
+	{
+		if (CalcLenPlayer(SEARCH_LENGTH))
+		{
+			D3DXVECTOR3 pos = GetPosition();
+			CLimitErea::sLimitEreaInfo info = {};
+			info.fMinX = pos.x - AREA_LENGTH;
+			info.fMaxX = pos.x + AREA_LENGTH;
+			info.fMinZ = pos.z - AREA_LENGTH;
+			info.fMaxZ = pos.z + AREA_LENGTH;
+
+			if (m_pLimitArea != nullptr)
+			{
+				m_pLimitArea->Uninit();
+				m_pLimitArea = nullptr;
+			}
+
+			m_pLimitArea = CLimitErea::Create(info);
+
+			bArea = true;
+		}
+	}
+
 	// 死亡の判定
 	if (IsDeath() == true)
 	{// 死亡フラグが立っていたら
@@ -433,48 +450,6 @@ void CEnemyTurret::SetMoveRotation(void)
 //==========================================
 //  プレイヤーを探す判定
 //==========================================
-bool CEnemyTurret::SearchPlayer(float fLen)
-{
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 rot = GetRotation();
-	D3DXVECTOR3 posL = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//索敵扇の左点
-	D3DXVECTOR3 posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//索敵扇の右点
-
-														//float fRot = SEARCH_ROT * D3DX_PI / 180;
-	float fRot = 0.785f;
-
-
-	//プレイヤーの人数を把握
-
-	//一番近いやつを標的にする
-	for (int nCnt = 0; nCnt < mylib_const::MAX_PLAYER; nCnt++)
-	{
-		// プレイヤー情報
-		CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCnt);
-		if (pPlayer == NULL)
-		{
-			continue;
-		}
-	}
-
-
-
-	// プレイヤーの位置取得
-	//D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-
-	//// 一定範囲内の判定
-	//if (CollisionFan(pos, posL, posR, posPlayer, fRot))
-	//{
-	//	return true;
-	//}
-
-	return false;
-}
-
-//==========================================
-//  プレイヤーを探す判定
-//==========================================
 bool CEnemyTurret::TargetPlayer(float fLen)
 {
 	// 位置取得
@@ -510,6 +485,39 @@ bool CEnemyTurret::TargetPlayer(float fLen)
 	//{
 	//	return true;
 	//}
+
+	return false;
+}
+
+//==========================================
+//  プレイヤーとの距離を判定
+//==========================================
+bool CEnemyTurret::CalcLenPlayer(float fLen)
+{
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+
+	// プレイヤー情報
+	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
+	if (pPlayer == NULL)
+	{
+		return false;
+	}
+
+	// プレイヤーの位置取得
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+
+	// 二点間を繋ぐベクトルの算出
+	D3DXVECTOR3 vecToPlayer = pos - posPlayer;
+
+	// ベクトルの大きさの2乗を算出
+	float fLength = vecToPlayer.x * vecToPlayer.x + vecToPlayer.z * vecToPlayer.z;
+
+	// 一定範囲内の判定
+	if (fLen * fLen >= fLength)
+	{
+		return true;
+	}
 
 	return false;
 }

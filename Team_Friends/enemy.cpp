@@ -1042,6 +1042,7 @@ void CEnemy::FadeOut(void)
 
 	// フェードアウトのフレーム数
 	int nAllFrame = m_pMotion->GetMaxAllCount(MOTION_FADEOUT);
+	float fFrame = m_pMotion->GetFrameCount();
 
 	// モーションの情報取得
 	CMotion::Info aInfo = m_pMotion->GetInfo(m_pMotion->GetType());
@@ -1060,7 +1061,7 @@ void CEnemy::FadeOut(void)
 	m_nCntState++;
 
 	// 色設定
-	m_mMatcol.a = (float)m_nCntState / (float)nAllFrame;
+	m_mMatcol.a = 1.0f - ((float)m_nCntState / (float)nAllFrame);
 
 	if (m_nCntState >= nAllFrame)
 	{// 遷移カウンターがモーションを超えたら
@@ -1752,7 +1753,11 @@ void CEnemy::AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo)
 void CEnemy::Draw(void)
 {
 #if _DEBUG
-	if (m_mMatcol != D3DXCOLOR(1.0f, 1.0f, 1.0f, m_mMatcol.a))
+	if (m_state == STATE_FADEOUT)
+	{
+		CObjectChara::Draw(m_mMatcol.a);
+	}
+	else if (m_mMatcol != D3DXCOLOR(1.0f, 1.0f, 1.0f, m_mMatcol.a))
 	{
 		// オブジェクトキャラの描画
 		CObjectChara::Draw(m_mMatcol);

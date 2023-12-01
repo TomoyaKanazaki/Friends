@@ -1,6 +1,6 @@
 //==========================================
 //
-//  突撃敵(enemy_tackle.h)
+//  砲台中ボス敵(enemy_turret.h)
 //  Author : Kai Takada
 //
 //==========================================
@@ -31,13 +31,15 @@ private:
 	//モーション列挙
 	enum MOTION
 	{
-		MOTION_DEF = 0,		// ニュートラルモーション
-		MOTION_WALK,		// 移動モーション
-		MOTION_ATK,			// 攻撃モーション
-		MOTION_KNOCKBACK,	// やられモーション
-		MOTION_FADEOUT,		// 帰還モーション
-		MOTION_READY,		// 準備モーション
-		MOTION_AFTER,		// 硬直モーション
+		MOTION_DEF = 0,			// ニュートラルモーション
+		MOTION_KNOCKBACK,		// ダメージモーション
+		MOTION_FADEOUT,			// 撃破モーション
+		MOTION_ATK_MORTAR,		// 攻撃モーション(迫撃)
+		MOTION_READY_MORTAR,	// 準備モーション(迫撃)
+		MOTION_AFTER_MORTAR,	// 硬直モーション(迫撃)
+		MOTION_ATK_BEAM,		// 攻撃モーション(ビーム)
+		MOTION_READY_BEAM,		// 準備モーション(ビーム)
+		MOTION_AFTER_BEAM,		// 硬直モーション(ビーム)
 		MOTION_MAX
 	};
 
@@ -48,12 +50,22 @@ private:
 		ACTION_READY,		//準備行動
 		ACTION_ATTACK,		//攻撃行動
 		ACTION_AFTER,		//攻撃硬直
-		MAX
+		ACTION_MAX
+	};
+
+	// 攻撃列挙
+	enum ATTACK
+	{
+		ATTACK_NONE = 0,	//攻撃と無関係
+		ATTACK_BEAM= 0,		//ビーム
+		ATTACK_MORTAR,		//迫撃砲
+		ATTACK_MAX
 	};
 
 	// メンバ変数
-	ACTION m_Act; //行動状態
-	float m_fActionCount; // 移動カウンター
+	ACTION m_Act;	//行動状態
+	ATTACK m_Atk;	//攻撃状態
+	float m_fActionCount;	// 移動カウンター
 	D3DXVECTOR3 m_moveLock;	//固定移動量
 	float m_fRotLock;	//向き保存
 

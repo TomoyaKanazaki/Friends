@@ -14,7 +14,6 @@
 //==========================================================================
 // マクロ定義
 //==========================================================================
-#define RANKINGNUM_PLAYER	(5) // プレイヤーの数
 
 // 前方宣言
 
@@ -34,12 +33,12 @@ public:
 	void Update(void);
 
 	void Reset(void);				// リセット
-	void SetNowScore(int nScore, int nPlayer);	// 今回のスコア設定
-	int GetNowScore(int nPlayer);			// 今回のスコア取得
+	void SetNowScore(int nScore);	// 今回のスコア設定
+	int GetNowScore(void);			// 今回のスコア取得
 	static CRankingManager *Create(void);	// 生成処理
 	
 private:
-	int m_nNowScore[RANKINGNUM_PLAYER];	// 今回のスコア
+	int m_nNowScore;	// 今回のスコア
 };
 
 

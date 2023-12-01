@@ -40,6 +40,7 @@
 #include "object_circlegauge2D.h"
 #include "statuswindow.h"
 #include "collisionobject.h"
+#include "limitereamanager.h"
 
 // 派生先
 #include "tutorialplayer.h"
@@ -1324,21 +1325,46 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 	}
 
 
+	// エリア制限情報取得
+	CLimitEreaManager *pLimitManager = CGame::GetLimitEreaManager();
+	CLimitErea **ppLimit = pLimitManager->GetLimitErea();
 
+	// 総数取得
+	int nNumAll = pLimitManager->GetNumAll();
+	int i = -1, nCntErea = 0;
 
+	while (1)
+	{
+		if (nCntErea >= nNumAll)
+		{// 総数超えたら終わり
+			break;
+		}
 
-	// 位置取得
-	D3DXVECTOR3 posOld = GetPosition();
+		// インデックス加算
+		i++;
+		if (ppLimit[i] == NULL)
+		{
+			continue;
+		}
+		CLimitErea::sLimitEreaInfo info = ppLimit[i]->GetLimitEreaInfo();
 
-	//// 箱
-	//D3DXVECTOR3 FieldPos = CGame::GetElevation()->GetPosition();
-	//float fLen = CGame::GetElevation()->GetWidthLen();
-	//int nBlock = CGame::GetElevation()->GetWidthBlock();
-	//nBlock /= 2;
-	//if (pos.x + GetRadius() >= fLen * nBlock) { pos.x = fLen * nBlock - GetRadius(); }
-	//if (pos.x - GetRadius() <= -fLen * nBlock) { pos.x = -fLen * nBlock + GetRadius(); }
-	//if (pos.z + GetRadius() >= fLen * nBlock) { pos.z = fLen * nBlock - GetRadius(); }
-	//if (pos.z - GetRadius() <= -fLen * nBlock) { pos.z = -fLen * nBlock + GetRadius(); }
+		if (pos.x + GetRadius() >= info.fMaxX) { pos.x = info.fMaxX - GetRadius(); }
+		if (pos.x - GetRadius() <= info.fMinX) { pos.x = info.fMinX + GetRadius(); }
+		if (pos.z + GetRadius() >= info.fMaxZ) { pos.z = info.fMaxZ - GetRadius(); }
+		if (pos.z - GetRadius() <= info.fMinZ) { pos.z = info.fMinZ + GetRadius(); }
+
+		// エリアの数加算
+		nCntErea++;
+	}
+
+	D3DXVECTOR3 FieldPos = CGame::GetElevation()->GetPosition();
+	float fLen = CGame::GetElevation()->GetWidthLen();
+	int nBlock = CGame::GetElevation()->GetWidthBlock();
+	nBlock /= 2;
+	if (pos.x + GetRadius() >= fLen * nBlock) { pos.x = fLen * nBlock - GetRadius(); }
+	if (pos.x - GetRadius() <= -fLen * nBlock) { pos.x = -fLen * nBlock + GetRadius(); }
+	if (pos.z + GetRadius() >= fLen * nBlock) { pos.z = fLen * nBlock - GetRadius(); }
+	if (pos.z - GetRadius() <= -fLen * nBlock) { pos.z = -fLen * nBlock + GetRadius(); }
 
 	// 向き設定
 	SetRotation(rot);

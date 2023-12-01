@@ -438,6 +438,9 @@
     <ClCompile Include="enemy_boss.cpp">
       <Filter>enemy</Filter>
     </ClCompile>
+    <ClCompile Include="enemy_turret.cpp">
+      <Filter>enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -786,6 +789,9 @@
       <Filter>ヘッダー ファイル\mode\title</Filter>
     </ClInclude>
     <ClInclude Include="enemy_boss.h">
+      <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_turret.h">
       <Filter>enemy</Filter>
     </ClInclude>
   </ItemGroup>

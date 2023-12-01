@@ -18,7 +18,7 @@ MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyboss.txt			# [0]ボス
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [1]蝶
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [2]徘徊
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [3]メタルスライム
-MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [3]突撃猪
+MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [4]突撃猪
 
 #===================================================================================================
 # 敵の情報
@@ -63,9 +63,30 @@ PATTERNSET
 	FIXEDMOVE = 0		# 一定の動きの種類
 	
 	ENEMYSET
+		TYPE = 1		# キャラの種類
+		INDEX = 0
+		POS = 0.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE = 2		# キャラの種類
+		INDEX = 0
+		POS = 400.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE = 3		# キャラの種類
+		INDEX = 0
+		POS = 800.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+	
+	ENEMYSET
 		TYPE = 4		# キャラの種類
 		INDEX = 0
-		POS = -400.00 0.00 0.00
+		POS = 1200.00 0.00 0.00
 		STARTFRAME = 0		# 初期フレーム
 	END_ENEMYSET
 		

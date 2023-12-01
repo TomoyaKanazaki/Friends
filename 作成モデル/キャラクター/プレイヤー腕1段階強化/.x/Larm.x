@@ -1657,7 +1657,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "arm_UV_Yellow.jpg";
+    "data\\TEXTURE\\player\\pUP_arm01\\arm_UV_Yellow.jpg";
    }
   }
  }

@@ -65,10 +65,10 @@ namespace
 			"data\\TEXTURE\\player\\init\\init_UV_Yellow.jpg",
 		},
 		{// 変更タグ1(腕)
-			"data\\TEXTURE\\player\\pUP_arm01\\init_UV.jpg",
-			"data\\TEXTURE\\player\\pUP_arm01\\init_UV_Blue.jpg",
-			"data\\TEXTURE\\player\\pUP_arm01\\init_UV_Green.jpg",
-			"data\\TEXTURE\\player\\pUP_arm01\\init_UV_Yellow.jpg",
+			"data\\TEXTURE\\player\\pUP_arm01\\arm_UV_Red.jpg",
+			"data\\TEXTURE\\player\\pUP_arm01\\arm_UV_Blue.jpg",
+			"data\\TEXTURE\\player\\pUP_arm01\\arm_UV_Green.jpg",
+			"data\\TEXTURE\\player\\pUP_arm01\\arm_UV_Yellow.jpg",
 		},
 		{// 変更タグ2(脚)
 			"data\\TEXTURE\\player\\pUP_leg01\\feet_UV_Red.jpg",

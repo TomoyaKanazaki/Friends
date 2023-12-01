@@ -48,7 +48,7 @@ private:
 
 	CMeshWall *m_pMeshWall[mylib_const::SHAPE_LIMITEREA];	// メッシュウォールのオブジェクト
 	sLimitEreaInfo m_sLimitEreaInfo;	// エリア制限情報
-	int m_nIdxEreaManager;			// エリア制限マネージャのインデックス番号
+	int m_nIdxEreaManager;				// エリア制限マネージャのインデックス番号
 };
 
 

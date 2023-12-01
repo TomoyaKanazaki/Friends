@@ -1145,7 +1145,7 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 	m_bLandField = false;
 	m_bHitWall = false;			// 壁の当たり判定
 
-								// 高さ取得
+	// 高さ取得
 	if (m_state != STATE_KNOCKBACK && m_state != STATE_DMG && m_state != STATE_DEAD && m_state != STATE_FADEOUT)
 	{
 		fHeight = CManager::GetInstance()->GetScene()->GetElevation()->GetHeight(pos, bLand);
@@ -1235,9 +1235,6 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 			}
 		}
 	}
-
-
-
 
 	// オブジェクト取得
 	CObjectX *pObjX = pStage->GetInjectionTable();
@@ -1356,15 +1353,6 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 		// エリアの数加算
 		nCntErea++;
 	}
-
-	D3DXVECTOR3 FieldPos = CGame::GetElevation()->GetPosition();
-	float fLen = CGame::GetElevation()->GetWidthLen();
-	int nBlock = CGame::GetElevation()->GetWidthBlock();
-	nBlock /= 2;
-	if (pos.x + GetRadius() >= fLen * nBlock) { pos.x = fLen * nBlock - GetRadius(); }
-	if (pos.x - GetRadius() <= -fLen * nBlock) { pos.x = -fLen * nBlock + GetRadius(); }
-	if (pos.z + GetRadius() >= fLen * nBlock) { pos.z = fLen * nBlock - GetRadius(); }
-	if (pos.z - GetRadius() <= -fLen * nBlock) { pos.z = -fLen * nBlock + GetRadius(); }
 
 	// 向き設定
 	SetRotation(rot);
@@ -1522,7 +1510,7 @@ bool CPlayer::GiveStatus(CGameManager::eStatus status)
 	switch (status)
 	{
 	case CGameManager::STATUS_POWER:
-		if (m_sStatus.nPower <= MAX_BUFFSTATUS)
+		if (m_sStatus.nPower < MAX_BUFFSTATUS)
 		{
 			m_sStatus.nPower++;
 			bGet = true;
@@ -1531,7 +1519,7 @@ bool CPlayer::GiveStatus(CGameManager::eStatus status)
 		break;
 
 	case CGameManager::STATUS_SPEED:
-		if (m_sStatus.nSpeed <= MAX_BUFFSTATUS)
+		if (m_sStatus.nSpeed < MAX_BUFFSTATUS)
 		{
 			m_sStatus.nSpeed++;
 			bGet = true;
@@ -1540,7 +1528,7 @@ bool CPlayer::GiveStatus(CGameManager::eStatus status)
 		break;
 
 	case CGameManager::STATUS_LIFE:
-		if (m_sStatus.nLife <= MAX_BUFFSTATUS)
+		if (m_sStatus.nLife < MAX_BUFFSTATUS)
 		{
 			m_sStatus.nLife++;
 			bGet = true;
@@ -1548,11 +1536,12 @@ bool CPlayer::GiveStatus(CGameManager::eStatus status)
 		break;
 	}
 
+	// 割合
 	float fRate = (float)nStatus / (float)MAX_BUFFSTATUS;
 
 	// バフ計算
-	m_sStatus.fPowerBuff = 1.0f + ((float)m_sStatus.nPower * 0.05f);
-	m_sStatus.fSpeedBuff = 1.0f + ((float)m_sStatus.nSpeed * 0.025f);
+	m_sStatus.fPowerBuff = 1.0f + ((float)m_sStatus.nPower * 0.01f);
+	m_sStatus.fSpeedBuff = 1.0f + ((float)m_sStatus.nSpeed * 0.01f);
 	m_sStatus.fLifeBuff = 1.0f + ((float)m_sStatus.nLife * 0.1f);
 
 	if (status == CGameManager::STATUS_POWER || status == CGameManager::STATUS_SPEED)

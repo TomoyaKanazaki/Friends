@@ -9,7 +9,7 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------
 # キャラクター数
 #------------------------------------------------------------------
-NUM_CHARACTER = 5
+NUM_CHARACTER = 6
 
 #------------------------------------------------------------------
 # キャラクターファイル名
@@ -18,8 +18,8 @@ MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyboss.txt			# [0]ボス
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [1]蝶
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [2]徘徊
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [3]メタルスライム
-MOTION_FILENAME = data/TEXT/character/enemy/motion_enemytackle.txt			# [3]突撃猪
-MOTION_FILENAME = data/TEXT/character/enemy/motion_enemytackle.txt			# [3]突撃猪
+MOTION_FILENAME = data/TEXT/character/enemy/motion_enemytackle.txt			# [4]突撃猪
+MOTION_FILENAME = data/TEXT/character/enemy/motion_enemytackle.txt			# [5]中ボス-砲台型
 
 #===================================================================================================
 # 敵の情報
@@ -90,7 +90,14 @@ PATTERNSET
 		POS = 1200.00 0.00 0.00
 		STARTFRAME = 0		# 初期フレーム
 	END_ENEMYSET
-		
+	
+	ENEMYSET
+		TYPE = 5		# キャラの種類
+		INDEX = 0
+		POS = 1200.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+				
 END_PATTERNSET
 
 #------------------------------------------------------------------
@@ -118,6 +125,22 @@ PATTERNSET
 	
 	ENEMYSET
 		TYPE = 4		# キャラの種類
+		INDEX = 0
+		POS = 0.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+	
+END_PATTERNSET
+
+#------------------------------------------------------------------
+# [5]中ボス-砲台型
+#------------------------------------------------------------------
+PATTERNSET
+	
+	FIXEDMOVE = 0		# 一定の動きの種類
+	
+	ENEMYSET
+		TYPE = 5		# キャラの種類
 		INDEX = 0
 		POS = 0.00 0.00 0.00
 		STARTFRAME = 0		# 初期フレーム

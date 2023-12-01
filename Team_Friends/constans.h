@@ -32,6 +32,7 @@ namespace mylib_const
 	const int MAX_FIXEDMOVE_INFO = 16;	// 一定の動き情報最大数
 	const int MAX_CAMERAAXIS = 62;		// カメラ軸の最大数
 	const int MAX_BULLET = 256;			// 弾の最大数
+	const int MAX_LIMITEREA = 16;		// エリア制限の最大数
 	const int MAX_STAGE = 64;			// ステージの最大数
 	const float GRAVITY = 0.7f;			// 重力
 	const int MAX_VTX = 51200;			// 頂点の最大数
@@ -40,6 +41,7 @@ namespace mylib_const
 	const int DMG_SLASH = 2;			// 斬撃の威力
 	const int BULLETAPPEARANCE_NUM = 2;	// 見た目の弾の数
 	const int MAX_PLAYER = 4;			// プレイヤーの数
+	const int SHAPE_LIMITEREA = 4;		// エリア制限の多角形
 	const D3DXCOLOR DEFAULT_COLOR = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// デフォルトの色
 	const D3DXCOLOR FIELDCOLOR_01 = D3DXCOLOR(0.6f, 0.4f, 0.1f, 1.0f);	// フィールドの色
 	const D3DXVECTOR3 DEFAULT_VECTOR3 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// Vector3のデフォルト値

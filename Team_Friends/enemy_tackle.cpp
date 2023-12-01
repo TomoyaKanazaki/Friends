@@ -356,6 +356,7 @@ void CEnemyTackle::Attack(void)
 		return;
 	}
 
+	m_moveLock.y = move.y;
 	SetMove(m_moveLock);
 }
 

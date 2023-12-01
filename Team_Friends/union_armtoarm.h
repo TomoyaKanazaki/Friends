@@ -43,6 +43,7 @@ protected:
 		MOTION_DEAD,			// 死亡モーション
 		MOTION_JUMP,			// ジャンプ
 		MOTION_FALL,			// 落下中
+		MOTION_APPEARANCE,		// 出現
 		MOTION_SUPERATK,		// 必殺技
 		MOTION_MAX
 	};
@@ -62,6 +63,7 @@ private:
 	// メンバ関数
 	void ControllLeg(int nIdx);			// 脚操作
 	void ControllATK(int nIdx, int nLoop);		// 攻撃操作
+	void Appearance(void) override;	// 出現
 
 	// メンバ変数
 	bool m_bSuperATK;	// 必殺技の判定

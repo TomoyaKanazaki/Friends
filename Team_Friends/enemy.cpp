@@ -37,6 +37,7 @@
 #include "enemy_fly.h"
 #include "enemy_roaming.h"
 #include "enemy_escape.h"
+#include "enemy_tackle.h"
 
 //==========================================================================
 // マクロ定義
@@ -124,6 +125,10 @@ CEnemy *CEnemy::Create(int nIdx, const char *pFileName, D3DXVECTOR3 pos, TYPE ty
 
 		case TYPE_ESCAPE:
 			pEnemy = DEBUG_NEW CEnemyEscape;
+			break;
+
+		case TYPE_TACKLE:
+			pEnemy = DEBUG_NEW CEnemyTackle;
 			break;
 
 		case TYPE_FLY:
@@ -411,7 +416,7 @@ void CEnemy::Update(void)
 
 	// 当たり判定
 	Collision();
-	CollisionPlayer();
+	//CollisionPlayer();
 
 	// 死亡の判定
 	if (IsDeath() == true)
@@ -430,6 +435,9 @@ void CEnemy::Update(void)
 	{// 死亡フラグが立っていたら
 		return;
 	}
+
+	// 行動更新
+	UpdateAction();
 
 	// 攻撃処理
 	Atack();
@@ -705,6 +713,12 @@ bool CEnemy::Hit(const int nValue)
 			// 爆発再生
 			CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_ENEMYEXPLOSION);
 
+			D3DXVECTOR3 move = GetMove();
+			move.x = Random(-5, 5) + 20.0f;
+			move.y = Random(0, 5) + 15.0f;
+			move.z = Random(-5, 5) + 20.0f;
+			SetMove(move);
+
 			// 当たった
 			return true;
 		}
@@ -755,6 +769,14 @@ bool CEnemy::Hit(const int nValue)
 // 種類別更新処理
 //==========================================================================
 void CEnemy::UpdateByType(void)
+{
+
+}
+
+//==========================================================================
+// 行動更新
+//==========================================================================
+void CEnemy::UpdateAction(void)
 {
 
 }
@@ -1020,6 +1042,7 @@ void CEnemy::FadeOut(void)
 
 	// フェードアウトのフレーム数
 	int nAllFrame = m_pMotion->GetMaxAllCount(MOTION_FADEOUT);
+	float fFrame = m_pMotion->GetFrameCount();
 
 	// モーションの情報取得
 	CMotion::Info aInfo = m_pMotion->GetInfo(m_pMotion->GetType());
@@ -1038,7 +1061,7 @@ void CEnemy::FadeOut(void)
 	m_nCntState++;
 
 	// 色設定
-	m_mMatcol.a = (float)m_nCntState / (float)nAllFrame;
+	m_mMatcol.a = 1.0f - ((float)m_nCntState / (float)nAllFrame);
 
 	if (m_nCntState >= nAllFrame)
 	{// 遷移カウンターがモーションを超えたら
@@ -1730,7 +1753,11 @@ void CEnemy::AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo)
 void CEnemy::Draw(void)
 {
 #if _DEBUG
-	if (m_mMatcol != D3DXCOLOR(1.0f, 1.0f, 1.0f, m_mMatcol.a))
+	if (m_state == STATE_FADEOUT)
+	{
+		CObjectChara::Draw(m_mMatcol.a);
+	}
+	else if (m_mMatcol != D3DXCOLOR(1.0f, 1.0f, 1.0f, m_mMatcol.a))
 	{
 		// オブジェクトキャラの描画
 		CObjectChara::Draw(m_mMatcol);

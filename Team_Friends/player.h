@@ -57,7 +57,7 @@ public:
 	bool Hit(const int nValue);	// ヒット処理
 	virtual int GetState(void) override;
 
-	void GiveStatus(CGameManager::eStatus status);	// ステータス付与
+	bool GiveStatus(CGameManager::eStatus status);	// ステータス付与
 	void SetState(STATE state, int nCntState = 0);	// 状態設定
 	static CPlayer *Create(int nIdx);	// 生成
 	void UninitByMode(void);	// モード別終了
@@ -101,6 +101,7 @@ protected:
 
 	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
 	void SetEvolusion(CGameManager::eStatus statusType);	// 進化先設定
+	void BindByPlayerIdxTexture(void);	// プレイヤーインデックス毎のテクスチャ設定
 
 	bool m_bJump;				// ジャンプ中かどうか
 	bool m_bLandOld;			// 過去の着地情報
@@ -138,6 +139,7 @@ private:
 	D3DXVECTOR3 m_posKnokBack;	// ノックバックの位置
 	D3DXVECTOR3 m_KnokBackMove;	// ノックバックの移動量
 	int m_nCntState;			// 状態遷移カウンター
+	int m_nEvolveType;			// 進化先の種類
 	CTargetPoint *m_pTargetP;	// 目標の地点
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定

@@ -5,12 +5,35 @@
 #--------------------------------[Stage0]-----------------------------
 STAGESET
 	BASESET
-		PATTERN = 3
-		POS = 0.00 0.00 0.00
+		PATTERN = 2
+		POS = 2001.86 0.00 -180.66
+		RUSH = 0
+	END_BASESET
+	
+	BASESET
+		PATTERN = 2
+		POS = 2301.86 0.00 -180.66
+		RUSH = 0
+	END_BASESET
+	
+	BASESET
+		PATTERN = 2
+		POS = 2601.86 0.00 -180.66
+		RUSH = 0
+	END_BASESET
+	
+	BASESET
+		PATTERN = 2
+		POS = 2901.86 0.00 -180.66
+		RUSH = 0
+	END_BASESET
+	
+	BASESET
+		PATTERN = 2
+		POS = 3201.86 0.00 -180.66
 		RUSH = 0
 	END_BASESET
 
 END_STAGESET
-
 
 END_SCRIPT		# Ç±ÇÃçsÇÕê‚ëŒè¡Ç≥Ç»Ç¢Ç±Ç∆ÅI

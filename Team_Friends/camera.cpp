@@ -837,8 +837,8 @@ void CCamera::SetCameraRGame(void)
 		m_fDiffHeight += (m_fDiffHeightDest - m_fDiffHeight) * 0.01f;
 
 		// 注視点の代入処理
-		m_posRDest.x = (m_TargetPos.x + sinf(D3DX_PI + m_TargetRot.y) * 150.0f);
-		m_posRDest.z = (m_TargetPos.z + cosf(D3DX_PI + m_TargetRot.y) * 150.0f);
+		m_posRDest.x = (m_TargetPos.x + sinf(D3DX_PI + m_TargetRot.y) * 25.0f);
+		m_posRDest.z = (m_TargetPos.z + cosf(D3DX_PI + m_TargetRot.y) * 25.0f);
 		m_posRDest.y = fYcamera - m_fDiffHeight;
 
 		// 補正する
@@ -896,7 +896,7 @@ void CCamera::SetCamera(void)
 								D3DXToRadian(45.0f),	// 視野角
 								(float)m_viewport.Width / (float)m_viewport.Height,	// アスペクト比
 								10.0f,		// 奥行きの制限
-								20000.0f);	// 奥行きの制限
+								30000.0f);	// 奥行きの制限
 
 	// プロジェクションマトリックスの設定
 	pDevice->SetTransform(D3DTS_PROJECTION, &m_mtxProjection);

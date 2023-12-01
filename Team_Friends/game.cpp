@@ -29,12 +29,14 @@
 #include "player.h"
 #include "player_union.h"
 #include "enemybase.h"
+#include "limitereamanager.h"
 
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
 CScore *CGame::m_pScore = NULL;					// スコアのオブジェクト
 CBulletManager *CGame::m_pBulletManager = NULL;		// 弾マネージャのオブジェクト
+CLimitEreaManager *CGame::m_pLimitEreaManager = NULL;	// エリア制限マネージャのオブジェクト
 CEditEnemyBase *CGame::m_pEditEnemyBase = NULL;		// 敵の拠点エディター
 CStage *CGame::m_pStage = NULL;						// ステージのオブジェクト
 CGameManager *CGame::m_pGameManager = NULL;			// ゲームマネージャのオブジェクト
@@ -127,6 +129,11 @@ HRESULT CGame::Init(void)
 	//**********************************
 	m_pBulletManager = CBulletManager::Create();
 
+	//**********************************
+	// エリア制限マネージャ
+	//**********************************
+	m_pLimitEreaManager = CLimitEreaManager::Create();
+
 	// ステージ
 	m_pStage = CStage::Create("data\\TEXT\\stage\\info.txt");
 
@@ -138,13 +145,17 @@ HRESULT CGame::Init(void)
 	// BGM再生
 	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_GAME);
 
-	// 最初から簡易合体作成したい場合
-#if 0
-	CPlayerUnion::Create(CPlayerUnion::TYPE_LEGtoARM);
-	CPlayerUnion::Create(CPlayerUnion::TYPE_ARMtoARM);
-#endif
-
+	// 簡易合体コア
 	CCompactCore::Create(D3DXVECTOR3(500.0f, 400.0f, 0.0f));
+
+	CLimitErea::sLimitEreaInfo info;
+	info.fMaxX = 8200.0f;
+	info.fMaxZ = 785.0f;
+	info.fMinX = -785.0f;
+	info.fMinZ = -785.0f;
+	CLimitErea *pLimitErea = CLimitErea::Create(info);
+	pLimitErea->SetEnableDisp(false);
+	//CMeshWall::Create(D3DXVECTOR3(0.0f, 0.0f, 1500.0f), mylib_const::DEFAULT_VECTOR3, 200.0f, 200.0f, 8, 1);
 
 	// 成功
 	return S_OK;
@@ -174,6 +185,14 @@ void CGame::Uninit(void)
 		m_pBulletManager->Uninit();
 		delete m_pBulletManager;
 		m_pBulletManager = NULL;
+	}
+
+	if (m_pLimitEreaManager != NULL)
+	{
+		// 終了させる
+		m_pLimitEreaManager->Uninit();
+		delete m_pLimitEreaManager;
+		m_pLimitEreaManager = NULL;
 	}
 
 	if (m_pEditEnemyBase != NULL)
@@ -351,6 +370,14 @@ CScore *CGame::GetScore(void)
 CBulletManager *CGame::GetBulletManager(void)
 {
 	return m_pBulletManager;
+}
+
+//==========================================================================
+// エリア制限マネージャマネージャの取得
+//==========================================================================
+CLimitEreaManager *CGame::GetLimitEreaManager(void)
+{
+	return m_pLimitEreaManager;
 }
 
 //==========================================================================

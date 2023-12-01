@@ -176,7 +176,7 @@ HRESULT CPlayerUnion::Init(void)
 	// 種類の設定
 	SetType(TYPE_PLAYER);
 
-	m_state = STATE_NONE;	// 状態
+	m_state = STATE_APPEARANCE;	// 状態
 	m_nCntState = 0;		// 状態遷移カウンター
 	m_bLandOld = true;		// 前回の着地状態
 	m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
@@ -191,7 +191,6 @@ HRESULT CPlayerUnion::Init(void)
 	// キャラ作成
 	CreateParts();
 
-
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
 
@@ -202,6 +201,7 @@ HRESULT CPlayerUnion::Init(void)
 	m_pShadow = CShadow::Create(pos, 50.0f);
 
 	SetPosition(D3DXVECTOR3(-600.0f, 500.0f, 0.0f));
+
 	return S_OK;
 }
 
@@ -210,11 +210,9 @@ HRESULT CPlayerUnion::Init(void)
 //==========================================================================
 HRESULT CPlayerUnion::CreateParts(void)
 {
-	HRESULT hr;
-
-
 	// 複数キャラ読み込み
 	ReadMultiCharacter("data\\TEXT\\multicharacter\\SuperUnion.txt");
+
 	return S_OK;
 }
 
@@ -360,7 +358,6 @@ void CPlayerUnion::Update(void)
 		// モーションの設定処理
 		MotionSet(i);
 	}
-
 
 	// モーション更新
 	for (int i = 0; i < PARTS_MAX; i++)
@@ -982,8 +979,9 @@ void CPlayerUnion::Atack(int nIdx)
 			// 武器の位置
 			D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_pObjChara[nIdx]->GetModel(), *aInfo.AttackInfo[nCntAttack]);
 
+#if _DEBUG
 			CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
-
+#endif
 #if 1
 			// 敵取得
 			CEnemy **ppEnemy = CGame::GetEnemyManager()->GetEnemy();
@@ -1177,7 +1175,7 @@ bool CPlayerUnion::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 	if (fHeight > pos.y)
 	{// 地面の方が自分より高かったら
 
-	 // 地面の高さに補正
+		// 地面の高さに補正
 		pos.y = fHeight;
 		m_bLandField = true;
 
@@ -1535,6 +1533,10 @@ void CPlayerUnion::UpdateState(void)
 	case STATE_KNOCKBACK:
 		KnockBack();
 		break;
+
+	case STATE_APPEARANCE:
+		Appearance();
+		break;
 	}
 }
 
@@ -1847,6 +1849,29 @@ void CPlayerUnion::KnockBack(void)
 
 	// 向き設定
 	SetRotation(rot);
+}
+
+//==========================================================================
+// 出現
+//==========================================================================
+void CPlayerUnion::Appearance(void)
+{
+	int nType = m_pMotion[0]->GetType();
+	if (nType == MOTION_APPEARANCE && m_pMotion[0]->IsFinish() == true)
+	{// 登場演出が終わってたら
+		m_nCntState = 0;
+		m_state = STATE_NONE;
+	}
+
+	for (int i = 0; i < PARTS_MAX; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+		// 登場モーション設定
+		m_pMotion[i]->Set(MOTION_APPEARANCE);
+	}
 }
 
 //==========================================================================

@@ -46,6 +46,7 @@ private:
 		MOTION_MAX
 	}MOTION;
 
+	void UpdateAction(void) override;	// 行動更新
 	void ProcessLanding(void) override;	// 着地時処理
 	void AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo) override;	// 攻撃時処理
 	void ChaseMove(float fMove);	// 追い掛け移動

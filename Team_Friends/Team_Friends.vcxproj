@@ -189,10 +189,13 @@
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemybase.cpp" />
     <ClCompile Include="enemymanager.cpp" />
+    <ClCompile Include="enemy_boss.cpp" />
     <ClCompile Include="enemy_escape.cpp" />
     <ClCompile Include="enemy_fly.cpp" />
     <ClCompile Include="enemy_papion.cpp" />
     <ClCompile Include="enemy_roaming.cpp" />
+    <ClCompile Include="enemy_tackle.cpp" />
+    <ClCompile Include="enemy_turret.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="fog.cpp" />
@@ -206,6 +209,8 @@
     <ClCompile Include="instantfade.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="light.cpp" />
+    <ClCompile Include="limitarea.cpp" />
+    <ClCompile Include="limitereamanager.cpp" />
     <ClCompile Include="list.cpp" />
     <ClCompile Include="listmanager.cpp" />
     <ClCompile Include="logo.cpp" />
@@ -275,6 +280,7 @@
     <ClCompile Include="union_bodytoarm.cpp" />
     <ClCompile Include="union_bodytoleg.cpp" />
     <ClCompile Include="union_legtoarm.cpp" />
+    <ClCompile Include="union_title.cpp" />
     <ClCompile Include="Xload.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -309,10 +315,13 @@
     <ClInclude Include="enemy.h" />
     <ClInclude Include="enemybase.h" />
     <ClInclude Include="enemymanager.h" />
+    <ClInclude Include="enemy_boss.h" />
     <ClInclude Include="enemy_escape.h" />
     <ClInclude Include="enemy_fly.h" />
     <ClInclude Include="enemy_papion.h" />
     <ClInclude Include="enemy_roaming.h" />
+    <ClInclude Include="enemy_tackle.h" />
+    <ClInclude Include="enemy_turret.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="fog.h" />
@@ -326,6 +335,8 @@
     <ClInclude Include="instantfade.h" />
     <ClInclude Include="item.h" />
     <ClInclude Include="light.h" />
+    <ClInclude Include="limitarea.h" />
+    <ClInclude Include="limitereamanager.h" />
     <ClInclude Include="list.h" />
     <ClInclude Include="listmanager.h" />
     <ClInclude Include="logo.h" />
@@ -391,6 +402,7 @@
     <ClInclude Include="union_bodytoarm.h" />
     <ClInclude Include="union_bodytoleg.h" />
     <ClInclude Include="union_legtoarm.h" />
+    <ClInclude Include="union_title.h" />
     <ClInclude Include="Xload.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

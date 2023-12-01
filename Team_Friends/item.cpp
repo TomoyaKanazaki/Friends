@@ -309,13 +309,15 @@ void CItem::CollisionPlayer(void)
 		{// 当たっていたら
 
 			// ステータス付与
-			pPlayer->GiveStatus(m_type);
+			if (pPlayer->GiveStatus(m_type))
+			{// 取得できた場合
 
-			// パーティクル生成
-			my_particle::Create(pos, my_particle::TYPE_ENEMY_FADE);
+				// パーティクル生成
+				my_particle::Create(pos, my_particle::TYPE_ENEMY_FADE);
 
-			// 終了処理
-			Uninit();
+				// 終了処理
+				Uninit();
+			}
 			continue;
 		}
 	}

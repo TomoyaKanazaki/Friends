@@ -134,7 +134,7 @@ void CRanking::Update(void)
 		if (m_bAllArrival == true)
 		{
 			// ƒ‚[ƒhÝ’è
-			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
+			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
 		}
 
 		else

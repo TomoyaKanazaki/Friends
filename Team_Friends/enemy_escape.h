@@ -56,6 +56,7 @@ private:
 	float m_fCntEscape; // 逃走カウンター
 
 	// メンバ関数
+	void UpdateAction(void) override;	// 行動更新
 	void ActionSet(void); // 行動の設定
 	void Move(void); // 移動
 	void Escape(void); // 逃走

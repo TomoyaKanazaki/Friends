@@ -123,6 +123,9 @@ HRESULT CObjectChara::SetCharacter(const std::string pTextFile)
 				// スコア加算量
 				m_nAddScore = m_aLoadData[nCntData].nAddScore;
 
+				// モーションスタートのインデックス
+				m_nMotionStartIdx = m_aLoadData[nCntData].nMotionStartIdx;
+
 				// ファイルのインデックス番号
 				m_nIdxFile = nCntData;
 
@@ -290,6 +293,45 @@ void CObjectChara::ChangeObject(int nSwitchType)
 	int nIdx = GetIdxFile();
 	Load LoadData = GetLoadData(nIdx);
 
+#if _DEBUG
+	for (int nCntParts = 0; nCntParts < LoadData.nNumModel; nCntParts++)
+	{// パーツ分繰り返し
+
+		if (m_apModel[nCntParts] != NULL)
+		{
+			// モデルの終了処理
+			m_apModel[nCntParts]->Uninit();
+			delete m_apModel[nCntParts];
+			m_apModel[nCntParts] = NULL;
+		}
+
+		// モデル作成
+		if (m_apModel[nCntParts] == NULL)
+		{
+			m_apModel[nCntParts] = CModel::Create(
+				LoadData.LoadData[LoadData.LoadData[nCntParts].nType].pModelFile.c_str(),
+				LoadData.LoadData[nCntParts].pos,
+				LoadData.LoadData[nCntParts].rot);
+		}
+
+		// 親モデルの設定
+		if (LoadData.LoadData[nCntParts].nParent >= 0)
+		{
+			// 親のモデルオブジェクト設定
+			m_apModel[nCntParts]->SetParent(m_apModel[LoadData.LoadData[nCntParts].nParent]);
+		}
+		else
+		{// 自分が親の時
+			m_apModel[nCntParts]->SetParent(NULL);
+		}
+
+		if (LoadData.LoadData[nCntParts].nStart != 1)
+		{
+			ChangeObject(nCntParts, -1);
+		}
+	}
+#endif
+
 	// モデルの切り替え
 	for (int nCntParts = 0; nCntParts < LoadData.nNumModel; nCntParts++)
 	{// パーツ分繰り返し
@@ -302,7 +344,6 @@ void CObjectChara::ChangeObject(int nSwitchType)
 		// 削除するインデックス番号
 		int nDeleteIdx = LoadData.LoadData[nCntParts].nIDSwitchModel;
 
-
 		if (nDeleteIdx >= 0 && m_apModel[nDeleteIdx] != NULL)
 		{// NULLじゃなかったら
 
@@ -311,8 +352,6 @@ void CObjectChara::ChangeObject(int nSwitchType)
 			delete m_apModel[nDeleteIdx];
 			m_apModel[nDeleteIdx] = NULL;
 		}
-
-
 
 		// 生成するインデックス番号
 		int nNewIdx = nDeleteIdx;

@@ -32,6 +32,7 @@ CModel::CModel(int nPriority)
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 向き
 	m_rotOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 向き
 	m_nIdxXFile = 0;								// Xファイルのインデックス番号
+	m_nIdxTexture = NULL;							// テクスチャのインデックス番号
 	m_pParent = NULL;								// 親モデルのポインタ
 	m_nNumAll++;									// 総数加算
 }
@@ -51,6 +52,32 @@ void CModel::BindXData(int nIdxXFile)
 {
 	// 情報割り当て
 	m_nIdxXFile = nIdxXFile;
+
+	// テクスチャ割り当て
+	BindTexture();
+}
+
+//==========================================================================
+// テクスチャ割り当て
+//==========================================================================
+void CModel::BindTexture(void)
+{
+	if (m_nIdxTexture != NULL)
+	{
+		delete[] m_nIdxTexture;
+	}
+
+	// Xファイルのデータ取得
+	CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(m_nIdxXFile);
+
+	// マテリアル分メモリ確保
+	m_nIdxTexture = DEBUG_NEW int[(int)pXData->dwNumMat];
+
+	// テクスチャのインデックス番号
+	for (int i = 0; i < (int)pXData->dwNumMat; i++)
+	{
+		m_nIdxTexture[i] = pXData->nIdxTexture[i];
+	}
 }
 
 //==========================================================================
@@ -126,6 +153,9 @@ HRESULT CModel::Init(const char *pFileName)
 
 	// 全頂点チェック
 	CheckVtx(GetRotation().y, &pXData->vtxMax, &pXData->vtxMin, pXData->pMesh, pXData->pVtxBuff);
+
+	// テクスチャ割り当て
+	BindTexture();
 	return S_OK;
 }
 
@@ -139,6 +169,10 @@ void CModel::Uninit(void)
 	//{
 	//	m_pParent = NULL;
 	//}
+	if (m_nIdxTexture != NULL)
+	{
+		delete[] m_nIdxTexture;
+	}
 }
 
 //==========================================================================
@@ -241,7 +275,7 @@ void CModel::Draw(void)
 		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 		// テクスチャの設定
-		pDevice->SetTexture(0, CManager::GetInstance()->GetTexture()->GetAdress(pXData->nIdxTexture[nCntMat]));
+		pDevice->SetTexture(0, CManager::GetInstance()->GetTexture()->GetAdress(m_nIdxTexture[nCntMat]));
 
 		// パーツの描画
 		pXData->pMesh->DrawSubset(nCntMat);
@@ -287,7 +321,7 @@ void CModel::Draw(D3DXCOLOR col)
 		pDevice->SetMaterial(&matNow.MatD3D);
 
 		// テクスチャの設定
-		pDevice->SetTexture(0, CManager::GetInstance()->GetTexture()->GetAdress(pXData->nIdxTexture[nCntMat]));
+		pDevice->SetTexture(0, CManager::GetInstance()->GetTexture()->GetAdress(m_nIdxTexture[nCntMat]));
 
 		// パーツの描画
 		pXData->pMesh->DrawSubset(nCntMat);
@@ -342,7 +376,7 @@ void CModel::Draw(float fAlpha)
 		pDevice->SetMaterial(&matNow.MatD3D);
 
 		// テクスチャの設定
-		pDevice->SetTexture(0, CManager::GetInstance()->GetTexture()->GetAdress(pXData->nIdxTexture[nCntMat]));
+		pDevice->SetTexture(0, CManager::GetInstance()->GetTexture()->GetAdress(m_nIdxTexture[nCntMat]));
 
 		// パーツの描画
 		pXData->pMesh->DrawSubset(nCntMat);
@@ -350,6 +384,22 @@ void CModel::Draw(float fAlpha)
 
 	// 保存していたマテリアルを戻す
 	pDevice->SetMaterial(&matDef);
+}
+
+//==========================================================================
+// テクスチャのインデックス割り当て
+//==========================================================================
+void CModel::SetIdxTexture(int i, int nIdx)
+{
+	m_nIdxTexture[i] = nIdx;
+}
+
+//==========================================================================
+// テクスチャインデックス番号割り当て
+//==========================================================================
+int CModel::GetIdxTexture(int nIdx)
+{
+	return m_nIdxTexture[nIdx];
 }
 
 //==========================================================================

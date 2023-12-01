@@ -40,6 +40,7 @@
 #include "object_circlegauge2D.h"
 #include "statuswindow.h"
 #include "collisionobject.h"
+#include "limitereamanager.h"
 
 // 派生先
 #include "tutorialplayer.h"
@@ -56,6 +57,33 @@ namespace
 		"data\\TEXT\\character\\player\\motion_pUPLeg.txt",		// 駆動性
 		"data\\TEXT\\character\\player\\motion_pUPBody.txt",	// 耐久
 	};
+	const char* TEXTURE_INITPLAYER[mylib_const::MAX_PLAYER][mylib_const::MAX_PLAYER] =	// 初期プレイヤーのテクスチャ
+	{
+		{// 初期プレイヤー
+			"data\\TEXTURE\\player\\init\\init_UV.jpg",
+			"data\\TEXTURE\\player\\init\\init_UV_Blue.jpg",
+			"data\\TEXTURE\\player\\init\\init_UV_Green.jpg",
+			"data\\TEXTURE\\player\\init\\init_UV_Yellow.jpg",
+		},
+		{// 変更タグ1(腕)
+			"data\\TEXTURE\\player\\pUP_arm01\\arm_UV_Red.jpg",
+			"data\\TEXTURE\\player\\pUP_arm01\\arm_UV_Blue.jpg",
+			"data\\TEXTURE\\player\\pUP_arm01\\arm_UV_Green.jpg",
+			"data\\TEXTURE\\player\\pUP_arm01\\arm_UV_Yellow.jpg",
+		},
+		{// 変更タグ2(脚)
+			"data\\TEXTURE\\player\\pUP_leg01\\feet_UV_Red.jpg",
+			"data\\TEXTURE\\player\\pUP_leg01\\feet_UV_Blue.jpg",
+			"data\\TEXTURE\\player\\pUP_leg01\\feet_UV_Green.jpg",
+			"data\\TEXTURE\\player\\pUP_leg01\\feet_UV_Yellow.jpg",
+		},
+		{// 変更タグ3(胴)
+			"data\\TEXTURE\\player\\pUP_body01\\body_UV_Red.jpg",
+			"data\\TEXTURE\\player\\pUP_body01\\body_UV_Blue.jpg",
+			"data\\TEXTURE\\player\\pUP_body01\\body_UV_Green.jpg",
+			"data\\TEXTURE\\player\\pUP_body01\\body_UV_Yellow.jpg",
+		}
+	};
 	const float JUMP = 20.0f * 1.5f;	// ジャンプ力初期値
 	const int INVINCIBLE_INT = 2;		// 無敵の間隔
 	const int INVINCIBLE_TIME = 90;		// 無敵の時間
@@ -63,6 +91,7 @@ namespace
 	const int FADEOUTTIME = 60;			// フェードアウトの時間
 	const int MAX_ATKCOMBO = 2;			// 攻撃コンボの最大数
 	const int INTERVAL_ATK = 15;		// 攻撃の猶予
+	const int MAX_BUFFSTATUS = 100;		// ステータスのバフ最大値
 }
 
 bool CPlayer::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
@@ -99,6 +128,7 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 	m_posKnokBack = mylib_const::DEFAULT_VECTOR3;	// ノックバックの位置
 	m_KnokBackMove = mylib_const::DEFAULT_VECTOR3;	// ノックバックの移動量
 	m_nCntState = 0;								// 状態遷移カウンター
+	m_nEvolveType = 0;								// 進化先の種類
 	m_nMyPlayerIdx = 0;								// プレイヤーインデックス番号
 	m_pShadow = NULL;								// 影の情報
 	m_pTargetP = NULL;								// 目標の地点
@@ -196,43 +226,25 @@ HRESULT CPlayer::Init(void)
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);
 
-	if (m_nMyPlayerIdx == 2 ||
-		m_nMyPlayerIdx == 3)
-	{// うで
-		SetEvolusion(CGameManager::STATUS_POWER);
-	}
+	//if (m_nMyPlayerIdx == 2 ||
+	//	m_nMyPlayerIdx == 3)
+	//{// うで
+	//	SetEvolusion(CGameManager::STATUS_POWER);
+	//}
 
-	if (m_nMyPlayerIdx == 0)
-	{// 胴
-		SetEvolusion(CGameManager::STATUS_LIFE);
-	}
+	//if (m_nMyPlayerIdx == 0)
+	//{// 胴
+	//	SetEvolusion(CGameManager::STATUS_LIFE);
+	//}
 
-	if (m_nMyPlayerIdx == 1)
-	{// 胴
-		SetEvolusion(CGameManager::STATUS_SPEED);
-	}
+	//if (m_nMyPlayerIdx == 1)
+	//{// 胴
+	//	SetEvolusion(CGameManager::STATUS_SPEED);
+	//}
+	//SetEvolusion(CGameManager::STATUS_POWER);
 
-#if 0
-	// モデル取得
-	CModel **ppModel = GetModel();
-
-	// Xファイルのデータ取得
-	for (int i = 0; i < GetNumModel(); i++)
-	{
-		if (ppModel[i] == NULL)
-		{
-			continue;
-		}
-
-		// Xファイルのデータ取得
-		CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());
-
-		for (int nMat = 0; nMat < pXData->dwNumMat; nMat++)
-		{
-			pXData->nIdxTexture[nMat] = ここにプレイヤーテクスチャインデックス番号;
-		}
-	}
-#endif
+	// プレイヤー毎のインデックス追加
+	BindByPlayerIdxTexture();
 
 	// バフ計算
 	m_sStatus.fPowerBuff = 1.0f;
@@ -337,6 +349,33 @@ void CPlayer::Update(void)
 
 	// 操作
 	Controll();
+#ifdef _DEBUG
+
+	if (pInputKeyboard->GetPress(DIK_DOWN))
+	{
+		D3DXVECTOR3 move = GetMove();
+		move.x = 10.0f;
+		SetMove(move);
+		m_sMotionFrag.bMove = true;
+
+		// 必要な値を取得
+		D3DXVECTOR3 rot2 = GetRotation();
+		D3DXVECTOR3 move2 = GetMove();
+
+		// 方向を算出
+		float fRot = atan2f(-move2.x, -move2.z);
+
+		//角度の正規化
+		RotNormalize(fRot);
+
+		//角度の補正をする
+		rot2.y = fRot;
+
+		// 向き設定
+		SetRotation(rot2);
+	}
+
+#endif
 
 	// モーションの設定処理
 	MotionSet();
@@ -384,8 +423,6 @@ void CPlayer::Update(void)
 	{
 		m_pShadow->SetPosition(D3DXVECTOR3(pos.x, m_pShadow->GetPosition().y, pos.z));
 	}
-
-	
 
 	// モーションの情報取得
 	if (m_pMotion != NULL)
@@ -786,13 +823,21 @@ void CPlayer::Controll(void)
 		}
 	}
 
+#if _DEBUG
+	static CGameManager::eStatus s_statusType;
+	if (pInputKeyboard->GetTrigger(DIK_RIGHT) == true)
+	{// ←キーが押された,左移動
+		s_statusType = (CGameManager::eStatus)(((int)s_statusType + 1) % (int)CGameManager::STATUS_MAX);
+		SetEvolusion(s_statusType);
+	}
 
 	if (pInputKeyboard->GetPress(DIK_UP) == true)
-	{//SPACEが押された,ジャンプ
+	{// SPACEが押された,ジャンプ
 
 		// アイテムドロップ
 		CItem::Create(D3DXVECTOR3(pos.x, pos.y + 100.0f, pos.z), D3DXVECTOR3(0.0f, Random(-31, 31) * 0.1f, 0.0f));
 	}
+#endif
 }
 
 //==========================================================================
@@ -917,102 +962,63 @@ void CPlayer::Atack(void)
 			{
 			case MOTION_ATK:
 			case MOTION_ATK2:
-				// パーティクル生成
-				//my_particle::Create(weponpos, my_particle::TYPE_BRASTATTACK);
 
-				// 武器の位置
-				for (int i = 0; i < 4; i++)
+				switch (CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx))
 				{
-					D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
+				case CPlayerUnion::PARTS_BODY:
+					break;
 
-					// 炎
-					float fMove = 6.0f + Random(-2, 5);
-					float fRot = Random(-20, 20) * 0.01f;
-					float fRotMove = Random(-10, 10) * 0.01f;
+				case CPlayerUnion::PARTS_R_ARM:
+				case CPlayerUnion::PARTS_L_ARM:
+					break;
 
-					// 炎
-					CEffect3D *pEffect = CEffect3D::Create(
-						weponpos,
-						D3DXVECTOR3(
-							sinf(D3DX_PI + rot.y + fRotMove) * fMove,
-							fRotMove,
-							cosf(D3DX_PI + rot.y + fRotMove) * fMove),
-						D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
-						60.0f + (float)Random(-10, 10),
-						15,
-						CEffect3D::MOVEEFFECT_ADD,
-						CEffect3D::TYPE_SMOKE);
+				case CPlayerUnion::PARTS_LEG:
+					break;
 
-					// 炎
-					CEffect3D::Create(
-						weponpos,
-						D3DXVECTOR3(
-							sinf(D3DX_PI + rot.y + fRotMove) * fMove,
-							fRotMove,
-							cosf(D3DX_PI + rot.y + fRotMove) * fMove),
-						D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
-						30.0f + (float)Random(-10, 10),
-						15,
-						CEffect3D::MOVEEFFECT_ADD,
-						CEffect3D::TYPE_SMOKE);
+				default:
+					// 武器の位置
+					for (int i = 0; i < 4; i++)
+					{
+						D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
 
-					int nDamage = (int)((float)aInfo.AttackInfo[nCntAttack]->nDamage * m_sStatus.fPowerBuff);
-					CCollisionObject::Create(pEffect->GetPosition(), pEffect->GetMove(), pEffect->GetSize().x, 15, nDamage, CCollisionObject::TAG_PLAYER);
+						// 炎
+						float fMove = 7.0f + Random(-2, 5);
+						float fRot = Random(-20, 20) * 0.01f;
+						float fRotMove = Random(-10, 10) * 0.01f;
+
+						// 炎
+						CEffect3D *pEffect = CEffect3D::Create(
+							weponpos,
+							D3DXVECTOR3(
+								sinf(D3DX_PI + rot.y + fRotMove) * fMove,
+								fRotMove,
+								cosf(D3DX_PI + rot.y + fRotMove) * fMove),
+							D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
+							90.0f + (float)Random(-10, 10),
+							15,
+							CEffect3D::MOVEEFFECT_ADD,
+							CEffect3D::TYPE_SMOKE);
+
+						// 炎
+						CEffect3D::Create(
+							weponpos,
+							D3DXVECTOR3(
+								sinf(D3DX_PI + rot.y + fRotMove) * fMove,
+								fRotMove,
+								cosf(D3DX_PI + rot.y + fRotMove) * fMove),
+							D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
+							60.0f + (float)Random(-10, 10),
+							15,
+							CEffect3D::MOVEEFFECT_ADD,
+							CEffect3D::TYPE_SMOKE);
+
+						int nDamage = (int)((float)aInfo.AttackInfo[nCntAttack]->nDamage * m_sStatus.fPowerBuff);
+						CCollisionObject::Create(pEffect->GetPosition(), pEffect->GetMove(), pEffect->GetSize().x, 15, nDamage, CCollisionObject::TAG_PLAYER);
+					}
+					break;
 				}
 
-				//// チャージカウントリセット
-				////CGame::GetPowerGauge()->SetChargeCount(0);
-
-				// 衝撃波生成
-				//CImpactWave *pWave = CImpactWave::Create
-				//(
-				//	D3DXVECTOR3(pos.x, pos.y + 80.0f, pos.z),	// 位置
-				//	D3DXVECTOR3(D3DX_PI * 0.5f, D3DX_PI + rot.y, 0.0f),				// 向き
-				//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f),			// 色
-				//	150.0f,										// 幅
-				//	150.0f,										// 高さ
-				//	0.0f,										// 中心からの間隔
-				//	8,											// 寿命
-				//	1.0f,										// 幅の移動量
-				//	CImpactWave::TYPE_GIZAWHITE2,					// テクスチャタイプ
-				//	true										// 加算合成するか
-				//);
-				//pWave->SetMove(D3DXVECTOR3(sinf(D3DX_PI + rot.y) * 15.0f, 0.0f, cosf(D3DX_PI + rot.y) * 15.0f));
-
-
-				//CImpactWave::Create
-				//(
-				//	D3DXVECTOR3(pos.x, pos.y + 150.0f, pos.z),	// 位置
-				//	D3DXVECTOR3(0.0f, 0.0f, D3DX_PI),				// 向き
-				//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f),			// 色
-				//	180.0f,										// 幅
-				//	150.0f,										// 高さ
-				//	14,											// 寿命
-				//	4.0f,										// 幅の移動量
-				//	CImpactWave::TYPE_GIZAWHITE,				// テクスチャタイプ
-				//	false										// 加算合成するか
-				//);
-
-				// 振動
-				//CManager::GetInstance()->GetCamera()->SetShake(20, 10.0f, 0.0f);
-
-				// 斬撃生成
-				//CSlash::Create
-				//(
-				//	D3DXVECTOR3(pos.x, pos.y + 50.0f, pos.z),	// 位置
-				//	D3DXVECTOR3(0.0f, 0.0f, 0.0f),		// 向き
-				//	D3DXVECTOR3(m_fAtkStickRot, D3DX_PI + fRotY, 0.0f),		// 向き
-				//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),	// 色
-				//	200.0f,								// 幅
-				//	50.0f,								// 中心からの間隔
-				//	10,									// 寿命
-				//	40.0f,								// 幅の移動量
-				//	CImpactWave::TYPE_PURPLE4,			// テクスチャの種類
-				//	true,								// 加算合成するかどうか
-				//	GetMoveAngle()
-				//);
-
-				// 歩行音再生
+				// スイング音再生
 				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_SWING);
 				break;
 			}
@@ -1139,7 +1145,7 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 	m_bLandField = false;
 	m_bHitWall = false;			// 壁の当たり判定
 
-								// 高さ取得
+	// 高さ取得
 	if (m_state != STATE_KNOCKBACK && m_state != STATE_DMG && m_state != STATE_DEAD && m_state != STATE_FADEOUT)
 	{
 		fHeight = CManager::GetInstance()->GetScene()->GetElevation()->GetHeight(pos, bLand);
@@ -1230,9 +1236,6 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 		}
 	}
 
-
-
-
 	// オブジェクト取得
 	CObjectX *pObjX = pStage->GetInjectionTable();
 
@@ -1319,21 +1322,37 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 	}
 
 
+	// エリア制限情報取得
+	CLimitEreaManager *pLimitManager = CGame::GetLimitEreaManager();
+	CLimitErea **ppLimit = pLimitManager->GetLimitErea();
 
+	// 総数取得
+	int nNumAll = pLimitManager->GetNumAll();
+	int i = -1, nCntErea = 0;
 
+	while (1)
+	{
+		if (nCntErea >= nNumAll)
+		{// 総数超えたら終わり
+			break;
+		}
 
-	// 位置取得
-	D3DXVECTOR3 posOld = GetPosition();
+		// インデックス加算
+		i++;
+		if (ppLimit[i] == NULL)
+		{
+			continue;
+		}
+		CLimitErea::sLimitEreaInfo info = ppLimit[i]->GetLimitEreaInfo();
 
-	//// 箱
-	//D3DXVECTOR3 FieldPos = CGame::GetElevation()->GetPosition();
-	//float fLen = CGame::GetElevation()->GetWidthLen();
-	//int nBlock = CGame::GetElevation()->GetWidthBlock();
-	//nBlock /= 2;
-	//if (pos.x + GetRadius() >= fLen * nBlock) { pos.x = fLen * nBlock - GetRadius(); }
-	//if (pos.x - GetRadius() <= -fLen * nBlock) { pos.x = -fLen * nBlock + GetRadius(); }
-	//if (pos.z + GetRadius() >= fLen * nBlock) { pos.z = fLen * nBlock - GetRadius(); }
-	//if (pos.z - GetRadius() <= -fLen * nBlock) { pos.z = -fLen * nBlock + GetRadius(); }
+		if (pos.x + GetRadius() >= info.fMaxX) { pos.x = info.fMaxX - GetRadius(); }
+		if (pos.x - GetRadius() <= info.fMinX) { pos.x = info.fMinX + GetRadius(); }
+		if (pos.z + GetRadius() >= info.fMaxZ) { pos.z = info.fMaxZ - GetRadius(); }
+		if (pos.z - GetRadius() <= info.fMinZ) { pos.z = info.fMinZ + GetRadius(); }
+
+		// エリアの数加算
+		nCntErea++;
+	}
 
 	// 向き設定
 	SetRotation(rot);
@@ -1481,32 +1500,48 @@ bool CPlayer::Hit(const int nValue)
 //==========================================================================
 // ステータス付与
 //==========================================================================
-void CPlayer::GiveStatus(CGameManager::eStatus status)
+bool CPlayer::GiveStatus(CGameManager::eStatus status)
 {
+	// 取得判定
+	bool bGet = false;
+
 	// 強化
 	int nStatus = 0;
 	switch (status)
 	{
 	case CGameManager::STATUS_POWER:
-		m_sStatus.nPower++;
+		if (m_sStatus.nPower < MAX_BUFFSTATUS)
+		{
+			m_sStatus.nPower++;
+			bGet = true;
+		}
 		nStatus = m_sStatus.nPower;
 		break;
 
 	case CGameManager::STATUS_SPEED:
-		m_sStatus.nSpeed++;
+		if (m_sStatus.nSpeed < MAX_BUFFSTATUS)
+		{
+			m_sStatus.nSpeed++;
+			bGet = true;
+		}
 		nStatus = m_sStatus.nSpeed;
 		break;
 
 	case CGameManager::STATUS_LIFE:
-		m_sStatus.nLife++;
+		if (m_sStatus.nLife < MAX_BUFFSTATUS)
+		{
+			m_sStatus.nLife++;
+			bGet = true;
+		}
 		break;
 	}
 
-	float fRate = (float)nStatus / (float)100;
+	// 割合
+	float fRate = (float)nStatus / (float)MAX_BUFFSTATUS;
 
 	// バフ計算
-	m_sStatus.fPowerBuff = 1.0f + ((float)m_sStatus.nPower * 0.05f);
-	m_sStatus.fSpeedBuff = 1.0f + ((float)m_sStatus.nSpeed * 0.025f);
+	m_sStatus.fPowerBuff = 1.0f + ((float)m_sStatus.nPower * 0.01f);
+	m_sStatus.fSpeedBuff = 1.0f + ((float)m_sStatus.nSpeed * 0.01f);
 	m_sStatus.fLifeBuff = 1.0f + ((float)m_sStatus.nLife * 0.1f);
 
 	if (status == CGameManager::STATUS_POWER || status == CGameManager::STATUS_SPEED)
@@ -1519,6 +1554,7 @@ void CPlayer::GiveStatus(CGameManager::eStatus status)
 			pStatusWindow->GetGauge(status)->SetRateDest(fRate);
 		}
 	}
+	return bGet;
 }
 
 //==========================================================================
@@ -1545,6 +1581,7 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 			}
 		}
 
+		// 腕の使用状況別設定
 		if (bR_Arm == false && bL_Arm == false)
 		{
 			CManager::GetInstance()->SetByPlayerPartsType(m_nMyPlayerIdx, CPlayerUnion::PARTS_R_ARM);
@@ -1569,11 +1606,91 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 		break;
 	}
 
+	// 進化先の種類
+	m_nEvolveType = (int)statusType + 1;
+
 	// パーツ変更
-	ChangeObject((int)statusType + 1);
+	ChangeObject(m_nEvolveType);
 
 	// モーション切り替え
 	ChangeMotion(EVOLUSIONFILE[(int)statusType]);
+
+	// プレイヤー毎のインデックス追加
+	BindByPlayerIdxTexture();
+}
+
+//==========================================================================
+// プレイヤーインデックス毎のテクスチャ設定
+//==========================================================================
+void CPlayer::BindByPlayerIdxTexture(void)
+{
+	// ファイルインデックス番号取得
+	int nIdxXFile = GetIdxFile();
+	CObjectChara::Load LoadData = GetLoadData(nIdxXFile);
+
+	// モデル取得
+	CModel **ppModel = GetModel();
+
+	// 初期テクスチャ
+	int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[0][m_nMyPlayerIdx]);
+	for (int i = 0; i < GetNumModel(); i++)
+	{
+		if (ppModel[i] == NULL)
+		{
+			continue;
+		}
+
+		// Xファイルのデータ取得
+		CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());
+
+		for (int nMat = 0; nMat < (int)pXData->dwNumMat; nMat++)
+		{
+			ppModel[i]->SetIdxTexture(nMat, nIdxTex);
+		}
+	}
+
+	// 種類別テクスチャ切り替え
+	for (int i = 0; i < LoadData.nNumModel; i++)
+	{
+		if (LoadData.LoadData[i].nSwitchType != m_nEvolveType)
+		{// 変更のタグと違うもの
+			continue;
+		}
+
+		if (LoadData.LoadData[i].nIDSwitchModel < 0)
+		{// 新しいパーツ
+
+			// テクスチャ読み込み
+			int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[m_nEvolveType][m_nMyPlayerIdx]);
+
+			// Xファイルのデータ取得
+			CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());
+
+			for (int nMat = 0; nMat < (int)pXData->dwNumMat; nMat++)
+			{
+				ppModel[i]->SetIdxTexture(nMat, nIdxTex);
+			}
+		}
+		else
+		{// 切り替えの場合
+
+			if (ppModel[LoadData.LoadData[i].nIDSwitchModel] == NULL)
+			{
+				continue;
+			}
+
+			// テクスチャ読み込み
+			int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[m_nEvolveType][m_nMyPlayerIdx]);
+
+			// Xファイルのデータ取得
+			CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[LoadData.LoadData[i].nIDSwitchModel]->GetIdxXFile());
+
+			for (int nMat = 0; nMat < (int)pXData->dwNumMat; nMat++)
+			{
+				ppModel[LoadData.LoadData[i].nIDSwitchModel]->SetIdxTexture(nMat, nIdxTex);
+			}
+		}
+	}
 }
 
 //==========================================================================

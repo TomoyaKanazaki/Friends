@@ -30,81 +30,47 @@ public:
 	void Update(void) override;
 	void Draw(void) override;
 	void Kill(void) override;
-	bool Hit(const int nValue) override;
+	void MotionSet(void) override;		// モーションの設定
 
-	CEnemyBoss *GetEnemy(void);
 protected:
 
 private:
+
+	//モーション列挙
 	typedef enum
 	{
 		MOTION_DEF = 0,		// ニュートラルモーション
 		MOTION_WALK,		// 移動モーション
-		MOTION_BULLETATK,	// 攻撃
-		MOTION_ASSULTATK,	// 攻撃
-		MOTION_CHILDSPAWN,	// 子分出現
-		MOTION_STUN,		// スタン
+		MOTION_ATK,			// 攻撃モーション
 		MOTION_KNOCKBACK,	// やられモーション
 		MOTION_FADEOUT,		// 帰還モーション
-		MOTION_APPEARANCE,	// 登場モーション
-		MOTION_MAX
 	}MOTION;
 
-	enum ATKTYPE
+	// 行動列挙
+	enum ACTION
 	{
-		ATKTYPE_BULLET = 0,		// 弾発射攻撃
-		ATKTYPE_ASSULT,			// 突進
-		ATKTYPE_ENEMYSPAWN,		// 敵出現
-		ATKTYPE_STUNKNOCKBACK,	// スタンノックバック
-		ATKTYPE_STUN,			// スタン
-		ATKTYPE_APPEARANCE,		// 登場
-		ATKTYPE_MAX
+		ACTION_CHASE = 0,		// 追従
+		ACTION_CHASE_DASH,		// ダッシュ追従
+		ACTION_PUNCH,			// パンチ
+		ACTION_KICK,			// キック
+		ACTION_BEAM,			// ビーム
+		ACTION_CHARGE_BEAM,		// チャージビーム
+		ACTION_TACKLE,			// タックル
+		ACTION_CHARGE_TACKLE,	// チャージタックル
+		ACTION_SELFEXPLOSION,	// 自爆
+		ACTION_MAX
 	};
-
-	// 行動の構造体定義
-	struct BOSSACT
-	{
-		int nBulletCnt;		// 弾のカウンター
-		int nKnockBackCnt;	// ノック縛のカウンタ
-		int nAssultAngle;	// 突進の向き
-		ATKTYPE AtkType;	// 攻撃の種類
-		D3DXVECTOR3 StunPosDest;	// スタン時の目標の位置
-	};
-
-	// オーバーライドされた関数
-	void UpdateByType(void) override;	// 種類別更新処理
-	void ProcessLanding(void) override;	// 着地時処理
-	void AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo) override;	// 攻撃時処理
-	void StateAttack(void) override;	// 攻撃処理
-	void MotionSet(void) override;		// モーションの設定
-	void StateWait(void) override;		// 待機処理
-	void PlayerChase(void) override;			// プレイヤー追従
-	void ChangeBase(void) override;			// 拠点切り替え
-	void CollisionPlayer(void) override;	// プレイヤーとの当たり判定
-
-	// 状態更新系
-	void Damage(void) override;		// ダメージ
-	void Spawn(void) override;		// スポーン
 
 	// メンバ関数
-	void ChaseMove(float fMove);		// 追い掛け移動
-	void ChangeToAttackState(void);		// 攻撃状態移行処理
-	void UpdateByAttack(void);			// 攻撃別処理
-	void UpdateAppearance(void);		// 登場
-	void UpdateAttackBullet(void);		// 弾攻撃
-	void UpdateAttackAssult(void);		// 突進攻撃
-	void UpdateChildSpawn(void);		// 子分出現攻撃
-	void UpdateStun(void);				// ピヨピヨ攻撃(?)
-	void UpdateKnockBackStun(void);		// スタンのノックバック
-	void DrawingACT(void);				// 行動抽選
-	void RotPlayer(void);				// プレイヤーの方を見る
+	void Move(void); // 移動
 
 	// メンバ変数
-	BOSSACT m_sAct;	// ボスの行動
-	eBaseType m_BaseType;	// 拠点の種類
-	eBaseType m_BaseTypeDest;	// 目標の拠点種類
-	int m_nCntDamage;			// ダメージカウンター
-	int m_nCntEmission;			// 発生物のカウンター
+	ACTION m_Act;		// 行動
+	float m_fActTime;	// 行動カウンター
+
+	// 関数リスト
+	typedef void(CEnemyBoss::*ACT_FUNC)(void);
+	static ACT_FUNC m_ActFuncList[];
 };
 
 

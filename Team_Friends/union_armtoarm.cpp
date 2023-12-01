@@ -67,7 +67,6 @@ HRESULT CUnion_ArntoArm::Init(void)
 	// 種類の設定
 	SetType(TYPE_PLAYER);
 
-	m_state = STATE_NONE;		// 状態
 	m_nUnionLife = LIFE_UNION;	// 合体時間
 
 	SetPosition(D3DXVECTOR3(-600.0f, 0.0f, -1000.0f));
@@ -306,8 +305,23 @@ void CUnion_ArntoArm::ControllATK(int nIdx, int nLoop)
 
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+	// キーボード情報取得
+	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 	
-	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)))
+#if _DEBUG
+
+	if (pInputGamepad->GetTrigger(CInputGamepad::BUTTON_B, nLoop))
+	{
+		m_state = STATE_APPEARANCE;	// 状態
+	}
+
+	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)) || pInputKeyboard->GetPress(DIK_RETURN) == true)
+#else
+	
+	//if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)))
+	if (pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop))
+#endif
 	{// 攻撃
 
 		// チャージ判定
@@ -343,6 +357,230 @@ void CUnion_ArntoArm::ControllATK(int nIdx, int nLoop)
 		// 攻撃中
 		m_sMotionFrag[nIdx].bCharge = false;
 		m_sMotionFrag[nIdx].bATK = true;
+	}
+}
+
+
+//==========================================================================
+// 出現
+//==========================================================================
+void CUnion_ArntoArm::Appearance(void)
+{
+	int nType = m_pMotion[0]->GetType();
+	if (nType == MOTION_APPEARANCE && m_pMotion[0]->IsFinish() == true)
+	{// 登場演出が終わってたら
+		m_nCntState = 0;
+		m_state = STATE_NONE;
+		return;
+	}
+	m_state = STATE_APPEARANCE;	// 状態
+
+	int nCntAllFrame = m_pMotion[0]->GetAllCount();
+
+#if 0
+	if (nCntAllFrame == 70)
+	{
+		D3DXVECTOR3 pos = GetPosition();
+		D3DXVECTOR3 rot = GetRotation();
+
+		int nMax = 40;
+		float fRotDivision = (D3DX_PI * 2.0f) / (float)nMax;
+		for (int i = 0; i < nMax; i++)
+		{
+			D3DXVECTOR3 spawnpos = pos;
+			spawnpos.x = pos.x + sinf(rot.y + fRotDivision * i) * 150.0f;
+			spawnpos.z = pos.z + cosf(rot.y + fRotDivision * i) * 150.0f;
+
+			float fMove = (float)Random(150, 250) * 0.1f;		// 移動量
+			D3DXVECTOR3 spawnmove = D3DXVECTOR3(
+				sinf(rot.y + fRotDivision * i) * 20.0f,
+				(float)Random(250, 450) * 0.1f,
+				cosf(rot.y + fRotDivision * i) * 20.0f);
+
+			D3DXCOLOR col = D3DXCOLOR(
+				0.9f + Random(-100, 100) * 0.001f,
+				0.6f + Random(-100, 100) * 0.001f,
+				0.2f + Random(-100, 100) * 0.001f,
+				1.0f);
+			/*D3DXCOLOR col = D3DXCOLOR(
+				Random(0, 10) * 0.1f,
+				Random(0, 10) * 0.1f,
+				Random(0, 10) * 0.1f,
+				1.0f);*/
+
+			CEffect3D *pEffect = CEffect3D::Create(
+				spawnpos,
+				spawnmove,
+				col,
+				100.0f + (float)Random(-10, 10),
+				80,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_JUJI2,
+				0.0f);
+			pEffect->SetEnableGravity();
+			pEffect->SetGravityValue(1.5f);
+		}
+
+		//my_particle::Create(GetPosition(), my_particle::TYPE_APPEARANCE_UNION);
+	}
+#else
+	
+	int nFinish = 75;
+	if (nCntAllFrame == nFinish)
+	{
+		D3DXVECTOR3 pos = GetPosition();
+		pos.y += 150.0f;
+		D3DXVECTOR3 rot = GetRotation();
+
+		// 衝撃波生成
+		CImpactWave *pWave = CImpactWave::Create
+		(
+			pos,	// 位置
+			D3DXVECTOR3(D3DX_PI * 0.25f, D3DX_PI * 0.5f + rot.y, 0.0f),				// 向き
+			D3DXCOLOR(0.9f, 0.5f, 0.1f, 0.8f),			// 色
+			150.0f,										// 幅
+			0.0f,										// 高さ
+			0.0f,										// 中心からの間隔
+			20,											// 寿命
+			30.0f,										// 幅の移動量
+			CImpactWave::TYPE_GIZAGRADATION,				// テクスチャタイプ
+			true										// 加算合成するか
+		);
+
+		// 衝撃波生成
+		CImpactWave::Create
+		(
+			pos,	// 位置
+			D3DXVECTOR3(D3DX_PI * 0.75f, D3DX_PI * 0.5f + rot.y, 0.0f),				// 向き
+			D3DXCOLOR(0.9f, 0.5f, 0.1f, 0.8f),			// 色
+			150.0f,										// 幅
+			0.0f,										// 高さ
+			0.0f,										// 中心からの間隔
+			20,											// 寿命
+			30.0f,										// 幅の移動量
+			CImpactWave::TYPE_GIZAGRADATION,				// テクスチャタイプ
+			true										// 加算合成するか
+		);
+
+
+		// 振動
+		CManager::GetInstance()->GetCamera()->SetShake(20, 15.0f, 0.0f);
+	}
+
+	if (nCntAllFrame >= 65)
+	{
+		// かくだい
+		CCamera *pCamera = CManager::GetInstance()->GetCamera();
+		pCamera->SetLenDest(pCamera->GetOriginDistance() - 550.0f, 20);
+		//my_particle::Create(GetPosition(), my_particle::TYPE_APPEARANCE_UNION);
+
+		if (nCntAllFrame >= nFinish)
+		{
+			D3DXVECTOR3 pos = GetPosition();
+			D3DXVECTOR3 rot = GetRotation();
+
+			int nMax = 1;
+			for (int i = 0; i < nMax; i++)
+			{
+				D3DXVECTOR3 spawnpos = pos;
+				spawnpos.x = pos.x + sinf(rot.y + D3DX_PI * 0.25f) * 200.0f;
+				spawnpos.z = pos.z + cosf(rot.y + D3DX_PI * 0.25f) * 200.0f;
+
+				float fMove = (float)Random(50, 150) * 0.1f;		// 移動量
+				D3DXVECTOR3 spawnmove = D3DXVECTOR3(
+					(float)Random(-150, 150) * 0.01f,
+					fMove,
+					(float)Random(-150, 150) * 0.01f);
+
+				D3DXCOLOR col = D3DXCOLOR(
+					0.9f + Random(-100, 100) * 0.001f,
+					0.1f + Random(-100, 100) * 0.001f,
+					0.1f + Random(-100, 100) * 0.001f,
+					0.6f);
+
+				CEffect3D::Create(
+					spawnpos,
+					spawnmove,
+					col,
+					100.0f + (float)Random(-10, 10),
+					40,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_SMOKE,
+					0.0f);
+
+				col = D3DXCOLOR(
+					0.9f + Random(-100, 100) * 0.001f,
+					0.5f + Random(-100, 100) * 0.001f,
+					0.2f + Random(-100, 100) * 0.001f,
+					0.6f);
+
+				CEffect3D::Create(
+					spawnpos,
+					spawnmove,
+					col,
+					80.0f + (float)Random(-10, 10),
+					40,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_SMOKE,
+					0.0f);
+			}
+
+			for (int i = 0; i < nMax; i++)
+			{
+				D3DXVECTOR3 spawnpos = pos;
+				spawnpos.x = pos.x + sinf(rot.y + -D3DX_PI * 0.25f) * 200.0f;
+				spawnpos.z = pos.z + cosf(rot.y + -D3DX_PI * 0.25f) * 200.0f;
+
+				float fMove = (float)Random(50, 150) * 0.1f;		// 移動量
+				D3DXVECTOR3 spawnmove = D3DXVECTOR3(
+					(float)Random(-150, 150) * 0.01f,
+					fMove,
+					(float)Random(-150, 150) * 0.01f);
+
+				D3DXCOLOR col = D3DXCOLOR(
+					0.9f + Random(-100, 100) * 0.001f,
+					0.1f + Random(-100, 100) * 0.001f,
+					0.1f + Random(-100, 100) * 0.001f,
+					0.6f);
+
+				CEffect3D::Create(
+					spawnpos,
+					spawnmove,
+					col,
+					100.0f + (float)Random(-10, 10),
+					40,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_SMOKE,
+					0.0f);
+
+				col = D3DXCOLOR(
+					0.9f + Random(-100, 100) * 0.001f,
+					0.5f + Random(-100, 100) * 0.001f,
+					0.2f + Random(-100, 100) * 0.001f,
+					0.6f);
+
+				CEffect3D::Create(
+					spawnpos,
+					spawnmove,
+					col,
+					80.0f + (float)Random(-10, 10),
+					40,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_SMOKE,
+					0.0f);
+			}
+		}
+	}
+#endif
+
+	// 登場モーション設定
+	for (int i = 0; i < PARTS_MAX; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+		m_pMotion[i]->Set(MOTION_APPEARANCE);
 	}
 }
 
@@ -458,6 +696,13 @@ void CUnion_ArntoArm::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo 
 
 	case MOTION_SUPERATK:
 		my_particle::Create(weponpos, my_particle::TYPE_MAGIC_EXPLOSION);
+		break;
+
+	case MOTION_APPEARANCE:
+		if (nIdx == 2)
+		{
+			my_particle::Create(weponpos, my_particle::TYPE_APPEARANCE_ARMTOARM);
+		}
 		break;
 	}
 }

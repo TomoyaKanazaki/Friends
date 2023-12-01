@@ -9,15 +9,17 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------
 # キャラクター数
 #------------------------------------------------------------------
-NUM_CHARACTER = 4
+NUM_CHARACTER = 6
 
 #------------------------------------------------------------------
 # キャラクターファイル名
 #------------------------------------------------------------------
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyboss.txt			# [0]ボス
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [1]蝶
-MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [2]徘徊
-MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [3]メタルスライム
+MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_roaming.txt		# [2]徘徊
+MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_escape.txt			# [3]メタルスライム
+MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_tackle.txt			# [4]突撃猪
+MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_turret.txt			# [5]中ボス-砲台型
 
 #===================================================================================================
 # 敵の情報
@@ -55,7 +57,7 @@ PATTERNSET
 END_PATTERNSET
 
 #------------------------------------------------------------------
-# [2]徘徊
+# [2]全配置
 #------------------------------------------------------------------
 PATTERNSET
 	
@@ -68,6 +70,27 @@ PATTERNSET
 		STARTFRAME = 0		# 初期フレーム
 	END_ENEMYSET
 	
+	ENEMYSET
+		TYPE = 3		# キャラの種類
+		INDEX = 0
+		POS = 400.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE = 4		# キャラの種類
+		INDEX = 0
+		POS = 800.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE = 5		# キャラの種類
+		INDEX = 0
+		POS = 1200.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+				
 END_PATTERNSET
 
 #------------------------------------------------------------------
@@ -79,6 +102,38 @@ PATTERNSET
 	
 	ENEMYSET
 		TYPE = 3		# キャラの種類
+		INDEX = 0
+		POS = 0.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+	
+END_PATTERNSET
+
+#------------------------------------------------------------------
+# [4]突撃猪
+#------------------------------------------------------------------
+PATTERNSET
+	
+	FIXEDMOVE = 0		# 一定の動きの種類
+	
+	ENEMYSET
+		TYPE = 4		# キャラの種類
+		INDEX = 0
+		POS = 0.00 0.00 0.00
+		STARTFRAME = 0		# 初期フレーム
+	END_ENEMYSET
+	
+END_PATTERNSET
+
+#------------------------------------------------------------------
+# [5]中ボス-砲台型
+#------------------------------------------------------------------
+PATTERNSET
+	
+	FIXEDMOVE = 0		# 一定の動きの種類
+	
+	ENEMYSET
+		TYPE = 5		# キャラの種類
 		INDEX = 0
 		POS = 0.00 0.00 0.00
 		STARTFRAME = 0		# 初期フレーム

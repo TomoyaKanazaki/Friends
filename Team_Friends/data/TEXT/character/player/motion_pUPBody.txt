@@ -249,7 +249,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 20				# [20]ã≠âª[ì∑]ç∂éË
 		PARENT = 5
-		POS = 10.82 0.00 0.00
+		POS = 18.00 0.00 0.00
 		ROT = 0.00 0.00 0.00
 		START = 0
 		SWITCHTYPE = 3			# êÿÇËë÷Ç¶ÇÃéÌóﬁ
@@ -279,7 +279,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 23				# [23]ã≠âª[ì∑]âEéË
 		PARENT = 8
-		POS = -11.27 0.00 0.00
+		POS = -18.00 0.00 0.00
 		ROT = 0.00 0.00 0.00
 		START = 0
 		SWITCHTYPE = 3			# êÿÇËë÷Ç¶ÇÃéÌóﬁ
@@ -1900,7 +1900,7 @@ MOTIONSET
 		OFFSET = -19.00 0.00 0.00
 		ATTACKCOUNT = 13 32
 		INPACTCOUNT = 20
-		DAMAGE = 100
+		DAMAGE = 2
 	END_ATTACKINFO
 
 	KEYSET			# --- << KEY : 0 / 6 >> ---

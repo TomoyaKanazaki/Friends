@@ -1199,7 +1199,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\TEXTURE\union\SuperUnion\Arm\union_arm_UV_Yellow.jpg";
+    "data\\TEXTURE\\union\\SuperUnion\\Arm\\union_arm_UV_Yellow.jpg";
    }
   }
  }

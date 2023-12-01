@@ -218,7 +218,8 @@ void CUnion_ArntoArm::ControllLeg(int nIdx)
 	int nRightArmIdx = CManager::GetInstance()->GetByPlayerPartsType(PARTS_R_ARM);
 
 	if (m_state != STATE_DEAD &&
-		m_state != STATE_FADEOUT)
+		m_state != STATE_FADEOUT &&
+		m_state != STATE_APPEARANCE)
 	{// ˆÚ“®‰Â”\ƒ‚[ƒVƒ‡ƒ“‚Ì
 
 		// ˆÚ“®‘€ì

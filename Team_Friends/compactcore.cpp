@@ -224,6 +224,8 @@ void CCompactCore::StateGet(void)
 
 		CPlayerUnion *pPlayerUnion = NULL;
 
+		// ˆê’U‘S‚Ä˜r~˜r
+#if 0
 		// Ží—ÞŽæ“¾‚µ‚Ä‚»‚ÌŽí—Þ‚ÉŠY“–‚·‚é‡‘Ìæ‚ð¶¬‚·‚é
 		if (nParentType == CPlayerUnion::PARTS_LEG ||
 			nExceptType == CPlayerUnion::PARTS_LEG)
@@ -267,6 +269,11 @@ void CCompactCore::StateGet(void)
 			}
 			pPlayerUnion->SetControllMoveIdx(m_nIdxParent);
 		}
+#else
+		// ˜r‚Æ˜r
+		pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_ARMtoARM);
+		pPlayerUnion->SetControllMoveIdx(m_nIdxParent);
+#endif
 
 		// ƒvƒŒƒCƒ„[–ˆ‚Ìƒp[ƒcƒCƒ“ƒfƒbƒNƒX”Ô†
 		pPlayerUnion->SetPlayerByPartsIdx(0, m_nIdxParent);

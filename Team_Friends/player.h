@@ -63,6 +63,7 @@ public:
 	void UninitByMode(void);	// モード別終了
 	virtual void Kill(void);	// 死亡処理
 
+	void DrawingEvolusion(void);	// 進化先抽選
 protected:
 	// 列挙型定義
 	enum MOTION

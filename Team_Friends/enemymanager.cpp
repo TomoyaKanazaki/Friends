@@ -12,6 +12,7 @@
 #include "gamemanager.h"
 #include "renderer.h"
 #include "enemy.h"
+#include "enemy_boss.h"
 #include "particle.h"
 #include "fade.h"
 #include "elevation.h"
@@ -41,6 +42,7 @@ CEnemyManager::CEnemyManager()
 {
 	// 値のクリア
 	memset(&m_pEnemy[0], NULL, sizeof(m_pEnemy));		// 敵へのポインタ
+	m_pBoss = NULL;										// ボス
 	memset(&m_aPattern[0], NULL, sizeof(m_aPattern));	// 配置の種類
 	m_state = STATE_NONE;	// 状態
 	m_nCntSpawn = 0;		// 出現カウント
@@ -336,6 +338,12 @@ CEnemy **CEnemyManager::SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nPattern)
 				break;
 			}
 
+			// ボスの場合コピー
+			if (nType == 0 && m_pBoss == NULL)
+			{
+				m_pBoss = (CEnemyBoss*)m_pEnemy[nCntNULL];
+			}
+
 			// ポインタコピー
 			pEnemy[nCntEnemy] = m_pEnemy[nCntNULL];
 
@@ -514,6 +522,14 @@ HRESULT CEnemyManager::ReadText(const std::string pTextFile)
 CEnemy **CEnemyManager::GetEnemy(void)
 {
 	return &m_pEnemy[0];
+}
+
+//==========================================================================
+// ボス取得
+//==========================================================================
+CEnemyBoss *CEnemyManager::GetBoss(void)
+{
+	return m_pBoss;
 }
 
 //==========================================================================

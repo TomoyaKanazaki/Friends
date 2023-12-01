@@ -32,10 +32,12 @@ public:
 	void Kill(void) override;
 	void MotionSet(void) override;		// モーションの設定
 
-protected:
-
+	void SetTargetPosition(D3DXVECTOR3 pos);	// 目標の位置設定
 private:
 
+	//=============================
+	// 列挙型定義
+	//=============================
 	//モーション列挙
 	typedef enum
 	{
@@ -61,16 +63,40 @@ private:
 		ACTION_MAX
 	};
 
-	// メンバ関数
-	void Move(void); // 移動
-
-	// メンバ変数
-	ACTION m_Act;		// 行動
-	float m_fActTime;	// 行動カウンター
-
+	//=============================
 	// 関数リスト
+	//=============================
 	typedef void(CEnemyBoss::*ACT_FUNC)(void);
 	static ACT_FUNC m_ActFuncList[];
+
+	//=============================
+	// メンバ関数
+	//=============================
+	// 行動関数
+	void UpdateAction(void) override;	// 行動更新
+	void ActChase(void);		// 追い掛け
+	void ActAttack(void);		// 攻撃
+	void ActCharge(void);		// チャージ
+
+	// 行動内関数
+	void ChaseSlow(void);		// 歩き追い掛け
+	void ChaseDash(void);		// ダッシュ追い掛け
+	void AttackPunch(void);		// パンチ攻撃
+	void AttackKick(void);		// キック攻撃
+	void AttackTackle(void);	// タックル攻撃
+	void ChargeBeam(void);		// ビームチャージ
+	void ChargeTackle(void);	// タックルチャージ
+
+	// その他関数
+	void Move(void);			// 移動
+	void RotationTarget(void);	// ターゲットの方を向く
+
+	//=============================
+	// メンバ変数
+	//=============================
+	ACTION m_Act;		// 行動
+	D3DXVECTOR3 m_TargetPosition;	// 目標の位置
+	float m_fActTime;	// 行動カウンター
 };
 
 

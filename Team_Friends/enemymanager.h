@@ -11,8 +11,11 @@
 #include "main.h"
 #include "constans.h"
 
+//==========================================================================
 // 前方宣言
+//==========================================================================
 class CEnemy;
+class CEnemyBoss;
 
 //==========================================================================
 // クラス定義
@@ -67,6 +70,7 @@ public:
 	int GetNumAll(void);		// 敵の総数取得
 	Pattern GetPattern(int nPattern);	// パターン取得
 	CEnemy **GetEnemy(void);	// 敵取得
+	CEnemyBoss *GetBoss(void);		// ボス取得
 	const char *GetMotionFilename(int nType);
 protected:
 
@@ -74,6 +78,7 @@ protected:
 private:
 
 	CEnemy *m_pEnemy[mylib_const::MAX_OBJ];						// 敵へのポインタ
+	CEnemyBoss *m_pBoss;											// ボス
 	Pattern m_aPattern[mylib_const::MAX_PATTEN_ENEMY];			// 配置の種類
 	std::string sMotionFileName[mylib_const::MAX_PATTEN_ENEMY];	// モーションファイル名
 	STATE m_state;			// 状態

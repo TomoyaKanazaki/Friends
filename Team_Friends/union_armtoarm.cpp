@@ -318,13 +318,9 @@ void CUnion_ArntoArm::ControllATK(int nIdx, int nLoop)
 
 	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)) || pInputKeyboard->GetPress(DIK_RETURN) == true)
 #else
-	if (pInputGamepad->GetTrigger(CInputGamepad::BUTTON_B, nLoop))
-	{
-		m_state = STATE_APPEARANCE;	// ó‘Ô
-	}
-
+	
 	//if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)))
-		if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)) || pInputKeyboard->GetPress(DIK_RETURN) == true)
+	if (pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop))
 #endif
 	{// UŒ‚
 

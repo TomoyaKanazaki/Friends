@@ -332,6 +332,11 @@ void CCompactCore::CollisionPlayer(void)
 			continue;
 		}
 
+		if (CManager::GetInstance()->GetByPlayerPartsType(nCntPlayer) < 0)
+		{
+			continue;
+		}
+
 		// ƒvƒŒƒCƒ„[‚Ìî•ñŽæ“¾
 		D3DXVECTOR3 PlayerPosition = pPlayer->GetPosition();
 		//D3DXVECTOR3 PlayerPosition = pPlayer->GetCenterPosition();

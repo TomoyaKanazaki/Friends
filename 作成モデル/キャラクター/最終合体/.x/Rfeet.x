@@ -348,7 +348,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "union_feet_UV_Red.jpg";
+    "data\TEXTURE\union\SuperUnion\Feet\union_feet_UV_Green.jpg";
    }
   }
  }

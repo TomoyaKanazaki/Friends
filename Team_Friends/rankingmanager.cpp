@@ -22,8 +22,7 @@
 CRankingManager::CRankingManager()
 {
 	// 値のクリア
-	memset(&m_nNowScore[0], 0, sizeof(m_nNowScore));	// 今回のスコア
-
+	m_nNowScore = 0;
 }
 
 //==========================================================================
@@ -45,13 +44,13 @@ CRankingManager *CRankingManager::Create(void)
 	if (pManager == NULL)
 	{// NULLだったら
 
-		// メモリの確保
+	 // メモリの確保
 		pManager = DEBUG_NEW CRankingManager;
 
 		if (pManager != NULL)
 		{// メモリの確保が出来ていたら
 
-			// 初期化処理
+		 // 初期化処理
 			HRESULT hr = pManager->Init();
 
 			if (FAILED(hr))
@@ -88,10 +87,7 @@ void CRankingManager::Uninit(void)
 void CRankingManager::Reset(void)
 {
 	// 値のクリア
-	for (int nCntPlayer = 0; nCntPlayer < RANKINGNUM_PLAYER; nCntPlayer++)
-	{
-		m_nNowScore[nCntPlayer] = 0;	// 今回のスコア
-	}
+	m_nNowScore = 0;	// 今回のスコア
 }
 
 //==========================================================================
@@ -99,21 +95,21 @@ void CRankingManager::Reset(void)
 //==========================================================================
 void CRankingManager::Update(void)
 {
-	
+
 }
 
 //==========================================================================
 // 今回のスコア設定
 //==========================================================================
-void CRankingManager::SetNowScore(int nScore, int nPlayer)
+void CRankingManager::SetNowScore(int nScore)
 {
-	m_nNowScore[nPlayer] = nScore;
+	m_nNowScore = nScore;
 }
 
 //==========================================================================
 // 今回のスコア取得
 //==========================================================================
-int CRankingManager::GetNowScore(int nPlayer)
+int CRankingManager::GetNowScore(void)
 {
-	return m_nNowScore[nPlayer];
+	return m_nNowScore;
 }

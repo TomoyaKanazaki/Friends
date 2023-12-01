@@ -11,6 +11,7 @@
 #include "texture.h"
 #include "debugproc.h"
 #include "calculation.h"
+#include "number.h"
 
 //==========================================================================
 // マクロ定義
@@ -41,6 +42,17 @@ CObject3D::CObject3D(int nPriority) : CObject(nPriority)
 	m_fSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// サイズ
 	m_pVtxBuff = NULL;								// 頂点バッファ
 	m_nTexIdx = 0;									// テクスチャのインデックス番号
+
+
+	m_fTex[0] = D3DXVECTOR2(0.0f, 0.0f);			// テクスチャ座標
+	m_fTex[1] = D3DXVECTOR2(1.0f, 0.0f);			// テクスチャ座標
+	m_fTex[2] = D3DXVECTOR2(0.0f, 1.0f);			// テクスチャ座標
+	m_fTex[3] = D3DXVECTOR2(1.0f, 1.0f);			// テクスチャ座標
+
+	for (int nCntVtx = 4; nCntVtx < 32; nCntVtx++)
+	{
+		m_fTex[0] = D3DXVECTOR2(0.0f, 0.0f);			// テクスチャ座標
+	}
 }
 
 //==========================================================================
@@ -63,7 +75,7 @@ void CObject3D::BindTexture(int nIdx)
 //==========================================================================
 // 生成処理
 //==========================================================================
-CObject3D *CObject3D::Create(void)
+CObject3D *CObject3D::Create(int nPriority)
 {
 	// 生成用のオブジェクト
 	CObject3D *pObject3D = NULL;
@@ -71,13 +83,13 @@ CObject3D *CObject3D::Create(void)
 	if (pObject3D == NULL)
 	{// NULLだったら
 
-		// メモリの確保
-		pObject3D = DEBUG_NEW CObject3D;
+	 // メモリの確保
+		pObject3D = DEBUG_NEW CObject3D(nPriority);
 
 		if (pObject3D != NULL)
 		{// メモリの確保が出来ていたら
 
-			// 初期化処理
+		 // 初期化処理
 			pObject3D->Init();
 		}
 
@@ -98,13 +110,13 @@ CObject3D *CObject3D::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	if (pObject3D == NULL)
 	{// NULLだったら
 
-		// メモリの確保
+	 // メモリの確保
 		pObject3D = DEBUG_NEW CObject3D;
 
 		if (pObject3D != NULL)
 		{// メモリの確保が出来ていたら
 
-			// 初期化処理
+		 // 初期化処理
 			pObject3D->Init();
 
 			// 位置・向き
@@ -241,11 +253,11 @@ void CObject3D::SetVtx(void)
 	D3DXVECTOR3 size = GetSize();
 	D3DXCOLOR col = GetColor();
 
-		// 位置を更新
-		pVtx[0].pos = D3DXVECTOR3(-size.x, +size.y, +size.z);
-		pVtx[1].pos = D3DXVECTOR3(+size.x, +size.y, +size.z);
-		pVtx[2].pos = D3DXVECTOR3(-size.x, -size.y, -size.z);
-		pVtx[3].pos = D3DXVECTOR3(+size.x, -size.y, -size.z);
+	// 位置を更新
+	pVtx[0].pos = D3DXVECTOR3(-size.x, +size.y, +size.z);
+	pVtx[1].pos = D3DXVECTOR3(+size.x, +size.y, +size.z);
+	pVtx[2].pos = D3DXVECTOR3(-size.x, -size.y, -size.z);
+	pVtx[3].pos = D3DXVECTOR3(+size.x, -size.y, -size.z);
 
 	// 境界線のベクトル
 	D3DXVECTOR3 vecLine0 = pVtx[1].pos - pVtx[0].pos;
@@ -264,7 +276,7 @@ void CObject3D::SetVtx(void)
 		((vecLine0.y * vecLine1.z) - (vecLine0.z * vecLine1.y)),
 		((vecLine0.z * vecLine1.x) - (vecLine0.x * vecLine1.z)),
 		((vecLine0.x * vecLine1.y) - (vecLine0.y * vecLine1.x)));
-	
+
 	// 正規化
 	D3DXVec3Normalize(&Nor[0], &Nor[0]);
 
@@ -301,10 +313,16 @@ void CObject3D::SetVtx(void)
 	pVtx[3].col = col;
 
 	// テクスチャ座標の設定
-	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-	pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-	pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+	/*pVtx[0].tex = m_fTex[0];
+	pVtx[1].tex = m_fTex[1];
+	pVtx[2].tex = m_fTex[2];
+	pVtx[3].tex = m_fTex[3];*/
+
+	// テクスチャ座標の設定
+	pVtx[0].tex = m_fTex[0];
+	pVtx[1].tex = m_fTex[1];
+	pVtx[2].tex = m_fTex[2];
+	pVtx[3].tex = m_fTex[3];
 
 	// 頂点バッファをアンロックロック
 	m_pVtxBuff->Unlock();
@@ -388,6 +406,22 @@ void CObject3D::SetSize(const D3DXVECTOR3 size)
 D3DXVECTOR3 CObject3D::GetSize(void) const
 {
 	return m_fSize;
+}
+
+//==========================================================================
+// テクスチャ座標設定
+//==========================================================================
+void CObject3D::SetTex(D3DXVECTOR2 *tex)
+{
+	memcpy(&m_fTex[0], tex, sizeof(m_fTex));
+}
+
+//==========================================================================
+// テクスチャ座標取得
+//==========================================================================
+D3DXVECTOR2 *CObject3D::GetTex(void)
+{
+	return &m_fTex[0];
 }
 
 //==========================================================================

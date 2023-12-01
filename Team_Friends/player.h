@@ -57,7 +57,7 @@ public:
 	bool Hit(const int nValue);	// ヒット処理
 	virtual int GetState(void) override;
 
-	void GiveStatus(CGameManager::eStatus status);	// ステータス付与
+	bool GiveStatus(CGameManager::eStatus status);	// ステータス付与
 	void SetState(STATE state, int nCntState = 0);	// 状態設定
 	static CPlayer *Create(int nIdx);	// 生成
 	void UninitByMode(void);	// モード別終了

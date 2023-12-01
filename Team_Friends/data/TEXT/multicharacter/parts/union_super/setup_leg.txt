@@ -15,11 +15,11 @@ NUM_MODEL = 6
 # モデルファイル名
 #------------------------------------------------------------------------------
 MODEL_FILENAME = data\MODEL\union_SUPER\Lleg.x		# [11]左もも
-MODEL_FILENAME = data\MODEL\union_SUPER\Lfeet.x		# [12]左脚
-MODEL_FILENAME = data\MODEL\union_SUPER\Lfoot.x		# [13]左あし
+MODEL_FILENAME = data\MODEL\union_SUPER\Lshin.x		# [12]左脚
+MODEL_FILENAME = data\MODEL\union_SUPER\Lfeet.x		# [13]左あし
 MODEL_FILENAME = data\MODEL\union_SUPER\Rleg.x		# [14]右もも
-MODEL_FILENAME = data\MODEL\union_SUPER\Rfeet.x		# [15]右脚
-MODEL_FILENAME = data\MODEL\union_SUPER\Rfoot.x		# [16]右あし
+MODEL_FILENAME = data\MODEL\union_SUPER\Rshin.x		# [15]右脚
+MODEL_FILENAME = data\MODEL\union_SUPER\Rfeet.x		# [16]右あし
 
 #------------------------------------------------------------------------------
 # キャラクター情報

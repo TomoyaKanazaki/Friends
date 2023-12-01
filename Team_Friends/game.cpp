@@ -29,6 +29,7 @@
 #include "player.h"
 #include "player_union.h"
 #include "enemybase.h"
+#include "meshwall.h"
 
 //==========================================================================
 // Ã“Iƒƒ“ƒo•Ï”éŒ¾
@@ -145,6 +146,8 @@ HRESULT CGame::Init(void)
 #endif
 
 	CCompactCore::Create(D3DXVECTOR3(500.0f, 400.0f, 0.0f));
+
+	//CMeshWall::Create(D3DXVECTOR3(0.0f, 0.0f, 1500.0f), mylib_const::DEFAULT_VECTOR3, 200.0f, 200.0f, 8, 1);
 
 	// ¬Œ÷
 	return S_OK;

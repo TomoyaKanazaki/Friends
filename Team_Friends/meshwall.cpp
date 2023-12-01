@@ -10,25 +10,19 @@
 #include "texture.h"
 
 //==========================================================================
-// マクロ定義
+// 無名ネームスペース
 //==========================================================================
-
-//==========================================================================
-// 静的メンバ変数宣言
-//==========================================================================
-const char *CMeshWall::m_apFilename[] =		//ファイル読み込み
+namespace
 {
-	"data\\TEXTURE\\glass.jpg",
-	"data\\TEXTURE\\FIELD\\senter.png",
-};
+	const char* TEXTURE_DEFAULT = "data\\TEXTURE\\glass.jpg";	// デフォルトテクスチャ
+}
 
 //==========================================================================
 // コンストラクタ
 //==========================================================================
 CMeshWall::CMeshWall(int nPriority) : CObject3DMesh(nPriority)
 {
-	m_type = TYPE_NONE;	// 種類
-	m_nTexIdx = 0;			// テクスチャのインデックス番号
+	m_nTexIdx = 0;	// テクスチャのインデックス番号
 }
 
 //==========================================================================
@@ -40,9 +34,9 @@ CMeshWall::~CMeshWall()
 }
 
 //==========================================================================
-// 生成処理(オーバーロード)
+// 生成処理
 //==========================================================================
-CMeshWall *CMeshWall::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fWidthLen, float fHeightLen, int nWidth, int nHeight, TYPE type, const char *aFileName)
+CMeshWall *CMeshWall::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fWidthLen, float fHeightLen, int nWidth, int nHeight, int nPriority, const char *aFileName)
 {
 	// 生成用のオブジェクト
 	CMeshWall *pObjMeshField = NULL;
@@ -51,16 +45,7 @@ CMeshWall *CMeshWall::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fWidthLen, 
 	{// NULLだったら
 
 		// メモリの確保
-		switch (type)
-		{
-		case TYPE_GRASS:
-			pObjMeshField = DEBUG_NEW CMeshWall(7);
-			break;
-
-		default:
-			pObjMeshField = DEBUG_NEW CMeshWall;
-			break;
-		}
+		pObjMeshField = DEBUG_NEW CMeshWall;
 
 		if (pObjMeshField != NULL)
 		{// メモリの確保が出来ていたら
@@ -73,13 +58,12 @@ CMeshWall *CMeshWall::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fWidthLen, 
 			pObjMeshField->SetHeightBlock(nHeight);
 			pObjMeshField->SetWidthLen(fWidthLen);
 			pObjMeshField->SetHeightLen(fHeightLen);
-			pObjMeshField->m_type = type;	// 種類
 
 			if (aFileName == NULL)
 			{// NULLだったら
 
 				// テクスチャの割り当て
-				pObjMeshField->m_nTexIdx = CManager::GetInstance()->GetTexture()->Regist(m_apFilename[pObjMeshField->m_type]);
+				pObjMeshField->m_nTexIdx = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_DEFAULT);
 			}
 			else
 			{// ファイル名が入っていたら
@@ -116,7 +100,6 @@ HRESULT CMeshWall::Init(void)
 
 	// オブジェクト3Dメッシュの初期化処理
 	hr = CObject3DMesh::Init(CObject3DMesh::TYPE_WALL);
-
 	if (FAILED(hr))
 	{// 失敗していたら
 		return E_FAIL;
@@ -148,18 +131,8 @@ void CMeshWall::Update(void)
 //==========================================================================
 void CMeshWall::Draw(void)
 {
-	//  デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
-
-	if (CManager::GetInstance()->IsWireframe() == true)
-	{
-		pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);	// ワイヤーフレームモード
-	}
-
 	// 描画処理
 	CObject3DMesh::Draw();
-
-	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);	// 埋めるモード
 }
 
 //==========================================================================

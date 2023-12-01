@@ -90,6 +90,7 @@ namespace
 	const int FADEOUTTIME = 60;			// フェードアウトの時間
 	const int MAX_ATKCOMBO = 2;			// 攻撃コンボの最大数
 	const int INTERVAL_ATK = 15;		// 攻撃の猶予
+	const int MAX_BUFFSTATUS = 100;		// ステータスのバフ最大値
 }
 
 bool CPlayer::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
@@ -1485,28 +1486,43 @@ bool CPlayer::Hit(const int nValue)
 //==========================================================================
 // ステータス付与
 //==========================================================================
-void CPlayer::GiveStatus(CGameManager::eStatus status)
+bool CPlayer::GiveStatus(CGameManager::eStatus status)
 {
+	// 取得判定
+	bool bGet = false;
+
 	// 強化
 	int nStatus = 0;
 	switch (status)
 	{
 	case CGameManager::STATUS_POWER:
-		m_sStatus.nPower++;
+		if (m_sStatus.nPower <= MAX_BUFFSTATUS)
+		{
+			m_sStatus.nPower++;
+			bGet = true;
+		}
 		nStatus = m_sStatus.nPower;
 		break;
 
 	case CGameManager::STATUS_SPEED:
-		m_sStatus.nSpeed++;
+		if (m_sStatus.nSpeed <= MAX_BUFFSTATUS)
+		{
+			m_sStatus.nSpeed++;
+			bGet = true;
+		}
 		nStatus = m_sStatus.nSpeed;
 		break;
 
 	case CGameManager::STATUS_LIFE:
-		m_sStatus.nLife++;
+		if (m_sStatus.nLife <= MAX_BUFFSTATUS)
+		{
+			m_sStatus.nLife++;
+			bGet = true;
+		}
 		break;
 	}
 
-	float fRate = (float)nStatus / (float)100;
+	float fRate = (float)nStatus / (float)MAX_BUFFSTATUS;
 
 	// バフ計算
 	m_sStatus.fPowerBuff = 1.0f + ((float)m_sStatus.nPower * 0.05f);
@@ -1523,6 +1539,7 @@ void CPlayer::GiveStatus(CGameManager::eStatus status)
 			pStatusWindow->GetGauge(status)->SetRateDest(fRate);
 		}
 	}
+	return bGet;
 }
 
 //==========================================================================

@@ -1,6 +1,6 @@
 //==========================================
 //
-//  突撃敵(enemy_tackle.cpp)
+//  砲台中ボス敵(enemy_turret.cpp)
 //  Author : Kai Takada
 //
 //==========================================
@@ -11,13 +11,13 @@
 #include "calculation.h"
 #include "hp_gauge.h"
 #include "particle.h"
+#include "particle.h"
 
 //==========================================
 //  定数定義
 //==========================================
 namespace
 {
-	const float SEARCH_LENGTH = 400.0f;
 	const float ATTACK_LENGTH = 200.0f;
 	const float MOVE_SPEED = 0.01f;
 	const float ATTACK_SPEED = 10.0f;
@@ -35,6 +35,7 @@ namespace
 //==========================================
 CEnemyTurret::CEnemyTurret(int nPriority) :
 	m_Act(ACTION_ROAMING),
+	m_Atk(ATTACK_NONE),
 	m_fActionCount(0.0f),
 	m_moveLock(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_fRotLock(0.0f)
@@ -185,15 +186,7 @@ void CEnemyTurret::MotionSet(void)
 		// 現在の種類取得
 		int nType = m_pMotion->GetType();
 
-		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockback == false)
-		{// 移動していたら
-			// 攻撃していない
-			m_sMotionFrag.bATK = false;
-
-			// 移動モーション
-			m_pMotion->Set(MOTION_WALK);
-		}
-		else if (m_sMotionFrag.bKnockback == true)
+		if (m_sMotionFrag.bKnockback == true)
 		{// やられ中だったら
 
 			// やられモーション
@@ -205,7 +198,14 @@ void CEnemyTurret::MotionSet(void)
 			m_sMotionFrag.bATK = false;		// 攻撃判定OFF
 
 			// 攻撃モーション
-			m_pMotion->Set(MOTION_ATK);
+			if (m_Atk == ATTACK_BEAM)
+			{
+				m_pMotion->Set(MOTION_ATK_BEAM);
+			}
+			else if (m_Atk == ATTACK_MORTAR)
+			{
+				m_pMotion->Set(MOTION_ATK_MORTAR);
+			}
 		}
 		else
 		{
@@ -254,13 +254,12 @@ void CEnemyTurret::ActionSet(void)
 
 	if (m_Act == ACTION_ROAMING)
 	{
-		if (SearchPlayer(SEARCH_LENGTH))
-		{// 索敵
+		//攻撃に移行
+		//攻撃の決定方法どうする
 
-			// 距離が近いと攻撃状態になる
-			m_Act = ACTION_READY;
-			m_fActionCount = 0.0f;
-		}
+		// 距離が近いと攻撃状態になる
+		m_Act = ACTION_READY;
+		m_fActionCount = 0.0f;
 	}
 }
 
@@ -426,26 +425,30 @@ bool CEnemyTurret::SearchPlayer(float fLen)
 	//float fRot = SEARCH_ROT * D3DX_PI / 180;
 	float fRot = 0.785f;
 
-	posL.x = pos.x + sinf(rot.y + fRot) * SEARCH_LENGTH;
-	posL.z = pos.z + cosf(rot.y + fRot) * SEARCH_LENGTH;
-	posR.x = pos.x + sinf(rot.y + -fRot) * SEARCH_LENGTH;
-	posR.z = pos.z + cosf(rot.y + -fRot) * SEARCH_LENGTH;
 
-	// プレイヤー情報
-	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
-	if (pPlayer == NULL)
+	//プレイヤーの人数を把握
+
+	//一番近いやつを標的にする
+	for (int nCnt = 0; nCnt < mylib_const::MAX_PLAYER; nCnt++)
 	{
-		return false;
+		// プレイヤー情報
+		CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCnt);
+		if (pPlayer == NULL)
+		{
+			continue;
+		}
 	}
+
+
 
 	// プレイヤーの位置取得
-	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+	//D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 
-	// 一定範囲内の判定
-	if (CollisionFan(pos, posL, posR, posPlayer, fRot))
-	{
-		return true;
-	}
+	//// 一定範囲内の判定
+	//if (CollisionFan(pos, posL, posR, posPlayer, fRot))
+	//{
+	//	return true;
+	//}
 
 	return false;
 }

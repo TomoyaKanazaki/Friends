@@ -105,7 +105,7 @@ HRESULT CResultScore::Init(void)
 	if (CManager::GetInstance()->GetResultManager() != nullptr)
 	{
 		m_nToatalNumDest = CManager::GetInstance()->GetResultManager()->GetToatalScore();
-		CManager::GetInstance()->GetRankingManager()->SetNowScore(m_nToatalNumDest, 0);
+		CManager::GetInstance()->GetRankingManager()->SetNowScore(m_nToatalNumDest);
 	}
 	
 	return S_OK;
@@ -229,7 +229,7 @@ void CResultScore::MoveToatalScore(void)
 		if (CManager::GetInstance()->GetResultManager() != nullptr)
 		{
 			m_nToatalNumDest = CManager::GetInstance()->GetResultManager()->GetToatalScore();
-			CManager::GetInstance()->GetRankingManager()->SetNowScore(m_nToatalNumDest, 0);
+			CManager::GetInstance()->GetRankingManager()->SetNowScore(m_nToatalNumDest);
 		}
 
 		if (m_nToatalNumDest > m_nToatalNum)

@@ -37,6 +37,7 @@ public:
 		TYPE_ROAMING, // 徘徊
 		TYPE_ESCAPE, // メタルスライム
 		TYPE_TACKLE, // 突撃猪
+		TYPE_TURRET, // 中ボス
 		TYPE_MAX
 	}TYPE;
 

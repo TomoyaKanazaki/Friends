@@ -83,6 +83,11 @@ HRESULT CGame::Init(void)
 
 
 	//**********************************
+	// エリア制限マネージャ
+	//**********************************
+	m_pLimitEreaManager = CLimitEreaManager::Create();
+
+	//**********************************
 	// 敵の拠点
 	//**********************************
 	m_pEnemyBase = CEnemyBase::Create("data\\TEXT\\enemydata\\base.txt");
@@ -129,10 +134,6 @@ HRESULT CGame::Init(void)
 	//**********************************
 	m_pBulletManager = CBulletManager::Create();
 
-	//**********************************
-	// エリア制限マネージャ
-	//**********************************
-	m_pLimitEreaManager = CLimitEreaManager::Create();
 
 	// ステージ
 	m_pStage = CStage::Create("data\\TEXT\\stage\\info.txt");

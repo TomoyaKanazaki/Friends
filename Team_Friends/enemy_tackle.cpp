@@ -10,6 +10,9 @@
 #include "debugproc.h"
 #include "calculation.h"
 #include "hp_gauge.h"
+#include "bullet.h"
+
+//デバッグ
 #include "particle.h"
 
 //==========================================
@@ -28,6 +31,7 @@ namespace
 	const float AFTER_TIME = 2.0f;
 	const float SEARCH_ROT = 45.0f;
 	const float AFTER_FIXROT = 0.07f;
+	const float FIXROT_GRACE = 0.5f;
 }
 
 //==========================================
@@ -141,7 +145,10 @@ void CEnemyTackle::UpdateAction(void)
 		//デバッグ用
 		my_particle::Create(pos, my_particle::TYPE_SMOKE);
 
-		FixRotation();
+		if (m_fActionCount > FIXROT_GRACE)
+		{//猶予が過ぎたら方向転換
+			FixRotation();
+		}
 
 		break;
 

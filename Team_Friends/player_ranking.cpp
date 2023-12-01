@@ -15,6 +15,13 @@
 #include "shadow.h"
 #include "player_union.h"
 
+//==========================================================================
+// マクロ定義
+//==========================================================================
+#define SPIN_TIME			(3.0f)		// スピンの一回転の時間
+#define MOVE_SPEED			(4)			// 移動の速さ
+#define MOVE_CHANGE			(6)			// 動きが変わるまでの時間
+
 //==========================================
 //  定数定義 : 金崎朋弥
 //==========================================
@@ -26,9 +33,9 @@ namespace
 		//"data\\TEXT\\multicharacter\\BodytoArm.txt", // 合体ファイルパス
 		//"data\\TEXT\\multicharacter\\LegtoArm.txt", // 合体ファイルパス
 		"data\\TEXT\\multicharacter\\ArmtoArm.txt", // 合体ファイルパス
-		"data\\TEXT\\multicharacter\\ArmtoArm.txt", // 合体ファイルパス
-		"data\\TEXT\\multicharacter\\ArmtoArm.txt", // 合体ファイルパス
-		"data\\TEXT\\multicharacter\\ArmtoArm.txt", // 合体ファイルパス
+		"data\\TEXT\\multicharacter\\BodytoArm.txt", // 合体ファイルパス
+		"data\\TEXT\\multicharacter\\BodytoLeg.txt", // 合体ファイルパス
+		"data\\TEXT\\multicharacter\\LegtoArm.txt", // 合体ファイルパス
 	};
 }
 
@@ -135,19 +142,22 @@ void CPlayerRanking::Update(void)
 
 	switch (m_nType)
 	{
+	case CPlayerRanking::ARMtoARM:
+		ARMtoARMMove();
+		break;
+
 	case CPlayerRanking::BODYtoLEG:
+		BODYtoLEGMove();
 		ARMtoARMMove();
 		break;
 
 	case CPlayerRanking::BODYtoARM:
+		BODYtoARMMove();
 		ARMtoARMMove();
 		break;
 
 	case CPlayerRanking::LEGtoARM:
-		ARMtoARMMove();
-		break;
-
-	case CPlayerRanking::ARMtoARM:
+		LEGtoARMMove();
 		ARMtoARMMove();
 		break;
 
@@ -212,6 +222,30 @@ HRESULT CPlayerRanking::CreateParts(void)
 //==========================================================================
 // パーツの設定
 //==========================================================================
+void CPlayerRanking::BODYtoLEGMove(void)
+{
+	
+}
+
+//==========================================================================
+// パーツの設定
+//==========================================================================
+void CPlayerRanking::BODYtoARMMove(void)
+{
+
+}
+
+//==========================================================================
+// パーツの設定
+//==========================================================================
+void CPlayerRanking::LEGtoARMMove(void)
+{
+
+}
+
+//==========================================================================
+// パーツの設定
+//==========================================================================
 void CPlayerRanking::ARMtoARMMove(void)
 {
 	m_nMovePtaCnt++;
@@ -220,16 +254,16 @@ void CPlayerRanking::ARMtoARMMove(void)
 
 	D3DXVECTOR3 pos = GetPosition();
 
-	pos.x -= sinf(GetRotation().y) * 5;
-	pos.z -= cosf(GetRotation().y) * 5;
+	pos.x -= sinf(GetRotation().y) * MOVE_SPEED;
+	pos.z -= cosf(GetRotation().y) * MOVE_SPEED;
 
 	SetPosition(pos);
 
 	D3DXVECTOR3 rot = GetRotation();
 
-	if (m_nMovePtaCnt >= 60 * 5 && m_nSpinCnt < 3)
+	if (m_nMovePtaCnt >= 60 * MOVE_CHANGE && m_nSpinCnt < 3)
 	{
-		rot.y -= 0.04f;
+		rot.y -= D3DX_PI * 2 / 60 / SPIN_TIME;
 
 		//
 		if (rot.y <= -D3DX_PI / 2 && m_bRight == true)
@@ -260,7 +294,7 @@ void CPlayerRanking::ARMtoARMMove(void)
 			m_bLeft = true;
 		}
 
-		if (m_bLeft == false && m_bOldLeft== true)
+		if (m_bLeft == false && m_bOldLeft == true)
 		{
 			m_nSpinCnt++;
 		}

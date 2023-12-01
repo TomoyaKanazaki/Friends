@@ -22,10 +22,10 @@ public:
 	//タイプ
 	enum MODEL
 	{
+		ARMtoARM = 0, //
 		BODYtoLEG,
 		BODYtoARM,
 		LEGtoARM,
-		ARMtoARM, //
 		MAX,
 	};
 
@@ -45,6 +45,9 @@ public:
 
 private:
 
+	void BODYtoLEGMove(void);
+	void BODYtoARMMove(void);
+	void LEGtoARMMove(void);
 	void ARMtoARMMove(void);
 
 	//メンバ変数

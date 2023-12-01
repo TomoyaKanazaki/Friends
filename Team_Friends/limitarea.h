@@ -18,6 +18,15 @@ class CLimitErea : public CObject
 {
 public:
 
+	//モーション列挙
+	enum STATE
+	{
+		STATE_DEF = 0,	// 無し
+		STATE_INIT,		// 出現
+		STATE_FADEOUT,	// 消滅
+		STATE_MAX
+	};
+
 	// エリア構造体
 	struct sLimitEreaInfo
 	{
@@ -40,12 +49,16 @@ public:
 
 	static CLimitErea *Create(sLimitEreaInfo info);
 	sLimitEreaInfo GetLimitEreaInfo(void);
+	STATE GetState(void);
+	void CLimitErea::SetState(CLimitErea::STATE state);
+
 protected:
 
 private:
 
 	void UpdateColor(int nIdx);
 
+	STATE m_state;
 	CMeshWall *m_pMeshWall[mylib_const::SHAPE_LIMITEREA];	// メッシュウォールのオブジェクト
 	sLimitEreaInfo m_sLimitEreaInfo;	// エリア制限情報
 	int m_nIdxEreaManager;				// エリア制限マネージャのインデックス番号

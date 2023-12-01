@@ -8,6 +8,7 @@
 
 // 派生先
 #include "number_2D.h"
+#include "number_3D.h"
 #include "number_Billboard.h"
 
 //==========================================================================
@@ -51,6 +52,10 @@ CNumber *CNumber::Create(EObjectType objtype, int nPriority)
 		{
 		case CNumber::OBJECTTYPE_2D:
 			pNumber = DEBUG_NEW CNumber2D;
+			break;
+
+		case CNumber::OBJECTTYPE_3D:
+			pNumber = DEBUG_NEW CNumber3D(nPriority);
 			break;
 
 		case CNumber::OBJECTTYPE_BILLBOARD:
@@ -174,6 +179,21 @@ D3DXVECTOR2 CNumber::GetSizeOrigin(void) const
 }
 
 //==========================================================================
+// サイズ設定
+//==========================================================================
+void CNumber::SetSize3D(const D3DXVECTOR3 size)
+{
+}
+
+//==========================================================================
+// サイズ取得
+//==========================================================================
+D3DXVECTOR3 CNumber::GetSize3D(void) const
+{
+	return D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+}
+
+//==========================================================================
 // テクスチャ座標設定
 //==========================================================================
 void CNumber::SetTex(D3DXVECTOR2 *tex)
@@ -192,6 +212,14 @@ D3DXVECTOR2 *CNumber::GetTex(void)
 // オブジェクト2Dオブジェクトの取得
 //==========================================================================
 CObject2D *CNumber::GetObject2D(void)
+{
+	return NULL;
+}
+
+//==========================================================================
+// オブジェクト2Dオブジェクトの取得
+//==========================================================================
+CObject3D *CNumber::GetObject3D(void)
 {
 	return NULL;
 }

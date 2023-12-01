@@ -18,7 +18,7 @@ namespace
 {
 	const float SEARCH_LENGTH = 400.0f;
 	const float MOVE_SPEED = 0.03f;
-	const float ESCAPE_SPEED = 0.0f;
+	const float ESCAPE_SPEED = 5.00f;
 	const float MOVE_X = 2.0f;
 	const float MOVE_Z = 2.0f;
 	const float FIND_TIME = 0.5f;

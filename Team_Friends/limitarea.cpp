@@ -35,6 +35,7 @@ CLimitErea::CLimitErea(int nPriority) : CObject(nPriority)
 	memset(&m_pMeshWall[0], NULL, sizeof(m_pMeshWall));	// メッシュウォールのオブジェクト
 	memset(&m_sLimitEreaInfo, NULL, sizeof(m_sLimitEreaInfo));	// エリア制限情報
 	m_nIdxEreaManager = 0;			// エリア制限マネージャのインデックス番号
+	m_state = STATE_DEF;
 }
 
 //==========================================================================
@@ -123,6 +124,9 @@ HRESULT CLimitErea::Init(void)
 		m_pMeshWall[i] = CMeshWall::Create(WallPos[i], D3DXVECTOR3(0.0f, D3DX_PI + fRot * i, 0.0f), fWidthLen[i] / (float)nBlock, fWidthLen[i] / (float)nBlock, nBlock, 1, 7, TEXTURE_DEFAULT);
 		m_pMeshWall[i]->SetType(CObject::TYPE_NONE);
 	}
+
+	//出現状態に
+	m_state = STATE_INIT;
 
 	// 割り当て
 	m_nIdxEreaManager = CGame::GetLimitEreaManager()->Regist(this);
@@ -326,4 +330,20 @@ void CLimitErea::Draw(void)
 CLimitErea::sLimitEreaInfo CLimitErea::GetLimitEreaInfo(void)
 {
 	return m_sLimitEreaInfo;
+}
+
+//==========================================================================
+// 状態取得
+//==========================================================================
+CLimitErea::STATE CLimitErea::GetState(void)
+{
+	return m_state;
+}
+
+//==========================================================================
+// 状態取得
+//==========================================================================
+void CLimitErea::SetState(CLimitErea::STATE state)
+{
+	m_state = state;
 }

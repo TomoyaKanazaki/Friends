@@ -231,6 +231,7 @@
     <ClCompile Include="multinumber.cpp" />
     <ClCompile Include="number.cpp" />
     <ClCompile Include="number_2D.cpp" />
+    <ClCompile Include="number_3D.cpp" />
     <ClCompile Include="number_Billboard.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="object2D.cpp" />
@@ -356,6 +357,7 @@
     <ClInclude Include="multinumber.h" />
     <ClInclude Include="number.h" />
     <ClInclude Include="number_2D.h" />
+    <ClInclude Include="number_3D.h" />
     <ClInclude Include="number_Billboard.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="object2D.h" />

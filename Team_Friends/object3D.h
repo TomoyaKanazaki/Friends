@@ -40,8 +40,10 @@ public:
 	D3DXCOLOR GetColor(void) const;				// 色取得
 	void SetSize(const D3DXVECTOR3 size);		// サイズの設定
 	D3DXVECTOR3 GetSize(void) const;			// サイズの取得
+	virtual void SetTex(D3DXVECTOR2 *tex);				// テクスチャ座標の設定
+	virtual D3DXVECTOR2 *GetTex(void);					// テクスチャ座標の取得
 
-	static CObject3D *Create();
+	static CObject3D *Create(int nPriority);
 	static CObject3D *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 	CObject3D *GetObject3D(void);
 	virtual CObject3DMesh *GetObject3DMesh(void);
@@ -51,6 +53,7 @@ private:
 	D3DXMATRIX	m_mtxWorld;		// ワールドマトリックス
 	D3DXVECTOR3 m_posOrigin;	// 元の位置
 	D3DXVECTOR3 m_rotOrigin;	// 元の向き
+	D3DXVECTOR2 m_fTex[32];		// テクスチャ座標
 	D3DXCOLOR m_col;			// 色
 	D3DXVECTOR3 m_fSize;		// サイズ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファ

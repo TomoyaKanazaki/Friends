@@ -10,11 +10,13 @@
 
 #include "main.h"
 #include "object2D.h"
+#include "object3D.h"
 
 //==========================================================================
 // 前方宣言
 //==========================================================================
 class CObject2D;
+class CObject3D;
 class CObjectBillboard;
 
 //==========================================================================
@@ -29,6 +31,7 @@ public:
 	enum EObjectType
 	{
 		OBJECTTYPE_2D = 0,		// 2D
+		OBJECTTYPE_3D,			// 3D
 		OBJECTTYPE_BILLBOARD,	// ビルボード
 		OBJECTTYPE_MAX
 	};
@@ -59,6 +62,8 @@ public:
 	virtual D3DXVECTOR2 GetSize(void) const;			// サイズの取得
 	virtual void SetSizeOrigin(const D3DXVECTOR2 size);	// 元のサイズの設定
 	virtual D3DXVECTOR2 GetSizeOrigin(void) const;		// 元のサイズの取得
+	virtual void SetSize3D(const D3DXVECTOR3 size);		// サイズの設定
+	virtual D3DXVECTOR3 GetSize3D(void) const;			// サイズの取得
 	virtual void SetTex(D3DXVECTOR2 *tex);				// テクスチャ座標の設定
 	virtual D3DXVECTOR2 *GetTex(void);					// テクスチャ座標の取得
 
@@ -67,6 +72,7 @@ public:
 	virtual void SetType(const CObject::TYPE type) = 0;
 
 	virtual CObject2D *GetObject2D(void);
+	virtual CObject3D *GetObject3D(void);
 	virtual CObjectBillboard *GetObjectBillboard(void);
 
 private:

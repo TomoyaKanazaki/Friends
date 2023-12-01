@@ -25,6 +25,7 @@ class CHitScore;
 class CStatusWindow;
 
 class CEnemyManager;
+class CLimitEreaManager;
 class CPlayer;
 class CEnemyBase;
 
@@ -58,6 +59,7 @@ public:
 	static CScore *GetScore(void);
 	static CEditEnemyBase *GetEditEnemyBase(void);
 	static CBulletManager *GetBulletManager(void);
+	static CLimitEreaManager *GetLimitEreaManager(void);
 	static CStage *GetStage(void);
 	static CGameManager *GetGameManager(void);
 	static CStatusWindow *GetStatusWindow(int nIdx);
@@ -74,6 +76,7 @@ private:
 	// メンバ変数
 	static CScore *m_pScore;					// スコアのオブジェクト
 	static CBulletManager *m_pBulletManager;		// 弾マネージャのオブジェクト
+	static CLimitEreaManager *m_pLimitEreaManager;		// エリア制限マネージャのオブジェクト
 	static CEditEnemyBase *m_pEditEnemyBase;		// 敵の拠点エディター
 	static CStage *m_pStage;	// ステージのオブジェクト
 	static CGameManager *m_pGameManager;	// ゲームマネージャのオブジェクト

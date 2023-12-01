@@ -441,6 +441,12 @@
     <ClCompile Include="enemy_turret.cpp">
       <Filter>enemy</Filter>
     </ClCompile>
+    <ClCompile Include="limitarea.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="limitereamanager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -793,6 +799,12 @@
     </ClInclude>
     <ClInclude Include="enemy_turret.h">
       <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="limitarea.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="limitereamanager.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

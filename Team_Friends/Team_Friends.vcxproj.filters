@@ -429,8 +429,6 @@
     <ClCompile Include="player_ranking.cpp">
       <Filter>ランキング触るよ</Filter>
     </ClCompile>
-    <ClCompile Include="number_3D.cpp">
-      <Filter>ソース ファイル</Filter>
     <ClCompile Include="enemy_tackle.cpp">
       <Filter>enemy</Filter>
     </ClCompile>
@@ -448,7 +446,6 @@
     </ClCompile>
     <ClCompile Include="limitereamanager.cpp">
       <Filter>ソース ファイル</Filter>
-    </ClCompile>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -807,9 +804,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="limitereamanager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="number_3D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,7 +11,6 @@
 #include "texture.h"
 #include "debugproc.h"
 #include "calculation.h"
-#include "number.h"
 
 //==========================================================================
 // マクロ定義
@@ -42,17 +41,6 @@ CObject3D::CObject3D(int nPriority) : CObject(nPriority)
 	m_fSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// サイズ
 	m_pVtxBuff = NULL;								// 頂点バッファ
 	m_nTexIdx = 0;									// テクスチャのインデックス番号
-
-	
-	m_fTex[0] = D3DXVECTOR2(0.0f, 0.0f);			// テクスチャ座標
-	m_fTex[1] = D3DXVECTOR2(1.0f, 0.0f);			// テクスチャ座標
-	m_fTex[2] = D3DXVECTOR2(0.0f, 1.0f);			// テクスチャ座標
-	m_fTex[3] = D3DXVECTOR2(1.0f, 1.0f);			// テクスチャ座標
-
-	for (int nCntVtx = 4; nCntVtx < 32; nCntVtx++)
-	{
-		m_fTex[0] = D3DXVECTOR2(0.0f, 0.0f);			// テクスチャ座標
-	}
 }
 
 //==========================================================================
@@ -75,7 +63,7 @@ void CObject3D::BindTexture(int nIdx)
 //==========================================================================
 // 生成処理
 //==========================================================================
-CObject3D *CObject3D::Create(int nPriority)
+CObject3D *CObject3D::Create(void)
 {
 	// 生成用のオブジェクト
 	CObject3D *pObject3D = NULL;
@@ -84,7 +72,7 @@ CObject3D *CObject3D::Create(int nPriority)
 	{// NULLだったら
 
 		// メモリの確保
-		pObject3D = DEBUG_NEW CObject3D(nPriority);
+		pObject3D = DEBUG_NEW CObject3D;
 
 		if (pObject3D != NULL)
 		{// メモリの確保が出来ていたら
@@ -313,16 +301,10 @@ void CObject3D::SetVtx(void)
 	pVtx[3].col = col;
 
 	// テクスチャ座標の設定
-	/*pVtx[0].tex = m_fTex[0];
-	pVtx[1].tex = m_fTex[1];
-	pVtx[2].tex = m_fTex[2];
-	pVtx[3].tex = m_fTex[3];*/
-
-	// テクスチャ座標の設定
-	pVtx[0].tex = m_fTex[0];
-	pVtx[1].tex = m_fTex[1];
-	pVtx[2].tex = m_fTex[2];
-	pVtx[3].tex = m_fTex[3];
+	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+	pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+	pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
 
 	// 頂点バッファをアンロックロック
 	m_pVtxBuff->Unlock();
@@ -406,22 +388,6 @@ void CObject3D::SetSize(const D3DXVECTOR3 size)
 D3DXVECTOR3 CObject3D::GetSize(void) const
 {
 	return m_fSize;
-}
-
-//==========================================================================
-// テクスチャ座標設定
-//==========================================================================
-void CObject3D::SetTex(D3DXVECTOR2 *tex)
-{
-	memcpy(&m_fTex[0], tex, sizeof(m_fTex));
-}
-
-//==========================================================================
-// テクスチャ座標取得
-//==========================================================================
-D3DXVECTOR2 *CObject3D::GetTex(void)
-{
-	return &m_fTex[0];
 }
 
 //==========================================================================

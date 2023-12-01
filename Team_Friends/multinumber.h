@@ -32,11 +32,11 @@ public:
 		ALIGNMENT_MAX
 	};
 
-	CMultiNumber(int nPriority = 8);
+	CMultiNumber(int nPriority = 6);
 	~CMultiNumber();
 
-	static CMultiNumber *Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, CNumber::EObjectType objtype, bool bDigitDraw = false, int nPriority = 8);
-	static CMultiNumber *Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, CNumber::EObjectType objtype, const char *pTextureFile, bool bDigitDraw = false, int nPriority = 8);
+	static CMultiNumber *Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, CNumber::EObjectType objtype, bool bDigitDraw = false, int nPriority = 6);
+	static CMultiNumber *Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, CNumber::EObjectType objtype, const char *pTextureFile, bool bDigitDraw = false, int nPriority = 6);
 
 	// メンバ関数
 	HRESULT Init(void);
@@ -50,8 +50,6 @@ public:
 	int GetValue(void);			// 値の取得処理
 	void SetPosition(const D3DXVECTOR3 pos);	// 位置設定
 	D3DXVECTOR3 GetPosition(void) const;		// 位置取得
-	void SetRotation(const D3DXVECTOR3 pos);	// 位置設定
-	D3DXVECTOR3 GetRotation(void) const;		// 位置取得
 	void SetColor(const D3DXCOLOR col);			// 色設定
 	D3DXCOLOR GetColor(void) const;				// 色取得
 	void Release(void);	// 開放処理
@@ -60,7 +58,6 @@ private:
 
 	// メンバ変数
 	D3DXVECTOR3 m_pos;				// 位置
-	D3DXVECTOR3 m_rot;				// 向き
 	D3DXCOLOR m_col;				// 色
 	D3DXVECTOR2 size;				// 数字のサイズ
 	int m_nNum;						// 数字

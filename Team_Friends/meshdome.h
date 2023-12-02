@@ -29,7 +29,7 @@ public:
 	void SetVtx(void);
 
 	static CMeshDome *Create();
-	static CMeshDome *Create(const float fMove, const char *aFileName = NULL, const int nWidth = 16, const int nHeight = 8, int nPriority = mylib_const::DEFAULT_PRIORITY);
+	static CMeshDome *Create(const float fMove, const char *aFileName = NULL, const int nWidth = 16, const int nHeight = 8, int nPriority = mylib_const::PRIORITY_DEFAULT);
 	CMeshDome *GetMyObject(void);
 
 private:

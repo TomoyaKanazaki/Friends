@@ -14,7 +14,7 @@
 //==========================================================================
 // クラス定義
 //==========================================================================
-// 弾クラス定義
+// エフェクトクラス定義
 class CEffect3D : public CObjectBillboard
 {
 public:
@@ -33,6 +33,7 @@ public:
 	typedef enum
 	{
 		TYPE_NORMAL = 0,	// 通常エフェクト
+		TYPE_POINT,			// 点
 		TYPE_SMOKE,			// 煙エフェクト
 		TYPE_SMOKEBLACK,	// 黒煙
 		TYPE_BLACK,			// 黒エフェクト
@@ -48,7 +49,7 @@ public:
 		TYPE_MAX
 	}TYPE;
 
-	CEffect3D(int nPriority = 5);
+	CEffect3D(int nPriority = mylib_const::PRIORITY_EFFECT3D);
 	~CEffect3D();
 
 	static CEffect3D *Create(void);
@@ -63,8 +64,9 @@ public:
 	void Draw(void);
 	void SetVtx(void);
 
+	void SetPositionDest(D3DXVECTOR3 pos);	// 目標の位置設定
 	void SetEnableGravity(void) { m_bGravity = true; }	// 重力有効
-	void SetGravityValue(float fValue) { m_fGravity = fValue; }
+	void SetGravityValue(float fValue);					// 重力の値設定
 	void SetUp(D3DXVECTOR3 setup, CObject *pObj, int nParentIdx);	// セットアップ
 	void UpdatePosition(D3DXVECTOR3 pos, D3DXVECTOR3 rot);	// 位置更新
 	void UninitParent(void);	// 親の破棄
@@ -73,6 +75,7 @@ public:
 private:
 
 	// メンバ関数
+	void UpdateMove(void);	// 移動処理
 	void SubSize(void);
 	void SuperSubSize(void);
 	void AddSize(void);
@@ -82,6 +85,7 @@ private:
 	D3DXVECTOR3 m_posOrigin;		// 原点
 	D3DXVECTOR3 m_updatePosition;	// 更新後の位置
 	D3DXVECTOR3 m_setupPosition;	// セットアップ位置
+	D3DXVECTOR3 m_posDest;			// 目標の位置
 	D3DXCOLOR m_colOrigin;		// 色
 	float m_fRadius;			// 半径
 	float m_fMaxRadius;			// 最大半径
@@ -95,6 +99,7 @@ private:
 	int m_nParentIdx;			// 親のインデックス番号
 	bool m_bAddAlpha;			// 加算合成の判定
 	bool m_bGravity;			// 重力のフラグ
+	bool m_bChaseDest;			// 目標の位置へ向かうフラグ
 	TYPE m_nType;				// 種類
 	CObject *m_pParent;			// 親のポインタ
 	static const char *m_apTextureFile[];			// テクスチャのファイル

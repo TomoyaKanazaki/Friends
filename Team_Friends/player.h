@@ -10,6 +10,7 @@
 
 #include "gamemanager.h"
 #include "objectChara.h"
+#include "motion.h"
 
 //==========================================================================
 // マクロ定義
@@ -17,7 +18,6 @@
 #define SLIDEMOVE		(2.05f)			// 坂の移動量
 
 // 前方宣言
-class CMotion;
 class CShadow;
 class CTargetPoint;
 class CHP_GaugePlayer;
@@ -46,7 +46,7 @@ public:
 		STATE_MAX
 	};
 
-	CPlayer(int nPriority = mylib_const::DEF2D_PRIORITY);
+	CPlayer(int nPriority = mylib_const::PRIORITY_DEF2D);
 	~CPlayer();
 
 	// オーバーライドされた関数
@@ -131,6 +131,11 @@ private:
 	virtual void Controll(void);	// 操作
 	void MotionSet(void);	// モーションの設定
 	void Atack(void);		// 攻撃
+
+	void AttackNormal(CMotion::AttackInfo attackInfo);	// 通常攻撃
+	void AttackArm(CMotion::AttackInfo attackInfo);		// 腕攻撃
+	void AttackLeg(CMotion::AttackInfo attackInfo);		// 脚攻撃
+	void AttackBody(CMotion::AttackInfo attackInfo);	// 胴攻撃
 
 	void ChangeMotion(const char* pMotionFile);	// モーションファイル
 

@@ -11,7 +11,7 @@
 //==========================================
 // 前方宣言
 //==========================================
-class CLimitErea;
+class CLimitArea;
 
 //==========================================
 //  クラス定義
@@ -73,7 +73,7 @@ private:
 	float m_fActionCount;	// 移動カウンター
 	D3DXVECTOR3 m_moveLock;	//固定移動量
 	float m_fRotLock;	//向き保存
-	CLimitErea *m_pLimitArea;	//ボス範囲
+	CLimitArea *m_pLimitArea;	//ボス範囲
 	bool bArea;		//エリア展開済みフラグ
 
 	// メンバ関数

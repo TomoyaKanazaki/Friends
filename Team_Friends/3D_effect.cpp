@@ -4,10 +4,11 @@
 // Author : 相馬靜雅
 // 
 //=============================================================================
+#include "3D_effect.h"
 #include "renderer.h"
 #include "texture.h"
 #include "manager.h"
-#include "3D_effect.h"
+#include "calculation.h"
 
 //==========================================================================
 // マクロ定義
@@ -24,6 +25,7 @@
 const char *CEffect3D::m_apTextureFile[] =					// ファイル読み込み
 {
 	"data\\TEXTURE\\effect\\effect000.jpg",	   // 通常エフェクト
+	"data\\TEXTURE\\effect\\effect_point01.tga",	   // 点エフェクト
 	"data\\TEXTURE\\effect\\smoke_05.tga",	   // 煙エフェクト
 	"data\\TEXTURE\\effect\\smoke_05.tga",	   // 黒煙
 	"data\\TEXTURE\\effect\\effect000.png",	   // 黒エフェクト
@@ -38,7 +40,7 @@ const char *CEffect3D::m_apTextureFile[] =					// ファイル読み込み
 	NULL,										// NULLエフェクト
 };
 int CEffect3D::m_nNumAll = 0;	// 総数
-int CEffect3D::m_nTexIdx[TYPE_MAX] = {};				// テクスチャのインデックス番号
+int CEffect3D::m_nTexIdx[TYPE_MAX] = {};	// テクスチャのインデックス番号
 
 //==========================================================================
 // コンストラクタ
@@ -46,10 +48,11 @@ int CEffect3D::m_nTexIdx[TYPE_MAX] = {};				// テクスチャのインデックス番号
 CEffect3D::CEffect3D(int nPriority) : CObjectBillboard(nPriority)
 {
 	// 値のクリア
-	m_posOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 原点
-	m_updatePosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 更新後の位置
-	m_setupPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// セットアップ位置
-	m_colOrigin = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 色の元
+	m_posOrigin = mylib_const::DEFAULT_VECTOR3;			// 原点
+	m_updatePosition = mylib_const::DEFAULT_VECTOR3;	// 更新後の位置
+	m_setupPosition = mylib_const::DEFAULT_VECTOR3;		// セットアップ位置
+	m_posDest = mylib_const::DEFAULT_VECTOR3;			// 目標の位置
+	m_colOrigin = mylib_const::DEFAULT_COLOR;	// 色の元
 	m_fRadius = 0.0f;							// 半径
 	m_fMaxRadius = 0.0f;						// 最大半径
 	m_fAddSizeValue = 0.0f;						// サイズ変更量
@@ -63,6 +66,7 @@ CEffect3D::CEffect3D(int nPriority) : CObjectBillboard(nPriority)
 	m_pParent = NULL;							// 親のポインタ
 	m_bAddAlpha = true;							// 加算合成の判定
 	m_bGravity = false;							// 重力のフラグ
+	m_bChaseDest = false;						// 目標の位置へ向かうフラグ
 
 	// 総数加算
 	m_nNumAll++;
@@ -84,7 +88,6 @@ void CEffect3D::LoadTexture(void)
 	// テクスチャの読み込み
 	for (int nCntTex = 0; nCntTex < sizeof(m_apTextureFile) / sizeof(*m_apTextureFile); nCntTex++)
 	{// テクスチャデータの配列分繰り返す
-
 		m_nTexIdx[nCntTex] = CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[nCntTex]);
 	}
 }
@@ -229,6 +232,10 @@ HRESULT CEffect3D::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3D
 		m_bAddAlpha = true;
 		break;
 
+	case TYPE_POINT:
+		m_bAddAlpha = true;
+		break;
+
 	case TYPE_SMOKE:
 		m_bAddAlpha = true;
 		break;
@@ -361,30 +368,11 @@ void CEffect3D::UninitParent(void)
 //==================================================================================
 void CEffect3D::Update(void)
 {
+	// 過去の位置設定
+	SetOldPosition(GetPosition());
 
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
-
-	// 移動量取得
-	D3DXVECTOR3 move = GetMove();
-
-	// 色取得
-	D3DXCOLOR col = GetColor();
-
-	// 位置更新
-	if (m_bGravity == true)
-	{
-		move.y -= m_fGravity;
-	}
-
-	m_updatePosition += move;
-	pos = m_posOrigin + m_updatePosition;
-
-	// 位置設定
-	SetPosition(pos);
-
-	// 移動量設定
-	SetMove(move);
+	// 移動処理
+	UpdateMove();
 
 	switch (m_moveType)
 	{
@@ -405,14 +393,17 @@ void CEffect3D::Update(void)
 		break;
 	}
 
+	// サイズ設定
+	SetSize(D3DXVECTOR2(m_fRadius, m_fRadius));
+
 	// 寿命の更新
 	m_nLife--;
 
+	// 色取得
+	D3DXCOLOR col = GetColor();
+
 	// 不透明度の更新
 	col.a = m_colOrigin.a * ((float)m_nLife / (float)m_nMaxLife);
-
-	// サイズ設定
-	SetSize(D3DXVECTOR2(m_fRadius, m_fRadius));
 
 	// 色設定
 	SetColor(col);
@@ -428,6 +419,46 @@ void CEffect3D::Update(void)
 	// 頂点座標の設定
 	SetVtx();
 
+}
+
+//==================================================================================
+// 移動処理
+//==================================================================================
+void CEffect3D::UpdateMove(void)
+{
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 posOld = GetOldPosition();
+
+	// 移動量取得
+	D3DXVECTOR3 move = GetMove();
+
+	// 位置更新
+	if (m_bGravity == true)
+	{
+		move.y -= m_fGravity;
+	}
+
+	// 補正別処理
+	if (m_bChaseDest == false)
+	{
+		m_updatePosition += move;
+		pos = m_posOrigin + m_updatePosition;
+	}
+	else
+	{
+		// 等速線形補間
+		float fRatio = 1.0f - ((float)m_nLife / (float)m_nMaxLife);
+		pos.x = EasingLinear(m_posOrigin.x, m_posDest.x, fRatio);
+		pos.y = EasingLinear(m_posOrigin.y, m_posDest.y, fRatio);
+		pos.z = EasingLinear(m_posOrigin.z, m_posDest.z, fRatio);
+	}
+
+	// 位置設定
+	SetPosition(pos);
+
+	// 移動量設定
+	SetMove(move);
 }
 
 //==================================================================================
@@ -519,10 +550,6 @@ void CEffect3D::Draw(void)
 	// ライティングを無効にする
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
-	// Zテストを無効にする
-	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);	//常に描画する
-
 	// アルファテストを有効にする
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
@@ -549,10 +576,6 @@ void CEffect3D::Draw(void)
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 
-	// Zテストを有効にする
-	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-
 	// ライティングを有効にする
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 }
@@ -564,6 +587,24 @@ void CEffect3D::SetVtx(void)
 {
 	// 頂点設定
 	CObjectBillboard::SetVtx();
+}
+
+//==========================================================================
+// 目標の位置設定
+//==========================================================================
+void CEffect3D::SetPositionDest(D3DXVECTOR3 pos)
+{
+	m_posDest = pos;
+	m_bChaseDest = true;	// 有効
+}
+
+//==========================================================================
+// 重力の値設定
+//==========================================================================
+void CEffect3D::SetGravityValue(float fValue)
+{ 
+	m_fGravity = fValue; 
+	m_bGravity = true;	// 有効
 }
 
 //==========================================================================

@@ -41,7 +41,7 @@ public:
 		TYPE_MAX
 	}TYPE;
 
-	CEffect2D(int nPriority = mylib_const::DEF2D_PRIORITY);
+	CEffect2D(int nPriority = mylib_const::PRIORITY_DEF2D);
 	~CEffect2D();
 
 	static HRESULT Load(void);

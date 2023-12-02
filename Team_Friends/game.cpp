@@ -36,7 +36,7 @@
 //==========================================================================
 CScore *CGame::m_pScore = NULL;					// スコアのオブジェクト
 CBulletManager *CGame::m_pBulletManager = NULL;		// 弾マネージャのオブジェクト
-CLimitEreaManager *CGame::m_pLimitEreaManager = NULL;	// エリア制限マネージャのオブジェクト
+CLimitAreaManager *CGame::m_pLimitEreaManager = NULL;	// エリア制限マネージャのオブジェクト
 CEditEnemyBase *CGame::m_pEditEnemyBase = NULL;		// 敵の拠点エディター
 CStage *CGame::m_pStage = NULL;						// ステージのオブジェクト
 CGameManager *CGame::m_pGameManager = NULL;			// ゲームマネージャのオブジェクト
@@ -85,7 +85,7 @@ HRESULT CGame::Init(void)
 	//**********************************
 	// エリア制限マネージャ
 	//**********************************
-	m_pLimitEreaManager = CLimitEreaManager::Create();
+	m_pLimitEreaManager = CLimitAreaManager::Create();
 
 	//**********************************
 	// 敵の拠点
@@ -149,12 +149,12 @@ HRESULT CGame::Init(void)
 	// 簡易合体コア
 	CCompactCore::Create(D3DXVECTOR3(500.0f, 400.0f, 0.0f));
 
-	CLimitErea::sLimitEreaInfo info;
+	CLimitArea::sLimitEreaInfo info;
 	info.fMaxX = 8200.0f;
 	info.fMaxZ = 785.0f;
 	info.fMinX = -785.0f;
 	info.fMinZ = -785.0f;
-	CLimitErea *pLimitErea = CLimitErea::Create(info);
+	CLimitArea *pLimitErea = CLimitArea::Create(info);
 	pLimitErea->SetEnableDisp(false);
 	//CMeshWall::Create(D3DXVECTOR3(0.0f, 0.0f, 1500.0f), mylib_const::DEFAULT_VECTOR3, 200.0f, 200.0f, 8, 1);
 
@@ -376,7 +376,7 @@ CBulletManager *CGame::GetBulletManager(void)
 //==========================================================================
 // エリア制限マネージャマネージャの取得
 //==========================================================================
-CLimitEreaManager *CGame::GetLimitEreaManager(void)
+CLimitAreaManager *CGame::GetLimitEreaManager(void)
 {
 	return m_pLimitEreaManager;
 }

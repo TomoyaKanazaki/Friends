@@ -81,6 +81,11 @@ void CEnemyTurret::Uninit(void)
 	//	m_pLimitArea = nullptr;
 	//}
 
+	if (m_pLimitArea != nullptr)
+	{
+		m_pLimitArea->SetState(CLimitArea::STATE_FADEOUT);
+	}
+
 	// 終了処理
 	CEnemy::Uninit();
 }
@@ -95,7 +100,7 @@ void CEnemyTurret::Update(void)
 		if (CalcLenPlayer(SEARCH_LENGTH))
 		{
 			D3DXVECTOR3 pos = GetPosition();
-			CLimitErea::sLimitEreaInfo info = {};
+			CLimitArea::sLimitEreaInfo info = {};
 			info.fMinX = pos.x - AREA_LENGTH;
 			info.fMaxX = pos.x + AREA_LENGTH;
 			info.fMinZ = pos.z - AREA_LENGTH;
@@ -107,7 +112,7 @@ void CEnemyTurret::Update(void)
 				m_pLimitArea = nullptr;
 			}
 
-			m_pLimitArea = CLimitErea::Create(info);
+			m_pLimitArea = CLimitArea::Create(info);
 
 			bArea = true;
 		}
@@ -208,7 +213,7 @@ void CEnemyTurret::Kill(void)
 	// 死亡処理
 	CEnemy::Kill();
 
-	m_pLimitArea->SetState(CLimitErea::STATE_FADEOUT);
+	m_pLimitArea->SetState(CLimitArea::STATE_FADEOUT);
 }
 
 //==========================================
@@ -504,6 +509,7 @@ bool CEnemyTurret::CalcLenPlayer(float fLen)
 		return false;
 	}
 
+#if 0
 	// プレイヤーの位置取得
 	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 
@@ -518,8 +524,11 @@ bool CEnemyTurret::CalcLenPlayer(float fLen)
 	{
 		return true;
 	}
+#else
 
-	return false;
+#endif
+
+	return CircleRange3D(pos, pPlayer->GetPosition(), fLen, pPlayer->GetRadius());
 }
 
 //==========================================

@@ -19,7 +19,7 @@ class CTutorialPlayer : public CPlayer
 {
 public:
 
-	CTutorialPlayer(int nPriority = mylib_const::DEF2D_PRIORITY);
+	CTutorialPlayer(int nPriority = mylib_const::PRIORITY_DEF2D);
 	~CTutorialPlayer();
 
 	// オーバーライドされた関数

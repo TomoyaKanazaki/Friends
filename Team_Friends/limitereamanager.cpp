@@ -22,7 +22,7 @@
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CLimitEreaManager::CLimitEreaManager()
+CLimitAreaManager::CLimitAreaManager()
 {
 	// 値のクリア
 	m_nNumAll = 0;	// 総数リセット
@@ -32,7 +32,7 @@ CLimitEreaManager::CLimitEreaManager()
 //==========================================================================
 // デストラクタ
 //==========================================================================
-CLimitEreaManager::~CLimitEreaManager()
+CLimitAreaManager::~CLimitAreaManager()
 {
 
 }
@@ -40,16 +40,16 @@ CLimitEreaManager::~CLimitEreaManager()
 //==========================================================================
 // 生成処理
 //==========================================================================
-CLimitEreaManager *CLimitEreaManager::Create(void)
+CLimitAreaManager *CLimitAreaManager::Create(void)
 {
 	// 生成用のオブジェクト
-	CLimitEreaManager *pModel = NULL;
+	CLimitAreaManager *pModel = NULL;
 
 	if (pModel == NULL)
 	{// NULLだったら
 
 		// メモリの確保
-		pModel = DEBUG_NEW CLimitEreaManager;
+		pModel = DEBUG_NEW CLimitAreaManager;
 
 		if (pModel != NULL)
 		{// メモリの確保が出来ていたら
@@ -71,7 +71,7 @@ CLimitEreaManager *CLimitEreaManager::Create(void)
 //==========================================================================
 // 初期化処理
 //==========================================================================
-HRESULT CLimitEreaManager::Init(void)
+HRESULT CLimitAreaManager::Init(void)
 {
 	// 総数リセット
 	m_nNumAll = 0;
@@ -82,7 +82,7 @@ HRESULT CLimitEreaManager::Init(void)
 //==========================================================================
 // 割り当て
 //==========================================================================
-int CLimitEreaManager::Regist(CLimitErea *pBullet)
+int CLimitAreaManager::Regist(CLimitArea *pBullet)
 {
 	int nIdx = 0;
 	for (int i = 0; i < mylib_const::MAX_LIMITEREA; i++)
@@ -108,7 +108,7 @@ int CLimitEreaManager::Regist(CLimitErea *pBullet)
 //==========================================================================
 // 削除
 //==========================================================================
-void CLimitEreaManager::Delete(int nIdx)
+void CLimitAreaManager::Delete(int nIdx)
 {
 	// NULLにする
 	m_apLimitErea[nIdx] = NULL;
@@ -120,7 +120,7 @@ void CLimitEreaManager::Delete(int nIdx)
 //==========================================================================
 // 終了処理
 //==========================================================================
-void CLimitEreaManager::Uninit(void)
+void CLimitAreaManager::Uninit(void)
 {
 	for (int i = 0; i < mylib_const::MAX_LIMITEREA; i++)
 	{
@@ -137,7 +137,7 @@ void CLimitEreaManager::Uninit(void)
 //==========================================================================
 // エリア制限の総数取得
 //==========================================================================
-int CLimitEreaManager::GetNumAll(void)
+int CLimitAreaManager::GetNumAll(void)
 {
 	return m_nNumAll;
 }
@@ -145,7 +145,7 @@ int CLimitEreaManager::GetNumAll(void)
 //==========================================================================
 // エリア制限のオブジェクト取得
 //==========================================================================
-CLimitErea **CLimitEreaManager::GetLimitErea(void)
+CLimitArea **CLimitAreaManager::GetLimitErea(void)
 {
 	return m_apLimitErea;
 }

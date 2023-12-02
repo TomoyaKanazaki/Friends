@@ -54,7 +54,7 @@ public:
 		STATE_MAX
 	}STATE;
 
-	CObjectChara(int nPriority = mylib_const::DEFAULT_PRIORITY);
+	CObjectChara(int nPriority = mylib_const::PRIORITY_DEFAULT);
 	~CObjectChara();
 
 	// オーバーライドされた関数

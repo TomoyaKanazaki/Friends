@@ -19,7 +19,7 @@ class CEffectEnemySpawn : public CObjectBillboard
 {
 public:
 
-	CEffectEnemySpawn(int nPriority = mylib_const::DEFAULT_PRIORITY);
+	CEffectEnemySpawn(int nPriority = mylib_const::PRIORITY_DEFAULT);
 	~CEffectEnemySpawn();
 
 	// オーバーライドされた関数

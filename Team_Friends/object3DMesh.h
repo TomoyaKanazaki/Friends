@@ -30,7 +30,7 @@ public:
 		TYPE_MAX
 	}TYPE;
 
-	CObject3DMesh(int nPriority = mylib_const::DEFAULT_PRIORITY);
+	CObject3DMesh(int nPriority = mylib_const::PRIORITY_DEFAULT);
 	~CObject3DMesh();
 
 	// オーバーライドされた関数
@@ -65,8 +65,8 @@ public:
 	int GetIdxTex(void);				// テクスチャのインデックス番号取得
 
 	static CObject3DMesh *Create();
-	static CObject3DMesh *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nPriority = mylib_const::DEFAULT_PRIORITY);
-	static CObject3DMesh *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fWidthLen, float fHeightLen, int nWidth, int nHeight, TYPE type, const char *pFileName, int nPriority = mylib_const::DEFAULT_PRIORITY);
+	static CObject3DMesh *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nPriority = mylib_const::PRIORITY_DEFAULT);
+	static CObject3DMesh *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fWidthLen, float fHeightLen, int nWidth, int nHeight, TYPE type, const char *pFileName, int nPriority = mylib_const::PRIORITY_DEFAULT);
 	CObject3DMesh *GetObject3DMesh(void);
 protected:
 

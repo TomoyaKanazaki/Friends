@@ -21,7 +21,7 @@ class CModel
 {
 public:
 
-	CModel(int nPriority = mylib_const::DEFAULT_PRIORITY);
+	CModel(int nPriority = mylib_const::PRIORITY_DEFAULT);
 	~CModel();
 
 	HRESULT Init(const char *pFileName);

@@ -19,7 +19,7 @@ class CEffectSlashHit : public CObjectBillboard
 {
 public:
 
-	CEffectSlashHit(int nPriority = mylib_const::DEFAULT_PRIORITY);
+	CEffectSlashHit(int nPriority = mylib_const::PRIORITY_DEFAULT);
 	~CEffectSlashHit();
 
 	// オーバーライドされた関数

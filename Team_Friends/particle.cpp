@@ -252,18 +252,12 @@ void Check(void)
 {
 	for (int nCntUse = 0; nCntUse < 1; nCntUse++)
 	{
-
-		float fMove = 0.0f;		// 移動量
-		float fAngle = 0.0f;	// 角度
-
 		// 移動量の設定
-		m_move.x = sinf((float)(rand() % 629 - 314) / 100.0f) * fMove;
-		m_move.y = cosf((float)(rand() % 629 - 314) / 100.0f) * fMove;
-		m_move.z = cosf((float)(rand() % 629 - 314) / 100.0f) * fMove;
+		m_move = mylib_const::DEFAULT_VECTOR3;
 
-		m_col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+		m_col = D3DXCOLOR(1.0f, 0.6f, 0.2f, 1.0f);
 
-		m_fRadius = 40.0f;
+		m_fRadius = 10.0f;
 
 		// エフェクトの設定
 		CEffect3D::Create(
@@ -272,7 +266,7 @@ void Check(void)
 			m_col,
 			m_fRadius,
 			m_nLife,
-			CEffect3D::MOVEEFFECT_SUB, CEffect3D::TYPE_NORMAL);
+			CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 	}
 }
 

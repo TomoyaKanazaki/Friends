@@ -8,10 +8,7 @@
 #ifndef _ENEMYBOSS_H_
 #define _ENEMYBOSS_H_	// 二重インクルード防止
 
-#include "main.h"
 #include "enemy.h"
-
-// 前方宣言
 
 //==========================================================================
 // クラス定義
@@ -30,7 +27,6 @@ public:
 	void Update(void) override;
 	void Draw(void) override;
 	void Kill(void) override;
-	void MotionSet(void) override;		// モーションの設定
 
 	void SetTargetPosition(D3DXVECTOR3 pos);	// 目標の位置設定
 private:
@@ -88,8 +84,8 @@ private:
 	void ChargeTackle(void);	// タックルチャージ
 
 	// その他関数
-	void Move(void);			// 移動
-	void RotationTarget(void);	// ターゲットの方を向く
+	void MotionSet(void) override;	// モーションの設定
+	void RotationTarget(void);		// ターゲットの方を向く
 
 	//=============================
 	// メンバ変数

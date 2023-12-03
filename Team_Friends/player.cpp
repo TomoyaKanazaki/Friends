@@ -966,7 +966,8 @@ void CPlayer::Atack(void)
 		}
 
 		// モーションカウンター取得
-		if (m_pMotion->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt && m_pMotion->GetAllCount() < aInfo.AttackInfo[nCntAttack]->nMaxCnt)
+		float fAllCount = m_pMotion->GetAllCount();
+		if (fAllCount > aInfo.AttackInfo[nCntAttack]->nMinCnt && fAllCount < aInfo.AttackInfo[nCntAttack]->nMaxCnt)
 		{// 攻撃判定中
 			
 			// 武器の位置
@@ -977,6 +978,19 @@ void CPlayer::Atack(void)
 			{
 			case CPlayerUnion::PARTS_BODY:
 				my_particle::Create(weponpos, my_particle::TYPE_ATTACK_BODY);
+
+				if ((int)fAllCount % 8 == 0)
+				{
+					for (int i = 0; i < 4; i++)
+					{
+						int repeat = (int)(fAllCount / 8.0f);
+						CEffect3D::Create(
+							weponpos,
+							D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+							D3DXCOLOR(0.9f, 0.2f, 0.9f, 1.0f),
+							20.0f, 16, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_POINT, repeat * 4.0f);
+					}
+				}
 				break;
 
 			case CPlayerUnion::PARTS_R_ARM:
@@ -1213,8 +1227,8 @@ void CPlayer::AttackBody(CMotion::AttackInfo attackInfo)
 		18.0f,						// 幅
 		8.0f,						// 高さ
 		20.0f,						// 中心からの距離
-		15,							// 寿命
-		7.0f,						// 幅の移動量
+		10,							// 寿命
+		10.0f,						// 幅の移動量
 		CImpactWave::TYPE_PURPLE4,	// テクスチャタイプ
 		true						// 加算合成するか
 	);

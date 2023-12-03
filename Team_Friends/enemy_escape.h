@@ -24,7 +24,6 @@ public:
 	void Update(void) override;
 	void Draw(void) override;
 	void Kill(void) override;
-	void MotionSet(void) override;		// モーションの設定
 
 private:
 
@@ -51,18 +50,14 @@ private:
 
 	// メンバ変数
 	ACTION m_Act; //行動状態
-	float m_fMoveCount; // 移動カウンター
 	float m_fCntFind; // 発見カウンター
 	float m_fCntEscape; // 逃走カウンター
 
 	// メンバ関数
+	void MotionSet(void) override;		// モーションの設定
 	void UpdateAction(void) override;	// 行動更新
 	void ActionSet(void); // 行動の設定
-	void Move(void); // 移動
 	void Escape(void); // 逃走
-	void MoveRotation(void); // 移動方向を向く
-	void RotationPlayer(void); // プレイヤーを向く処理
-	bool CalcLenPlayer(float fLen); // プレイヤーとの距離判定
 };
 
 #endif

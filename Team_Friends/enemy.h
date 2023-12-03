@@ -135,8 +135,13 @@ protected:
 	virtual void ProcessLanding(void);	// 着地時処理
 	virtual void AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo);	// 攻撃時処理
 	virtual void ChaseMove(float fMove);	// 追い掛け移動
+	virtual void RotationPlayer(void);		// プレイヤーを向く処理
+	virtual bool CalcLenPlayer(float fLen); // プレイヤーとの距離判定
+	virtual void MoveRotation(void);		// 移動方向を向く
+	virtual void Move(void);				// 移動
 
 	virtual void UpdateAction(void);		// 行動更新
+	virtual void ActionSet(void) = 0;		// 行動の設定
 
 	// 状態更新系
 	virtual void StateNone(void);			// 何もない状態
@@ -158,6 +163,7 @@ protected:
 	int m_nSurvivalLife;					// 生存時間
 	int m_nSurvivalLifeOrigin;				// 生存時間
 	int m_nTargetPlayerIndex;				// 追い掛けるプレイヤーのインデックス番号
+	float m_fMoveCount;						// 移動カウンター
 	D3DXVECTOR3 m_posOrigin;				// 最初の位置
 	D3DXVECTOR3 m_posKnokBack;				// ノックバックの位置
 	SMotionFrag m_sMotionFrag;				// モーションのフラグ

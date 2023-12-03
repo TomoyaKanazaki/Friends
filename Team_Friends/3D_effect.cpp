@@ -310,32 +310,6 @@ HRESULT CEffect3D::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3D
 }
 
 //==================================================================================
-// セットアップ
-//==================================================================================
-void CEffect3D::SetUp(D3DXVECTOR3 setup, CObject *pObj, int nParentIdx)
-{
-	// 親のポインタ渡す
-	if (m_pParent == NULL)
-	{
-		m_pParent = pObj;
-	}
-
-	// 親のインデックス番号
-	m_nParentIdx = nParentIdx;
-
-	// セットアップ位置
-	m_setupPosition = setup;
-
-	// セットアップの向き
-	m_fSetupRotation = atan2f((m_setupPosition.x - 0.0f), (m_setupPosition.z - 0.0f));
-
-	// セットアップの強さ
-	m_fSetupVec =
-		sqrtf((0.0f - m_setupPosition.x) * (0.0f - m_setupPosition.x)
-			+ (0.0f - m_setupPosition.z) * (0.0f - m_setupPosition.z));
-}
-
-//==================================================================================
 // エフェクトの終了処理
 //==================================================================================
 void CEffect3D::Uninit(void)
@@ -461,25 +435,48 @@ void CEffect3D::UpdateMove(void)
 	SetMove(move);
 }
 
+
+//==================================================================================
+// セットアップ
+//==================================================================================
+void CEffect3D::SetUp(D3DXVECTOR3 setup, CObject *pObj, int nParentIdx)
+{
+	// 親のポインタ渡す
+	if (m_pParent == NULL)
+	{
+		m_pParent = pObj;
+	}
+
+	// 親のインデックス番号
+	m_nParentIdx = nParentIdx;
+
+	// セットアップ位置
+	m_setupPosition = setup;
+
+	// セットアップの向き
+	m_fSetupRotation = atan2f((0.0f - m_setupPosition.x), (0.0f - m_setupPosition.z));
+
+	// セットアップの強さ
+	m_fSetupVec =
+		sqrtf((0.0f - m_setupPosition.x) * (0.0f - m_setupPosition.x)
+			+ (0.0f - m_setupPosition.z) * (0.0f - m_setupPosition.z));
+}
+
 //==================================================================================
 // 位置更新
 //==================================================================================
 void CEffect3D::UpdatePosition(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
-	// 親の情報取得
-	D3DXVECTOR3 ParentPos = pos;
-	D3DXVECTOR3 ParentRot = rot;
-
 	// 原点更新
 	m_posOrigin =
 		D3DXVECTOR3(
-			ParentPos.x + sinf(ParentRot.y + m_fSetupRotation) * m_fSetupVec,
-			ParentPos.y,
-			ParentPos.z + cosf(ParentRot.y + m_fSetupRotation) * m_fSetupVec) +
+			pos.x + sinf(rot.y + m_fSetupRotation) * m_fSetupVec,
+			pos.y,
+			pos.z + cosf(rot.y + m_fSetupRotation) * m_fSetupVec) +
 		D3DXVECTOR3(
-			sinf(ParentRot.y + m_fSetupRotation) * m_fSetupVec,
+			sinf(rot.y + m_fSetupRotation) * m_fSetupVec,
 			m_setupPosition.y,
-			cosf(ParentRot.y + m_fSetupRotation) * m_fSetupVec);
+			cosf(rot.y + m_fSetupRotation) * m_fSetupVec);
 }
 
 //==================================================================================

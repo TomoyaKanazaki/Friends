@@ -45,7 +45,7 @@ public:
 		TYPE_MAX
 	}TYPE;
 
-	CImpactWave(int nPriority = 6);
+	CImpactWave(int nPriority = mylib_const::PRIORITY_ZSORT);
 	~CImpactWave();
 
 	// オーバーライドされた関数

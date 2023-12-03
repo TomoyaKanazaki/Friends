@@ -137,6 +137,34 @@ void CObject::ReleaseAll(void)
 			pObject = pObjNext;
 		}
 	}
+
+	// 優先順位的に消えなかったものを全削除
+	for (int nCntPriority = 0; nCntPriority < mylib_const::PRIORITY_NUM; nCntPriority++)
+	{
+		// 先頭を保存
+		CObject *pObject = m_pTop[nCntPriority];
+
+		while (pObject != NULL)
+		{// NULLが来るまで無限ループ
+
+			// 次のオブジェクトを一時保存
+			CObject *pObjNext = pObject->m_pNext;
+
+			if (pObject->m_bDeath == true)
+			{// 死亡フラグが立っていたら
+
+				// 完全死亡処理
+				pObject->Death();
+			}
+			else
+			{
+				int n = 0;
+			}
+
+			// 次のオブジェクトを代入
+			pObject = pObjNext;
+		}
+	}
 }
 
 //==========================================================================
@@ -224,7 +252,7 @@ void CObject::DrawAll(void)
 {
 	for (int nCntPriority = 0; nCntPriority < mylib_const::PRIORITY_NUM; nCntPriority++)
 	{
-		if (nCntPriority == mylib_const::PRIORITY_EFFECT3D)
+		if (nCntPriority == mylib_const::PRIORITY_ZSORT)
 		{// Zソート描画
 			DrawZSort(nCntPriority);
 		}

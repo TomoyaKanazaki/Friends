@@ -332,6 +332,23 @@ float GetRandomCircleValue(void)
 }
 
 //==================================================================================
+// 球範囲ランダムベクトル取得
+//==================================================================================
+D3DXVECTOR3 GetRandomSphereVec(void)
+{
+	// 球ベクトル
+	D3DXVECTOR3 vecSphere = mylib_const::DEFAULT_VECTOR3;
+
+	// 球の範囲内でランダム生成
+	float fRot = GetRandomCircleValue(), fRotPhi = GetRandomCircleValue();
+	vecSphere.x = cosf(fRot) * sinf(fRotPhi);
+	vecSphere.y = sinf(fRot);
+	vecSphere.z = cosf(fRot) * cosf(fRotPhi);
+
+	return vecSphere;
+}
+
+//==================================================================================
 // 球範囲ランダム位置取得
 //==================================================================================
 D3DXVECTOR3 GetRandomSpherePosition(D3DXVECTOR3 pos, float fRadius)

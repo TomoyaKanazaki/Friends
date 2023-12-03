@@ -213,7 +213,10 @@ void CEnemyTurret::Kill(void)
 	// Ž€–Sˆ—
 	CEnemy::Kill();
 
-	m_pLimitArea->SetState(CLimitArea::STATE_FADEOUT);
+	if (m_pLimitArea != nullptr)
+	{
+		m_pLimitArea->SetState(CLimitArea::STATE_FADEOUT);
+	}
 }
 
 //==========================================

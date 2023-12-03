@@ -162,9 +162,6 @@
     <ClCompile Include="hp_gauge_player.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="impactwave.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="input.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -452,6 +449,9 @@
     </ClCompile>
     <ClCompile Include="beam.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="impactwave.cpp">
+      <Filter>ソース ファイル\mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

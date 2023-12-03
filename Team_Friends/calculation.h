@@ -52,6 +52,7 @@ float EasingEaseInOut(float start, float end, float time);					// üŒ`•â³(‰Á‘¬‚
 D3DXCOLOR HSVtoRGB(float H, float S, float V);										// HSV•ÏŠ·
 int Random(int nMinNum, int nMaxNum);												// ƒ‰ƒ“ƒ_ƒ€¶¬
 float GetRandomCircleValue(void);													// ‰~”ÍˆÍƒ‰ƒ“ƒ_ƒ€’læ“¾
+D3DXVECTOR3 GetRandomSphereVec(void);												// ‹…”ÍˆÍƒ‰ƒ“ƒ_ƒ€ƒxƒNƒgƒ‹æ“¾
 D3DXVECTOR3 GetRandomSpherePosition(D3DXVECTOR3 pos, float fRadius);				// ‹…”ÍˆÍƒ‰ƒ“ƒ_ƒ€ˆÊ’uæ“¾
 int GetDigit(int nNum);																// Œ…”æ“¾
 float GetRatio(D3DXVECTOR3 Mypos, D3DXVECTOR3 Targetpos);							// Š„‡æ“¾

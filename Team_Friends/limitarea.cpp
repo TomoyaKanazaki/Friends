@@ -162,7 +162,6 @@ void CLimitArea::Uninit(void)
 			continue;
 		}
 		m_pMeshWall[i]->Uninit();
-		delete m_pMeshWall[i];
 		m_pMeshWall[i] = NULL;
 	}
 

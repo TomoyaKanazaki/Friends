@@ -1163,6 +1163,11 @@ void CPlayer::AttackBody(CMotion::AttackInfo attackInfo)
 	D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), attackInfo);
 	int nDamage = (int)((float)attackInfo.nDamage * m_sStatus.fPowerBuff);
 	float fMove = 28.0f;
+	D3DXCOLOR col = D3DXCOLOR(
+		0.9f + Random(-100, 100) * 0.001f,
+		0.2f + Random(-100, 100) * 0.001f,
+		0.9f + Random(-100, 100) * 0.001f,	// 色
+		1.0f);
 
 	switch (m_pMotion->GetType())
 	{
@@ -1173,11 +1178,7 @@ void CPlayer::AttackBody(CMotion::AttackInfo attackInfo)
 				sinf(D3DX_PI + rot.y) * fMove,	// 位置
 				cosf(D3DX_PI * 0.65f) * fMove,
 				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
-			D3DXCOLOR(
-				0.9f + Random(-100, 100) * 0.001f,
-				0.2f + Random(-100, 100) * 0.001f,
-				0.9f + Random(-100, 100) * 0.001f,	// 色
-				1.0f),
+			col,	// 色
 			20.0f,	// 半径
 			200.0f,	// 長さ
 			15,		// 寿命
@@ -1193,11 +1194,7 @@ void CPlayer::AttackBody(CMotion::AttackInfo attackInfo)
 				sinf(D3DX_PI + rot.y) * fMove,	// 位置
 				cosf(D3DX_PI * 0.65f) * fMove,
 				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
-			D3DXCOLOR(
-				0.9f + Random(-100, 100) * 0.001f,
-				0.2f + Random(-100, 100) * 0.001f,
-				0.9f + Random(-100, 100) * 0.001f,	// 色
-				1.0f),
+			col,	// 色
 			25.0f,	// 半径
 			200.0f,	// 長さ
 			40,		// 寿命
@@ -1205,6 +1202,22 @@ void CPlayer::AttackBody(CMotion::AttackInfo attackInfo)
 			nDamage);		// ダメージ
 		break;
 	}
+
+	col.a = 0.8f;
+	// 衝撃波生成
+	CImpactWave::Create
+	(
+		weponpos,	// 位置
+		D3DXVECTOR3(D3DX_PI * 0.5f, D3DX_PI + rot.y, 0.0f),				// 向き
+		col,			// 色
+		18.0f,						// 幅
+		8.0f,						// 高さ
+		20.0f,						// 中心からの距離
+		15,							// 寿命
+		7.0f,						// 幅の移動量
+		CImpactWave::TYPE_PURPLE4,	// テクスチャタイプ
+		true						// 加算合成するか
+	);
 }
 
 //==========================================================================

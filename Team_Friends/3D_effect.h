@@ -49,7 +49,7 @@ public:
 		TYPE_MAX
 	}TYPE;
 
-	CEffect3D(int nPriority = mylib_const::PRIORITY_EFFECT3D);
+	CEffect3D(int nPriority = mylib_const::PRIORITY_ZSORT);
 	~CEffect3D();
 
 	static CEffect3D *Create(void);

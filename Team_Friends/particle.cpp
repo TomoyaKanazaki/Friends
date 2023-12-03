@@ -1582,12 +1582,14 @@ void BeamHitField(void)
 
 		float fMove = 5.0f * fBuff;		// 移動量
 		float fMoveY = 7.0f * fBuff;	// 移動量
-		float fRot = GetRandomCircleValue(), fRotPhi = GetRandomCircleValue();
+
+		// 球範囲ランダムベクトル取得
+		D3DXVECTOR3 vecSphere = GetRandomSphereVec();
 
 		// 移動量の設定
-		m_move.x = cosf(fRot) * sinf(fRotPhi) * fMove;
+		m_move.x = vecSphere.x * fMove;
 		m_move.y = sinf(D3DX_PI * 0.5f + (float)Random(-20, 20) * 0.01f) * fMoveY;
-		m_move.z = cosf(fRot) * cosf(fRotPhi) * fMove;
+		m_move.z = vecSphere.z * fMove;
 
 		m_col = D3DXCOLOR(
 			0.9f + Random(-100, 100) * 0.001f,

@@ -813,7 +813,8 @@ void CPlayer::Controll(void)
 
 	if (pInputKeyboard->GetPress(DIK_DOWN) == true || pInputKeyboard->GetTrigger(DIK_LEFT) == true)
 	{
-		my_particle::Create(GetCenterPosition(), my_particle::TYPE_ATTACK_BODY);
+		//my_particle::Create(GetCenterPosition(), my_particle::TYPE_ATTACK_BODY);
+		my_particle::Create(pos, my_particle::TYPE_BEAMHIT_FIELD);
 	}
 #endif
 }
@@ -1160,22 +1161,50 @@ void CPlayer::AttackBody(CMotion::AttackInfo attackInfo)
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
 	D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), attackInfo);
+	int nDamage = (int)((float)attackInfo.nDamage * m_sStatus.fPowerBuff);
+	float fMove = 28.0f;
 
-	CBeam::Create(
-		weponpos,
-		D3DXVECTOR3(
-			sinf(D3DX_PI + rot.y) * 20.0f,	// 位置
-			-7.0f,
-			cosf(D3DX_PI + rot.y) * 20.0f),	// 移動量
-		D3DXCOLOR(
-			0.9f + Random(-100, 100) * 0.001f,
-			0.2f + Random(-100, 100) * 0.001f,
-			0.9f + Random(-100, 100) * 0.001f,	// 色
-			1.0f),
-		50.0f,	// 半径
-		200.0f,	// 長さ
-		20,		// 寿命
-		32);	// 密度
+	switch (m_pMotion->GetType())
+	{
+	case MOTION_ATK:
+		CBeam::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y) * fMove,	// 位置
+				cosf(D3DX_PI * 0.65f) * fMove,
+				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
+			D3DXCOLOR(
+				0.9f + Random(-100, 100) * 0.001f,
+				0.2f + Random(-100, 100) * 0.001f,
+				0.9f + Random(-100, 100) * 0.001f,	// 色
+				1.0f),
+			20.0f,	// 半径
+			200.0f,	// 長さ
+			15,		// 寿命
+			18,		// 密度
+			nDamage);		// ダメージ
+		break;
+
+	case MOTION_ATK2:
+		fMove = 32.0f;
+		CBeam::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y) * fMove,	// 位置
+				cosf(D3DX_PI * 0.65f) * fMove,
+				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
+			D3DXCOLOR(
+				0.9f + Random(-100, 100) * 0.001f,
+				0.2f + Random(-100, 100) * 0.001f,
+				0.9f + Random(-100, 100) * 0.001f,	// 色
+				1.0f),
+			25.0f,	// 半径
+			200.0f,	// 長さ
+			40,		// 寿命
+			24,		// 密度
+			nDamage);		// ダメージ
+		break;
+	}
 }
 
 //==========================================================================

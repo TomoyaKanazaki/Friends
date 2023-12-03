@@ -15,9 +15,9 @@
 //==========================================================================
 class CEffect3D;
 
-namespace
+namespace my_beam
 {
-	const int DENSITY_BEAM = 12;	// ビームの密度
+	const int DEFAULTDENSITY_BEAM = 12;	// ビームの密度
 }
 
 //==========================================================================
@@ -37,15 +37,12 @@ public:
 	void Update(void) override;
 	void Draw(void) override;
 
-	static CBeam *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXCOLOR col, const float fRadius, const float fLength, const int nLife, const int nDisity = DENSITY_BEAM);
+	static CBeam *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXCOLOR col, const float fRadius, const float fLength, const int nLife, const int nDisity, const int nDamage);
 
 private:
 
-	float m_fRadius;	// 半径
-	float m_fLength;	// 長さ
-	int m_nLife;		// 寿命
-	int m_nDisity;		// 密度
-	D3DXCOLOR m_col;	// 色
+	// メンバ変数
+	int m_nLife;	// 寿命
 };
 
 

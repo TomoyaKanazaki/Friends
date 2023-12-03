@@ -47,6 +47,7 @@ namespace my_particle
 		TYPE_APPEARANCE_UNION,		// 合体の出現時
 		TYPE_APPEARANCE_ARMTOARM,	// 腕×腕合体の出現
 		TYPE_ATTACK_BODY,			// 胴攻撃
+		TYPE_BEAMHIT_FIELD,			// ビームヒット(地面)
 		TYPE_MAX
 	}TYPE;
 

@@ -53,6 +53,7 @@ void BrastAttack(void);
 void AppearanceUnion(void);
 void AppearanceArmToArm(void);
 void AttackBody(void);
+void BeamHitField(void);
 
 //==========================================================================
 // パーティクルの初期化処理
@@ -236,6 +237,11 @@ void my_particle::Create(D3DXVECTOR3 pos, TYPE nType)
 	case TYPE_ATTACK_BODY:			// 胴攻撃
 		m_nLife = 40;
 		AttackBody();
+		break;
+
+	case TYPE_BEAMHIT_FIELD:			// ビームヒット(地面)
+		BeamHitField();
+		break;
 	}
 }
 
@@ -1561,5 +1567,48 @@ void AttackBody(void)
 
 		// 目標の位置設定
 		pEffect->SetPositionDest(m_pos);
+	}
+}
+
+//==========================================================================
+// ビームヒット(地面)
+//==========================================================================
+void BeamHitField(void)
+{
+	for (int nCntUse = 0; nCntUse < 4; nCntUse++)
+	{
+		float fBuff = (float)Random(80, 100) * 0.01f;
+		m_nLife = (int)(30.0f * fBuff);
+
+		float fMove = 5.0f * fBuff;		// 移動量
+		float fMoveY = 7.0f * fBuff;	// 移動量
+		float fRot = GetRandomCircleValue(), fRotPhi = GetRandomCircleValue();
+
+		// 移動量の設定
+		m_move.x = cosf(fRot) * sinf(fRotPhi) * fMove;
+		m_move.y = sinf(D3DX_PI * 0.5f + (float)Random(-20, 20) * 0.01f) * fMoveY;
+		m_move.z = cosf(fRot) * cosf(fRotPhi) * fMove;
+
+		m_col = D3DXCOLOR(
+			0.9f + Random(-100, 100) * 0.001f,
+			0.2f + Random(-100, 100) * 0.001f,
+			0.9f + Random(-100, 100) * 0.001f,
+			1.0f);
+
+		// 半径設定
+		m_fRadius = 50.0f * fBuff;
+
+		// エフェクトの設定
+		CEffect3D *pEffect = CEffect3D::Create(
+			m_pos,
+			m_move,
+			m_col,
+			m_fRadius,
+			m_nLife,
+			CEffect3D::MOVEEFFECT_SUB,
+			CEffect3D::TYPE_POINT);
+
+		// 目標の位置設定
+		pEffect->SetGravityValue(0.4f);
 	}
 }

@@ -1,10 +1,10 @@
 //==========================================
 //
-//  徘徊する敵(enemy_roaming.cpp)
+//  ギガントエッジ(enemy_riot.cpp)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
-#include "enemy_roaming.h"
+#include "enemy_riot.h"
 #include "player.h"
 #include "manager.h"
 #include "debugproc.h"
@@ -23,8 +23,7 @@ namespace
 //==========================================
 //  コンストラクタ
 //==========================================
-CEnemyRoaming::CEnemyRoaming(int nPriority) :
-	m_Act(ACTION_ROAMING)
+CEnemyRiot::CEnemyRiot(int nPriority)
 {
 
 }
@@ -32,7 +31,7 @@ CEnemyRoaming::CEnemyRoaming(int nPriority) :
 //==========================================
 //  デストラクタ
 //==========================================
-CEnemyRoaming::~CEnemyRoaming()
+CEnemyRiot::~CEnemyRiot()
 {
 
 }
@@ -40,7 +39,7 @@ CEnemyRoaming::~CEnemyRoaming()
 //==========================================
 //  初期化処理
 //==========================================
-HRESULT CEnemyRoaming::Init(void)
+HRESULT CEnemyRiot::Init(void)
 {
 	//初期化処理
 	CEnemy::Init();
@@ -54,7 +53,7 @@ HRESULT CEnemyRoaming::Init(void)
 //==========================================
 //  終了処理
 //==========================================
-void CEnemyRoaming::Uninit(void)
+void CEnemyRiot::Uninit(void)
 {
 	// 終了処理
 	CEnemy::Uninit();
@@ -63,7 +62,7 @@ void CEnemyRoaming::Uninit(void)
 //==========================================
 //  更新処理
 //==========================================
-void CEnemyRoaming::Update(void)
+void CEnemyRiot::Update(void)
 {
 	// 死亡の判定
 	if (IsDeath() == true)
@@ -81,39 +80,9 @@ void CEnemyRoaming::Update(void)
 }
 
 //==========================================
-// 行動更新
-//==========================================
-void CEnemyRoaming::UpdateAction(void)
-{
-	// 行動ごとの行動
-	switch (m_Act)
-	{
-	case CEnemyRoaming::ACTION_ROAMING:
-
-		// 移動
-		Move();
-
-		break;
-
-	case CEnemyRoaming::ACTION_ATTACK:
-
-		// プレイヤーを向く
-		RotationPlayer();
-
-		// 攻撃
-		Attack();
-
-		break;
-
-	default:
-		break;
-	}
-}
-
-//==========================================
 //  描画処理
 //==========================================
-void CEnemyRoaming::Draw(void)
+void CEnemyRiot::Draw(void)
 {
 	// 描画処理
 	CEnemy::Draw();
@@ -122,7 +91,7 @@ void CEnemyRoaming::Draw(void)
 //==========================================
 //  殺す
 //==========================================
-void CEnemyRoaming::Kill(void)
+void CEnemyRiot::Kill(void)
 {
 	// 死亡処理
 	CEnemy::Kill();
@@ -131,7 +100,7 @@ void CEnemyRoaming::Kill(void)
 //==========================================
 //  モーションセット
 //==========================================
-void CEnemyRoaming::MotionSet(void)
+void CEnemyRiot::MotionSet(void)
 {
 	if (m_pMotion->IsFinish() == true)
 	{// 終了していたら
@@ -170,9 +139,9 @@ void CEnemyRoaming::MotionSet(void)
 }
 
 //==========================================
-//  行動設定
+//  行動セット
 //==========================================
-void CEnemyRoaming::ActionSet(void)
+void CEnemyRiot::ActionSet(void)
 {
 	if (CalcLenPlayer(ATTACK_LENGTH))
 	{
@@ -187,14 +156,14 @@ void CEnemyRoaming::ActionSet(void)
 	}
 	else // 上記以外なら待機状態
 	{
-		m_Act = ACTION_ROAMING;
+		m_Act = ACTION_DEF;
 	}
 }
 
 //==========================================
 //  移動
 //==========================================
-void CEnemyRoaming::Move(void)
+void CEnemyRiot::Move(void)
 {
 	// 移動フラグを立てる
 	m_sMotionFrag.bMove = true;
@@ -218,7 +187,7 @@ void CEnemyRoaming::Move(void)
 //==========================================
 //  攻撃
 //==========================================
-void CEnemyRoaming::Attack(void)
+void CEnemyRiot::Attack(void)
 {
 	// 攻撃処理
 	CEnemy::StateAttack();

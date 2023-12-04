@@ -9,17 +9,23 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 6
+NUM_MODEL = 12
 
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
 MODEL_FILENAME = data/MODEL/ENEMY/roaming/body.x			# [0]体
 MODEL_FILENAME = data/MODEL/ENEMY/roaming/head.x			# [1]頭
-MODEL_FILENAME = data/MODEL/ENEMY/roaming/leg.x			# [2]前脚
-MODEL_FILENAME = data/MODEL/ENEMY/roaming/leg.x			# [3]前脚
-MODEL_FILENAME = data/MODEL/ENEMY/roaming/leg.x			# [4]後脚
-MODEL_FILENAME = data/MODEL/ENEMY/roaming/leg.x			# [5]後脚
+MODEL_FILENAME = data/MODEL/ENEMY/roaming/leg.x			# [2]右前脚
+MODEL_FILENAME = data/MODEL/ENEMY/roaming/nail.x		# [3]右前爪
+MODEL_FILENAME = data/MODEL/ENEMY/roaming/leg.x			# [4]左前脚
+MODEL_FILENAME = data/MODEL/ENEMY/roaming/nail.x		# [5]左前爪
+MODEL_FILENAME = data/MODEL/ENEMY/roaming/leg.x			# [6]右後脚
+MODEL_FILENAME = data/MODEL/ENEMY/roaming/nail.x		# [7]右後爪
+MODEL_FILENAME = data/MODEL/ENEMY/roaming/leg.x			# [8]左後脚
+MODEL_FILENAME = data/MODEL/ENEMY/roaming/nail.x		# [9]左後爪
+MODEL_FILENAME = data/MODEL/ENEMY/roaming/eye.x			# [10]眼
+MODEL_FILENAME = data/MODEL/ENEMY/roaming/eye.x			# [11]眼
 
 #------------------------------------------------------------------------------
 # キャラクター情報
@@ -34,7 +40,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 0
 		PARENT = -1
-		POS = 0.00 41.50 0.00
+		POS = 0.00 16.00 0.00
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -42,7 +48,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 1
 		PARENT = 0
-		POS = 0.00 0.00 -35.00
+		POS = 0.00 9.50 1.00
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -50,31 +56,79 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 2
 		PARENT = 0
-		POS = -11.50 0.00 -28.50
-		ROT = 0.00 0.00 0.00
+		POS = -27.50 0.00 -22.00
+		ROT = 0.00 -0.82 0.00
 		START = 1
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 3
 		PARENT = 0
-		POS = 13.00 0.00 -29.00
-		ROT = 0.00 0.00 0.00
+		POS = -34.50 -6.00 -29.50
+		ROT = 0.00 -0.82 0.00
 		START = 1
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 4
 		PARENT = 0
-		POS = -13.50 0.00 26.50
-		ROT = 0.00 0.00 0.00
+		POS = 27.50 0.00 -22.00
+		ROT = 0.00 -2.36 0.00
 		START = 1
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 5
 		PARENT = 0
-		POS = 11.00 0.00 25.50
+		POS = 35.00 -6.00 -29.50
+		ROT = 0.00 -2.36 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 6
+		PARENT = 0
+		POS = -27.50 0.00 23.50
+		ROT = 0.00 0.79 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 7
+		PARENT = 0
+		POS = -35.50 -6.00 31.00
+		ROT = 0.00 0.75 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 8
+		PARENT = 0
+		POS = 28.00 0.00 23.50
+		ROT = 0.00 -3.93 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 9
+		PARENT = 0
+		POS = 35.50 -6.00 31.00
+		ROT = 0.00 -3.96 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 10
+		PARENT = 0
+		POS = 0.00 56.00 -20.50
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+	
+		PARTSSET
+		INDEX = 10
+		PARENT = 0
+		POS = 0.00 32.00 -20.50
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET

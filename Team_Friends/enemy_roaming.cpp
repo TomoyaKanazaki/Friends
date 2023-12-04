@@ -16,8 +16,8 @@
 //==========================================
 namespace
 {
-	const float ATTACK_LENGTH = 200.0f;	// コメント
-	const float MOVE_SPEED = 0.01f;
+	const float ATTACK_LENGTH = 200.0f; // 攻撃する距離
+	const float MOVE_SPEED = 0.01f; // 移動速度(倍率)
 }
 
 //==========================================
@@ -200,15 +200,15 @@ void CEnemyRoaming::Move(void)
 	m_sMotionFrag.bMove = true;
 
 	// 移動カウンターを加算
-	m_fMoveCount += MOVE_SPEED;
+	m_fActCounter += MOVE_SPEED;
 
 	// 移動速度取得
 	float fMove = GetVelocity();
 
 	// 移動量を適用
 	D3DXVECTOR3 move = GetMove();
-	move.x = sinf(m_fMoveCount) * fMove;
-	move.z = cosf(m_fMoveCount) * fMove;
+	move.x = sinf(m_fActCounter) * fMove;
+	move.z = cosf(m_fActCounter) * fMove;
 	SetMove(move);
 
 	// 方向転換

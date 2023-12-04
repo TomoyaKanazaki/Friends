@@ -37,7 +37,8 @@ public:
 		TYPE_ROAMING, // 徘徊
 		TYPE_ESCAPE, // メタルスライム
 		TYPE_TACKLE, // 突撃猪
-		TYPE_TURRET, // 中ボス
+		TYPE_TURRET, // 中ボス(ウィスピーウッズ)
+		TYPE_RIOT, // 中ボス(ギガントエッジ)
 		TYPE_MAX
 	}TYPE;
 
@@ -164,7 +165,7 @@ protected:
 	int m_nSurvivalLife;					// 生存時間
 	int m_nSurvivalLifeOrigin;				// 生存時間
 	int m_nTargetPlayerIndex;				// 追い掛けるプレイヤーのインデックス番号
-	float m_fMoveCount;						// 移動カウンター
+	float m_fActCounter;						// 移動カウンター
 	D3DXVECTOR3 m_posOrigin;				// 最初の位置
 	D3DXVECTOR3 m_posKnokBack;				// ノックバックの位置
 	SMotionFrag m_sMotionFrag;				// モーションのフラグ
@@ -194,6 +195,7 @@ private:
 	void RegistrChild(CEnemy *pChild);
 	void ResetChild(CEnemy *pChild);
 	void Atack(void);		// 攻撃
+	void LimitArea(void); // 大人の壁判定
 
 	TYPE m_type;			// 種類
 	SFormationInfo m_sFormationInfo;	// 隊列の情報

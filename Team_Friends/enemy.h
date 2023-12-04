@@ -194,6 +194,7 @@ private:
 	void RegistrChild(CEnemy *pChild);
 	void ResetChild(CEnemy *pChild);
 	void Atack(void);		// UŒ‚
+	void LimitArea(void); // ‘ål‚Ì•Ç”»’è
 
 	TYPE m_type;			// í—Ş
 	SFormationInfo m_sFormationInfo;	// ‘à—ñ‚Ìî•ñ

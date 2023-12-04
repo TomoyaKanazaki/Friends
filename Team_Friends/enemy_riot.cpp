@@ -143,21 +143,7 @@ void CEnemyRiot::MotionSet(void)
 //==========================================
 void CEnemyRiot::ActionSet(void)
 {
-	if (CalcLenPlayer(ATTACK_LENGTH))
-	{
-		// 攻撃フラグを立てる
-		if (m_Act != ACTION_ATTACK)
-		{
-			m_sMotionFrag.bATK = true;
-		}
 
-		// 距離が近いと攻撃状態になる
-		m_Act = ACTION_ATTACK;
-	}
-	else // 上記以外なら待機状態
-	{
-		m_Act = ACTION_DEF;
-	}
 }
 
 //==========================================
@@ -165,23 +151,7 @@ void CEnemyRiot::ActionSet(void)
 //==========================================
 void CEnemyRiot::Move(void)
 {
-	// 移動フラグを立てる
-	m_sMotionFrag.bMove = true;
 
-	// 移動カウンターを加算
-	m_fMoveCount += MOVE_SPEED;
-
-	// 移動速度取得
-	float fMove = GetVelocity();
-
-	// 移動量を適用
-	D3DXVECTOR3 move = GetMove();
-	move.x = sinf(m_fMoveCount) * fMove;
-	move.z = cosf(m_fMoveCount) * fMove;
-	SetMove(move);
-
-	// 方向転換
-	MoveRotation();
 }
 
 //==========================================

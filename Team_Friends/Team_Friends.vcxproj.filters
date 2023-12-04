@@ -454,7 +454,7 @@
       <Filter>ソース ファイル\mesh</Filter>
     </ClCompile>
     <ClCompile Include="enemy_riot.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

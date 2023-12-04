@@ -610,11 +610,6 @@ void CPlayer::Controll(void)
 				float fMove = 5.5f + Random(-20, 20) * 0.1f;
 				float fRot = Random(-20, 20) * 0.01f;
 
-				float ffff = sinf(D3DX_PI + ModelRot.x) * fMove;
-				float fffff = cosf(D3DX_PI + ModelRot.x) * fMove;
-				float ffffff = sinf(D3DX_PI * 0.5f + ModelRot.x) * fMove;
-				float fffffff = cosf(D3DX_PI * 0.5f + ModelRot.x) * fMove;
-
 				pEffect = CEffect3D::Create(
 					weponpos,
 					D3DXVECTOR3(
@@ -1449,6 +1444,7 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 		}
 		CLimitArea::sLimitEreaInfo info = ppLimit[i]->GetLimitEreaInfo();
 
+		// ‘ål‚Ì•Ç‚ð“K—p
 		if (pos.x + GetRadius() >= info.fMaxX) { pos.x = info.fMaxX - GetRadius(); }
 		if (pos.x - GetRadius() <= info.fMinX) { pos.x = info.fMinX + GetRadius(); }
 		if (pos.z + GetRadius() >= info.fMaxZ) { pos.z = info.fMaxZ - GetRadius(); }

@@ -16,6 +16,8 @@
 namespace
 {
 	const float LENGTH_CHASEWALK = 1000.0f;	// •à‚«’Ç]‚Ì’·‚³
+	const float VELOCITY_WALK = 1.0f;		// •à‚«
+	const float VELOCITY_DASH = 2.0f;		// ƒ_ƒbƒVƒ…
 }
 
 //==========================================================================
@@ -187,7 +189,17 @@ void CEnemyBoss::ActChase(void)
 //==========================================================================
 void CEnemyBoss::ChaseSlow(void)
 {
+	// î•ñæ“¾
+	D3DXVECTOR3 move = GetMove();
+	D3DXVECTOR3 rot = GetRotation();
+	float fMove = GetVelocity();
 
+	// ˆÚ“®—Êİ’è
+	move.x = sinf(D3DX_PI + rot.y) * fMove * VELOCITY_WALK;
+	move.z = cosf(D3DX_PI + rot.y) * fMove * VELOCITY_WALK;
+
+	// ˆÚ“®—Êİ’è
+	SetMove(move);
 }
 
 //==========================================================================
@@ -195,7 +207,17 @@ void CEnemyBoss::ChaseSlow(void)
 //==========================================================================
 void CEnemyBoss::ChaseDash(void)
 {
+	// î•ñæ“¾
+	D3DXVECTOR3 move = GetMove();
+	D3DXVECTOR3 rot = GetRotation();
+	float fMove = GetVelocity();
 
+	// ˆÚ“®—Êİ’è
+	move.x = sinf(D3DX_PI + rot.y) * fMove * VELOCITY_DASH;
+	move.z = cosf(D3DX_PI + rot.y) * fMove * VELOCITY_DASH;
+
+	// ˆÚ“®—Êİ’è
+	SetMove(move);
 }
 
 //==========================================================================

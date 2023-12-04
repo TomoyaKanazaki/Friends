@@ -21,7 +21,7 @@ class CUnion_BodytoLeg : public CPlayerUnion
 {
 public:
 
-	CUnion_BodytoLeg(int nPriority = mylib_const::DEF2D_PRIORITY);
+	CUnion_BodytoLeg(int nPriority = mylib_const::PRIORITY_DEF2D);
 	~CUnion_BodytoLeg();
 
 	// オーバーライドされた関数

@@ -18,7 +18,6 @@
 #include "texture.h"
 #include "Xload.h"
 #include "model.h"
-#include "motion.h"
 #include "hp_gauge.h"
 #include "objectChara.h"
 #include "elevation.h"
@@ -41,6 +40,7 @@
 #include "statuswindow.h"
 #include "collisionobject.h"
 #include "limitereamanager.h"
+#include "beam.h"
 
 // 派生先
 #include "tutorialplayer.h"
@@ -349,33 +349,6 @@ void CPlayer::Update(void)
 
 	// 操作
 	Controll();
-#ifdef _DEBUG
-
-	if (pInputKeyboard->GetPress(DIK_DOWN))
-	{
-		D3DXVECTOR3 move = GetMove();
-		move.x = 10.0f;
-		SetMove(move);
-		m_sMotionFrag.bMove = true;
-
-		// 必要な値を取得
-		D3DXVECTOR3 rot2 = GetRotation();
-		D3DXVECTOR3 move2 = GetMove();
-
-		// 方向を算出
-		float fRot = atan2f(-move2.x, -move2.z);
-
-		//角度の正規化
-		RotNormalize(fRot);
-
-		//角度の補正をする
-		rot2.y = fRot;
-
-		// 向き設定
-		SetRotation(rot2);
-	}
-
-#endif
 
 	// モーションの設定処理
 	MotionSet();
@@ -837,6 +810,12 @@ void CPlayer::Controll(void)
 		// アイテムドロップ
 		CItem::Create(D3DXVECTOR3(pos.x, pos.y + 100.0f, pos.z), D3DXVECTOR3(0.0f, Random(-31, 31) * 0.1f, 0.0f));
 	}
+
+	if (pInputKeyboard->GetPress(DIK_DOWN) == true || pInputKeyboard->GetTrigger(DIK_LEFT) == true)
+	{
+		//my_particle::Create(GetCenterPosition(), my_particle::TYPE_ATTACK_BODY);
+		my_particle::Create(pos, my_particle::TYPE_BEAMHIT_FIELD);
+	}
 #endif
 }
 
@@ -954,9 +933,6 @@ void CPlayer::Atack(void)
 		if (m_pMotion->IsImpactFrame(*aInfo.AttackInfo[nCntAttack]))
 		{// 衝撃のカウントと同じとき
 
-			// 武器の位置
-			D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetObjectChara()->GetModel(), *aInfo.AttackInfo[nCntAttack]);
-
 			// 種類別
 			switch (m_pMotion->GetType())
 			{
@@ -966,55 +942,20 @@ void CPlayer::Atack(void)
 				switch (CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx))
 				{
 				case CPlayerUnion::PARTS_BODY:
+					AttackBody(*aInfo.AttackInfo[nCntAttack]);
 					break;
 
 				case CPlayerUnion::PARTS_R_ARM:
 				case CPlayerUnion::PARTS_L_ARM:
+					AttackArm(*aInfo.AttackInfo[nCntAttack]);
 					break;
 
 				case CPlayerUnion::PARTS_LEG:
+					AttackLeg(*aInfo.AttackInfo[nCntAttack]);
 					break;
 
 				default:
-					// 武器の位置
-					for (int i = 0; i < 4; i++)
-					{
-						D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
-
-						// 炎
-						float fMove = 7.0f + Random(-2, 5);
-						float fRot = Random(-20, 20) * 0.01f;
-						float fRotMove = Random(-10, 10) * 0.01f;
-
-						// 炎
-						CEffect3D *pEffect = CEffect3D::Create(
-							weponpos,
-							D3DXVECTOR3(
-								sinf(D3DX_PI + rot.y + fRotMove) * fMove,
-								fRotMove,
-								cosf(D3DX_PI + rot.y + fRotMove) * fMove),
-							D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
-							90.0f + (float)Random(-10, 10),
-							15,
-							CEffect3D::MOVEEFFECT_ADD,
-							CEffect3D::TYPE_SMOKE);
-
-						// 炎
-						CEffect3D::Create(
-							weponpos,
-							D3DXVECTOR3(
-								sinf(D3DX_PI + rot.y + fRotMove) * fMove,
-								fRotMove,
-								cosf(D3DX_PI + rot.y + fRotMove) * fMove),
-							D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
-							60.0f + (float)Random(-10, 10),
-							15,
-							CEffect3D::MOVEEFFECT_ADD,
-							CEffect3D::TYPE_SMOKE);
-
-						int nDamage = (int)((float)aInfo.AttackInfo[nCntAttack]->nDamage * m_sStatus.fPowerBuff);
-						CCollisionObject::Create(pEffect->GetPosition(), pEffect->GetMove(), pEffect->GetSize().x, 15, nDamage, CCollisionObject::TAG_PLAYER);
-					}
+					AttackNormal(*aInfo.AttackInfo[nCntAttack]);
 					break;
 				}
 
@@ -1025,11 +966,43 @@ void CPlayer::Atack(void)
 		}
 
 		// モーションカウンター取得
-		if (m_pMotion->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt && m_pMotion->GetAllCount() < aInfo.AttackInfo[nCntAttack]->nMaxCnt)
+		float fAllCount = m_pMotion->GetAllCount();
+		if (fAllCount > aInfo.AttackInfo[nCntAttack]->nMinCnt && fAllCount < aInfo.AttackInfo[nCntAttack]->nMaxCnt)
 		{// 攻撃判定中
-
+			
 			// 武器の位置
 			D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetObjectChara()->GetModel(), *aInfo.AttackInfo[nCntAttack]);
+
+			// 進化先別
+			switch (CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx))
+			{
+			case CPlayerUnion::PARTS_BODY:
+				my_particle::Create(weponpos, my_particle::TYPE_ATTACK_BODY);
+
+				if ((int)fAllCount % 8 == 0)
+				{
+					for (int i = 0; i < 4; i++)
+					{
+						int repeat = (int)(fAllCount / 8.0f);
+						CEffect3D::Create(
+							weponpos,
+							D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+							D3DXCOLOR(0.9f, 0.2f, 0.9f, 1.0f),
+							20.0f, 16, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_POINT, repeat * 4.0f);
+					}
+				}
+				break;
+
+			case CPlayerUnion::PARTS_R_ARM:
+			case CPlayerUnion::PARTS_L_ARM:
+				break;
+
+			case CPlayerUnion::PARTS_LEG:
+				break;
+
+			default:
+				break;
+			}
 
 #if _DEBUG
 			CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
@@ -1128,6 +1101,137 @@ void CPlayer::Atack(void)
 
 	CManager::GetInstance()->GetDebugProc()->Print(
 		"モーションカウンター：%d\n", m_pMotion->GetAllCount());
+}
+
+//==========================================================================
+// 通常攻撃
+//==========================================================================
+void CPlayer::AttackNormal(CMotion::AttackInfo attackInfo)
+{
+	// 向き取得
+	D3DXVECTOR3 rot = GetRotation();
+	D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), attackInfo);
+
+	// 武器の位置
+	for (int i = 0; i < 4; i++)
+	{
+		// 炎
+		float fMove = 7.0f + Random(-2, 5);
+		float fRot = Random(-20, 20) * 0.01f;
+		float fRotMove = Random(-10, 10) * 0.01f;
+
+		// 炎
+		CEffect3D *pEffect = CEffect3D::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y + fRotMove) * fMove,
+				fRotMove,
+				cosf(D3DX_PI + rot.y + fRotMove) * fMove),
+			D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
+			90.0f + (float)Random(-10, 10),
+			15,
+			CEffect3D::MOVEEFFECT_ADD,
+			CEffect3D::TYPE_SMOKE);
+
+		// 炎
+		CEffect3D::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y + fRotMove) * fMove,
+				fRotMove,
+				cosf(D3DX_PI + rot.y + fRotMove) * fMove),
+			D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
+			60.0f + (float)Random(-10, 10),
+			15,
+			CEffect3D::MOVEEFFECT_ADD,
+			CEffect3D::TYPE_SMOKE);
+
+		int nDamage = (int)((float)attackInfo.nDamage * m_sStatus.fPowerBuff);
+		CCollisionObject::Create(pEffect->GetPosition(), pEffect->GetMove(), pEffect->GetSize().x, 15, nDamage, CCollisionObject::TAG_PLAYER);
+	}
+}
+
+//==========================================================================
+// 腕攻撃
+//==========================================================================
+void CPlayer::AttackArm(CMotion::AttackInfo attackInfo)
+{
+
+}
+
+//==========================================================================
+// 脚攻撃
+//==========================================================================
+void CPlayer::AttackLeg(CMotion::AttackInfo attackInfo)
+{
+
+}
+
+//==========================================================================
+// 胴攻撃
+//==========================================================================
+void CPlayer::AttackBody(CMotion::AttackInfo attackInfo)
+{
+	// 向き取得
+	D3DXVECTOR3 rot = GetRotation();
+	D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), attackInfo);
+	int nDamage = (int)((float)attackInfo.nDamage * m_sStatus.fPowerBuff);
+	float fMove = 28.0f;
+	D3DXCOLOR col = D3DXCOLOR(
+		0.9f + Random(-100, 100) * 0.001f,
+		0.2f + Random(-100, 100) * 0.001f,
+		0.9f + Random(-100, 100) * 0.001f,	// 色
+		1.0f);
+
+	switch (m_pMotion->GetType())
+	{
+	case MOTION_ATK:
+		CBeam::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y) * fMove,	// 位置
+				cosf(D3DX_PI * 0.65f) * fMove,
+				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
+			col,	// 色
+			20.0f,	// 半径
+			200.0f,	// 長さ
+			15,		// 寿命
+			18,		// 密度
+			nDamage);		// ダメージ
+		break;
+
+	case MOTION_ATK2:
+		fMove = 32.0f;
+		CBeam::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y) * fMove,	// 位置
+				cosf(D3DX_PI * 0.65f) * fMove,
+				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
+			col,	// 色
+			25.0f,	// 半径
+			200.0f,	// 長さ
+			40,		// 寿命
+			24,		// 密度
+			nDamage);		// ダメージ
+		break;
+	}
+
+	col.a = 0.8f;
+	// 衝撃波生成
+	CImpactWave::Create
+	(
+		weponpos,	// 位置
+		D3DXVECTOR3(D3DX_PI * 0.5f, D3DX_PI + rot.y, 0.0f),				// 向き
+		col,			// 色
+		18.0f,						// 幅
+		8.0f,						// 高さ
+		20.0f,						// 中心からの距離
+		10,							// 寿命
+		10.0f,						// 幅の移動量
+		CImpactWave::TYPE_PURPLE4,	// テクスチャタイプ
+		true						// 加算合成するか
+	);
 }
 
 //==========================================================================
@@ -1323,8 +1427,8 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 
 
 	// エリア制限情報取得
-	CLimitEreaManager *pLimitManager = CGame::GetLimitEreaManager();
-	CLimitErea **ppLimit = pLimitManager->GetLimitErea();
+	CLimitAreaManager *pLimitManager = CGame::GetLimitEreaManager();
+	CLimitArea **ppLimit = pLimitManager->GetLimitErea();
 
 	// 総数取得
 	int nNumAll = pLimitManager->GetNumAll();
@@ -1343,7 +1447,7 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 		{
 			continue;
 		}
-		CLimitErea::sLimitEreaInfo info = ppLimit[i]->GetLimitEreaInfo();
+		CLimitArea::sLimitEreaInfo info = ppLimit[i]->GetLimitEreaInfo();
 
 		if (pos.x + GetRadius() >= info.fMaxX) { pos.x = info.fMaxX - GetRadius(); }
 		if (pos.x - GetRadius() <= info.fMinX) { pos.x = info.fMinX + GetRadius(); }

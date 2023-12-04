@@ -72,7 +72,7 @@ public:
 		TYPE_MAX
 	};
 
-	CObject(int nPriority = mylib_const::DEFAULT_PRIORITY);
+	CObject(int nPriority = mylib_const::PRIORITY_DEFAULT);
 	virtual ~CObject();
 
 	// 派生クラスでオーバーライドされた関数が絶対必要(純粋仮想関数)
@@ -95,6 +95,8 @@ public:
 	virtual bool Hit(const int nValue);						// 嘆きのバーチャルヒット処理
 	virtual bool Hit(const int nValue, D3DXVECTOR3 move);
 
+	float CObject::ScreenZ() const;
+	static bool ZSort(const CObject *obj1, const CObject *obj2);	// Zソートの比較関数
 	int GetPriority(void) { return m_nPriority; }	// 優先順位取得
 	void SetEnableDisp(bool bDisp) { m_bDisp = bDisp; }		// 描画設定
 
@@ -129,6 +131,9 @@ protected:
 	void Death(void);	// 死亡処理
 
 private:
+
+	static void DrawNone(int nPriority);	// 通常描画
+	static void DrawZSort(int nPriority);	// Zソート描画
 
 	D3DXVECTOR3 m_pos;			// 位置
 	D3DXVECTOR3 m_posOld;		// 前回の位置

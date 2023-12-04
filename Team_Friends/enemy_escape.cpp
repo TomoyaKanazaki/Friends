@@ -19,8 +19,6 @@ namespace
 	const float SEARCH_LENGTH = 400.0f;
 	const float MOVE_SPEED = 0.03f;
 	const float ESCAPE_SPEED = 5.00f;
-	const float MOVE_X = 2.0f;
-	const float MOVE_Z = 2.0f;
 	const float FIND_TIME = 0.5f;
 	const float ESCAPE_TIME = 3.0f;
 }
@@ -30,7 +28,6 @@ namespace
 //==========================================
 CEnemyEscape::CEnemyEscape(int nPriority) :
 	m_Act(ACTION_ROAMING),
-	m_fMoveCount(0.0f),
 	m_fCntFind(0.0f),
 	m_fCntEscape(0.0f)
 {
@@ -86,12 +83,6 @@ void CEnemyEscape::Update(void)
 	{// 死亡フラグが立っていたら
 		return;
 	}
-
-	// 行動状態の更新
-	ActionSet();
-
-	// モーションの更新
-	MotionSet();
 
 	CManager::GetInstance()->GetDebugProc()->Print
 	(
@@ -257,27 +248,6 @@ void CEnemyEscape::ActionSet(void)
 }
 
 //==========================================
-//  移動
-//==========================================
-void CEnemyEscape::Move(void)
-{
-	// 移動フラグを立てる
-	m_sMotionFrag.bMove = true;
-
-	// 移動カウンターを加算
-	m_fMoveCount += MOVE_SPEED;
-
-	// 移動量を適用
-	D3DXVECTOR3 move = GetMove();
-	move.x = sinf(m_fMoveCount) * MOVE_X;
-	move.z = cosf(m_fMoveCount) * MOVE_Z;
-	SetMove(move);
-
-	// 方向転換
-	MoveRotation();
-}
-
-//==========================================
 //  逃走
 //==========================================
 void CEnemyEscape::Escape(void)
@@ -313,100 +283,4 @@ void CEnemyEscape::Escape(void)
 
 	// 方向転換
 	MoveRotation();
-}
-
-//==========================================
-//  移動方向を向く処理
-//==========================================
-void CEnemyEscape::MoveRotation(void)
-{
-	// 必要な値を取得
-	D3DXVECTOR3 rot = GetRotation();
-	D3DXVECTOR3 move = GetMove();
-
-	// 方向を算出
-	float fRot = atan2f(-move.x, -move.z);
-
-	//角度の正規化
-	RotNormalize(fRot);
-
-	//角度の補正をする
-	rot.y = fRot;
-
-	// 向き設定
-	SetRotation(rot);
-}
-
-//==========================================
-//  プレイヤーを向く処理
-//==========================================
-void CEnemyEscape::RotationPlayer(void)
-{
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 rot = GetRotation();
-
-	// プレイヤー情報
-	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
-	if (pPlayer == NULL)
-	{
-		return;
-	}
-
-	// プレイヤーの位置取得
-	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-
-	// 目標の角度を求める
-	float fRotDest = atan2f((pos.x - posPlayer.x), (pos.z - posPlayer.z));
-
-	// 目標との差分
-	float fRotDiff = fRotDest - rot.y;
-
-	//角度の正規化
-	RotNormalize(fRotDiff);
-
-	//角度の補正をする
-	rot.y += fRotDiff * 0.1f;
-
-	// 角度の正規化
-	RotNormalize(rot.y);
-
-	// 向き設定
-	SetRotation(rot);
-
-	// 目標の向き設定
-	SetRotDest(fRotDest);
-}
-
-//==========================================
-//  プレイヤーとの距離を判定
-//==========================================
-bool CEnemyEscape::CalcLenPlayer(float fLen)
-{
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
-
-	// プレイヤー情報
-	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
-	if (pPlayer == NULL)
-	{
-		return false;
-	}
-
-	// プレイヤーの位置取得
-	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-
-	// 二点間を繋ぐベクトルの算出
-	D3DXVECTOR3 vecToPlayer = pos - posPlayer;
-
-	// ベクトルの大きさの2乗を算出
-	float fLength = vecToPlayer.x * vecToPlayer.x + vecToPlayer.z * vecToPlayer.z;
-
-	// 一定範囲内の判定
-	if (fLen * fLen >= fLength)
-	{
-		return true;
-	}
-
-	return false;
 }

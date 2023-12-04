@@ -19,7 +19,7 @@ class CHP_Gauge : public CObject
 {
 public:
 
-	CHP_Gauge(int nPriority = mylib_const::DEFAULT_PRIORITY);
+	CHP_Gauge(int nPriority = mylib_const::PRIORITY_DEFAULT);
 	~CHP_Gauge();
 
 	static CHP_Gauge *Create(float fPosLen, int nMaxLife, float fSizeBuff = 1.0f);

@@ -18,7 +18,7 @@
 class CMeshSphere : public CObject3DMesh
 {
 public:
-	CMeshSphere(int nPriority = mylib_const::DEF2D_PRIORITY);
+	CMeshSphere(int nPriority = mylib_const::PRIORITY_DEF2D);
 	~CMeshSphere();
 
 	// オーバーライドされた関数
@@ -28,8 +28,8 @@ public:
 	void Draw(void);
 
 	void SetSizeDest(float fSize);	// 目標のサイズ設定
-	static CMeshSphere *Create(D3DXVECTOR3 pos, float fSize, const char *pFileName, int nPriority = mylib_const::DEF2D_PRIORITY);	// 生成処理
-	static CMeshSphere *Create(D3DXVECTOR3 pos, float fSize, int nTexIdx, int nPriority = mylib_const::DEF2D_PRIORITY);	// 生成処理
+	static CMeshSphere *Create(D3DXVECTOR3 pos, float fSize, const char *pFileName, int nPriority = mylib_const::PRIORITY_DEF2D);	// 生成処理
+	static CMeshSphere *Create(D3DXVECTOR3 pos, float fSize, int nTexIdx, int nPriority = mylib_const::PRIORITY_DEF2D);	// 生成処理
 
 private:
 

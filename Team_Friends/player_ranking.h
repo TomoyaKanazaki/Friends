@@ -29,8 +29,8 @@ public:
 		MAX,
 	};
 
-	CPlayerRanking(int nPriority = mylib_const::DEF2D_PRIORITY);
-	CPlayerRanking(MODEL nType, int nPriority = mylib_const::DEF2D_PRIORITY);
+	CPlayerRanking(int nPriority = mylib_const::PRIORITY_DEF2D);
+	CPlayerRanking(MODEL nType, int nPriority = mylib_const::PRIORITY_DEF2D);
 	~CPlayerRanking();
 
 	// オーバーライドされた関数

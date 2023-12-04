@@ -151,7 +151,24 @@ void CEnemyBoss::ChaseDash(void)
 //==========================================================================
 void CEnemyBoss::ActAttack(void)
 {
+	// 移動フラグを立てる
+	m_sMotionFrag.bMove = true;
 
+	// ターゲットの方を向く
+	RotationTarget();
+
+	// 行動別移動処理
+	switch (m_Act)
+	{
+	case CEnemyBoss::ACTION_CHASE:
+		break;
+
+	case CEnemyBoss::ACTION_CHASE_DASH:
+		break;
+
+	default:
+		break;
+	}
 }
 
 //==========================================================================
@@ -160,27 +177,6 @@ void CEnemyBoss::ActAttack(void)
 void CEnemyBoss::ActCharge(void)
 {
 
-}
-
-//==========================================================================
-//  移動
-//==========================================================================
-void CEnemyBoss::Move(void)
-{
-	//// 移動フラグを立てる
-	//m_sMotionFrag.bMove = true;
-
-	//// 移動カウンターを加算
-	//m_fMoveCount += MOVE_SPEED;
-
-	//// 移動量を適用
-	//D3DXVECTOR3 move = GetMove();
-	//move.x = sinf(m_fMoveCount) * MOVE_X;
-	//move.z = cosf(m_fMoveCount) * MOVE_Z;
-	//SetMove(move);
-
-	//// 方向転換
-	//MoveRotation();
 }
 
 //==========================================================================

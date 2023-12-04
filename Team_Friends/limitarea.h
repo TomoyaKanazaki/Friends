@@ -14,16 +14,16 @@
 // クラス定義
 //==========================================================================
 // エリア制限クラス定義
-class CLimitErea : public CObject
+class CLimitArea : public CObject
 {
 public:
 
-	//モーション列挙
+	// 状態列挙
 	enum STATE
 	{
-		STATE_DEF = 0,	// 無し
-		STATE_INIT,		// 出現
-		STATE_FADEOUT,	// 消滅
+		STATE_NONE = 0,
+		STATE_APPEARANCE,	// 出現
+		STATE_FADEOUT,		// 消滅
 		STATE_MAX
 	};
 
@@ -36,32 +36,49 @@ public:
 		float fMaxZ;	// 最大Z
 	};
 
-	CLimitErea(int nPriority = 7);
-	~CLimitErea();
+	CLimitArea(int nPriority = 7);
+	~CLimitArea();
 
 	// オーバーライドされた関数
-	virtual HRESULT Init(void);
-	virtual void Uninit(void);
-	virtual void Update(void);
-	virtual void Draw(void);
+	virtual HRESULT Init(void) override;
+	virtual void Uninit(void) override;
+	virtual void Update(void) override;
+	virtual void Draw(void) override;
 
-	void Release(void);
+	void Kill(void);	// 削除処理
 
-	static CLimitErea *Create(sLimitEreaInfo info);
-	sLimitEreaInfo GetLimitEreaInfo(void);
-	STATE GetState(void);
-	void CLimitErea::SetState(CLimitErea::STATE state);
+	static CLimitArea *Create(sLimitEreaInfo info);	// 生成処理
+	STATE GetState(void);		// 状態取得
+	void SetState(STATE state);	// 状態設定
+	sLimitEreaInfo GetLimitEreaInfo(void);	// エリア情報取得
 
 protected:
 
 private:
 
-	void UpdateColor(int nIdx);
+	//=============================
+	// 関数リスト
+	//=============================
+	typedef void(CLimitArea::*STATE_FUNC)(void);
+	static STATE_FUNC m_StateFuncList[];	// 状態の関数リスト
 
-	STATE m_state;
-	CMeshWall *m_pMeshWall[mylib_const::SHAPE_LIMITEREA];	// メッシュウォールのオブジェクト
+	//=============================
+	// メンバ関数
+	//=============================
+	void StateNone(void);		// 通常
+	void StateAppearance(void);	// 出現状態
+	void StateFadeout(void);	// フェードアウト
+	void UpdateColor(int nIdx);	// プレイヤーの位置で色更新
+
+
+	//=============================
+	// メンバ変数
+	//=============================
+	STATE m_state;						// 状態
+	float m_fTimeState;					// 状態カウンター
 	sLimitEreaInfo m_sLimitEreaInfo;	// エリア制限情報
 	int m_nIdxEreaManager;				// エリア制限マネージャのインデックス番号
+	CMeshWall *m_pMeshWall[mylib_const::SHAPE_LIMITEREA];	// メッシュウォールのオブジェクト
 };
 
 

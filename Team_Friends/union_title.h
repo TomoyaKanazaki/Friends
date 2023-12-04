@@ -15,7 +15,7 @@ class CUnionTitle : public CPlayerUnion
 {
 public:
 
-	CUnionTitle(int nPriority = mylib_const::DEF2D_PRIORITY);
+	CUnionTitle(int nPriority = mylib_const::PRIORITY_DEF2D);
 	~CUnionTitle();
 
 	// オーバーライドされた関数

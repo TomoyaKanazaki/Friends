@@ -7,6 +7,7 @@
 #include "object.h"
 #include "manager.h"
 #include "3D_effect.h"
+#include "camera.h"
 
 //==========================================================================
 // マクロ定義
@@ -136,6 +137,34 @@ void CObject::ReleaseAll(void)
 			pObject = pObjNext;
 		}
 	}
+
+	// 優先順位的に消えなかったものを全削除
+	for (int nCntPriority = 0; nCntPriority < mylib_const::PRIORITY_NUM; nCntPriority++)
+	{
+		// 先頭を保存
+		CObject *pObject = m_pTop[nCntPriority];
+
+		while (pObject != NULL)
+		{// NULLが来るまで無限ループ
+
+			// 次のオブジェクトを一時保存
+			CObject *pObjNext = pObject->m_pNext;
+
+			if (pObject->m_bDeath == true)
+			{// 死亡フラグが立っていたら
+
+				// 完全死亡処理
+				pObject->Death();
+			}
+			else
+			{
+				int n = 0;
+			}
+
+			// 次のオブジェクトを代入
+			pObject = pObjNext;
+		}
+	}
 }
 
 //==========================================================================
@@ -223,26 +252,113 @@ void CObject::DrawAll(void)
 {
 	for (int nCntPriority = 0; nCntPriority < mylib_const::PRIORITY_NUM; nCntPriority++)
 	{
-		// 先頭を保存
-		CObject *pObject = m_pTop[nCntPriority];
-
-		while (pObject != NULL)
-		{// NULLが来るまで無限ループ
-
-			// 次のオブジェクトを一時保存
-			CObject *pObjNext = pObject->m_pNext;
-
-			if (pObject->m_bDisp == true && pObject->m_bDeath == false && pObject->m_type != TYPE_NONE)
-			{// NONEじゃなければ
-
-				// 描画処理
-				pObject->Draw();
-			}
-
-			// 次のオブジェクトを代入
-			pObject = pObjNext;
+		if (nCntPriority == mylib_const::PRIORITY_ZSORT)
+		{// Zソート描画
+			DrawZSort(nCntPriority);
+		}
+		else
+		{// 通常描画
+			DrawNone(nCntPriority);
 		}
 	}
+}
+
+//==========================================================================
+// 通常描画
+//==========================================================================
+void CObject::DrawNone(int nPriority)
+{
+	// 先頭を保存
+	CObject *pObject = m_pTop[nPriority];
+
+	while (pObject != NULL)
+	{// NULLが来るまで無限ループ
+
+		// 次のオブジェクトを一時保存
+		CObject *pObjNext = pObject->m_pNext;
+
+		if (pObject->m_bDisp == true &&
+			pObject->m_bDeath == false &&
+			pObject->m_type != TYPE_NONE)
+		{// NONEじゃなければ
+
+			// 描画処理
+			pObject->Draw();
+		}
+
+		// 次のオブジェクトを代入
+		pObject = pObjNext;
+	}
+}
+
+//==========================================================================
+// Zソート描画
+//==========================================================================
+void CObject::DrawZSort(int nPriority)
+{
+	// 先頭を保存
+	CObject *pObject = m_pTop[nPriority];
+
+	// リストコピー
+	std::vector<CObject*> pObjectSort;
+	while (pObject != NULL)
+	{
+		// 次のオブジェクトを一時保存
+		CObject *pObjNext = pObject->m_pNext;
+
+		// 要素を末尾に追加
+		pObjectSort.push_back(pObject);
+
+		// 次のオブジェクトを代入
+		pObject = pObjNext;
+	}
+
+	// Zソート
+	std::sort(pObjectSort.begin(), pObjectSort.end(), ZSort);
+
+	for (int i = 0; i < (int)pObjectSort.size(); i++)
+	{
+		if (pObjectSort[i]->m_bDisp == true
+			&& pObjectSort[i]->m_bDeath == false
+			&& pObjectSort[i]->m_type != TYPE_NONE)
+		{// NONEじゃなければ
+
+			// 描画処理
+			pObjectSort[i]->Draw();
+		}
+	}
+}
+
+//==========================================================================
+// スクリーン座標取得(Z座標)
+//==========================================================================
+float CObject::ScreenZ() const 
+{
+	// カメラの座標変換行列を取得
+	D3DXMATRIX mtxCamera = CManager::GetInstance()->GetCamera()->GetMtxView();
+
+	// オブジェクト座標をカメラからの座標に変換
+	D3DXVECTOR3 screenPos;
+	D3DXVec3TransformCoord(&screenPos, &m_pos, &mtxCamera);
+
+	// カメラ視点から見たZ座標
+	float screenZ = -screenPos.z;
+
+	return screenZ;
+}
+
+//==========================================================================
+// Zソートの比較関数
+//==========================================================================
+bool CObject::ZSort(const CObject *obj1, const CObject *obj2)
+{
+	bool bSort = false;
+	if (obj1->ScreenZ() < obj2->ScreenZ())
+	{
+		bSort = true;
+	}
+
+	return bSort;
 }
 
 //==========================================================================

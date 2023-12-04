@@ -38,7 +38,7 @@ public:
 		TYPE_MAX
 	}TYPE;
 
-	CBallast(int nPriority = mylib_const::DEFAULT_PRIORITY);
+	CBallast(int nPriority = mylib_const::PRIORITY_DEFAULT);
 	~CBallast();
 
 	static CBallast *Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, int nNum = 10, float fAlpha = 1.0f, TYPE type = TYPE_STONE);

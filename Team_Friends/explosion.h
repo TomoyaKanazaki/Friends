@@ -19,7 +19,7 @@ class CExplosion : public CObjectBillboard
 {
 public:
 
-	CExplosion(int nPriority = mylib_const::DEFAULT_PRIORITY);
+	CExplosion(int nPriority = mylib_const::PRIORITY_DEFAULT);
 	~CExplosion();
 
 	static HRESULT Load(void);

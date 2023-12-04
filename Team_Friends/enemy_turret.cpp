@@ -24,8 +24,6 @@ namespace
 	const float ATTACK_LENGTH = 200.0f;
 	const float MOVE_SPEED = 0.01f;
 	const float ATTACK_SPEED = 10.0f;
-	const float MOVE_X = 2.0f;
-	const float MOVE_Z = 2.0f;
 	const float READY_TIME = 3.0f;
 	const float ATTACK_TIME = 1.0f;
 	const float AFTER_TIME = 2.0f;
@@ -81,6 +79,11 @@ void CEnemyTurret::Uninit(void)
 	//	m_pLimitArea = nullptr;
 	//}
 
+	if (m_pLimitArea != nullptr)
+	{
+		m_pLimitArea->SetState(CLimitArea::STATE_FADEOUT);
+	}
+
 	// 終了処理
 	CEnemy::Uninit();
 }
@@ -95,7 +98,7 @@ void CEnemyTurret::Update(void)
 		if (CalcLenPlayer(SEARCH_LENGTH))
 		{
 			D3DXVECTOR3 pos = GetPosition();
-			CLimitErea::sLimitEreaInfo info = {};
+			CLimitArea::sLimitEreaInfo info = {};
 			info.fMinX = pos.x - AREA_LENGTH;
 			info.fMaxX = pos.x + AREA_LENGTH;
 			info.fMinZ = pos.z - AREA_LENGTH;
@@ -107,7 +110,7 @@ void CEnemyTurret::Update(void)
 				m_pLimitArea = nullptr;
 			}
 
-			m_pLimitArea = CLimitErea::Create(info);
+			m_pLimitArea = CLimitArea::Create(info);
 
 			bArea = true;
 		}
@@ -126,12 +129,6 @@ void CEnemyTurret::Update(void)
 	{// 死亡フラグが立っていたら
 		return;
 	}
-
-	// 行動状態の更新
-	ActionSet();
-
-	// モーションの更新
-	MotionSet();
 }
 
 //==========================================================================
@@ -208,7 +205,10 @@ void CEnemyTurret::Kill(void)
 	// 死亡処理
 	CEnemy::Kill();
 
-	m_pLimitArea->SetState(CLimitErea::STATE_FADEOUT);
+	if (m_pLimitArea != nullptr)
+	{
+		m_pLimitArea->SetState(CLimitArea::STATE_FADEOUT);
+	}
 }
 
 //==========================================
@@ -300,52 +300,6 @@ void CEnemyTurret::ActionSet(void)
 }
 
 //==========================================
-//  移動
-//==========================================
-void CEnemyTurret::Move(void)
-{
-	// 移動フラグを立てる
-	m_sMotionFrag.bMove = true;
-
-	// 移動カウンターを加算
-	m_fActionCount += MOVE_SPEED;
-
-	// 移動量を適用
-	D3DXVECTOR3 move = GetMove();
-	move.x = sinf(m_fActionCount) * MOVE_X;
-	move.z = cosf(m_fActionCount) * MOVE_Z;
-	SetMove(move);
-
-	// 方向転換
-	MoveRotation();
-}
-
-//==========================================
-//  移動方向を向く処理
-//==========================================
-void CEnemyTurret::MoveRotation(void)
-{
-	// 必要な値を取得
-	D3DXVECTOR3 rot = GetRotation();
-	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 move = GetMove();
-	D3DXVECTOR3 posDest = pos + move;
-	D3DXVECTOR3 posDiff = posDest - pos;
-
-	// 方向を算出
-	float fRot = atan2f(-posDiff.x, -posDiff.z);
-
-	//角度の正規化
-	RotNormalize(fRot);
-
-	//角度の補正をする
-	rot.y = fRot;
-
-	// 向き設定
-	SetRotation(rot);
-}
-
-//==========================================
 //  攻撃
 //==========================================
 void CEnemyTurret::Attack(void)
@@ -395,55 +349,18 @@ void CEnemyTurret::Attack(void)
 }
 
 //==========================================
-//  プレイヤーを向く処理
-//==========================================
-void CEnemyTurret::RotationPlayer(void)
-{
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 rot = GetRotation();
-
-	// プレイヤー情報
-	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
-	if (pPlayer == NULL)
-	{
-		return;
-	}
-
-	// プレイヤーの位置取得
-	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-
-	// 目標の角度を求める
-	float fRotDest = atan2f((pos.x - posPlayer.x), (pos.z - posPlayer.z));
-
-	// 目標との差分
-	float fRotDiff = fRotDest - rot.y;
-
-	//角度の正規化
-	RotNormalize(fRotDiff);
-
-	//角度の補正をする
-	rot.y += fRotDiff * 0.025f;
-
-	// 角度の正規化
-	RotNormalize(rot.y);
-
-	// 向き設定
-	SetRotation(rot);
-
-	// 目標の向き設定
-	SetRotDest(fRotDest);
-}
-
-//==========================================
 //　向きから移動量を設定
 //==========================================
 void CEnemyTurret::SetMoveRotation(void)
 {
 	D3DXVECTOR3 move = GetMove();
 	D3DXVECTOR3 rot = GetRotation();
-	move.x = sinf(rot.y) * MOVE_X * ATTACK_SPEED;
-	move.z = cosf(rot.y) * MOVE_Z * ATTACK_SPEED;
+
+	// 移動速度取得
+	float fMove = GetVelocity();
+
+	move.x = sinf(rot.y) * fMove * ATTACK_SPEED;
+	move.z = cosf(rot.y) * fMove * ATTACK_SPEED;
 	SetMove(move);
 }
 
@@ -485,39 +402,6 @@ bool CEnemyTurret::TargetPlayer(float fLen)
 	//{
 	//	return true;
 	//}
-
-	return false;
-}
-
-//==========================================
-//  プレイヤーとの距離を判定
-//==========================================
-bool CEnemyTurret::CalcLenPlayer(float fLen)
-{
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
-
-	// プレイヤー情報
-	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
-	if (pPlayer == NULL)
-	{
-		return false;
-	}
-
-	// プレイヤーの位置取得
-	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-
-	// 二点間を繋ぐベクトルの算出
-	D3DXVECTOR3 vecToPlayer = pos - posPlayer;
-
-	// ベクトルの大きさの2乗を算出
-	float fLength = vecToPlayer.x * vecToPlayer.x + vecToPlayer.z * vecToPlayer.z;
-
-	// 一定範囲内の判定
-	if (fLen * fLen >= fLength)
-	{
-		return true;
-	}
 
 	return false;
 }

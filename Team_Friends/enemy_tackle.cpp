@@ -24,8 +24,6 @@ namespace
 	const float ATTACK_LENGTH = 200.0f;
 	const float MOVE_SPEED = 0.01f;
 	const float ATTACK_SPEED = 10.0f;
-	const float MOVE_X = 2.0f;
-	const float MOVE_Z = 2.0f;
 	const float READY_TIME = 3.0f;
 	const float ATTACK_TIME = 1.0f;
 	const float AFTER_TIME = 2.0f;
@@ -95,12 +93,6 @@ void CEnemyTackle::Update(void)
 	{// 死亡フラグが立っていたら
 		return;
 	}
-
-	// 行動状態の更新
-	ActionSet();
-
-	// モーションの更新
-	MotionSet();
 }
 
 //==========================================================================
@@ -272,52 +264,6 @@ void CEnemyTackle::ActionSet(void)
 }
 
 //==========================================
-//  移動
-//==========================================
-void CEnemyTackle::Move(void)
-{
-	// 移動フラグを立てる
-	m_sMotionFrag.bMove = true;
-
-	// 移動カウンターを加算
-	m_fActionCount += MOVE_SPEED;
-
-	// 移動量を適用
-	D3DXVECTOR3 move = GetMove();
-	move.x = sinf(m_fActionCount) * MOVE_X;
-	move.z = cosf(m_fActionCount) * MOVE_Z;
-	SetMove(move);
-
-	// 方向転換
-	MoveRotation();
-}
-
-//==========================================
-//  移動方向を向く処理
-//==========================================
-void CEnemyTackle::MoveRotation(void)
-{
-	// 必要な値を取得
-	D3DXVECTOR3 rot = GetRotation();
-	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 move = GetMove();
-	D3DXVECTOR3 posDest = pos + move;
-	D3DXVECTOR3 posDiff = posDest - pos;
-
-	// 方向を算出
-	float fRot = atan2f(-posDiff.x, -posDiff.z);
-
-	//角度の正規化
-	RotNormalize(fRot);
-
-	//角度の補正をする
-	rot.y = fRot;
-
-	// 向き設定
-	SetRotation(rot);
-}
-
-//==========================================
 //  攻撃
 //==========================================
 void CEnemyTackle::Attack(void)
@@ -368,55 +314,18 @@ void CEnemyTackle::Attack(void)
 }
 
 //==========================================
-//  プレイヤーを向く処理
-//==========================================
-void CEnemyTackle::RotationPlayer(void)
-{
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 rot = GetRotation();
-
-	// プレイヤー情報
-	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
-	if (pPlayer == NULL)
-	{
-		return;
-	}
-
-	// プレイヤーの位置取得
-	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-
-	// 目標の角度を求める
-	float fRotDest = atan2f((pos.x - posPlayer.x), (pos.z - posPlayer.z));
-
-	// 目標との差分
-	float fRotDiff = fRotDest - rot.y;
-
-	//角度の正規化
-	RotNormalize(fRotDiff);
-
-	//角度の補正をする
-	rot.y += fRotDiff * 0.025f;
-
-	// 角度の正規化
-	RotNormalize(rot.y);
-
-	// 向き設定
-	SetRotation(rot);
-
-	// 目標の向き設定
-	SetRotDest(fRotDest);
-}
-
-//==========================================
 //　向きから移動量を設定
 //==========================================
 void CEnemyTackle::SetMoveRotation(void)
 {
 	D3DXVECTOR3 move = GetMove();
 	D3DXVECTOR3 rot = GetRotation();
-	move.x = sinf(rot.y) * MOVE_X * ATTACK_SPEED;
-	move.z = cosf(rot.y) * MOVE_Z * ATTACK_SPEED;
+
+	// 移動速度取得
+	float fMove = GetVelocity();
+
+	move.x = sinf(rot.y) * fMove * ATTACK_SPEED;
+	move.z = cosf(rot.y) * fMove * ATTACK_SPEED;
 	SetMove(move);
 }
 

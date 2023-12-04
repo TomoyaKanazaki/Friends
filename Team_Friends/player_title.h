@@ -29,7 +29,7 @@ public:
 		NONE
 	};
 
-	CPlayerTitle(int nPriority = mylib_const::DEF2D_PRIORITY);
+	CPlayerTitle(int nPriority = mylib_const::PRIORITY_DEF2D);
 	~CPlayerTitle();
 
 	// オーバーライドされた関数

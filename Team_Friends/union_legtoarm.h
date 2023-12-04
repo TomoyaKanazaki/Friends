@@ -21,7 +21,7 @@ class CUnion_LegtoArm : public CPlayerUnion
 {
 public:
 
-	CUnion_LegtoArm(int nPriority = mylib_const::DEF2D_PRIORITY);
+	CUnion_LegtoArm(int nPriority = mylib_const::PRIORITY_DEF2D);
 	~CUnion_LegtoArm();
 
 	// オーバーライドされた関数

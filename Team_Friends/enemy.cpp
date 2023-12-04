@@ -79,6 +79,7 @@ CEnemy::CEnemy(int nPriority) : CObjectChara(nPriority)
 	m_nSurvivalLife = 0;	// 生存時間
 	m_nSurvivalLifeOrigin = 0;	// 生存時間
 	m_nTargetPlayerIndex = 0;	// 追い掛けるプレイヤーのインデックス番号
+	m_fMoveCount = 0.0f;		// 移動カウンター
 	m_bAddScore = false;	// スコア加算するかの判定
 	m_nBallastEmission = 0;	// 瓦礫の発生カウンター
 	m_sMotionFrag.bJump = false;		// ジャンプ中かどうか
@@ -441,6 +442,9 @@ void CEnemy::Update(void)
 		return;
 	}
 
+	// 行動の設定
+	ActionSet();
+
 	// 行動更新
 	UpdateAction();
 
@@ -784,6 +788,109 @@ void CEnemy::UpdateByType(void)
 void CEnemy::UpdateAction(void)
 {
 
+}
+
+//==========================================================================
+// プレイヤーを向く処理
+//==========================================================================
+void CEnemy::RotationPlayer(void)
+{
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
+	// プレイヤー情報
+	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
+	if (pPlayer == NULL)
+	{
+		return;
+	}
+
+	// プレイヤーの位置取得
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+
+	// 目標の角度を求める
+	float fRotDest = atan2f((pos.x - posPlayer.x), (pos.z - posPlayer.z));
+
+	// 目標との差分
+	float fRotDiff = fRotDest - rot.y;
+
+	//角度の正規化
+	RotNormalize(fRotDiff);
+
+	//角度の補正をする
+	rot.y += fRotDiff * 0.025f;
+
+	// 角度の正規化
+	RotNormalize(rot.y);
+
+	// 向き設定
+	SetRotation(rot);
+
+	// 目標の向き設定
+	SetRotDest(fRotDest);
+}
+
+
+//==========================================================================
+// プレイヤーとの距離を判定
+//==========================================================================
+bool CEnemy::CalcLenPlayer(float fLen)
+{
+	// プレイヤー情報
+	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
+	if (pPlayer == NULL)
+	{
+		return false;
+	}
+
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+
+	return CircleRange3D(pos, pPlayer->GetPosition(), fLen, pPlayer->GetRadius());
+}
+
+//==========================================================================
+// 移動方向を向く処理
+//==========================================================================
+void CEnemy::MoveRotation(void)
+{
+	// 必要な値を取得
+	D3DXVECTOR3 rot = GetRotation();
+	D3DXVECTOR3 move = GetMove();
+
+	// 方向を算出
+	float fRot = atan2f(-move.x, -move.z);
+
+	//角度の正規化
+	RotNormalize(fRot);
+
+	//角度の補正をする
+	rot.y = fRot;
+
+	// 向き設定
+	SetRotation(rot);
+}
+
+//==========================================================================
+// 移動
+//==========================================================================
+void CEnemy::Move(void)
+{
+	// 移動フラグを立てる
+	m_sMotionFrag.bMove = true;
+
+	// 移動速度取得
+	float fMove = GetVelocity();
+
+	// 移動量を適用
+	D3DXVECTOR3 move = GetMove();
+	move.x = sinf(m_fMoveCount) * fMove;
+	move.z = cosf(m_fMoveCount) * fMove;
+	SetMove(move);
+
+	// 方向転換
+	MoveRotation();
 }
 
 //==========================================================================

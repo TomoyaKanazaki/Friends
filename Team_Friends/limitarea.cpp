@@ -21,27 +21,37 @@
 namespace
 {
 	const char* TEXTURE_DEFAULT = "data\\TEXTURE\\cyberwall_03.png";	// デフォルトテクスチャ
+	const float MAX_ALPHA = 0.3f;	// 最大不透明度
+	const float TIME_APPEARANCE = 0.5f;	// 出現時間
+	const float TIME_FADEOUT = 0.5f;	// フェードアウト時間
 }
 
 //==========================================================================
-// 静的メンバ変数宣言
+// 関数リスト
 //==========================================================================
+CLimitArea::STATE_FUNC CLimitArea::m_StateFuncList[] =
+{
+	&CLimitArea::StateNone,			// 通常
+	&CLimitArea::StateAppearance,	// 出現状態
+	&CLimitArea::StateFadeout,		// フェードアウト
+};
 
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CLimitErea::CLimitErea(int nPriority) : CObject(nPriority)
+CLimitArea::CLimitArea(int nPriority) : CObject(nPriority)
 {
-	memset(&m_pMeshWall[0], NULL, sizeof(m_pMeshWall));	// メッシュウォールのオブジェクト
-	memset(&m_sLimitEreaInfo, NULL, sizeof(m_sLimitEreaInfo));	// エリア制限情報
+	m_state = STATE_NONE;			// 状態
+	m_fTimeState = 0.0f;			// 状態カウンター
 	m_nIdxEreaManager = 0;			// エリア制限マネージャのインデックス番号
-	m_state = STATE_DEF;
+	memset(&m_pMeshWall[0], NULL, sizeof(m_pMeshWall));			// メッシュウォールのオブジェクト
+	memset(&m_sLimitEreaInfo, NULL, sizeof(m_sLimitEreaInfo));	// エリア制限情報
 }
 
 //==========================================================================
 // デストラクタ
 //==========================================================================
-CLimitErea::~CLimitErea()
+CLimitArea::~CLimitArea()
 {
 
 }
@@ -49,16 +59,16 @@ CLimitErea::~CLimitErea()
 //==========================================================================
 // 生成処理
 //==========================================================================
-CLimitErea *CLimitErea::Create(sLimitEreaInfo info)
+CLimitArea *CLimitArea::Create(sLimitEreaInfo info)
 {
 	// 生成用のオブジェクト
-	CLimitErea *pObjMeshField = NULL;
+	CLimitArea *pObjMeshField = NULL;
 
 	if (pObjMeshField == NULL)
 	{// NULLだったら
 
 		// メモリの確保
-		pObjMeshField = DEBUG_NEW CLimitErea;
+		pObjMeshField = DEBUG_NEW CLimitArea;
 
 		if (pObjMeshField != NULL)
 		{// メモリの確保が出来ていたら
@@ -79,11 +89,14 @@ CLimitErea *CLimitErea::Create(sLimitEreaInfo info)
 //==========================================================================
 // 初期化処理
 //==========================================================================
-HRESULT CLimitErea::Init(void)
+HRESULT CLimitArea::Init(void)
 {
 
 	// 種類設定
 	SetType(TYPE_ELEVATION);
+
+	// 割り当て
+	m_nIdxEreaManager = CGame::GetLimitEreaManager()->Regist(this);
 
 	// 各種変数初期化
 	D3DXVECTOR3 WallPos[mylib_const::SHAPE_LIMITEREA];
@@ -125,18 +138,16 @@ HRESULT CLimitErea::Init(void)
 		m_pMeshWall[i]->SetType(CObject::TYPE_NONE);
 	}
 
-	//出現状態に
-	m_state = STATE_INIT;
+	// 出現状態
+	m_state = STATE_APPEARANCE;
 
-	// 割り当て
-	m_nIdxEreaManager = CGame::GetLimitEreaManager()->Regist(this);
 	return E_FAIL;
 }
 
 //==========================================================================
 // 終了処理
 //==========================================================================
-void CLimitErea::Uninit(void)
+void CLimitArea::Uninit(void)
 {
 	// 削除
 	if (CManager::GetInstance()->GetMode() == CScene::MODE_GAME && CGame::GetLimitEreaManager() != NULL)
@@ -151,7 +162,6 @@ void CLimitErea::Uninit(void)
 			continue;
 		}
 		m_pMeshWall[i]->Uninit();
-		delete m_pMeshWall[i];
 		m_pMeshWall[i] = NULL;
 	}
 
@@ -160,18 +170,38 @@ void CLimitErea::Uninit(void)
 }
 
 //==========================================================================
-// 解放処理
+// 削除処理
 //==========================================================================
-void CLimitErea::Release(void)
+void CLimitArea::Kill(void)
 {
+	// 削除
+	if (CManager::GetInstance()->GetMode() == CScene::MODE_GAME && CGame::GetLimitEreaManager() != NULL)
+	{// 弾マネージャの削除
+		CGame::GetLimitEreaManager()->Delete(m_nIdxEreaManager);
+	}
 
+	for (int i = 0; i < mylib_const::SHAPE_LIMITEREA; i++)
+	{
+		if (m_pMeshWall[i] == NULL)
+		{
+			continue;
+		}
+		m_pMeshWall[i]->Uninit();
+		m_pMeshWall[i] = NULL;
+	}
+
+	// 解放処理
+	CObject::Release();
 }
 
 //==========================================================================
 // 更新処理
 //==========================================================================
-void CLimitErea::Update(void)
+void CLimitArea::Update(void)
 {
+	// 状態更新
+	(this->*(m_StateFuncList[m_state]))();
+
 	for (int i = 0; i < mylib_const::SHAPE_LIMITEREA; i++)
 	{
 		if (m_pMeshWall[i] == NULL)
@@ -179,15 +209,93 @@ void CLimitErea::Update(void)
 			continue;
 		}
 
-		UpdateColor(i);
+		// 一旦いらね
+		//UpdateColor(i);
 		m_pMeshWall[i]->Update();
+	}
+}
+
+//==========================================================================
+// 通常状態
+//==========================================================================
+void CLimitArea::StateNone(void)
+{
+	// 状態カウンターリセット
+	m_fTimeState = 0.0f;
+}
+
+//==========================================================================
+// 出現状態
+//==========================================================================
+void CLimitArea::StateAppearance(void)
+{
+	// 状態カウンター加算
+	m_fTimeState += CManager::GetInstance()->GetDeltaTime();
+
+	// 不透明度
+	float fAlpha =  MAX_ALPHA * (m_fTimeState / TIME_APPEARANCE);
+
+	for (int i = 0; i < mylib_const::SHAPE_LIMITEREA; i++)
+	{
+		if (m_pMeshWall[i] == NULL)
+		{
+			continue;
+		}
+
+		// 頂点カラー取得
+		D3DXCOLOR *pVtxCol = m_pMeshWall[i]->GetVtxCol();
+		D3DXCOLOR newcolor = D3DXCOLOR(1.0f, 1.0f, 1.0f, fAlpha);
+
+		// 全ての要素を書き換え
+		std::fill(pVtxCol, pVtxCol + m_pMeshWall[i]->GetNumVertex(), newcolor);
+	}
+
+	if (m_fTimeState >= TIME_APPEARANCE)
+	{// 規定値を超えたら出現状態解除
+		m_state = STATE_NONE;
+	}
+
+}
+
+//==========================================================================
+// フェードアウト状態
+//==========================================================================
+void CLimitArea::StateFadeout(void)
+{
+	// 状態カウンター加算
+	m_fTimeState += CManager::GetInstance()->GetDeltaTime();
+
+	// 不透明度
+	float fAlpha = MAX_ALPHA - (m_fTimeState / TIME_FADEOUT);
+
+	for (int i = 0; i < mylib_const::SHAPE_LIMITEREA; i++)
+	{
+		if (m_pMeshWall[i] == NULL)
+		{
+			continue;
+		}
+
+		// 頂点カラー取得
+		D3DXCOLOR *pVtxCol = m_pMeshWall[i]->GetVtxCol();
+		D3DXCOLOR newcolor = D3DXCOLOR(1.0f, 1.0f, 1.0f, fAlpha);
+
+		// 全ての要素を書き換え
+		std::fill(pVtxCol, pVtxCol + m_pMeshWall[i]->GetNumVertex(), newcolor);
+	}
+
+	if (m_fTimeState >= TIME_FADEOUT)
+	{// 削除
+
+		// 削除
+		Kill();
+		return;
 	}
 }
 
 //==========================================================================
 // 色更新
 //==========================================================================
-void CLimitErea::UpdateColor(int nIdx)
+void CLimitArea::UpdateColor(int nIdx)
 {
 	CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(0);
 	if (pPlayer == NULL)
@@ -295,7 +403,7 @@ void CLimitErea::UpdateColor(int nIdx)
 //==========================================================================
 // 描画処理
 //==========================================================================
-void CLimitErea::Draw(void)
+void CLimitArea::Draw(void)
 {
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
@@ -327,7 +435,7 @@ void CLimitErea::Draw(void)
 //==========================================================================
 // 情報取得
 //==========================================================================
-CLimitErea::sLimitEreaInfo CLimitErea::GetLimitEreaInfo(void)
+CLimitArea::sLimitEreaInfo CLimitArea::GetLimitEreaInfo(void)
 {
 	return m_sLimitEreaInfo;
 }
@@ -335,7 +443,7 @@ CLimitErea::sLimitEreaInfo CLimitErea::GetLimitEreaInfo(void)
 //==========================================================================
 // 状態取得
 //==========================================================================
-CLimitErea::STATE CLimitErea::GetState(void)
+CLimitArea::STATE CLimitArea::GetState(void)
 {
 	return m_state;
 }
@@ -343,7 +451,7 @@ CLimitErea::STATE CLimitErea::GetState(void)
 //==========================================================================
 // 状態取得
 //==========================================================================
-void CLimitErea::SetState(CLimitErea::STATE state)
+void CLimitArea::SetState(STATE state)
 {
 	m_state = state;
 }

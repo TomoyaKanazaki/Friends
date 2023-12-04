@@ -88,13 +88,11 @@ HRESULT CFade::Init(void)
 	m_state = STATE_FADEIN;			// 状態
 	
 #if _DEBUG
-	m_ModeNext = CScene::MODE_GAME;	// 次のモード
 	m_ModeNext = CScene::MODE_TITLE;	// 次のモード
-	m_ModeNext = CScene::MODE_RANKING;	// 次のモード
 	
+	//m_ModeNext = CScene::MODE_DECIDEPLAYER;	// 次のモード
 #else
 	m_ModeNext = CScene::MODE_TITLE;	// 次のモード
-	//m_ModeNext = CScene::MODE_DECIDEPLAYER;	// 次のモード
 #endif
 	
 	m_aObject2D->SetSize(D3DXVECTOR2(640.0f, 360.0f));	// サイズ

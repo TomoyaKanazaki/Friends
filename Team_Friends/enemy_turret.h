@@ -11,7 +11,7 @@
 //==========================================
 // 前方宣言
 //==========================================
-class CLimitErea;
+class CLimitArea;
 
 //==========================================
 //  クラス定義
@@ -29,7 +29,6 @@ public:
 	void Update(void) override;
 	void Draw(void) override;
 	void Kill(void) override;
-	void MotionSet(void) override;		// モーションの設定
 
 private:
 
@@ -73,19 +72,16 @@ private:
 	float m_fActionCount;	// 移動カウンター
 	D3DXVECTOR3 m_moveLock;	//固定移動量
 	float m_fRotLock;	//向き保存
-	CLimitErea *m_pLimitArea;	//ボス範囲
+	CLimitArea *m_pLimitArea;	//ボス範囲
 	bool bArea;		//エリア展開済みフラグ
 
 	// メンバ関数
+	void MotionSet(void) override;		// モーションの設定
 	void UpdateAction(void) override;	// 行動更新
 	void ActionSet(void); // 行動の設定
-	void Move(void); // 移動
-	void MoveRotation(void); // 移動方向を向く
 	void Attack(void); // 攻撃
-	void RotationPlayer(void); // プレイヤーを向く処理
 	void SetMoveRotation(void); // 向きから移動量を設定する処理
 	bool TargetPlayer(float fLen); // プレイヤーとの距離判定
-	bool CalcLenPlayer(float fLen); // プレイヤーとの距離判定
 
 	void FixRotation(void); // 指定方向を向く
 };

@@ -56,6 +56,7 @@ public:
 	D3DXVECTOR3 GetTargetPosition(void);			// 追従目標の位置取得
 	void SetTargetRotation(const D3DXVECTOR3 rot);	// 追従目標の向き設定
 	D3DXVECTOR3 GetTargetRotation(void);			// 追従目標の向き取得
+	D3DXMATRIX GetMtxView(void) { return m_mtxView; }
 
 	void SetShake(int nTime, float fLength, float fLengthY);	// 振動設定
 	void SetLenDest(float fLength, int nCntTime = 120, float DecrementValue = 2.0f, float fCorrection = 0.1f);	// 目標の長さ設定

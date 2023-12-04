@@ -260,7 +260,7 @@ D3DXCOLOR HSVtoRGB(float H, float S, float V)
 		H += 360.0f;
 	}
 	float C = V * S;
-	float X = C * (1 - abs(fmod(H / 60.0f, 2) - 1));
+	float X = C * (1 - (float)abs(fmod(H / 60.0f, 2) - 1));
 	float m = V - C;
 
 	// RGB別の数値
@@ -313,7 +313,7 @@ int Random(int nMinNum, int nMaxNum)
 	if (nMinNum == 0)
 	{// 最小値が0の時
 
-	 // 範囲に1加算
+		// 範囲に1加算
 		nRange += 1;
 	}
 
@@ -321,6 +321,48 @@ int Random(int nMinNum, int nMaxNum)
 	nRand = rand() % nRange + nMinNum;
 
 	return nRand;
+}
+
+//==================================================================================
+// 円範囲ランダム値取得
+//==================================================================================
+float GetRandomCircleValue(void)
+{
+	return (float)Random(-314, 314) * 0.01f;
+}
+
+//==================================================================================
+// 球範囲ランダムベクトル取得
+//==================================================================================
+D3DXVECTOR3 GetRandomSphereVec(void)
+{
+	// 球ベクトル
+	D3DXVECTOR3 vecSphere = mylib_const::DEFAULT_VECTOR3;
+
+	// 球の範囲内でランダム生成
+	float fRot = GetRandomCircleValue(), fRotPhi = GetRandomCircleValue();
+	vecSphere.x = cosf(fRot) * sinf(fRotPhi);
+	vecSphere.y = sinf(fRot);
+	vecSphere.z = cosf(fRot) * cosf(fRotPhi);
+
+	return vecSphere;
+}
+
+//==================================================================================
+// 球範囲ランダム位置取得
+//==================================================================================
+D3DXVECTOR3 GetRandomSpherePosition(D3DXVECTOR3 pos, float fRadius)
+{
+	// 球座標
+	D3DXVECTOR3 spherepos = mylib_const::DEFAULT_VECTOR3;
+
+	// 球の範囲内でランダム生成
+	float fRot = GetRandomCircleValue(), fRotPhi = GetRandomCircleValue();
+	spherepos.x = pos.x + cosf(fRot) * sinf(fRotPhi) * fRadius;
+	spherepos.y = pos.y + sinf(fRot) * fRadius;
+	spherepos.z = pos.z + cosf(fRot) * cosf(fRotPhi) * fRadius;
+
+	return spherepos;
 }
 
 //==================================================================================

@@ -24,7 +24,6 @@ public:
 	void Update(void) override;
 	void Draw(void) override;
 	void Kill(void) override;
-	void MotionSet(void) override;		// モーションの設定
 
 private:
 
@@ -58,12 +57,10 @@ private:
 	float m_fRotLock;	//向き保存
 
 	// メンバ関数
+	void MotionSet(void) override;		// モーションの設定
 	void UpdateAction(void) override;	// 行動更新
-	void ActionSet(void); // 行動の設定
-	void Move(void); // 移動
-	void MoveRotation(void); // 移動方向を向く
+	void ActionSet(void) override; // 行動の設定
 	void Attack(void); // 攻撃
-	void RotationPlayer(void); // プレイヤーを向く処理
 	void SetMoveRotation(void); // 向きから移動量を設定する処理
 	bool SearchPlayer(float fLen); // プレイヤーとの距離判定
 	void FixRotation(void); // 指定方向を向く

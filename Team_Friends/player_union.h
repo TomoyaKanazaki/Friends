@@ -62,7 +62,7 @@ public:
 		PARTS_MAX
 	};
 
-	CPlayerUnion(int nPriority = mylib_const::DEF2D_PRIORITY);
+	CPlayerUnion(int nPriority = mylib_const::PRIORITY_DEF2D);
 	~CPlayerUnion();
 
 	// オーバーライドされた関数

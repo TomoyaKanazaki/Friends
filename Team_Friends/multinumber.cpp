@@ -280,7 +280,7 @@ void CMultiNumber::Update(void)
 		case CNumber::OBJECTTYPE_3D:
 			if (m_nNumNumber - nNumberDigit <= nCntNum)
 			{// Œ…”
-				m_ppMultiNumber[nCntNum]->GetObject3D()->SetEnableDisp(false);
+				m_ppMultiNumber[nCntNum]->GetObject3D()->SetEnableDisp(true);
 			}
 			else
 			{

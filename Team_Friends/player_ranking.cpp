@@ -7,6 +7,7 @@
 #include "game.h"
 #include "player_ranking.h"
 #include "manager.h"
+#include "calculation.h"
 #include "debugproc.h"
 #include "input.h"
 #include "model.h"
@@ -14,6 +15,7 @@
 #include "objectChara.h"
 #include "shadow.h"
 #include "player_union.h"
+#include "ranking.h"
 
 //==========================================
 //  定数定義 : 金崎朋弥
@@ -22,12 +24,9 @@ namespace
 {
 	const char* CHARAFILE[CPlayerRanking::MAX] =
 	{
-		//"data\\TEXT\\multicharacter\\BodytoLeg.txt", // 合体ファイルパス
-		//"data\\TEXT\\multicharacter\\BodytoArm.txt", // 合体ファイルパス
-		//"data\\TEXT\\multicharacter\\LegtoArm.txt", // 合体ファイルパス
-		"data\\TEXT\\multicharacter\\ArmtoArm.txt", // 合体ファイルパス
-		"data\\TEXT\\multicharacter\\ArmtoArm.txt", // 合体ファイルパス
-		"data\\TEXT\\multicharacter\\ArmtoArm.txt", // 合体ファイルパス
+		"data\\TEXT\\multicharacter\\BodytoLeg.txt", // 合体ファイルパス
+		"data\\TEXT\\multicharacter\\BodytoArm.txt", // 合体ファイルパス
+		"data\\TEXT\\multicharacter\\LegtoArm.txt", // 合体ファイルパス
 		"data\\TEXT\\multicharacter\\ArmtoArm.txt", // 合体ファイルパス
 	};
 }
@@ -40,8 +39,12 @@ CPlayerRanking::CPlayerRanking(int nPriority)
 	// 値のクリア
 	m_nMovePtaCnt = 0;
 	m_nSpinCnt = 0;
+	m_nStopCnt = 0;
 	m_bRight = false;
 	m_bLeft = false;
+	m_bAtkMotion = false;
+	m_bReMove = false;
+	m_nTypeMove = PTN_NONE;
 }
 
 //==========================================================================
@@ -53,8 +56,12 @@ CPlayerRanking::CPlayerRanking(MODEL nType, int nPriority)
 	m_nType = nType;
 	m_nMovePtaCnt = 0;
 	m_nSpinCnt = 0;
+	m_nStopCnt = 0;
 	m_bRight = false;
 	m_bLeft = false;
+	m_bAtkMotion = false;
+	m_bReMove = false;
+	m_nTypeMove = PTN_NONE;
 }
 
 //==========================================================================
@@ -75,37 +82,23 @@ HRESULT CPlayerRanking::Init()
 	// キャラ作成
 	CreateParts();
 
+	int i = Random(PTN_01, PTN_MAX);
 
-	//// モーションの生成処理
-	//m_pMotion = CMotion::Create(CHARAFILE[BODYtoLEG]);
-
-	//// オブジェクトキャラクターの情報取得
-	//CObjectChara *pObjChar = GetObjectChara();
-
-	//// モーションの設定
-	//m_pMotion->SetModel(pObjChar->GetModel(), pObjChar->GetNumModel(), CObjectChara::GetObjectChara());
-
-	// モデルの差し替え
-	/*switch (m_nModelType)
+	switch (i)
 	{
-	case PLAYER_BODY:
-		SetEvolusion(CGameManager::STATUS_LIFE);
+	case PTN_01:
+		m_nTypeMove = PTN_01;
 		break;
 
-	case PLAYER_ARM:
-		SetEvolusion(CGameManager::STATUS_POWER);
-		break;
-
-	case PLAYER_LEG:
-		SetEvolusion(CGameManager::STATUS_SPEED);
+	case PTN_02:
+		m_nTypeMove = PTN_02;
 		break;
 
 	default:
-		break;
-	}*/
+		return S_OK;
+	}
 
-	// ポーズのリセット
-	//m_pMotion->ResetPose(MOTION_DEF);
+
 	return S_OK;
 }
 
@@ -133,22 +126,14 @@ void CPlayerRanking::Update(void)
 	// 過去の位置保存
 	SetOldPosition(GetPosition());
 
-	switch (m_nType)
+	switch (m_nTypeMove)
 	{
-	case CPlayerRanking::BODYtoLEG:
-		ARMtoARMMove();
+	case PTN_01:
+		MovePtn01();
 		break;
 
-	case CPlayerRanking::BODYtoARM:
-		ARMtoARMMove();
-		break;
-
-	case CPlayerRanking::LEGtoARM:
-		ARMtoARMMove();
-		break;
-
-	case CPlayerRanking::ARMtoARM:
-		ARMtoARMMove();
+	case PTN_02:
+		MovePtn02();
 		break;
 
 	default:
@@ -210,9 +195,9 @@ HRESULT CPlayerRanking::CreateParts(void)
 }
 
 //==========================================================================
-// パーツの設定
+// 背景キャラの行動パターン1
 //==========================================================================
-void CPlayerRanking::ARMtoARMMove(void)
+void CPlayerRanking::MovePtn01(void)
 {
 	m_nMovePtaCnt++;
 
@@ -222,8 +207,6 @@ void CPlayerRanking::ARMtoARMMove(void)
 
 	pos.x -= sinf(GetRotation().y) * 5;
 	pos.z -= cosf(GetRotation().y) * 5;
-
-	SetPosition(pos);
 
 	D3DXVECTOR3 rot = GetRotation();
 
@@ -266,6 +249,7 @@ void CPlayerRanking::ARMtoARMMove(void)
 		}
 	}
 
+	SetPosition(pos);
 	SetRotation(rot);
 
 	// 移動中にする
@@ -278,4 +262,103 @@ void CPlayerRanking::ARMtoARMMove(void)
 			continue;
 		}
 	}
+}
+
+//==========================================================================
+// 背景キャラの行動パターン2
+//==========================================================================
+void CPlayerRanking::MovePtn02(void)
+{
+	m_nMovePtaCnt++;
+
+	D3DXVECTOR3 pos = GetPosition();
+
+	D3DXVECTOR3 rot = GetRotation();
+
+	// 左を向き始めるまで定位置で止める
+	if (m_nMovePtaCnt >= 60 * 5 && m_bReMove == false)
+	{
+		// 攻撃モーション後に止まる秒数
+		if (m_nStopCnt <= 60 * 2)
+		{
+			rot.y -= 0.01f;
+
+			// 正面を向く
+			if (rot.y <= 0.0f)
+			{
+				rot.y = 0.0f;
+
+				// 攻撃モーション
+				for (int i = 0; i < PARTS_MAX; i++)
+				{
+					// 一回だけ
+					if (m_sMotionFrag[i].bATK == true || m_bAtkMotion == true)
+					{
+						m_sMotionFrag[i].bATK = false;
+						m_bAtkMotion = true;
+					}
+
+					else
+					{
+						m_sMotionFrag[i].bATK = true;
+					}
+
+					if (m_pMotion[i] == NULL)
+					{
+						continue;
+					}
+				}
+
+				// 攻撃モーションを終えた
+				if (m_bAtkMotion == true)
+				{
+					m_nStopCnt++;
+				}
+			}
+		}
+
+		else
+		{
+			rot.y += 0.01f;
+
+			// 左を向く
+			if (rot.y >= D3DX_PI / 2)
+			{
+				rot.y = D3DX_PI / 2;
+				m_bReMove = true;
+			}
+		}
+
+		// 移動モーションをやめる
+		for (int i = 0; i < PARTS_MAX; i++)
+		{
+			m_sMotionFrag[i].bMove = false;
+
+			if (m_pMotion[i] == NULL)
+			{
+				continue;
+			}
+		}
+	}
+
+	else
+	{
+		pos.x -= sinf(GetRotation().y) * 5;
+		pos.z -= cosf(GetRotation().y) * 5;
+
+		// 移動中にする
+		for (int i = 0; i < PARTS_MAX; i++)
+		{
+			m_sMotionFrag[i].bMove = true;
+
+			if (m_pMotion[i] == NULL)
+			{
+				continue;
+			}
+		}
+	}
+
+	SetPosition(pos);
+	SetRotation(rot);
+	
 }

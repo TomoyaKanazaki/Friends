@@ -16,6 +16,13 @@
 #include "player_union.h"
 
 //==========================================================================
+// マクロ定義
+//==========================================================================
+#define PLAYER_CREATE_POSX				(1200.0f)		// スポーンX座標
+#define PLAYER_CREATE_POSY				(900.0f)		// スポーンY座標
+#define PLAYER_DELETE_POSX				(-1200.0f)		// デスポーンX座標
+
+//==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
 int CRanking::m_nRandStage = 0;	// ステージのランダムインデックス番号
@@ -63,7 +70,7 @@ HRESULT CRanking::Init(void)
 	p->SetType(CObject::TYPE_OBJECTX);
 
 	// 合体キャラの生成
-	UniCharCreate(D3DXVECTOR3(1200.0f, 900.0f, 1300.0f), D3DXVECTOR3(0.0f, 1.57f, 0.0f));
+	UniCharCreate(D3DXVECTOR3(PLAYER_CREATE_POSX, PLAYER_CREATE_POSY, 1300.0f), D3DXVECTOR3(0.0f, 1.57f, 0.0f));
 
 	// ランキングのスコア生成
 	m_pRankingScore = CRankingScore::Create();
@@ -106,18 +113,18 @@ void CRanking::Update(void)
 	m_nCntUniCharCre++;
 	m_nCntUniCharDel++;
 
-	if (m_nCntSwitch >= 60 * 3600)
+	if (m_bAllArrival == true)
 	{
 		// モード設定
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
 	}
 
 	// 合体キャラの生成
-	if (m_nCntUniCharCre >= 60 * 20)
+	if (m_pPlayerUnion->GetPosition().x <= PLAYER_DELETE_POSX)
 	{
 		m_pPlayerUnion->Kill();
 		m_pPlayerUnion->Uninit();
-		UniCharCreate(D3DXVECTOR3(1200.0f, 900.0f, 1300.0f), D3DXVECTOR3(0.0f, 1.57f, 0.0f));
+		UniCharCreate(D3DXVECTOR3(PLAYER_CREATE_POSX, PLAYER_CREATE_POSY, 1300.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f));
 		m_nCntUniCharCre = 0;
 	}
 
@@ -130,18 +137,7 @@ void CRanking::Update(void)
 
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
 	{
-		if (m_bAllArrival == true)
-		{
-			// モード設定
-			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
-		}
-
-		else
-		{
-			// 全ての到着処理
-			//m_pRankingScore->SetAllArrival();
-			m_bAllArrival = true;
-		}
+		m_bAllArrival = true;
 	}
 }
 
@@ -191,4 +187,12 @@ void CRanking::UniCharCreate(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	}
 
 	m_pPlayerUnion = CPlayerRanking::Create(pos, rot, m_nType);
+}
+
+//==========================================================================
+// 到着設定ON
+//==========================================================================
+CPlayerUnion *CRanking::GetPlayerUnion(void)
+{
+	return m_pPlayerUnion;
 }

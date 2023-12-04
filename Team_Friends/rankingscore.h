@@ -14,9 +14,11 @@
 //==========================================================================
 // マクロ定義
 //==========================================================================
+#define RANKINGRANK_DIGIT	(2)	// 順位桁数
 #define RANKINGSCORE_DIGIT	(6)	// 桁数
-#define RANKINGNUM	(20)	// 桁数
-#define RANKING_DISPLAY_NUM	(5)	// 桁数
+#define RANKINGNUM	(20)	// 総数
+#define RANKING_DISPLAY_NUM	(5)	// 初期表示数
+#define WINDOW_WHITE_NUM	(3)	// 
 
 //==========================================================================
 // 前方宣言
@@ -42,8 +44,8 @@ public:
 
 	void SetAllArrival(void);	// 全ての到着設定
 	void UpdateNewRecord(void);	// ニューレコードの更新処理
-	void SetValue(void);	// 値の設定処理
-	void Moving(void);	// 移動処理
+	void MovingScore(void);	// 移動処理
+	void MovingRank(void);	// 移動処理
 	static CRankingScore *Create(void);
 private:
 
@@ -63,17 +65,23 @@ private:
 
 	int m_nNumRanking;				// ランキング数
 	int m_nScore[RANKINGNUM];		// スコア
+	int m_nRank[RANKINGNUM];		// スコア
 	int m_nNowScore;		// 今回のスコア
 	int m_nTexIdx3D[VTX3D_MAX];					// テクスチャのインデックス番号
+	int m_nTexIdx3D_Win;					// テクスチャのインデックス番号
 	int m_nTexIdxNumber;			// 数字テクスチャのインデックス番号
 	int m_nIdxNewRecord;			// ニューレコードのインデックス番号
 	int m_nCntNewRecord;			// ニューレコードのカウンター
-	float m_fPosDestX[RANKINGNUM];	// 目標の位置
+	int m_nCnt;
+	float m_fPosDestY[RANKINGNUM];	// 目標の位置
 	bool m_bNewRecord;				// ニューレコードのフラグ
 	bool m_bArrival[RANKINGNUM];	// 到着判定
-	CObject3D *m_pObj3D[VTX3D_MAX];	// オブジェクト2Dのオブジェクト
+	CObject3D *m_pObj3D[VTX3D_MAX];	// オブジェクト3Dのオブジェクト
+	CObject3D *m_pObj3D_Win[WINDOW_WHITE_NUM];	// オブジェクト3Dのオブジェクト
 	CMultiNumber *m_pScore[RANKINGNUM];			// 数字のオブジェクト
+	CMultiNumber *m_pRank[RANKINGNUM];			// 数字のオブジェクト
 	static const char *m_apTexture3DFile[VTX3D_MAX];	// テクスチャのファイル
+	static const char *m_apTexture3D_WinFile;	// テクスチャのファイル
 };
 
 

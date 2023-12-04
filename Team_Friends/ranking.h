@@ -37,6 +37,8 @@ public:
 	static void SetEnableArrival(void);
 	static int GetRandStage(void) { return m_nRandStage; }
 
+	static CPlayerUnion *GetPlayerUnion(void);		// 合体プレイヤーのオブジェクト
+
 private:
 	void UniCharCreate(D3DXVECTOR3 pos, D3DXVECTOR3 rot);		//合体キャラの生成
 

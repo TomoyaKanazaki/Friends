@@ -862,11 +862,11 @@ void CEnemy::MoveRotation(void)
 	// 方向を算出
 	float fRot = atan2f(-move.x, -move.z);
 
-	//角度の正規化
+	// 角度の正規化
 	RotNormalize(fRot);
 
-	//角度の補正をする
-	rot.y = fRot;
+	// 角度の補正をする
+	rot.y += (fRot - rot.y) * 0.025f;
 
 	// 向き設定
 	SetRotation(rot);

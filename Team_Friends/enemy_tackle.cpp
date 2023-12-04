@@ -284,6 +284,7 @@ void CEnemyTackle::Attack(void)
 		// èÓïÒéÊìæ
 		D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 		D3DXVECTOR3 pos = GetPosition();
+		D3DXVECTOR3 rot = GetRotation();
 
 		//çUåÇîªíËÉAÉäì 
 
@@ -300,8 +301,8 @@ void CEnemyTackle::Attack(void)
 		RotNormalize(m_fRotLock);
 
 		// à⁄ìÆó ÇÃê›íË
-		move.x = vecToPlayer.x;
-		move.z = vecToPlayer.z;
+		move.x = sinf(rot.y + D3DX_PI) * ATTACK_SPEED;
+		move.z = cosf(rot.y + D3DX_PI) * ATTACK_SPEED;
 		SetMove(move);
 
 		m_moveLock = move;
@@ -311,6 +312,7 @@ void CEnemyTackle::Attack(void)
 
 	m_moveLock.y = move.y;
 	SetMove(m_moveLock);
+	//MoveRotation();
 }
 
 //==========================================

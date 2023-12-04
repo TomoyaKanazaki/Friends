@@ -256,46 +256,47 @@ void CEnemyTurret::MotionSet(void)
 //==========================================
 void CEnemyTurret::ActionSet(void)
 {
-	if (m_Act == ACTION_READY)
+	switch (m_Act)
 	{
+	case ACTION_ROAMING:
+
+		//UŒ‚‚ÌŒˆ’è•û–@‚Ç‚¤‚·‚é
+
+		// ‹——£‚ª‹ß‚¢‚ÆUŒ‚ó‘Ô‚ÉˆÚs
+		m_Act = ACTION_READY;
+		m_fActionCount = 0.0f;
+		break;
+
+	case ACTION_READY:
+		
 		if (m_fActionCount >= READY_TIME)
 		{
 			m_Act = ACTION_ATTACK;
 			m_fActionCount = 0.0f;
 		}
+		break;
 
-		return;
-	}
-	else if (m_Act == ACTION_ATTACK)
-	{
+	case ACTION_ATTACK:
+
 		if (m_fActionCount >= ATTACK_TIME)
 		{
 			m_Act = ACTION_AFTER;
 			m_fActionCount = 0.0f;
 			m_moveLock = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		}
+		break;
 
-		return;
-	}
-	else if (m_Act == ACTION_AFTER)
-	{
+	case ACTION_AFTER:
+
 		if (m_fActionCount >= AFTER_TIME)
 		{
 			m_Act = ACTION_ROAMING;
 			m_fActionCount = 0.0f;
 		}
+		break;
 
-		return;
-	}
-
-	if (m_Act == ACTION_ROAMING)
-	{
-		//UŒ‚‚ÉˆÚs
-		//UŒ‚‚ÌŒˆ’è•û–@‚Ç‚¤‚·‚é
-
-		// ‹——£‚ª‹ß‚¢‚ÆUŒ‚ó‘Ô‚É‚È‚é
-		m_Act = ACTION_READY;
-		m_fActionCount = 0.0f;
+	default:
+		break;
 	}
 }
 
@@ -344,8 +345,6 @@ void CEnemyTurret::Attack(void)
 
 		return;
 	}
-
-	SetMove(m_moveLock);
 }
 
 //==========================================

@@ -238,8 +238,10 @@ void CEnemyRoaming::Attack(void)
 		}
 
 		// モーションカウンター取得
-		if (m_pMotion->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt)
+		float fAllCount = m_pMotion->GetAllCount();
+		if (fAllCount > aInfo.AttackInfo[nCntAttack]->nMinCnt && fAllCount < aInfo.AttackInfo[nCntAttack]->nMaxCnt)
 		{// 攻撃判定中
+
 			// 攻撃判定中にする
 			bAtkWait = false;
 		}

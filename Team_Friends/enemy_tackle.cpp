@@ -11,25 +11,30 @@
 #include "calculation.h"
 #include "hp_gauge.h"
 #include "bullet.h"
+#include "collisionobject.h"
 
 //デバッグ
+#if _DEBUG
 #include "particle.h"
+#endif
 
 //==========================================
 //  定数定義
 //==========================================
 namespace
 {
-	const float SEARCH_LENGTH = 400.0f;
-	const float ATTACK_LENGTH = 200.0f;
-	const float MOVE_SPEED = 0.01f;
-	const float ATTACK_SPEED = 10.0f;
-	const float READY_TIME = 3.0f;
-	const float ATTACK_TIME = 1.0f;
-	const float AFTER_TIME = 2.0f;
-	const float SEARCH_ROT = 45.0f;
-	const float AFTER_FIXROT = 0.07f;
-	const float FIXROT_GRACE = 0.5f;
+	const float SEARCH_LENGTH = 400.0f;		//索敵距離
+	const float ATTACK_LENGTH = 200.0f;		//攻撃距離
+	const float MOVE_SPEED = 1.0f;			//徘徊時速度
+	const float ATTACK_SPEED = 10.0f;		//突撃速度
+	const float READY_TIME = 3.0f;			//準備時間
+	const float ATTACK_TIME = 1.0f;			//突撃時間
+	const float AFTER_TIME = 2.0f;			//硬直時間
+	const float SEARCH_ROT = 45.0f;			//正面からの索敵範囲
+	const float AFTER_FIXROT = 0.07f;		//硬直時の方向修正速度
+	const float FIXROT_GRACE = 0.5f;		//方向修正までの猶予
+	const float ROAM_CHANGE_ROT = 3.0f;		//徘徊時の方向転換タイミング
+	const int ATTACK = 1;		//攻撃力
 }
 
 //==========================================
@@ -39,7 +44,8 @@ CEnemyTackle::CEnemyTackle(int nPriority) :
 	m_Act(ACTION_ROAMING),
 	m_fActionCount(0.0f),
 	m_moveLock(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
-	m_fRotLock(0.0f)
+	m_fRotLock(0.0f),
+	m_nAttack(0)
 {
 
 }
@@ -108,14 +114,11 @@ void CEnemyTackle::UpdateAction(void)
 	case CEnemyTackle::ACTION_ROAMING:
 
 		//移動
-		Move();
+		Roaming();
 
 		break;
 
 	case CEnemyTackle::ACTION_READY:
-
-		//デバッグ用
-		my_particle::Create(pos, my_particle::TYPE_SMOKE);
 
 		// 移動量を設定
 		RotationPlayer();
@@ -124,8 +127,9 @@ void CEnemyTackle::UpdateAction(void)
 
 	case CEnemyTackle::ACTION_ATTACK:
 
-		//デバッグ用
-		my_particle::Create(pos, my_particle::TYPE_SMOKE_RED);
+#if _DEBUG
+		my_particle::Create(pos, my_particle::TYPE_CHECK);
+#endif
 
 		// 攻撃
 		Attack();
@@ -133,9 +137,6 @@ void CEnemyTackle::UpdateAction(void)
 		break;
 
 	case CEnemyTackle::ACTION_AFTER:
-
-		//デバッグ用
-		my_particle::Create(pos, my_particle::TYPE_SMOKE);
 
 		if (m_fActionCount > FIXROT_GRACE)
 		{//猶予が過ぎたら方向転換
@@ -148,11 +149,8 @@ void CEnemyTackle::UpdateAction(void)
 		break;
 	}
 
-	if (m_Act != ACTION_ROAMING)
-	{
-		// カウンターを加算
-		m_fActionCount += CManager::GetInstance()->GetDeltaTime();
-	}
+	// カウンターを加算
+	m_fActionCount += CManager::GetInstance()->GetDeltaTime();
 }
 
 //==========================================
@@ -219,47 +217,53 @@ void CEnemyTackle::MotionSet(void)
 //==========================================
 void CEnemyTackle::ActionSet(void)
 {
-	if (m_Act == ACTION_READY)
+	switch (m_Act)
 	{
+	case CEnemyTackle::ACTION_ROAMING:
+
+		if (SearchPlayer(SEARCH_LENGTH))
+		{// 索敵
+
+		 // 距離が近いと攻撃状態になる
+			m_Act = ACTION_READY;
+			m_fActionCount = 0.0f;
+		}
+
+		break;
+
+	case CEnemyTackle::ACTION_READY:
+
 		if (m_fActionCount >= READY_TIME)
 		{
 			m_Act = ACTION_ATTACK;
 			m_fActionCount = 0.0f;
 		}
 
-		return;
-	}
-	else if (m_Act == ACTION_ATTACK)
-	{
+		break;
+
+	case CEnemyTackle::ACTION_ATTACK:
+		
 		if (m_fActionCount >= ATTACK_TIME)
 		{
 			m_Act = ACTION_AFTER;
 			m_fActionCount = 0.0f;
 			m_moveLock = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		}
+		
+		break;
 
-		return;
-	}
-	else if (m_Act == ACTION_AFTER)
-	{
+	case CEnemyTackle::ACTION_AFTER:
+
 		if (m_fActionCount >= AFTER_TIME)
 		{
 			m_Act = ACTION_ROAMING;
 			m_fActionCount = 0.0f;
 		}
 
-		return;
-	}
+		break;
 
-	if (m_Act == ACTION_ROAMING)
-	{
-		if (SearchPlayer(SEARCH_LENGTH))
-		{// 索敵
-
-			// 距離が近いと攻撃状態になる
-			m_Act = ACTION_READY;
-			m_fActionCount = 0.0f;
-		}
+	default:
+		break;
 	}
 }
 
@@ -269,6 +273,9 @@ void CEnemyTackle::ActionSet(void)
 void CEnemyTackle::Attack(void)
 {
 	D3DXVECTOR3 move = GetMove();
+	D3DXVECTOR3 pos = GetPosition();//髪ゲーじゃん
+
+	CCollisionObject::Create(D3DXVECTOR3(pos.x, pos.y + 40.0f, pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 30.0f, 5, ATTACK, CCollisionObject::TAG_ENEMY);
 
 	if (m_moveLock == D3DXVECTOR3(0.0f, 0.0f, 0.0f))
 	{
@@ -299,6 +306,7 @@ void CEnemyTackle::Attack(void)
 		//角度を反転
 		m_fRotLock = GetRotation().y + D3DX_PI;
 		RotNormalize(m_fRotLock);
+		SetRotDest(m_fRotLock);
 
 		// 移動量の設定
 		move.x = sinf(rot.y + D3DX_PI) * ATTACK_SPEED;
@@ -312,7 +320,6 @@ void CEnemyTackle::Attack(void)
 
 	m_moveLock.y = move.y;
 	SetMove(m_moveLock);
-	//MoveRotation();
 }
 
 //==========================================
@@ -377,9 +384,10 @@ void CEnemyTackle::FixRotation(void)
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 rot = GetRotation();
+	float fRotDest = GetRotDest();
 
 	// 目標との差分
-	float fRotDiff = m_fRotLock - rot.y;
+	float fRotDiff = fRotDest - rot.y;
 
 	//角度の正規化
 	RotNormalize(fRotDiff);
@@ -392,7 +400,79 @@ void CEnemyTackle::FixRotation(void)
 
 	// 向き設定
 	SetRotation(rot);
+}
+
+//==========================================
+// 徘徊
+//==========================================
+void CEnemyTackle::Roaming(void)
+{
+	D3DXVECTOR3 rot = GetRotation();
+	float fRotDest = GetRotDest();
+	D3DXVECTOR3 move = GetMove();
+
+	//一定カウントでランダムにrot変更
+	if (int(m_fActionCount * 100) % int(ROAM_CHANGE_ROT * 100) == 0)
+	{
+		float fRotDiff = (Random(-16, 16) / 1.0f);
+		RotNormalize(fRotDiff);
+		rot.y += fRotDiff;
+		RotNormalize(rot.y);
+		SetRotDest(rot.y);
+
+		m_fActionCount = 0.0f;
+	}
+
+	if (rot.y - fRotDest > -0.1f && rot.y - fRotDest < 0.1f)
+	{//あらかた方向が目標方向合ったら
+		//移動
+		move.x = sinf(rot.y + D3DX_PI) * MOVE_SPEED;
+		move.z = cosf(rot.y + D3DX_PI) * MOVE_SPEED;
+		SetMove(move);
+	}
+	else
+	{
+		FixRotation();
+	}
+}
+
+//==========================================================================
+// プレイヤーを向く処理
+//==========================================================================
+void CEnemyTackle::RotationPlayer(void)
+{
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
+	// プレイヤー情報
+	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
+	if (pPlayer == NULL)
+	{
+		return;
+	}
+
+	// プレイヤーの位置取得
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+
+	// 目標の角度を求める
+	float fRotDest = atan2f((pos.x - posPlayer.x), (pos.z - posPlayer.z));
+
+	// 目標との差分
+	float fRotDiff = fRotDest - rot.y;
+
+	//角度の正規化
+	RotNormalize(fRotDiff);
+
+	//角度の補正をする
+	rot.y += fRotDiff;
+
+	// 角度の正規化
+	RotNormalize(rot.y);
+
+	// 向き設定
+	SetRotation(rot);
 
 	// 目標の向き設定
-	SetRotDest(m_fRotLock);
+	SetRotDest(fRotDest);
 }

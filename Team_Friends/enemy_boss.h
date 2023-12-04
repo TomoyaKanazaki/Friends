@@ -48,15 +48,23 @@ private:
 	enum ACTION
 	{
 		ACTION_CHASE = 0,		// 追従
-		ACTION_CHASE_DASH,		// ダッシュ追従
-		ACTION_PUNCH,			// パンチ
-		ACTION_KICK,			// キック
-		ACTION_BEAM,			// ビーム
-		ACTION_CHARGE_BEAM,		// チャージビーム
-		ACTION_TACKLE,			// タックル
-		ACTION_CHARGE_TACKLE,	// チャージタックル
+		ACTION_PROXIMITY,		// 近接攻撃
+		ACTION_REMOTE,			// 遠隔攻撃
+		ACTION_ASSAULT,			// 突撃攻撃
 		ACTION_SELFEXPLOSION,	// 自爆
 		ACTION_MAX
+	};
+
+	// 行動分岐
+	enum eActionBranch
+	{
+		ACTBRANCH_CHASE_SLOW = 0,	// 歩き追従
+		ACTBRANCH_CHASE_DASH,		// ダッシュ追従
+		ACTBRANCH_PROXIMITY_PUNCH,	// 近接攻撃(パンチ)
+		ACTBRANCH_PROXIMITY_KICK,	// 近接攻撃(キック)
+		ACTBRANCH_REMOTE_BEAM,		// 遠距離攻撃(ビーム)
+		ACTBRANCH_ASSAULT_CHARGE,	// 突撃攻撃(溜め)
+		ACTBRANCH_ASSAULT_TACKLE,	// 突撃攻撃(タックル)
 	};
 
 	//=============================
@@ -69,19 +77,22 @@ private:
 	// メンバ関数
 	//=============================
 	// 行動関数
+	void ActionSet(void) override;	// 行動の設定
 	void UpdateAction(void) override;	// 行動更新
-	void ActChase(void);		// 追い掛け
-	void ActAttack(void);		// 攻撃
-	void ActCharge(void);		// チャージ
+	void ActChase(void);			// 追い掛け
+	void ActAttackProximity(void);	// 近接攻撃
+	void ActAttackRemote(void);		// 遠隔攻撃
+	void ActAttackAssault(void);	// 突撃攻撃
+	void ActAttackExplosion(void);	// 自爆攻撃
 
 	// 行動内関数
 	void ChaseSlow(void);		// 歩き追い掛け
 	void ChaseDash(void);		// ダッシュ追い掛け
 	void AttackPunch(void);		// パンチ攻撃
 	void AttackKick(void);		// キック攻撃
-	void AttackTackle(void);	// タックル攻撃
-	void ChargeBeam(void);		// ビームチャージ
+	void AttackBeam(void);		// ビーム攻撃
 	void ChargeTackle(void);	// タックルチャージ
+	void AttackTackle(void);	// タックル攻撃
 
 	// その他関数
 	void MotionSet(void) override;	// モーションの設定
@@ -90,7 +101,8 @@ private:
 	//=============================
 	// メンバ変数
 	//=============================
-	ACTION m_Act;		// 行動
+	ACTION m_Action;		// 行動
+	eActionBranch m_ActionBranch;	// 行動分岐
 	D3DXVECTOR3 m_TargetPosition;	// 目標の位置
 	float m_fActTime;	// 行動カウンター
 };

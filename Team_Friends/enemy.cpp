@@ -844,10 +844,7 @@ bool CEnemy::CalcLenPlayer(float fLen)
 		return false;
 	}
 
-	// ˆÊ’uæ“¾
-	D3DXVECTOR3 pos = GetPosition();
-
-	return CircleRange3D(pos, pPlayer->GetPosition(), fLen, pPlayer->GetRadius());
+	return CircleRange3D(GetPosition(), pPlayer->GetPosition(), fLen, pPlayer->GetRadius());
 }
 
 //==========================================================================

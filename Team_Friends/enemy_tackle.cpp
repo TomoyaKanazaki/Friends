@@ -30,11 +30,12 @@ namespace
 	const float READY_TIME = 3.0f;			//準備時間
 	const float ATTACK_TIME = 1.0f;			//突撃時間
 	const float AFTER_TIME = 2.0f;			//硬直時間
-	const float SEARCH_ROT = 45.0f;			//正面からの索敵範囲
+	const float SEARCH_ROT = 0.785f;		//正面からの索敵範囲(計算に変更)
 	const float AFTER_FIXROT = 0.07f;		//硬直時の方向修正速度
 	const float FIXROT_GRACE = 0.5f;		//方向修正までの猶予
 	const float ROAM_CHANGE_ROT = 3.0f;		//徘徊時の方向転換タイミング
 	const int ATTACK = 1;		//攻撃力
+	const int FIXROT = 16;		//方向転換の片分割
 }
 
 //==========================================
@@ -101,9 +102,9 @@ void CEnemyTackle::Update(void)
 	}
 }
 
-//==========================================================================
+//==========================================
 // 行動更新
-//==========================================================================
+//==========================================
 void CEnemyTackle::UpdateAction(void)
 {
 	D3DXVECTOR3 pos = GetPosition();
@@ -275,6 +276,7 @@ void CEnemyTackle::Attack(void)
 	D3DXVECTOR3 move = GetMove();
 	D3DXVECTOR3 pos = GetPosition();//髪ゲーじゃん
 
+	//攻撃判定
 	CCollisionObject::Create(D3DXVECTOR3(pos.x, pos.y + 40.0f, pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 30.0f, 5, ATTACK, CCollisionObject::TAG_ENEMY);
 
 	if (m_moveLock == D3DXVECTOR3(0.0f, 0.0f, 0.0f))
@@ -349,8 +351,7 @@ bool CEnemyTackle::SearchPlayer(float fLen)
 	D3DXVECTOR3 posL = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//索敵扇の左点
 	D3DXVECTOR3 posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//索敵扇の右点
 
-	//float fRot = SEARCH_ROT * D3DX_PI / 180;
-	float fRot = 0.785f;
+	float fRot = SEARCH_ROT;
 
 	posL.x = pos.x + sinf(rot.y + fRot) * SEARCH_LENGTH;
 	posL.z = pos.z + cosf(rot.y + fRot) * SEARCH_LENGTH;
@@ -414,7 +415,7 @@ void CEnemyTackle::Roaming(void)
 	//一定カウントでランダムにrot変更
 	if (int(m_fActionCount * 100) % int(ROAM_CHANGE_ROT * 100) == 0)
 	{
-		float fRotDiff = (Random(-16, 16) / 1.0f);
+		float fRotDiff = (Random(-FIXROT, FIXROT) / 1.0f);
 		RotNormalize(fRotDiff);
 		rot.y += fRotDiff;
 		RotNormalize(rot.y);

@@ -16,8 +16,8 @@
 //==========================================
 namespace
 {
-	const float ATTACK_LENGTH = 200.0f;	// ƒRƒƒ“ƒg
-	const float MOVE_SPEED = 0.01f;
+	const float ATTACK_LENGTH = 200.0f; // UŒ‚‚·‚é‹——£
+	const float MOVE_SPEED = 0.01f; // ˆÚ“®‘¬“x(”{—¦)
 }
 
 //==========================================

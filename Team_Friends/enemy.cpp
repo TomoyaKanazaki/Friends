@@ -31,6 +31,7 @@
 #include "listmanager.h"
 #include "item.h"
 #include "collisionobject.h"
+#include "limitereamanager.h"
 
 // 子クラス
 #include "enemy_boss.h"
@@ -484,6 +485,9 @@ void CEnemy::Update(void)
 		Uninit();
 		return;
 	}
+
+	// 大人の壁
+	LimitArea();
 }
 
 //==========================================================================
@@ -1848,6 +1852,51 @@ void CEnemy::Atack(void)
 	SetRotation(rot);
 }
 
+//==========================================
+//  大人の壁
+//==========================================
+void CEnemy::LimitArea(void)
+{
+	// 自身の値を取得
+	D3DXVECTOR3 pos = GetPosition();
+
+	// 大人の壁
+	CLimitAreaManager* pLimitManager = CGame::GetLimitEreaManager();
+	CLimitArea** ppLimit = pLimitManager->GetLimitErea();
+
+	// 総数取得
+	int nNumAll = pLimitManager->GetNumAll();
+	int i = -1, nCntErea = 0;
+
+	while (1)
+	{
+		if (nCntErea >= nNumAll)
+		{// 総数超えたら終わり
+			break;
+		}
+
+		// インデックス加算
+		i++;
+		if (ppLimit[i] == NULL)
+		{
+			continue;
+		}
+		CLimitArea::sLimitEreaInfo info = ppLimit[i]->GetLimitEreaInfo();
+
+		// 大人の壁を適用
+		if (pos.x + GetRadius() >= info.fMaxX) { pos.x = info.fMaxX - GetRadius(); }
+		if (pos.x - GetRadius() <= info.fMinX) { pos.x = info.fMinX + GetRadius(); }
+		if (pos.z + GetRadius() >= info.fMaxZ) { pos.z = info.fMaxZ - GetRadius(); }
+		if (pos.z - GetRadius() <= info.fMinZ) { pos.z = info.fMinZ + GetRadius(); }
+
+		// エリアの数加算
+		nCntErea++;
+	}
+
+	// 値を適用
+	SetPosition(pos);
+}
+
 //==========================================================================
 // 攻撃時処理
 //==========================================================================
@@ -1957,4 +2006,3 @@ CEnemy *CEnemy::GetEnemy(void)
 	// 自分自身のポインタを取得
 	return this;
 }
-

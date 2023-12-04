@@ -120,6 +120,7 @@ protected:
 		bool bATK;			// 攻撃中かどうか
 		bool bKnockback;	// ノックバック中かどうか
 		bool bMove;			// 移動中かどうか
+		bool bCharge;		// チャージ中かどうか
 	};
 
 	// 隊列の構造体定義
@@ -164,7 +165,7 @@ protected:
 	int m_nSurvivalLife;					// 生存時間
 	int m_nSurvivalLifeOrigin;				// 生存時間
 	int m_nTargetPlayerIndex;				// 追い掛けるプレイヤーのインデックス番号
-	float m_fMoveCount;						// 移動カウンター
+	float m_fActCounter;						// 移動カウンター
 	D3DXVECTOR3 m_posOrigin;				// 最初の位置
 	D3DXVECTOR3 m_posKnokBack;				// ノックバックの位置
 	SMotionFrag m_sMotionFrag;				// モーションのフラグ

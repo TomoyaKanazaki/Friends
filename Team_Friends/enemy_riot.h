@@ -42,7 +42,7 @@ private:
 	enum ACTION
 	{
 		ACTION_DEF = 0, // 待機行動
-		ACTION_MOVE = 0, // 移動行動
+		ACTION_MOVE, // 移動行動
 		ACTION_ATTACK, // 通常攻撃行動
 		ACTION_TACKLE, // 突進攻撃行動
 		ACTION_AXIS, // 軸合わせ行動
@@ -51,6 +51,7 @@ private:
 
 	// メンバ変数
 	ACTION m_Act; //行動状態
+	float m_fWaitTime; // 待機時間
 
 	// メンバ関数
 	void MotionSet(void) override;		// モーションの設定

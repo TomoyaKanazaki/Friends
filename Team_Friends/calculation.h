@@ -57,6 +57,7 @@ D3DXVECTOR3 GetRandomSpherePosition(D3DXVECTOR3 pos, float fRadius);				// ‹…”Íˆ
 int GetDigit(int nNum);																// Œ…”æ“¾
 float GetRatio(D3DXVECTOR3 Mypos, D3DXVECTOR3 Targetpos);							// Š„‡æ“¾
 float GetPosLength(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2);								// ’·‚³æ“¾
+float GetFabsPosLength(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2);							// ’·‚³‚Ìâ‘Î’læ“¾
 D3DXVECTOR3 GetPointOnEdge2D(D3DXVECTOR3 point1, D3DXVECTOR3 point2, float fRate);	// •Óã‚ÌˆÊ’uæ“¾(2D)
 D3DXVECTOR3 GetParabola(D3DXVECTOR3 start, D3DXVECTOR3 end, float fMaxHeight, float time);				// •ú•¨üˆÚ“®
 bool CircleRange2D(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, float fRadius1, float fRadius2);						// 1‚Æ2‚Ì“–‚½‚è”»’è(‰~)(2D)

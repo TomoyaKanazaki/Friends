@@ -38,6 +38,7 @@
 #include "listmanager.h"
 #include "item.h"
 #include "injectiontable.h"
+#include "enemy_boss.h"
 
 // ”h¶æ
 #include "union_bodytoleg.h"
@@ -377,6 +378,15 @@ void CPlayerUnion::Update(void)
 
 	// ˆÊ’uŽæ“¾
 	D3DXVECTOR3 pos = GetPosition();
+
+	if (CGame::GetEnemyManager() != NULL && CGame::GetEnemyManager()->GetBoss() != NULL)
+	{
+		CEnemyBoss *pEnemyBoss = CGame::GetEnemyManager()->GetBoss();
+		if (pEnemyBoss != NULL)
+		{
+			pEnemyBoss->SetTargetPosition(pos);
+		}
+	}
 
 	// ˆÚ“®—ÊŽæ“¾
 	D3DXVECTOR3 move = GetMove();

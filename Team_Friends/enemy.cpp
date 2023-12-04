@@ -81,7 +81,6 @@ CEnemy::CEnemy(int nPriority) : CObjectChara(nPriority)
 	m_nSurvivalLife = 0;	// 生存時間
 	m_nSurvivalLifeOrigin = 0;	// 生存時間
 	m_nTargetPlayerIndex = 0;	// 追い掛けるプレイヤーのインデックス番号
-	m_fMoveCount = 0.0f;		// 移動カウンター
 	m_fActCounter = 0.0f;		// 移動カウンター
 	m_bAddScore = false;	// スコア加算するかの判定
 	m_nBallastEmission = 0;	// 瓦礫の発生カウンター

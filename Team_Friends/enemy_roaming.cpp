@@ -246,10 +246,10 @@ void CEnemyRoaming::MoveRotation(void)
 	// •ûŒü‚ğZo
 	float fRot = atan2f(-move.x, -move.z);
 
-	//Šp“x‚Ì³‹K‰»
+	// Šp“x‚Ì³‹K‰»
 	RotNormalize(fRot);
 
-	//Šp“x‚Ì•â³‚ğ‚·‚é
+	// Šp“x‚Ì•â³‚ğ‚·‚é
 	rot.y = fRot;
 
 	// Œü‚«İ’è

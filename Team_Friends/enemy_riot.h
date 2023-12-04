@@ -1,23 +1,23 @@
 //==========================================
 //
-//  徘徊する敵(enemy_roaming.h)
+//  ギガントエッジ(enemy_riot.h)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
-#ifndef _ENEMY_ROAMING_H_
-#define _ENEMY_ROSMING_H_
+#ifndef _ENEMY_RIOT_H_
+#define _ENEMY_RIOT_H_
 #include "enemy.h"
 
 //==========================================
-// クラス定義
+//  クラス定義
 //==========================================
-class CEnemyRoaming : public CEnemy
+class CEnemyRiot : public CEnemy
 {
 public:
 
 	// オーバーライドされた関数
-	CEnemyRoaming(int nPriority = mylib_const::ENEMY_PRIORITY);
-	~CEnemyRoaming();
+	CEnemyRiot(int nPriority = mylib_const::ENEMY_PRIORITY);
+	~CEnemyRiot();
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;
@@ -41,8 +41,11 @@ private:
 	// 行動列挙
 	enum ACTION
 	{
-		ACTION_ROAMING = 0, //徘徊行動
-		ACTION_ATTACK, //攻撃行動
+		ACTION_DEF = 0, // 待機行動
+		ACTION_MOVE = 0, // 移動行動
+		ACTION_ATTACK, // 通常攻撃行動
+		ACTION_TACKLE, // 突進攻撃行動
+		ACTION_AXIS, // 軸合わせ行動
 		MAX
 	};
 
@@ -51,7 +54,6 @@ private:
 
 	// メンバ関数
 	void MotionSet(void) override;		// モーションの設定
-	void UpdateAction(void) override;	// 行動更新
 	void ActionSet(void) override; // 行動の設定
 	void Move(void) override; // 移動
 	void Attack(void); // 攻撃

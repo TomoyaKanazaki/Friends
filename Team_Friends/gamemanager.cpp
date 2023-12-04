@@ -212,7 +212,7 @@ void CGameManager::SetBoss(void)
 		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
 		if (pPlayer == NULL)
 		{
-			return;
+			continue;
 		}
 
 		// 位置設定
@@ -225,6 +225,14 @@ void CGameManager::SetBoss(void)
 
 	// 黒フレーム侵入
 	CManager::GetInstance()->GetBlackFrame()->SetState(CBlackFrame::STATE_IN);
+
+	// 敵の再配置
+	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
+	if (pEnemyManager != NULL)
+	{
+		// 敵の再配置
+		pEnemyManager->SetStageBoss();
+	}
 }
 
 //==========================================================================

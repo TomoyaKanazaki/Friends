@@ -125,7 +125,7 @@ HRESULT CBeam::Init(void)
 		effect.push_back(pEffect);
 
 		// 当たり判定オブジェクト生成
-		//CCollisionObject::Create(pos + vecmove * fLen, move, radius, life, damage, CCollisionObject::TAG_PLAYER);
+		CCollisionObject::Create(pos + vecmove * fLen, move, radius, m_nLife, damage, CCollisionObject::TAG_PLAYER);
 
 		// 距離加算
 		fLen += fDistance;

@@ -194,6 +194,7 @@
     <ClCompile Include="enemy_escape.cpp" />
     <ClCompile Include="enemy_fly.cpp" />
     <ClCompile Include="enemy_papion.cpp" />
+    <ClCompile Include="enemy_riot.cpp" />
     <ClCompile Include="enemy_roaming.cpp" />
     <ClCompile Include="enemy_tackle.cpp" />
     <ClCompile Include="enemy_turret.cpp" />
@@ -321,6 +322,7 @@
     <ClInclude Include="enemy_escape.h" />
     <ClInclude Include="enemy_fly.h" />
     <ClInclude Include="enemy_papion.h" />
+    <ClInclude Include="enemy_riot.h" />
     <ClInclude Include="enemy_roaming.h" />
     <ClInclude Include="enemy_tackle.h" />
     <ClInclude Include="enemy_turret.h" />

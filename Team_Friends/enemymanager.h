@@ -59,6 +59,7 @@ public:
 	static CEnemyManager *Create(const std::string pTextFile);
 	HRESULT ReadText(const std::string pTextFile);	// 外部ファイル読み込み処理
 	void SetStageEnemy(void);	// ステージ毎の敵配置
+	void SetStageBoss(void);	// ボスステージの敵配置
 	CEnemy **SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nPattern);	// 敵配置
 	int GetPatternNum(void);
 	void Release(int nIdx);		// 破棄

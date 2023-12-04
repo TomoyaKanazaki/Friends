@@ -31,6 +31,7 @@
 #include "listmanager.h"
 #include "item.h"
 #include "collisionobject.h"
+#include "limitereamanager.h"
 
 // 子クラス
 #include "enemy_boss.h"
@@ -39,6 +40,7 @@
 #include "enemy_escape.h"
 #include "enemy_tackle.h"
 #include "enemy_turret.h"
+#include "enemy_riot.h"
 
 //==========================================================================
 // マクロ定義
@@ -79,7 +81,7 @@ CEnemy::CEnemy(int nPriority) : CObjectChara(nPriority)
 	m_nSurvivalLife = 0;	// 生存時間
 	m_nSurvivalLifeOrigin = 0;	// 生存時間
 	m_nTargetPlayerIndex = 0;	// 追い掛けるプレイヤーのインデックス番号
-	m_fMoveCount = 0.0f;		// 移動カウンター
+	m_fActCounter = 0.0f;		// 移動カウンター
 	m_bAddScore = false;	// スコア加算するかの判定
 	m_nBallastEmission = 0;	// 瓦礫の発生カウンター
 	m_sMotionFrag.bJump = false;		// ジャンプ中かどうか
@@ -118,7 +120,7 @@ CEnemy *CEnemy::Create(int nIdx, const char *pFileName, D3DXVECTOR3 pos, TYPE ty
 		switch (type)
 		{
 		case TYPE_BOSS:
-			//pEnemy = DEBUG_NEW CEnemyBoss;
+			pEnemy = DEBUG_NEW CEnemyBoss;
 			break;
 
 		case TYPE_ROAMING:
@@ -135,6 +137,10 @@ CEnemy *CEnemy::Create(int nIdx, const char *pFileName, D3DXVECTOR3 pos, TYPE ty
 
 		case TYPE_TURRET:
 			pEnemy = DEBUG_NEW CEnemyTurret;
+			break;
+
+		case TYPE_RIOT:
+			pEnemy = DEBUG_NEW CEnemyRiot;
 			break;
 
 		case TYPE_FLY:
@@ -484,6 +490,9 @@ void CEnemy::Update(void)
 		Uninit();
 		return;
 	}
+
+	// 大人の壁
+	LimitArea();
 }
 
 //==========================================================================
@@ -844,10 +853,7 @@ bool CEnemy::CalcLenPlayer(float fLen)
 		return false;
 	}
 
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
-
-	return CircleRange3D(pos, pPlayer->GetPosition(), fLen, pPlayer->GetRadius());
+	return CircleRange3D(GetPosition(), pPlayer->GetPosition(), fLen, pPlayer->GetRadius());
 }
 
 //==========================================================================
@@ -862,11 +868,11 @@ void CEnemy::MoveRotation(void)
 	// 方向を算出
 	float fRot = atan2f(-move.x, -move.z);
 
-	//角度の正規化
+	// 角度の正規化
 	RotNormalize(fRot);
 
-	//角度の補正をする
-	rot.y = fRot;
+	// 角度の補正をする
+	rot.y += (fRot - rot.y) * 0.025f;
 
 	// 向き設定
 	SetRotation(rot);
@@ -885,8 +891,8 @@ void CEnemy::Move(void)
 
 	// 移動量を適用
 	D3DXVECTOR3 move = GetMove();
-	move.x = sinf(m_fMoveCount) * fMove;
-	move.z = cosf(m_fMoveCount) * fMove;
+	move.x = sinf(m_fActCounter) * fMove;
+	move.z = cosf(m_fActCounter) * fMove;
 	SetMove(move);
 
 	// 方向転換
@@ -1851,6 +1857,51 @@ void CEnemy::Atack(void)
 	SetRotation(rot);
 }
 
+//==========================================
+//  大人の壁
+//==========================================
+void CEnemy::LimitArea(void)
+{
+	// 自身の値を取得
+	D3DXVECTOR3 pos = GetPosition();
+
+	// 大人の壁
+	CLimitAreaManager* pLimitManager = CGame::GetLimitEreaManager();
+	CLimitArea** ppLimit = pLimitManager->GetLimitErea();
+
+	// 総数取得
+	int nNumAll = pLimitManager->GetNumAll();
+	int i = -1, nCntErea = 0;
+
+	while (1)
+	{
+		if (nCntErea >= nNumAll)
+		{// 総数超えたら終わり
+			break;
+		}
+
+		// インデックス加算
+		i++;
+		if (ppLimit[i] == NULL)
+		{
+			continue;
+		}
+		CLimitArea::sLimitEreaInfo info = ppLimit[i]->GetLimitEreaInfo();
+
+		// 大人の壁を適用
+		if (pos.x + GetRadius() >= info.fMaxX) { pos.x = info.fMaxX - GetRadius(); }
+		if (pos.x - GetRadius() <= info.fMinX) { pos.x = info.fMinX + GetRadius(); }
+		if (pos.z + GetRadius() >= info.fMaxZ) { pos.z = info.fMaxZ - GetRadius(); }
+		if (pos.z - GetRadius() <= info.fMinZ) { pos.z = info.fMinZ + GetRadius(); }
+
+		// エリアの数加算
+		nCntErea++;
+	}
+
+	// 値を適用
+	SetPosition(pos);
+}
+
 //==========================================================================
 // 攻撃時処理
 //==========================================================================
@@ -1960,4 +2011,3 @@ CEnemy *CEnemy::GetEnemy(void)
 	// 自分自身のポインタを取得
 	return this;
 }
-

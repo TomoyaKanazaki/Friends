@@ -580,6 +580,53 @@ void CPlayer::Controll(void)
 				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
 			}
 		}
+		else if (m_pMotion->IsGetMove(nMotionType) == 0 &&
+			m_state != STATE_DEAD &&
+			m_state != STATE_FADEOUT &&
+			m_state != STATE_COMPACTUNION &&
+			m_state != STATE_RELEASEUNION)
+		{
+			if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).x < 0)
+			{//←キーが押された,左移動
+
+				if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
+				{//A+W,左上移動
+					fRotDest = D3DX_PI * 0.75f + Camerarot.y;
+				}
+				else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y < 0)
+				{//A+S,左下移動
+					fRotDest = D3DX_PI * 0.25f + Camerarot.y;
+				}
+				else
+				{//A,左移動
+					fRotDest = D3DX_PI * 0.5f + Camerarot.y;
+				}
+			}
+			else if (pInputKeyboard->GetPress(DIK_D) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).x > 0)
+			{//Dキーが押された,右移動
+
+				if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
+				{//D+W,右上移動
+					fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
+				}
+				else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y < 0)
+				{//D+S,右下移動
+					fRotDest = -D3DX_PI * 0.25f + Camerarot.y;
+				}
+				else
+				{//D,右移動
+					fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
+				}
+			}
+			else if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y > 0)
+			{//Wが押された、上移動
+				fRotDest = D3DX_PI * 1.0f + Camerarot.y;
+			}
+			else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).y < 0)
+			{//Sが押された、下移動
+				fRotDest = D3DX_PI * 0.0f + Camerarot.y;
+			}
+		}
 	}
 
 	if (m_state != STATE_COMPACTUNION &&
@@ -609,11 +656,6 @@ void CPlayer::Controll(void)
 				// 炎
 				float fMove = 5.5f + Random(-20, 20) * 0.1f;
 				float fRot = Random(-20, 20) * 0.01f;
-
-				float ffff = sinf(D3DX_PI + ModelRot.x) * fMove;
-				float fffff = cosf(D3DX_PI + ModelRot.x) * fMove;
-				float ffffff = sinf(D3DX_PI * 0.5f + ModelRot.x) * fMove;
-				float fffffff = cosf(D3DX_PI * 0.5f + ModelRot.x) * fMove;
 
 				pEffect = CEffect3D::Create(
 					weponpos,
@@ -1449,6 +1491,7 @@ bool CPlayer::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 		}
 		CLimitArea::sLimitEreaInfo info = ppLimit[i]->GetLimitEreaInfo();
 
+		// 大人の壁を適用
 		if (pos.x + GetRadius() >= info.fMaxX) { pos.x = info.fMaxX - GetRadius(); }
 		if (pos.x - GetRadius() <= info.fMinX) { pos.x = info.fMinX + GetRadius(); }
 		if (pos.z + GetRadius() >= info.fMaxZ) { pos.z = info.fMaxZ - GetRadius(); }

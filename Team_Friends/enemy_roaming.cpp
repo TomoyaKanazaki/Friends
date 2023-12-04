@@ -1,6 +1,6 @@
 //==========================================
 //
-//  コピペ用の敵(enemy_roaming.cpp)
+//  徘徊する敵(enemy_roaming.cpp)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
@@ -12,25 +12,12 @@
 #include "hp_gauge.h"
 
 //==========================================
-//  敵についての説明
-//==========================================
-/*
-	※このファイルに記述されているコードは敵を動かす最低限です。消さないでください。※ ←いっぱい消した
-	0.このファイルをコピーする
-	1.[ enemydata ]フォルダ内の[ manager.txt ]に使用したいモデルのテキストファイルを追加する
-	2.[ enemy.h ]のTYPE列挙に新しいタイプを追加する
-	3.[ enemydata ]フォルダ内の[ base.txt ]で追加したタイプを呼び出す
-	4.実行したらいる！！！
-	5.それぞれたくさん処理を追加する
-*/
-
-//==========================================
 //  定数定義
 //==========================================
 namespace
 {
-	const float ATTACK_LENGTH = 200.0f;
-	const float MOVE_SPEED = 0.01f;
+	const float ATTACK_LENGTH = 200.0f; // 攻撃する距離
+	const float MOVE_SPEED = 0.01f; // 移動速度(倍率)
 }
 
 //==========================================
@@ -213,15 +200,15 @@ void CEnemyRoaming::Move(void)
 	m_sMotionFrag.bMove = true;
 
 	// 移動カウンターを加算
-	m_fMoveCount += MOVE_SPEED;
+	m_fActCounter += MOVE_SPEED;
 
 	// 移動速度取得
 	float fMove = GetVelocity();
 
 	// 移動量を適用
 	D3DXVECTOR3 move = GetMove();
-	move.x = sinf(m_fMoveCount) * fMove;
-	move.z = cosf(m_fMoveCount) * fMove;
+	move.x = sinf(m_fActCounter) * fMove;
+	move.z = cosf(m_fActCounter) * fMove;
 	SetMove(move);
 
 	// 方向転換
@@ -251,8 +238,10 @@ void CEnemyRoaming::Attack(void)
 		}
 
 		// モーションカウンター取得
-		if (m_pMotion->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt)
+		float fAllCount = m_pMotion->GetAllCount();
+		if (fAllCount > aInfo.AttackInfo[nCntAttack]->nMinCnt && fAllCount < aInfo.AttackInfo[nCntAttack]->nMaxCnt)
 		{// 攻撃判定中
+
 			// 攻撃判定中にする
 			bAtkWait = false;
 		}

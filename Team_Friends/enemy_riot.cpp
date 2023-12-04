@@ -10,6 +10,7 @@
 #include "debugproc.h"
 #include "calculation.h"
 #include "hp_gauge.h"
+#include "camera.h"
 
 //==========================================
 //  定数定義
@@ -17,10 +18,10 @@
 namespace
 {
 	const float ATTACK_LENGTH = 200.0f; // 攻撃する距離
-	const float MOVE_SPEED = 300.0f; // 移動速度
+	const float MOVE_SPEED = 1000.0f; // 移動速度
 	const float WAIT_TIMER = 3.0f; // 初期待機時間
 	const float ROTATION_TIMER = 1.0f; // 軸合わせに要する時間
-	const float TACKLE_TIMER = 2.0f; // 軸合わせに要する時間
+	const float TACKLE_TIMER = 2.0f; // 突進する時間
 }
 
 //==========================================
@@ -172,10 +173,7 @@ void CEnemyRiot::ActionSet(void)
 		}
 
 		// デバッグ表示
-		CManager::GetInstance()->GetDebugProc()->Print
-		(
-			"攻撃\n\n"
-		);
+		CManager::GetInstance()->GetDebugProc()->Print("攻撃\n\n");
 
 		break;
 
@@ -199,10 +197,7 @@ void CEnemyRiot::ActionSet(void)
 		}
 
 		// デバッグ表示
-		CManager::GetInstance()->GetDebugProc()->Print
-		(
-			"突進\n\n"
-		);
+		CManager::GetInstance()->GetDebugProc()->Print("突進\n\n");
 
 		break;
 
@@ -233,10 +228,7 @@ void CEnemyRiot::ActionSet(void)
 		}
 
 		// デバッグ表示
-		CManager::GetInstance()->GetDebugProc()->Print
-		(
-			"軸合わせ\n\n"
-		);
+		CManager::GetInstance()->GetDebugProc()->Print("軸合わせ\n\n");
 
 		break;
 
@@ -252,15 +244,18 @@ void CEnemyRiot::ActionSet(void)
 		}
 		else
 		{
+			//スクリーン内の存在判定
+			if (!CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
+			{
+				break; // 抜ける
+			}
+
 			// 待機時間を加算
 			m_fWaitTime += CManager::GetInstance()->GetDeltaTime();
 		}
 
 		// デバッグ表示
-		CManager::GetInstance()->GetDebugProc()->Print
-		(
-			"待機\n\n"
-		);
+		CManager::GetInstance()->GetDebugProc()->Print("待機\n\n");
 
 		break;
 
@@ -281,8 +276,8 @@ void CEnemyRiot::Move(void)
 	D3DXVECTOR3 move = GetMove();
 
 	// 移動量を分解する
-	move.x = -cosf(rot.y) * MOVE_SPEED * CManager::GetInstance()->GetDeltaTime();
-	move.z = -sinf(rot.y) * MOVE_SPEED * CManager::GetInstance()->GetDeltaTime();
+	move.x = -sinf(rot.y) * MOVE_SPEED * CManager::GetInstance()->GetDeltaTime();
+	move.z = -cosf(rot.y) * MOVE_SPEED * CManager::GetInstance()->GetDeltaTime();
 
 	// 移動量を適用する
 	SetMove(move);

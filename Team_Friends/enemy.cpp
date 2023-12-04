@@ -2006,4 +2006,3 @@ CEnemy *CEnemy::GetEnemy(void)
 	// 自分自身のポインタを取得
 	return this;
 }
-

@@ -29,7 +29,7 @@
 //==========================================
 namespace
 {
-	const float ATTACK_LENGTH = 200.0f;
+	const float ATTACK_LENGTH = 200.0f;	// ÉRÉÅÉìÉg
 	const float MOVE_SPEED = 0.01f;
 }
 

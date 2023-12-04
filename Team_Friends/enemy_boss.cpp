@@ -9,15 +9,20 @@
 #include "debugproc.h"
 #include "calculation.h"
 #include "hp_gauge.h"
+#include "blackframe.h"
 
 //==========================================================================
 //  定数定義
 //==========================================================================
 namespace
 {
+	const float LENGTH_PUNCH = 300.0f;		// パンチの長さ
+	const float LENGTH_KICK = 500.0f;		// キックの長さ
 	const float LENGTH_CHASEWALK = 1000.0f;	// 歩き追従の長さ
 	const float VELOCITY_WALK = 1.0f;		// 歩き
 	const float VELOCITY_DASH = 2.0f;		// ダッシュ
+	const float VELOCITY_TACKLE = 2.0f;		// タックル
+	const float TIME_WAIT = 3.0f;			// 待機
 }
 
 //==========================================================================
@@ -29,6 +34,7 @@ CEnemyBoss::ACT_FUNC CEnemyBoss::m_ActFuncList[] =
 	&CEnemyBoss::ActAttackProximity,	// 近接
 	&CEnemyBoss::ActAttackRemote,		// 遠隔
 	&CEnemyBoss::ActAttackAssault,		// 突撃
+	&CEnemyBoss::ActWait,				// 待機
 	&CEnemyBoss::ActAttackExplosion,	// 自爆
 };
 
@@ -38,9 +44,13 @@ CEnemyBoss::ACT_FUNC CEnemyBoss::m_ActFuncList[] =
 CEnemyBoss::CEnemyBoss(int nPriority) : CEnemy(nPriority)
 {
 	m_Action = ACTION_CHASE;		// 行動
-	m_ActionBranch = ACTBRANCH_CHASE_SLOW;	// 行動分岐
+	m_ActionBranch = ACTBRANCH_CHASE_SLOW;		// 行動分岐
+	m_MakeForActionBranch = ACTBRANCH_CHASE_SLOW;	// 行動する為の行動
 	m_TargetPosition = mylib_const::DEFAULT_VECTOR3;	// 目標の位置
 	m_fActTime = 0.0f;			// 行動カウンター
+	m_fAssultLength = 0.0f;		// 突撃長さ
+	m_fAssultLengthDest = 0.0f;	// 目標の突撃長さ
+	m_bCatchUp = false;			// 追い着き判定
 }
 
 //==========================================================================
@@ -61,6 +71,12 @@ HRESULT CEnemyBoss::Init(void)
 
 	// HPの設定
 	m_pHPGauge = CHP_Gauge::Create(100.0f, GetLifeOrigin());
+
+	// 黒フレーム捌ける
+	CManager::GetInstance()->GetBlackFrame()->SetState(CBlackFrame::STATE_OUT);
+
+	// 行動
+	m_Action = ACTION_WAIT;
 
 	return S_OK;
 }
@@ -93,8 +109,11 @@ void CEnemyBoss::Update(void)
 		return;
 	}
 
-	// モーションの更新
-	MotionSet();
+	// 黒フレーム捌ける
+	if (CManager::GetInstance()->GetBlackFrame()->GetState() == CBlackFrame::STATE_INCOMPLETION)
+	{
+		CManager::GetInstance()->GetBlackFrame()->SetState(CBlackFrame::STATE_OUT);
+	}
 }
 
 //==========================================================================
@@ -103,13 +122,30 @@ void CEnemyBoss::Update(void)
 void CEnemyBoss::ActionSet(void)
 {
 
+}
+
+//==========================================================================
+// 行動更新
+//==========================================================================
+void CEnemyBoss::UpdateAction(void)
+{
+	// 状態別処理
+	(this->*(m_ActFuncList[m_Action]))();
+}
+
+//==========================================================================
+// 行動抽選
+//==========================================================================
+void CEnemyBoss::DrawingAction(void)
+{
 	while (1)
 	{
 		// 行動抽選
 		m_Action = (ACTION)(rand() % ACTION_MAX);
 
 		if (m_Action != ACTION_SELFEXPLOSION &&
-			m_Action != ACTION_CHASE)
+			m_Action != ACTION_CHASE &&
+			m_Action != ACTION_WAIT)
 		{// 既定行動以外
 			break;
 		}
@@ -117,6 +153,7 @@ void CEnemyBoss::ActionSet(void)
 
 	// 次の行動別
 	int nActRand;
+	float fLength = 0.0f;
 	switch (m_Action)
 	{
 	case CEnemyBoss::ACTION_CHASE:	// 追従
@@ -133,6 +170,41 @@ void CEnemyBoss::ActionSet(void)
 	case CEnemyBoss::ACTION_PROXIMITY:	// 近接攻撃
 		nActRand = Random(ACTBRANCH_PROXIMITY_PUNCH, ACTBRANCH_PROXIMITY_KICK);
 		m_ActionBranch = static_cast<eActionBranch>(nActRand);
+
+		// 行動別移動処理
+		fLength = 0.0f;
+		switch (m_ActionBranch)
+		{
+		case CEnemyBoss::ACTBRANCH_PROXIMITY_PUNCH:
+			fLength = LENGTH_PUNCH;
+			break;
+
+		case CEnemyBoss::ACTBRANCH_PROXIMITY_KICK:
+			fLength = LENGTH_KICK;
+			break;
+		}
+
+		// 行動する為の行動決定
+		if (CalcLenPlayer(fLength))
+		{// 攻撃範囲内
+
+			// 追い着いた
+			m_bCatchUp = true;
+		}
+		else
+		{
+			// 追い着いてない
+			m_bCatchUp = false;
+
+			if (CalcLenPlayer(LENGTH_CHASEWALK))
+			{// 歩きの範囲
+				m_MakeForActionBranch = ACTBRANCH_CHASE_SLOW;
+			}
+			else
+			{
+				m_MakeForActionBranch = ACTBRANCH_CHASE_DASH;
+			}
+		}
 		break;
 
 	case CEnemyBoss::ACTION_REMOTE:	// 遠隔攻撃
@@ -141,6 +213,7 @@ void CEnemyBoss::ActionSet(void)
 
 	case CEnemyBoss::ACTION_ASSAULT:	// 突撃攻撃
 		m_ActionBranch = ACTBRANCH_ASSAULT_CHARGE;
+		m_fAssultLength = 0.0f;
 		break;
 
 	default:
@@ -149,12 +222,26 @@ void CEnemyBoss::ActionSet(void)
 }
 
 //==========================================================================
-// 行動更新
+// 待機
 //==========================================================================
-void CEnemyBoss::UpdateAction(void)
+void CEnemyBoss::ActWait(void)
 {
-	// 状態別処理
-	(this->*(m_ActFuncList[m_Action]))();
+	// 待機モーション設定
+	m_pMotion->Set(MOTION_DEF);
+
+	// 行動カウンター加算
+	m_fActTime += CManager::GetInstance()->GetDeltaTime();
+
+	// ターゲットの方を向く
+	RotationTarget();
+
+	if (TIME_WAIT <= m_fActTime)
+	{// 待機時間超えたら
+
+		// 行動抽選
+		DrawingAction();
+		m_fActTime = 0.0f;
+	}
 }
 
 //==========================================================================
@@ -225,25 +312,60 @@ void CEnemyBoss::ChaseDash(void)
 //==========================================================================
 void CEnemyBoss::ActAttackProximity(void)
 {
-	// 攻撃フラグを立てる
-	m_sMotionFrag.bATK = true;
+	if (m_bCatchUp == false)
+	{// 追い着いてない時
 
-	// ターゲットの方を向く
-	RotationTarget();
+		// ターゲットの方を向く
+		RotationTarget();
 
-	// 行動別移動処理
-	switch (m_ActionBranch)
-	{
-	case CEnemyBoss::ACTBRANCH_PROXIMITY_PUNCH:
-		AttackPunch();
-		break;
+		// 移動フラグを立てる
+		m_sMotionFrag.bMove = true;
 
-	case CEnemyBoss::ACTBRANCH_PROXIMITY_KICK:
-		AttackKick();
-		break;
+		// 行動する為の行動別移動処理
+		switch (m_MakeForActionBranch)
+		{
+		case CEnemyBoss::ACTBRANCH_CHASE_SLOW:
+			ChaseSlow();
+			break;
 
-	default:
-		break;
+		case CEnemyBoss::ACTBRANCH_CHASE_DASH:
+			ChaseDash();
+			break;
+		}
+
+		// 行動別移動処理
+		float fLength = 0.0f;
+		switch (m_ActionBranch)
+		{
+		case CEnemyBoss::ACTBRANCH_PROXIMITY_PUNCH:
+			fLength = LENGTH_PUNCH;
+			break;
+
+		case CEnemyBoss::ACTBRANCH_PROXIMITY_KICK:
+			fLength = LENGTH_KICK;
+			break;
+		}
+
+		// 追い着き判定
+		m_bCatchUp = CircleRange3D(GetPosition(), m_TargetPosition, fLength, 0.0f);
+	}
+	else
+	{// 攻撃の長さ内
+
+		// 攻撃フラグを立てる
+		m_sMotionFrag.bATK = true;
+
+		// 行動別移動処理
+		switch (m_ActionBranch)
+		{
+		case CEnemyBoss::ACTBRANCH_PROXIMITY_PUNCH:
+			AttackPunch();
+			break;
+
+		case CEnemyBoss::ACTBRANCH_PROXIMITY_KICK:
+			AttackKick();
+			break;
+		}
 	}
 }
 
@@ -252,7 +374,26 @@ void CEnemyBoss::ActAttackProximity(void)
 //==========================================================================
 void CEnemyBoss::AttackPunch(void)
 {
+	int nType = m_pMotion->GetType();
+	if (nType == MOTION_PUNCH && m_pMotion->IsFinish() == true)
+	{// パンチ攻撃が終わってたら
 
+		// 待機行動
+		m_Action = ACTION_WAIT;
+
+		// 待機モーション設定
+		m_pMotion->Set(MOTION_DEF);
+		return;
+	}
+
+	if (nType != MOTION_PUNCH)
+	{
+		// パンチモーション設定
+		m_pMotion->Set(MOTION_PUNCH);
+	}
+
+	// 攻撃フラグを立てる
+	m_sMotionFrag.bATK = true;
 }
 
 //==========================================================================
@@ -260,7 +401,26 @@ void CEnemyBoss::AttackPunch(void)
 //==========================================================================
 void CEnemyBoss::AttackKick(void)
 {
+	int nType = m_pMotion->GetType();
+	if (nType == MOTION_KICK && m_pMotion->IsFinish() == true)
+	{// キック攻撃が終わってたら
 
+		// 待機行動
+		m_Action = ACTION_WAIT;
+
+		// 待機モーション設定
+		m_pMotion->Set(MOTION_DEF);
+		return;
+	}
+
+	if (nType != MOTION_KICK)
+	{
+		// キックモーション設定
+		m_pMotion->Set(MOTION_KICK);
+	}
+
+	// 攻撃フラグを立てる
+	m_sMotionFrag.bATK = true;
 }
 
 //==========================================================================
@@ -291,7 +451,26 @@ void CEnemyBoss::ActAttackRemote(void)
 //==========================================================================
 void CEnemyBoss::AttackBeam(void)
 {
+	int nType = m_pMotion->GetType();
+	if (nType == MOTION_BEAM && m_pMotion->IsFinish() == true)
+	{// ビーム攻撃が終わってたら
 
+		// 待機行動
+		m_Action = ACTION_WAIT;
+
+		// 待機モーション設定
+		m_pMotion->Set(MOTION_DEF);
+		return;
+	}
+
+	if (nType != MOTION_BEAM)
+	{
+		// ビームモーション設定
+		m_pMotion->Set(MOTION_BEAM);
+	}
+
+	// 攻撃フラグを立てる
+	m_sMotionFrag.bATK = true;
 }
 
 //==========================================================================
@@ -299,11 +478,6 @@ void CEnemyBoss::AttackBeam(void)
 //==========================================================================
 void CEnemyBoss::ActAttackAssault(void)
 {
-	// 攻撃フラグを立てる
-	m_sMotionFrag.bATK = true;
-
-	// ターゲットの方を向く
-	RotationTarget();
 
 	// 行動別移動処理
 	switch (m_ActionBranch)
@@ -319,6 +493,7 @@ void CEnemyBoss::ActAttackAssault(void)
 	default:
 		break;
 	}
+
 }
 
 //==========================================================================
@@ -326,7 +501,35 @@ void CEnemyBoss::ActAttackAssault(void)
 //==========================================================================
 void CEnemyBoss::ChargeTackle(void)
 {
+	int nType = m_pMotion->GetType();
+	if (nType == MOTION_CHARGE_TACKLE && m_pMotion->IsFinish() == true)
+	{// タックルチャージが終わってたら
 
+		// タックル行動
+		m_ActionBranch = ACTBRANCH_ASSAULT_TACKLE;
+
+		// タックル設定
+		m_pMotion->Set(MOTION_TACKLE);
+
+		// 目標との距離算出
+		m_fAssultLengthDest = GetFabsPosLength(GetPosition(), m_TargetPosition);
+		
+		// 目標の突撃長さ
+		m_fAssultLengthDest *= 1.5f;
+		return;
+	}
+
+	if (nType != MOTION_CHARGE_TACKLE)
+	{
+		// タックルチャージ設定
+		m_pMotion->Set(MOTION_CHARGE_TACKLE);
+	}
+
+	// ターゲットの方を向く
+	RotationTarget();
+
+	// チャージフラグを立てる
+	m_sMotionFrag.bCharge = true;
 }
 
 //==========================================================================
@@ -334,7 +537,43 @@ void CEnemyBoss::ChargeTackle(void)
 //==========================================================================
 void CEnemyBoss::AttackTackle(void)
 {
+	if (m_fAssultLength >= m_fAssultLengthDest)
+	{// タックル攻撃が目標の長さ分移動したら
 
+		// 待機行動
+		m_Action = ACTION_WAIT;
+
+		// 待機モーション設定
+		m_pMotion->Set(MOTION_DEF);
+		return;
+	}
+
+	// 突撃の距離
+	float fMove = GetVelocity();
+	m_fAssultLength += fMove * VELOCITY_TACKLE;
+
+	// 攻撃判定中に追加する予定
+#if 1
+	// 情報取得
+	D3DXVECTOR3 move = GetMove();
+	D3DXVECTOR3 rot = GetRotation();
+
+	// タックル移動量設定
+	move.x = sinf(D3DX_PI + rot.y) * fMove * VELOCITY_TACKLE;
+	move.z = cosf(D3DX_PI + rot.y) * fMove * VELOCITY_TACKLE;
+
+	// 移動量設定
+	SetMove(move);
+#endif
+
+	if (m_pMotion->GetType() != MOTION_TACKLE)
+	{
+		// タックルモーション設定
+		m_pMotion->Set(MOTION_TACKLE);
+	}
+
+	// 攻撃フラグを立てる
+	m_sMotionFrag.bATK = true;
 }
 
 //==========================================================================
@@ -374,13 +613,23 @@ void CEnemyBoss::MotionSet(void)
 		// 現在の種類取得
 		int nType = m_pMotion->GetType();
 
-		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockback == false)
+		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockback == false && m_sMotionFrag.bATK == false)
 		{// 移動していたら
+
 			// 攻撃していない
 			m_sMotionFrag.bATK = false;
 
-			// 移動モーション
-			m_pMotion->Set(MOTION_WALK);
+			// 行動別設定処理
+			switch (m_MakeForActionBranch)
+			{
+			case CEnemyBoss::ACTBRANCH_CHASE_SLOW:
+				m_pMotion->Set(MOTION_WALK);
+				break;
+
+			case CEnemyBoss::ACTBRANCH_CHASE_DASH:
+				m_pMotion->Set(MOTION_DASH);
+				break;
+			}
 		}
 		else if (m_sMotionFrag.bKnockback == true)
 		{// やられ中だったら
@@ -388,19 +637,44 @@ void CEnemyBoss::MotionSet(void)
 			// やられモーション
 			m_pMotion->Set(MOTION_KNOCKBACK);
 		}
+		else if (m_sMotionFrag.bCharge == true)
+		{// チャージ中だったら
+			
+			m_sMotionFrag.bCharge = false;
+			// チャージモーション
+			m_pMotion->Set(MOTION_CHARGE_TACKLE);
+		}
 		else if (m_sMotionFrag.bATK == true)
 		{// 攻撃していたら
 
-			m_sMotionFrag.bATK = false;		// 攻撃判定OFF
+			// 攻撃判定OFF
+			m_sMotionFrag.bATK = false;
 
-			// 攻撃モーション
-			m_pMotion->Set(MOTION_ATK);
+			// 行動別設定処理
+			switch (m_ActionBranch)
+			{
+			case ACTBRANCH_PROXIMITY_PUNCH:
+				m_pMotion->Set(MOTION_PUNCH);
+				break;
+
+			case ACTBRANCH_PROXIMITY_KICK:
+				m_pMotion->Set(MOTION_KICK);
+				break;
+
+			case ACTBRANCH_REMOTE_BEAM:
+				m_pMotion->Set(MOTION_BEAM);
+				break;
+
+			case ACTBRANCH_ASSAULT_TACKLE:
+				m_pMotion->Set(MOTION_TACKLE);
+				break;
+			}
 		}
-		else
-		{
-			// ニュートラルモーション
-			m_pMotion->Set(MOTION_DEF);
-		}
+		//else
+		//{
+		//	// ニュートラルモーション
+		//	m_pMotion->Set(MOTION_DEF);
+		//}
 	}
 }
 
@@ -433,3 +707,10 @@ void CEnemyBoss::RotationTarget(void)
 	SetRotDest(fRotDest);
 }
 
+//==========================================================================
+// 目標の位置設定
+//==========================================================================
+void CEnemyBoss::SetTargetPosition(D3DXVECTOR3 pos)
+{
+	m_TargetPosition = pos;
+}

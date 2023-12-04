@@ -120,6 +120,7 @@ protected:
 		bool bATK;			// 攻撃中かどうか
 		bool bKnockback;	// ノックバック中かどうか
 		bool bMove;			// 移動中かどうか
+		bool bCharge;		// チャージ中かどうか
 	};
 
 	// 隊列の構造体定義

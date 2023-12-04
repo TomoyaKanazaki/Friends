@@ -37,11 +37,16 @@ private:
 	//モーション列挙
 	typedef enum
 	{
-		MOTION_DEF = 0,		// ニュートラルモーション
-		MOTION_WALK,		// 移動モーション
-		MOTION_ATK,			// 攻撃モーション
-		MOTION_KNOCKBACK,	// やられモーション
-		MOTION_FADEOUT,		// 帰還モーション
+		MOTION_DEF = 0,			// ニュートラルモーション
+		MOTION_WALK,			// 移動モーション
+		MOTION_DASH,			// ダッシュ移動モーション
+		MOTION_PUNCH,			// パンチモーション
+		MOTION_KICK,			// キックモーション
+		MOTION_BEAM,			// ビームモーション
+		MOTION_CHARGE_TACKLE,	// タックルチャージモーション
+		MOTION_TACKLE,			// タックルモーション
+		MOTION_KNOCKBACK,		// やられモーション
+		MOTION_FADEOUT,			// 帰還モーション
 	}MOTION;
 
 	// 行動列挙
@@ -51,6 +56,7 @@ private:
 		ACTION_PROXIMITY,		// 近接攻撃
 		ACTION_REMOTE,			// 遠隔攻撃
 		ACTION_ASSAULT,			// 突撃攻撃
+		ACTION_WAIT,			// 待機
 		ACTION_SELFEXPLOSION,	// 自爆
 		ACTION_MAX
 	};
@@ -77,8 +83,10 @@ private:
 	// メンバ関数
 	//=============================
 	// 行動関数
-	void ActionSet(void) override;	// 行動の設定
+	void ActionSet(void) override;		// 行動の設定
+	void DrawingAction(void);			// 行動抽選
 	void UpdateAction(void) override;	// 行動更新
+	void ActWait(void);				// 待機
 	void ActChase(void);			// 追い掛け
 	void ActAttackProximity(void);	// 近接攻撃
 	void ActAttackRemote(void);		// 遠隔攻撃
@@ -103,8 +111,12 @@ private:
 	//=============================
 	ACTION m_Action;		// 行動
 	eActionBranch m_ActionBranch;	// 行動分岐
+	eActionBranch m_MakeForActionBranch;	// 行動する為の行動
 	D3DXVECTOR3 m_TargetPosition;	// 目標の位置
-	float m_fActTime;	// 行動カウンター
+	float m_fActTime;		// 行動カウンター
+	float m_fAssultLength;		// 突撃長さ
+	float m_fAssultLengthDest;	// 目標の突撃長さ
+	bool m_bCatchUp;	// 追い着き判定
 };
 
 

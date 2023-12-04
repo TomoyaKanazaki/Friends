@@ -409,6 +409,17 @@ float GetPosLength(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2)
 }
 
 //==================================================================================
+// í∑Ç≥ÇÃê‚ëŒíléÊìæ
+//==================================================================================
+float GetFabsPosLength(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2)
+{
+	float fLen = sqrtf((pos1.x - pos2.x) * (pos1.x - pos2.x) +
+		(pos1.z - pos2.z) * (pos1.z - pos2.z));
+
+	return fabsf(fLen);
+}
+
+//==================================================================================
 // ï”è„ÇÃà íuéÊìæ(2D)
 //==================================================================================
 D3DXVECTOR3 GetPointOnEdge2D(D3DXVECTOR3 point1, D3DXVECTOR3 point2, float fRate)

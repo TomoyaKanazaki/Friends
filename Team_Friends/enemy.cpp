@@ -120,7 +120,7 @@ CEnemy *CEnemy::Create(int nIdx, const char *pFileName, D3DXVECTOR3 pos, TYPE ty
 		switch (type)
 		{
 		case TYPE_BOSS:
-			//pEnemy = DEBUG_NEW CEnemyBoss;
+			pEnemy = DEBUG_NEW CEnemyBoss;
 			break;
 
 		case TYPE_ROAMING:

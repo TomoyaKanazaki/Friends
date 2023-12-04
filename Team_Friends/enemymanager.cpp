@@ -280,6 +280,31 @@ void CEnemyManager::SetStageEnemy(void)
 }
 
 //==========================================================================
+// ボスステージの敵配置
+//==========================================================================
+void CEnemyManager::SetStageBoss(void)
+{
+	// 敵拠点データ取得
+	CEnemyBase *pEnemyBase = CGame::GetEnemyBase();
+	if (pEnemyBase == NULL)
+	{
+		return;
+	}
+
+	// 拠点の数取得
+	int nNumBase = pEnemyBase->GetNumBase(0);
+
+	for (int i = 0; i < nNumBase; i++)
+	{
+		// 拠点ごとのデータ取得
+		CEnemyBase::sInfo sEnemyBaseInfo = pEnemyBase->GetEnemyBaseInfo(0, i);
+
+		// 敵の配置
+		SetEnemy(sEnemyBaseInfo.pos, sEnemyBaseInfo.rot, sEnemyBaseInfo.nPattern);
+	}
+}
+
+//==========================================================================
 // 敵配置
 //==========================================================================
 CEnemy **CEnemyManager::SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nPattern)

@@ -67,6 +67,8 @@ public:
 	void SetViewPort(D3DXVECTOR3 pos, D3DXVECTOR2 size);		// ビューポートの設定
 	void Reset(CScene::MODE mode);	// リセット
 	void ResetBoss(void);	// リセット
+	bool OnScreen(const D3DXVECTOR3 pos); // スクリーン内の判定
+
 private:
 
 	// メンバ変数

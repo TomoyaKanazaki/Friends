@@ -1098,6 +1098,47 @@ void CCamera::ResetBoss(void)
 	ResetGame();
 }
 
+//==========================================
+//  スクリーン内の判定
+//==========================================
+bool CCamera::OnScreen(const D3DXVECTOR3 pos)
+{
+	// 返り値用の変数
+	bool bIn = false;
+
+	// 判定
+	//ビューポートの設定
+	D3DVIEWPORT9 vp = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 1.0f };
+
+	//計算用変数宣言
+	D3DXMATRIX mtxWorld; //ワールドマトリックス
+
+	//ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&mtxWorld);
+
+	//敵のスクリーン座標を算出
+	D3DXVECTOR3 screenPos;
+	D3DXVec3Project
+	(
+		&screenPos,
+		&pos,
+		&vp,
+		&m_mtxProjection,
+		&m_mtxView,
+		&mtxWorld
+	);
+
+	// 判定
+	if (screenPos.x >= 0.0f && screenPos.x <= SCREEN_WIDTH &&
+		screenPos.y >= 0.0f && screenPos.y <= SCREEN_HEIGHT)
+	{
+		bIn = true;
+	}
+
+	// 返す
+	return bIn;
+}
+
 //==========================================================================
 // タイトルのリセット
 //==========================================================================

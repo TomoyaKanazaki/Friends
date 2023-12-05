@@ -304,9 +304,6 @@ D3DXCOLOR HSVtoRGB(float H, float S, float V)
 //==================================================================================
 int Random(int nMinNum, int nMaxNum)
 {
-	// ƒ‰ƒ“ƒ_ƒ€”
-	int nRand = 0;
-
 	// ”ÍˆÍ
 	int nRange = nMaxNum - nMinNum;
 
@@ -317,8 +314,13 @@ int Random(int nMinNum, int nMaxNum)
 		nRange += 1;
 	}
 
+	if (nMinNum + 1 == nMaxNum || nMaxNum - 1 == nMinNum)
+	{
+		nRange += 1;
+	}
+
 	// ƒ‰ƒ“ƒ_ƒ€¶¬
-	nRand = rand() % nRange + nMinNum;
+	int nRand = rand() % nRange + nMinNum;
 
 	return nRand;
 }

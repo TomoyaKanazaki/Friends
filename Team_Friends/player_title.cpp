@@ -19,12 +19,10 @@
 //==========================================
 namespace
 {
-	const char* CHARAFILE[CPlayerTitle::MAX] =
+	// ファイルパス
+	const char* CHARAFILE =
 	{
-		"data\\TEXT\\character\\player\\motion_player.txt", // 合体ファイルパス
-		"data\\TEXT\\character\\player\\motion_player.txt", // 腕ファイルパス
-		"data\\TEXT\\character\\player\\motion_player.txt", // 足ファイルパス
-		"data\\TEXT\\character\\player\\motion_player.txt" // 胴ファイルパス
+		"data\\TEXT\\character\\player\\motion_player.txt"
 	};
 }
 
@@ -57,7 +55,7 @@ HRESULT CPlayerTitle::Init(void)
 	m_state = STATE_NONE;	// 状態
 
 	// キャラ作成
-	HRESULT hr = SetCharacter(CHARAFILE[m_nModelType]);
+	HRESULT hr = SetCharacter(CHARAFILE);
 
 	if (FAILED(hr))
 	{// 失敗していたら
@@ -65,7 +63,7 @@ HRESULT CPlayerTitle::Init(void)
 	}
 
 	// モーションの生成処理
-	m_pMotion = CMotion::Create(CHARAFILE[m_nModelType]);
+	m_pMotion = CMotion::Create(CHARAFILE);
 
 	// オブジェクトキャラクターの情報取得
 	CObjectChara *pObjChar = GetObjectChara();

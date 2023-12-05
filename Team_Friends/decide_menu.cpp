@@ -14,18 +14,24 @@
 #include "sound.h"
 #include "fade.h"
 #include "debugproc.h"
+#include "fog.h"
 
 //==========================================
 //  定数定義
 //==========================================
 namespace
 {
+	const D3DXVECTOR3 POS_UI = D3DXVECTOR3(0.0f, 1000.0f, 0.0f); // UIの位置
+	const D3DXVECTOR3 POS_WALL = D3DXVECTOR3(0.0f, 1000.0f, 5000.0f); // 壁の位置
+	const D3DXCOLOR COLOR_WALL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f); // 壁の色
+	const float SIZE_WALL = 10.0f; // 壁のサイズ倍率
 	const int ALPHATIME = 60; // 不透明度更新の時間
 
 	// テクスチャのファイル
 	const char* m_apTextureFile[CDecideMenu::VTX_MAX] =
 	{
 		"data\\TEXTURE\\decideplayer_text.png",
+		"data\\TEXTURE\\cyberwall_02.png"
 	};
 
 	// テクスチャのファイル
@@ -87,7 +93,6 @@ void CDecideMenu::Uninit(void)
 		{// NULLじゃなかったら
 
 			// 終了処理
-			m_pObj3D[nCntSelect]->Uninit();
 			m_pObj3D[nCntSelect] = NULL;
 		}
 	}
@@ -98,7 +103,6 @@ void CDecideMenu::Uninit(void)
 		{// NULLじゃなかったら
 
 			// 終了処理
-			m_pSelect3D[nCntSelect]->Uninit();
 			m_pSelect3D[nCntSelect] = NULL;
 		}
 	}
@@ -268,10 +272,18 @@ void CDecideMenu::CreateUI(void)
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
 		// 生成処理
-		m_pObj3D[nCntSelect] = CObject3D::Create(8);
+		switch (nCntSelect)
+		{
+		case VTX_TEXT:
+			m_pObj3D[nCntSelect] = CObject3D::Create(8);
+			break;
+		case VTX_WALL:
+			m_pObj3D[nCntSelect] = CObject3D::Create(7);
+			break;
+		}
 
 		// 種類の設定
-		m_pObj3D[nCntSelect]->SetType(TYPE_OBJECT2D);
+		m_pObj3D[nCntSelect]->SetType(TYPE_OBJECT3D);
 
 		// テクスチャの割り当て
 		m_nTexIdx[nCntSelect] = pTexture->Regist(m_apTextureFile[nCntSelect]);
@@ -279,16 +291,23 @@ void CDecideMenu::CreateUI(void)
 		// テクスチャの割り当て
 		m_pObj3D[nCntSelect]->BindTexture(m_nTexIdx[nCntSelect]);
 
+		// サイズ取得
+		D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx[nCntSelect]);
+
 		// 各種変数の初期化
 		switch (nCntSelect)
 		{
 		case VTX_TEXT:
-			// サイズ取得
-			D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx[nCntSelect]);
 			size.z = 0.0f;
 			m_pObj3D[nCntSelect]->SetSize(size * 0.4f);	// サイズ
-			m_pObj3D[nCntSelect]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 位置
+			m_pObj3D[nCntSelect]->SetPosition(POS_UI);	// 位置
 			m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
+			break;
+		case VTX_WALL:
+			size.z = 0.0f;
+			m_pObj3D[nCntSelect]->SetSize(size * SIZE_WALL);	// サイズ
+			m_pObj3D[nCntSelect]->SetPosition(POS_WALL);	// 位置
+			m_pObj3D[nCntSelect]->SetColor(COLOR_WALL);	// 色
 			break;
 		}
 	}
@@ -308,7 +327,7 @@ void CDecideMenu::CreateSelect(void)
 		m_pSelect3D[nCntSelect] = CObject3D::Create(8);
 
 		// 種類の設定
-		m_pSelect3D[nCntSelect]->SetType(TYPE_OBJECT2D);
+		m_pSelect3D[nCntSelect]->SetType(TYPE_OBJECT3D);
 
 		// テクスチャの割り当て
 		m_nTexIdx_Select[nCntSelect] = pTexture->Regist(m_apTextureFile_Select[nCntSelect]);

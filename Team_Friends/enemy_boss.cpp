@@ -14,17 +14,33 @@
 #include "particle.h"
 
 //==========================================================================
-//  定数定義
+// 定数定義
 //==========================================================================
 namespace
 {
+	struct sProbability 
+	{
+		CEnemyBoss::ACTION action;	// 行動
+		float fProbability;			// 確率
+	};
+
+
 	const float LENGTH_PUNCH = 300.0f;		// パンチの長さ
 	const float LENGTH_KICK = 500.0f;		// キックの長さ
-	const float LENGTH_CHASEWALK = 1000.0f;	// 歩き追従の長さ
+	const float LENGTH_CHASEWALK = 800.0f;	// 歩き追従の長さ
 	const float VELOCITY_WALK = 1.0f;		// 歩き
-	const float VELOCITY_DASH = 2.0f;		// ダッシュ
+	const float VELOCITY_DASH = 2.5f;		// ダッシュ
 	const float VELOCITY_TACKLE = 2.0f;		// タックル
 	const float TIME_WAIT = 3.0f;			// 待機
+	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
+	{
+		{ CEnemyBoss::ACTION_CHASE, 0.0f },			// 追従
+		{ CEnemyBoss::ACTION_PROXIMITY, 0.5f },		// 近接攻撃
+		{ CEnemyBoss::ACTION_REMOTE, 0.3f },		// 遠隔攻撃
+		{ CEnemyBoss::ACTION_ASSAULT, 0.2f },		// 突撃攻撃
+		{ CEnemyBoss::ACTION_WAIT, 0.0f },			// 待機
+		{ CEnemyBoss::ACTION_SELFEXPLOSION, 0.0f },	// 自爆
+	};
 }
 
 //==========================================================================
@@ -140,18 +156,41 @@ void CEnemyBoss::UpdateAction(void)
 //==========================================================================
 void CEnemyBoss::DrawingAction(void)
 {
-	while (1)
-	{
-		// 行動抽選
-		m_Action = (ACTION)(rand() % ACTION_MAX);
+	// 0～1のランダム値取得
+	float fRandomValue = static_cast<float>(std::rand()) / RAND_MAX;
 
-		if (m_Action != ACTION_SELFEXPLOSION &&
-			m_Action != ACTION_CHASE &&
-			m_Action != ACTION_WAIT)
-		{// 既定行動以外
+	// 確率加算用変数
+	float fDrawingProbability = 0.0;
+
+	// 行動抽選要素分繰り返し
+	for (const auto& candidate : ACT_PROBABILITY)
+	{
+		// 今回の確率分を加算
+		fDrawingProbability += candidate.fProbability;
+
+		if (fRandomValue < fDrawingProbability)
+		{// 今回のランダム値が確率を超えたら
+
+			// 行動決定
+			m_Action = candidate.action;
 			break;
 		}
 	}
+
+
+
+	//while (1)
+	//{
+	//	// 行動抽選
+	//	m_Action = (ACTION)(rand() % ACTION_MAX);
+
+	//	if (m_Action != ACTION_SELFEXPLOSION &&
+	//		m_Action != ACTION_CHASE &&
+	//		m_Action != ACTION_WAIT)
+	//	{// 既定行動以外
+	//		break;
+	//	}
+	//}
 
 	// 次の行動別
 	int nActRand;
@@ -159,7 +198,7 @@ void CEnemyBoss::DrawingAction(void)
 	switch (m_Action)
 	{
 	case CEnemyBoss::ACTION_CHASE:	// 追従
-		if (CalcLenPlayer(LENGTH_CHASEWALK))
+		if (CircleRange3D(GetPosition(), m_TargetPosition, LENGTH_CHASEWALK, 0.0f))
 		{// 歩きの範囲
 			m_ActionBranch = ACTBRANCH_CHASE_SLOW;
 		}
@@ -187,7 +226,7 @@ void CEnemyBoss::DrawingAction(void)
 		}
 
 		// 行動する為の行動決定
-		if (CalcLenPlayer(fLength))
+		if (CircleRange3D(GetPosition(), m_TargetPosition, fLength, 0.0f))
 		{// 攻撃範囲内
 
 			// 追い着いた
@@ -198,7 +237,7 @@ void CEnemyBoss::DrawingAction(void)
 			// 追い着いてない
 			m_bCatchUp = false;
 
-			if (CalcLenPlayer(LENGTH_CHASEWALK))
+			if (CircleRange3D(GetPosition(), m_TargetPosition, LENGTH_CHASEWALK, 0.0f))
 			{// 歩きの範囲
 				m_MakeForActionBranch = ACTBRANCH_CHASE_SLOW;
 			}

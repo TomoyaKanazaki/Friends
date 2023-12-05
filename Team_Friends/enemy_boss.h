@@ -29,7 +29,6 @@ public:
 	void Kill(void) override;
 
 	void SetTargetPosition(D3DXVECTOR3 pos);	// 目標の位置設定
-private:
 
 	//=============================
 	// 列挙型定義
@@ -49,18 +48,6 @@ private:
 		MOTION_FADEOUT,			// 帰還モーション
 	};
 
-	// 行動列挙
-	enum ACTION
-	{
-		ACTION_CHASE = 0,		// 追従
-		ACTION_PROXIMITY,		// 近接攻撃
-		ACTION_REMOTE,			// 遠隔攻撃
-		ACTION_ASSAULT,			// 突撃攻撃
-		ACTION_WAIT,			// 待機
-		ACTION_SELFEXPLOSION,	// 自爆
-		ACTION_MAX
-	};
-
 	// 行動分岐
 	enum eActionBranch
 	{
@@ -72,6 +59,20 @@ private:
 		ACTBRANCH_ASSAULT_CHARGE,	// 突撃攻撃(溜め)
 		ACTBRANCH_ASSAULT_TACKLE,	// 突撃攻撃(タックル)
 	};
+
+	// 行動列挙
+	enum ACTION
+	{
+		ACTION_CHASE = 0,		// 追従
+		ACTION_PROXIMITY,		// 近接攻撃
+		ACTION_REMOTE,			// 遠隔攻撃
+		ACTION_ASSAULT,			// 突撃攻撃
+		ACTION_WAIT,			// 待機
+		ACTION_SELFEXPLOSION,	// 自爆
+		ACTION_MAX
+	};
+private:
+
 
 	//=============================
 	// 関数リスト

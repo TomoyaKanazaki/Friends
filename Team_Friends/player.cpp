@@ -568,6 +568,8 @@ void CPlayer::Controll(void)
 				m_sMotionFrag.bMove = false;
 			}
 
+			// ジャンプ
+#if 0
 			if (m_bJump == false &&
 				(pInputKeyboard->GetTrigger(DIK_SPACE) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LB, m_nMyPlayerIdx)))
 			{//SPACEが押された,ジャンプ
@@ -579,6 +581,7 @@ void CPlayer::Controll(void)
 				// サウンド再生
 				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
 			}
+#endif
 		}
 		else if (m_pMotion->IsGetMove(nMotionType) == 0 &&
 			m_state != STATE_DEAD &&

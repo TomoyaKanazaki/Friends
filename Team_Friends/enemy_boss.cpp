@@ -18,20 +18,21 @@
 //==========================================================================
 namespace
 {
+	// 行動抽選の構造体
 	struct sProbability 
 	{
 		CEnemyBoss::ACTION action;	// 行動
 		float fProbability;			// 確率
 	};
 
-
 	const float LENGTH_PUNCH = 300.0f;		// パンチの長さ
 	const float LENGTH_KICK = 500.0f;		// キックの長さ
 	const float LENGTH_CHASEWALK = 800.0f;	// 歩き追従の長さ
 	const float VELOCITY_WALK = 1.0f;		// 歩き
-	const float VELOCITY_DASH = 2.5f;		// ダッシュ
-	const float VELOCITY_TACKLE = 2.0f;		// タックル
+	const float VELOCITY_DASH = 3.5f;		// ダッシュ
+	const float VELOCITY_TACKLE = 2.5f;		// タックル
 	const float TIME_WAIT = 3.0f;			// 待機
+	const float TIME_PROXIMITYCHASE = 5.0f;	// 近接攻撃の追従時間最大値
 	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
 	{
 		{ CEnemyBoss::ACTION_CHASE, 0.0f },			// 追従
@@ -173,24 +174,12 @@ void CEnemyBoss::DrawingAction(void)
 
 			// 行動決定
 			m_Action = candidate.action;
+
+			// 行動カウンターリセット
+			m_fActTime = 0.0f;
 			break;
 		}
 	}
-
-
-
-	//while (1)
-	//{
-	//	// 行動抽選
-	//	m_Action = (ACTION)(rand() % ACTION_MAX);
-
-	//	if (m_Action != ACTION_SELFEXPLOSION &&
-	//		m_Action != ACTION_CHASE &&
-	//		m_Action != ACTION_WAIT)
-	//	{// 既定行動以外
-	//		break;
-	//	}
-	//}
 
 	// 次の行動別
 	int nActRand;
@@ -389,6 +378,14 @@ void CEnemyBoss::ActAttackProximity(void)
 
 		// 追い着き判定
 		m_bCatchUp = CircleRange3D(GetPosition(), m_TargetPosition, fLength, 0.0f);
+
+		// 行動カウンター加算
+		m_fActTime += CManager::GetInstance()->GetDeltaTime();;
+		if (TIME_PROXIMITYCHASE <= m_fActTime)
+		{
+			// 追い着き判定
+			m_bCatchUp = true;
+		}
 	}
 	else
 	{// 攻撃の長さ内
@@ -738,7 +735,7 @@ void CEnemyBoss::RotationTarget(void)
 	RotNormalize(fRotDiff);
 
 	//角度の補正をする
-	rot.y += fRotDiff * 0.025f;
+	rot.y += fRotDiff * 0.1f;
 	RotNormalize(rot.y);
 
 	// 向き設定

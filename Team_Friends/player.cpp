@@ -853,12 +853,12 @@ void CPlayer::Controll(void)
 		CItem::Create(D3DXVECTOR3(pos.x, pos.y + 100.0f, pos.z), D3DXVECTOR3(0.0f, Random(-31, 31) * 0.1f, 0.0f));
 	}
 
-	if (pInputKeyboard->GetPress(DIK_DOWN) == true || pInputKeyboard->GetTrigger(DIK_LEFT) == true)
-	{
-		//my_particle::Create(GetCenterPosition(), my_particle::TYPE_ATTACK_BODY);
-		my_particle::Create(pos, my_particle::TYPE_BEAMHIT_FIELD);
-	}
+	
 #endif
+	if (pInputKeyboard->GetTrigger(DIK_LEFT) == true)
+	{
+		CCollisionObject::Create(GetPosition(), mylib_const::DEFAULT_VECTOR3, 10000.0f, 3, 10000, CCollisionObject::TAG_PLAYER);
+	}
 }
 
 //==========================================================================
@@ -1239,7 +1239,9 @@ void CPlayer::AttackBody(CMotion::AttackInfo attackInfo)
 			200.0f,	// 長さ
 			15,		// 寿命
 			18,		// 密度
-			nDamage);		// ダメージ
+			nDamage,	// ダメージ
+			CCollisionObject::TAG_PLAYER	// タグ
+		);
 		break;
 
 	case MOTION_ATK2:
@@ -1250,12 +1252,14 @@ void CPlayer::AttackBody(CMotion::AttackInfo attackInfo)
 				sinf(D3DX_PI + rot.y) * fMove,	// 位置
 				cosf(D3DX_PI * 0.65f) * fMove,
 				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
-			col,	// 色
-			25.0f,	// 半径
-			200.0f,	// 長さ
-			40,		// 寿命
-			24,		// 密度
-			nDamage);		// ダメージ
+			col,		// 色
+			25.0f,		// 半径
+			200.0f,		// 長さ
+			40,			// 寿命
+			24,			// 密度
+			nDamage,	// ダメージ
+			CCollisionObject::TAG_PLAYER	// タグ
+		);
 		break;
 	}
 

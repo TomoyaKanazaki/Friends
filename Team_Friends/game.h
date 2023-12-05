@@ -25,6 +25,7 @@ class CHitScore;
 class CStatusWindow;
 
 class CEnemyManager;
+class CLimitArea;
 class CLimitAreaManager;
 class CPlayer;
 class CEnemyBase;
@@ -77,6 +78,7 @@ private:
 	static CScore *m_pScore;					// スコアのオブジェクト
 	static CBulletManager *m_pBulletManager;		// 弾マネージャのオブジェクト
 	static CLimitAreaManager *m_pLimitEreaManager;		// エリア制限マネージャのオブジェクト
+	static CLimitArea *m_pLimitArea;					// エリア制限のオブジェクト
 	static CEditEnemyBase *m_pEditEnemyBase;		// 敵の拠点エディター
 	static CStage *m_pStage;	// ステージのオブジェクト
 	static CGameManager *m_pGameManager;	// ゲームマネージャのオブジェクト

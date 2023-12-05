@@ -45,7 +45,6 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	void Delete(void);
 
 	// 静的メンバ関数
 	static CDecideMenu* Create(void);
@@ -60,8 +59,8 @@ private:
 	int m_nNowSelect;		// 現在の選択肢
 	int m_nTexIdx[VTX_MAX];						// テクスチャのインデックス番号
 	int m_nTexIdx_Select[VTXSELECT_MAX];						// テクスチャのインデックス番号
-	CObject2D *m_pObj2D[VTX_MAX];					// オブジェクト2Dのオブジェクト
-	CObject2D *m_pSelect2D[VTXSELECT_MAX];				// 選択肢のオブジェクト
+	CObject3D*m_pObj3D[VTX_MAX];					// オブジェクト2Dのオブジェクト
+	CObject3D*m_pSelect3D[VTXSELECT_MAX];				// 選択肢のオブジェクト
 };
 
 #endif

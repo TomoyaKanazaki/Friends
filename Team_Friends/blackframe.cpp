@@ -34,7 +34,7 @@ const D3DXVECTOR3 CBlackFrame::m_DestPosition[VTX_MAX] =	// 目標の位置
 CBlackFrame::CBlackFrame(int nPriority)
 {
 	// 値のクリア
-	memset(&m_pObj2D[0], NULL, sizeof(m_pObj2D));	// オブジェクト2Dのオブジェクト
+	memset(&m_pObj3D[0], NULL, sizeof(m_pObj3D));	// オブジェクト2Dのオブジェクト
 	m_state = STATE_NONE;	// 状態
 	m_nCntMove = 0;	// 移動カウント
 }
@@ -83,29 +83,29 @@ HRESULT CBlackFrame::Init(void)
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
 		// 生成処理
-		m_pObj2D[nCntSelect] = CObject2D::Create(8);
+		m_pObj3D[nCntSelect] = CObject2D::Create(8);
 
 		// 種類の設定
 		//m_pObj2D[nCntSelect]->SetType(CObject::TYPE_OBJECT2D);
 
 		// テクスチャの割り当て
-		m_pObj2D[nCntSelect]->BindTexture(0);
+		m_pObj3D[nCntSelect]->BindTexture(0);
 
 		// 各種変数の初期化
 		switch (nCntSelect)
 		{
 		case VTX_UP:
 			// サイズ取得
-			m_pObj2D[nCntSelect]->SetSize(SIZE);	// サイズ
-			m_pObj2D[nCntSelect]->SetPosition(START_UP);	// 位置
-			m_pObj2D[nCntSelect]->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));	// 色
+			m_pObj3D[nCntSelect]->SetSize(SIZE);	// サイズ
+			m_pObj3D[nCntSelect]->SetPosition(START_UP);	// 位置
+			m_pObj3D[nCntSelect]->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));	// 色
 			break;
 
 		case VTX_DOWN:
 			// サイズ取得
-			m_pObj2D[nCntSelect]->SetSize(SIZE);	// サイズ
-			m_pObj2D[nCntSelect]->SetPosition(START_DOWN);	// 位置
-			m_pObj2D[nCntSelect]->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));	// 色
+			m_pObj3D[nCntSelect]->SetSize(SIZE);	// サイズ
+			m_pObj3D[nCntSelect]->SetPosition(START_DOWN);	// 位置
+			m_pObj3D[nCntSelect]->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));	// 色
 			break;
 		}
 	}
@@ -124,7 +124,7 @@ void CBlackFrame::Reset(void)
 
 	for (int nCntVtx = 0; nCntVtx < VTX_MAX; nCntVtx++)
 	{
-		if (m_pObj2D[nCntVtx] != NULL)
+		if (m_pObj3D[nCntVtx] != NULL)
 		{// NULLじゃなかったら
 
 			D3DXVECTOR3 pos = mylib_const::DEFAULT_VECTOR3;
@@ -138,7 +138,7 @@ void CBlackFrame::Reset(void)
 			}
 
 			// 情報設定
-			m_pObj2D[nCntVtx]->SetPosition(pos);
+			m_pObj3D[nCntVtx]->SetPosition(pos);
 		}
 	}
 
@@ -151,13 +151,13 @@ void CBlackFrame::Uninit(void)
 {
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
-		if (m_pObj2D[nCntSelect] != NULL)
+		if (m_pObj3D[nCntSelect] != NULL)
 		{// NULLじゃなかったら
 
 			// 終了処理
-			m_pObj2D[nCntSelect]->Uninit();
-			delete m_pObj2D[nCntSelect];
-			m_pObj2D[nCntSelect] = NULL;
+			m_pObj3D[nCntSelect]->Uninit();
+			delete m_pObj3D[nCntSelect];
+			m_pObj3D[nCntSelect] = NULL;
 		}
 	}
 }
@@ -169,7 +169,7 @@ void CBlackFrame::Update(void)
 {
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
-		if (m_pObj2D[nCntSelect] == NULL)
+		if (m_pObj3D[nCntSelect] == NULL)
 		{// NULLだったら
 			continue;
 		}
@@ -178,7 +178,7 @@ void CBlackFrame::Update(void)
 		UpdateState(nCntSelect);
 
 		// 頂点情報設定
-		m_pObj2D[nCntSelect]->SetVtx();
+		m_pObj3D[nCntSelect]->SetVtx();
 	}
 
 	// 移動カウント加算
@@ -224,7 +224,7 @@ void CBlackFrame::StateIn(int nCntVtx)
 	}
 
 	// 情報取得
-	D3DXVECTOR3 pos = m_pObj2D[nCntVtx]->GetPosition();
+	D3DXVECTOR3 pos = m_pObj3D[nCntVtx]->GetPosition();
 
 	// 初期位置
 	D3DXVECTOR3 start = mylib_const::DEFAULT_VECTOR3;
@@ -245,7 +245,7 @@ void CBlackFrame::StateIn(int nCntVtx)
 	pos.y = Lerp(start.y, m_DestPosition[nCntVtx].y, fTime);
 
 	// 情報設定
-	m_pObj2D[nCntVtx]->SetPosition(pos);
+	m_pObj3D[nCntVtx]->SetPosition(pos);
 }
 
 //==========================================================================
@@ -261,7 +261,7 @@ void CBlackFrame::StateOut(int nCntVtx)
 	}
 
 	// 情報取得
-	D3DXVECTOR3 pos = m_pObj2D[nCntVtx]->GetPosition();
+	D3DXVECTOR3 pos = m_pObj3D[nCntVtx]->GetPosition();
 
 	// 初期位置
 	D3DXVECTOR3 start = mylib_const::DEFAULT_VECTOR3;
@@ -282,7 +282,7 @@ void CBlackFrame::StateOut(int nCntVtx)
 	pos.y = Lerp(m_DestPosition[nCntVtx].y, start.y, fTime);
 
 	// 情報設定
-	m_pObj2D[nCntVtx]->SetPosition(pos);
+	m_pObj3D[nCntVtx]->SetPosition(pos);
 }
 
 //==========================================================================
@@ -300,13 +300,13 @@ void CBlackFrame::Draw(void)
 
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
-		if (m_pObj2D[nCntSelect] == NULL)
+		if (m_pObj3D[nCntSelect] == NULL)
 		{
 			continue;
 		}
 
 		// 描画処理
-		m_pObj2D[nCntSelect]->Draw();
+		m_pObj3D[nCntSelect]->Draw();
 	}
 
 	// アルファテストを無効にする

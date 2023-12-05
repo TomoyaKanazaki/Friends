@@ -177,7 +177,6 @@
     <ClCompile Include="cursor.cpp" />
     <ClCompile Include="debugpointnumber.cpp" />
     <ClCompile Include="debugproc.cpp" />
-    <ClCompile Include="decidecharacter.cpp" />
     <ClCompile Include="decide.cpp" />
     <ClCompile Include="decide_menu.cpp" />
     <ClCompile Include="edit.cpp" />
@@ -305,7 +304,6 @@
     <ClInclude Include="cursor.h" />
     <ClInclude Include="debugpointnumber.h" />
     <ClInclude Include="debugproc.h" />
-    <ClInclude Include="decidecharacter.h" />
     <ClInclude Include="decide.h" />
     <ClInclude Include="decide_menu.h" />
     <ClInclude Include="edit.h" />

@@ -66,8 +66,8 @@ private:
 	// メンバ変数
 	int m_nTexIdx[VTX_MAX];						// テクスチャのインデックス番号
 	int m_nTexIdx_Select[VTXCHARACTER_MAX];						// テクスチャのインデックス番号
-	CObject2D *m_pObj2D[VTX_MAX];					// オブジェクト2Dのオブジェクト
-	CObject2D *m_pSelect2D[VTXCHARACTER_MAX];				// 選択肢のオブジェクト
+	CObject2D *m_pObj3D[VTX_MAX];					// オブジェクト2Dのオブジェクト
+	CObject2D *m_pSelect3D[VTXCHARACTER_MAX];				// 選択肢のオブジェクト
 	CCursor *m_apCursor[mylib_const::MAX_PLAYER];	// カーソルのオブジェクト
 	bool m_bDecide[mylib_const::MAX_PLAYER];		// 決定したか
 	bool m_bAllDecide;								// 全て決定したか

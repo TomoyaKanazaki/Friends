@@ -18,10 +18,10 @@
 namespace
 {
 	const float ATTACK_LENGTH = 200.0f; // 攻撃する距離
-	const float MOVE_SPEED = 1000.0f; // 移動速度
-	const float WAIT_TIMER = 3.0f; // 初期待機時間
+	const float MOVE_SPEED = 500.0f; // 移動速度
+	const float WAIT_TIMER = 2.0f; // 初期待機時間
 	const float ROTATION_TIMER = 1.0f; // 軸合わせに要する時間
-	const float TACKLE_TIMER = 2.0f; // 突進する時間
+	const float TACKLE_TIMER = 1.0f; // 突進する時間
 }
 
 //==========================================

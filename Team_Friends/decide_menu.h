@@ -53,6 +53,8 @@ private:
 
 	// メンバ関数
 	void UpdateSelect(int nCntSelect);	// 選択肢の更新処理
+	void CreateUI(void); // UIの生成
+	void CreateSelect(void); // 選択対象の生成
 
 	// メンバ変数
 	int m_nCntAlpha;		// 不透明度のカウンター

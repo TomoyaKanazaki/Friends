@@ -65,7 +65,7 @@ CScene *CScene::Create(CScene::MODE mode)
 			pScene = DEBUG_NEW CTitle;
 			break;
 
-		case CScene::MODE_DECIDEPLAYER:
+		case CScene::MODE_DECIDE:
 			pScene = DEBUG_NEW CDecide;
 			break;
 

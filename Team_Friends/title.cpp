@@ -152,7 +152,7 @@ void CTitle::Update(void)
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
 	{
 		// モード設定
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDEPLAYER);
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDE);
 	}
 
 	if (m_fCnt >= SWITCH_TIME)
@@ -204,7 +204,7 @@ void CTitle::WhiteOut()
 	if (pInputKeyboard->GetTrigger(DIK_3))
 	{
 		// モード設定
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDEPLAYER);
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDE);
 	}
 
 	if (pInputKeyboard->GetTrigger(DIK_4))

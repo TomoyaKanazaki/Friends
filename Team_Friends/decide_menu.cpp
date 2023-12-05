@@ -65,62 +65,13 @@ CDecideMenu::~CDecideMenu()
 HRESULT CDecideMenu::Init(void)
 {
 	// 種類の設定
-	SetType(TYPE_OBJECT2D);
+	SetType(TYPE_OBJECT3D);
 
-	// テクスチャのオブジェクト取得
-	CTexture *pTexture = CManager::GetInstance()->GetTexture();
+	// UIの生成
+	CreateUI();
 
-	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
-	{
-		// 生成処理
-		m_pObj3D[nCntSelect] = CObject3D::Create(8);
-
-		// 種類の設定
-		m_pObj3D[nCntSelect]->SetType(TYPE_OBJECT2D);
-
-		// テクスチャの割り当て
-		m_nTexIdx[nCntSelect] = pTexture->Regist(m_apTextureFile[nCntSelect]);
-
-		// テクスチャの割り当て
-		m_pObj3D[nCntSelect]->BindTexture(m_nTexIdx[nCntSelect]);
-
-		// 各種変数の初期化
-		switch (nCntSelect)
-		{
-		case VTX_TEXT:
-			// サイズ取得
-			D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx[nCntSelect]);
-			size.z = 0.0f;
-			m_pObj3D[nCntSelect]->SetSize(size * 0.4f);	// サイズ
-			m_pObj3D[nCntSelect]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 位置
-			m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
-			break;
-		}
-	}
-
-	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
-	{
-		// 生成処理
-		m_pSelect3D[nCntSelect] = CObject3D::Create(8);
-
-		// 種類の設定
-		m_pSelect3D[nCntSelect]->SetType(TYPE_OBJECT2D);
-
-		// テクスチャの割り当て
-		m_nTexIdx_Select[nCntSelect] = pTexture->Regist(m_apTextureFile_Select[nCntSelect]);
-
-		// テクスチャの割り当て
-		m_pSelect3D[nCntSelect]->BindTexture(m_nTexIdx_Select[nCntSelect]);
-
-		// サイズ取得
-		D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx_Select[nCntSelect]) * 0.4f;
-		size.z = 0.0f;
-		float fDistance = size.x * 2.0f;
-
-		m_pSelect3D[nCntSelect]->SetSize(size);								// サイズ
-		m_pSelect3D[nCntSelect]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 位置
-		m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
-	}
+	// 選択対象の生成
+	CreateSelect();
 
 	return S_OK;
 }
@@ -304,4 +255,74 @@ void CDecideMenu::UpdateSelect(int nCntSelect)
 
 	// 色設定
 	m_pSelect3D[nCntSelect]->SetColor(col);
+}
+
+//==========================================
+//  UIの生成
+//==========================================
+void CDecideMenu::CreateUI(void)
+{
+	// テクスチャのオブジェクト取得
+	CTexture* pTexture = CManager::GetInstance()->GetTexture();
+
+	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
+	{
+		// 生成処理
+		m_pObj3D[nCntSelect] = CObject3D::Create(8);
+
+		// 種類の設定
+		m_pObj3D[nCntSelect]->SetType(TYPE_OBJECT2D);
+
+		// テクスチャの割り当て
+		m_nTexIdx[nCntSelect] = pTexture->Regist(m_apTextureFile[nCntSelect]);
+
+		// テクスチャの割り当て
+		m_pObj3D[nCntSelect]->BindTexture(m_nTexIdx[nCntSelect]);
+
+		// 各種変数の初期化
+		switch (nCntSelect)
+		{
+		case VTX_TEXT:
+			// サイズ取得
+			D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx[nCntSelect]);
+			size.z = 0.0f;
+			m_pObj3D[nCntSelect]->SetSize(size * 0.4f);	// サイズ
+			m_pObj3D[nCntSelect]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 位置
+			m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
+			break;
+		}
+	}
+}
+
+//==========================================
+//  選択対象の生成
+//==========================================
+void CDecideMenu::CreateSelect(void)
+{
+	// テクスチャのオブジェクト取得
+	CTexture* pTexture = CManager::GetInstance()->GetTexture();
+
+	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
+	{
+		// 生成処理
+		m_pSelect3D[nCntSelect] = CObject3D::Create(8);
+
+		// 種類の設定
+		m_pSelect3D[nCntSelect]->SetType(TYPE_OBJECT2D);
+
+		// テクスチャの割り当て
+		m_nTexIdx_Select[nCntSelect] = pTexture->Regist(m_apTextureFile_Select[nCntSelect]);
+
+		// テクスチャの割り当て
+		m_pSelect3D[nCntSelect]->BindTexture(m_nTexIdx_Select[nCntSelect]);
+
+		// サイズ取得
+		D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx_Select[nCntSelect]) * 0.4f;
+		size.z = 0.0f;
+		float fDistance = size.x * 2.0f;
+
+		m_pSelect3D[nCntSelect]->SetSize(size);								// サイズ
+		m_pSelect3D[nCntSelect]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 位置
+		m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
+	}
 }

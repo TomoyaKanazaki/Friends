@@ -41,7 +41,9 @@
 #define RANKING_POS_V	(D3DXVECTOR3(70.0f, 960.0f, -160.0f))
 //#define RESULT_LEN	(1000.0f)
 #define RANKINGROT_NONE		(D3DXVECTOR3(0.0f, 0.15f, 0.06f))
-#define DECIDECAMERAROT_NONE		(D3DXVECTOR3(0.0f, 0.0f, -D3DX_PI * 0.01f))
+#define DECIDECAMERAROT_NONE		(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
+#define DECIDECAMERAPOS_NONE		(D3DXVECTOR3(0.0f, 1000.0f, 0.0f))
+#define DECIDE_LEN	(1000.0f)
 
 //==========================================================================
 // コンストラクタ
@@ -1257,9 +1259,9 @@ void CCamera::ResetDecide(void)
 	m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);				// 上方向ベクトル
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);				// 移動量
 	m_TargetPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 目標の位置
-	m_fDistance = RANKING_LEN_DEST;						// 距離
-	m_fDestDistance = RANKING_LEN_DEST;					// 目標の距離
-	m_fOriginDistance = RANKING_LEN_DEST;				// 元の距離
+	m_fDistance = DECIDE_LEN;						// 距離
+	m_fDestDistance = DECIDE_LEN;					// 目標の距離
+	m_fOriginDistance = DECIDE_LEN;				// 元の距離
 	m_fDiffHeight = 0.0f;								// 高さの差分
 	m_fDiffHeightSave = 0.0f;							// 高さの差分保存用
 	m_fDiffHeightDest = 0.0f;							// 目標の高さの差分
@@ -1275,7 +1277,7 @@ void CCamera::ResetDecide(void)
 	m_rotVDest = m_rot;									// 目標の視点の向き
 
 	// 注視点の代入
-	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 注視点(見たい場所)
+	m_posR = DECIDECAMERAPOS_NONE;			// 注視点(見たい場所)
 
 	// 視点の代入
 	m_posV.x = m_posR.x + cosf(m_rot.z) * sinf(m_rot.y) * -m_fDistance;

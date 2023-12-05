@@ -23,7 +23,8 @@ public:
 	// 列挙型定義
 	enum VTX
 	{
-		VTX_TEXT = 0,	// テキスト
+		VTX_TEXT = 0,	// UI
+		VTX_WALL, // 壁
 		VTX_MAX
 	};
 

@@ -10,6 +10,8 @@
 #include "calculation.h"
 #include "hp_gauge.h"
 #include "blackframe.h"
+#include "beam.h"
+#include "particle.h"
 
 //==========================================================================
 //  定数定義
@@ -705,6 +707,94 @@ void CEnemyBoss::RotationTarget(void)
 
 	// 目標の向き設定
 	SetRotDest(fRotDest);
+}
+
+//==========================================================================
+// 攻撃時処理
+//==========================================================================
+void CEnemyBoss::AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo)
+{
+	// モーション情報取得
+	int nMotionType = m_pMotion->GetType();
+	D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), ATKInfo);
+
+	// 情報取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
+	// モーション別処理
+	switch (nMotionType)
+	{
+	case MOTION_PUNCH:
+		break;
+
+	case MOTION_KICK:
+		break;
+
+	case MOTION_BEAM:
+	{
+		D3DXCOLOR col = D3DXCOLOR(
+			0.5f + Random(-100, 100) * 0.001f,
+			0.1f + Random(-100, 100) * 0.001f,
+			0.5f + Random(-100, 100) * 0.001f,	// 色
+			1.0f);
+
+		CBeam::Create(
+			weponpos,	// 位置
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y) * 100.0f,
+				cosf(D3DX_PI * 0.55f) * 100.0f,
+				cosf(D3DX_PI + rot.y) * 100.0f),	// 移動量
+			col,	// 色
+			60.0f,	// 半径
+			400.0f,	// 長さ
+			30,		// 寿命
+			32,		// 密度
+			1,		// ダメージ
+			CCollisionObject::TAG_ENEMY	// タグ
+		);
+	}
+	break;
+
+	case MOTION_CHARGE_TACKLE:
+		break;
+
+	case MOTION_TACKLE:
+		break;
+	}
+}
+
+//==========================================================================
+// 攻撃判定中処理
+//==========================================================================
+void CEnemyBoss::AttackInDicision(CMotion::AttackInfo ATKInfo)
+{
+	// 基底の攻撃判定中処理
+	CEnemy::AttackInDicision(ATKInfo);
+
+	// モーション情報取得
+	int nMotionType = m_pMotion->GetType();
+	D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), ATKInfo);
+
+	// モーション別処理
+	switch (nMotionType)
+	{
+	case MOTION_PUNCH:
+		break;
+
+	case MOTION_KICK:
+		break;
+
+	case MOTION_BEAM:
+		my_particle::Create(weponpos, my_particle::TYPE_ATTACK_BODY);
+		break;
+
+	case MOTION_CHARGE_TACKLE:
+		break;
+
+	case MOTION_TACKLE:
+		break;
+	}
 }
 
 //==========================================================================

@@ -17,7 +17,7 @@
 
 // ëJà⁄êÊ
 #include "game.h"
-#include "decideplayer.h"
+#include "decide.h"
 #include "title.h"
 #include "tutorial.h"
 #include "result.h"
@@ -65,8 +65,8 @@ CScene *CScene::Create(CScene::MODE mode)
 			pScene = DEBUG_NEW CTitle;
 			break;
 
-		case CScene::MODE_DECIDEPLAYER:
-			pScene = DEBUG_NEW CDecidePlayer;
+		case CScene::MODE_DECIDE:
+			pScene = DEBUG_NEW CDecide;
 			break;
 
 		case CScene::MODE_TUTORIAL:

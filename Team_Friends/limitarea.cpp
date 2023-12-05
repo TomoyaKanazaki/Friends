@@ -414,6 +414,11 @@ void CLimitArea::Draw(void)
 	// 背面のカリングなし
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
+	// アルファテストを有効にする
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+
 	// 描画処理
 	for (int i = 0; i < mylib_const::SHAPE_LIMITEREA; i++)
 	{
@@ -424,6 +429,11 @@ void CLimitArea::Draw(void)
 
 		m_pMeshWall[i]->Draw();
 	}
+
+	// アルファテストを無効にする
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 
 	// ライティングを有効にする
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);

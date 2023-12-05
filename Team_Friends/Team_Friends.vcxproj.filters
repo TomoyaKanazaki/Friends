@@ -309,13 +309,10 @@
     <ClCompile Include="item.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="decideplayer.cpp">
+    <ClCompile Include="decide.cpp">
       <Filter>ソース ファイル\mode\decideplayer</Filter>
     </ClCompile>
-    <ClCompile Include="decideplayer_screen.cpp">
-      <Filter>ソース ファイル\mode\decideplayer</Filter>
-    </ClCompile>
-    <ClCompile Include="decidecharacter.cpp">
+    <ClCompile Include="decide_menu.cpp">
       <Filter>ソース ファイル\mode\decideplayer</Filter>
     </ClCompile>
     <ClCompile Include="cursor.cpp">
@@ -680,13 +677,7 @@
     <ClInclude Include="item.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="decideplayer.h">
-      <Filter>ヘッダー ファイル\mode\decideplayer</Filter>
-    </ClInclude>
-    <ClInclude Include="decideplayer_screen.h">
-      <Filter>ヘッダー ファイル\mode\decideplayer</Filter>
-    </ClInclude>
-    <ClInclude Include="decidecharacter.h">
+    <ClInclude Include="decide.h">
       <Filter>ヘッダー ファイル\mode\decideplayer</Filter>
     </ClInclude>
     <ClInclude Include="cursor.h">
@@ -823,6 +814,9 @@
     </ClInclude>
     <ClInclude Include="enemy_riot.h">
       <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="decide_menu.h">
+      <Filter>ヘッダー ファイル\mode\decideplayer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

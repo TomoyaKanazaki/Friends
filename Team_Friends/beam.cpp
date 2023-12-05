@@ -10,7 +10,6 @@
 #include "renderer.h"
 #include "calculation.h"
 #include "3D_effect.h"
-#include "collisionobject.h"
 #include "camera.h"
 #include "particle.h"
 #include "ballast.h"
@@ -26,6 +25,7 @@ namespace
 	int damage;			// ダメージ
 	D3DXCOLOR color;	// 色
 	std::vector<CEffect3D*> effect;	// エフェクトのオブジェクト
+	CCollisionObject::eMyTag tag;	// タグ
 }
 
 //==========================================================================
@@ -53,7 +53,8 @@ CBeam::~CBeam()
 //==========================================================================
 CBeam *CBeam::Create(
 	const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXCOLOR col,
-	const float fRadius, const float fLength, const int nLife, const int nDisity, const int nDamage)
+	const float fRadius, const float fLength, const int nLife,
+	const int nDisity, const int nDamage, CCollisionObject::eMyTag TagType)
 {
 	// 生成用のオブジェクト
 	CBeam *pBallast = NULL;
@@ -75,6 +76,7 @@ CBeam *CBeam::Create(
 			color = col;				// 色
 			disity = nDisity;			// 密度
 			damage = nDamage;			// ダメージ
+			tag = TagType;				// タグ
 
 			// 初期化処理
 			HRESULT hr = pBallast->Init();
@@ -125,7 +127,7 @@ HRESULT CBeam::Init(void)
 		effect.push_back(pEffect);
 
 		// 当たり判定オブジェクト生成
-		CCollisionObject::Create(pos + vecmove * fLen, move, radius, m_nLife, damage, CCollisionObject::TAG_PLAYER);
+		CCollisionObject::Create(pos + vecmove * fLen, move, radius, m_nLife, damage, tag);
 
 		// 距離加算
 		fLen += fDistance;

@@ -568,6 +568,8 @@ void CPlayer::Controll(void)
 				m_sMotionFrag.bMove = false;
 			}
 
+			// ジャンプ
+#if 0
 			if (m_bJump == false &&
 				(pInputKeyboard->GetTrigger(DIK_SPACE) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LB, m_nMyPlayerIdx)))
 			{//SPACEが押された,ジャンプ
@@ -579,6 +581,7 @@ void CPlayer::Controll(void)
 				// サウンド再生
 				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
 			}
+#endif
 		}
 		else if (m_pMotion->IsGetMove(nMotionType) == 0 &&
 			m_state != STATE_DEAD &&
@@ -853,12 +856,12 @@ void CPlayer::Controll(void)
 		CItem::Create(D3DXVECTOR3(pos.x, pos.y + 100.0f, pos.z), D3DXVECTOR3(0.0f, Random(-31, 31) * 0.1f, 0.0f));
 	}
 
-	if (pInputKeyboard->GetPress(DIK_DOWN) == true || pInputKeyboard->GetTrigger(DIK_LEFT) == true)
-	{
-		//my_particle::Create(GetCenterPosition(), my_particle::TYPE_ATTACK_BODY);
-		my_particle::Create(pos, my_particle::TYPE_BEAMHIT_FIELD);
-	}
+	
 #endif
+	if (pInputKeyboard->GetTrigger(DIK_LEFT) == true)
+	{
+		CCollisionObject::Create(GetPosition(), mylib_const::DEFAULT_VECTOR3, 10000.0f, 3, 10000, CCollisionObject::TAG_PLAYER);
+	}
 }
 
 //==========================================================================
@@ -1239,7 +1242,9 @@ void CPlayer::AttackBody(CMotion::AttackInfo attackInfo)
 			200.0f,	// 長さ
 			15,		// 寿命
 			18,		// 密度
-			nDamage);		// ダメージ
+			nDamage,	// ダメージ
+			CCollisionObject::TAG_PLAYER	// タグ
+		);
 		break;
 
 	case MOTION_ATK2:
@@ -1250,12 +1255,14 @@ void CPlayer::AttackBody(CMotion::AttackInfo attackInfo)
 				sinf(D3DX_PI + rot.y) * fMove,	// 位置
 				cosf(D3DX_PI * 0.65f) * fMove,
 				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
-			col,	// 色
-			25.0f,	// 半径
-			200.0f,	// 長さ
-			40,		// 寿命
-			24,		// 密度
-			nDamage);		// ダメージ
+			col,		// 色
+			25.0f,		// 半径
+			200.0f,		// 長さ
+			40,			// 寿命
+			24,			// 密度
+			nDamage,	// ダメージ
+			CCollisionObject::TAG_PLAYER	// タグ
+		);
 		break;
 	}
 

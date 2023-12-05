@@ -10,19 +10,37 @@
 #include "calculation.h"
 #include "hp_gauge.h"
 #include "blackframe.h"
+#include "beam.h"
+#include "particle.h"
 
 //==========================================================================
-//  定数定義
+// 定数定義
 //==========================================================================
 namespace
 {
+	struct sProbability 
+	{
+		CEnemyBoss::ACTION action;	// 行動
+		float fProbability;			// 確率
+	};
+
+
 	const float LENGTH_PUNCH = 300.0f;		// パンチの長さ
 	const float LENGTH_KICK = 500.0f;		// キックの長さ
-	const float LENGTH_CHASEWALK = 1000.0f;	// 歩き追従の長さ
+	const float LENGTH_CHASEWALK = 800.0f;	// 歩き追従の長さ
 	const float VELOCITY_WALK = 1.0f;		// 歩き
-	const float VELOCITY_DASH = 2.0f;		// ダッシュ
+	const float VELOCITY_DASH = 2.5f;		// ダッシュ
 	const float VELOCITY_TACKLE = 2.0f;		// タックル
 	const float TIME_WAIT = 3.0f;			// 待機
+	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
+	{
+		{ CEnemyBoss::ACTION_CHASE, 0.0f },			// 追従
+		{ CEnemyBoss::ACTION_PROXIMITY, 0.5f },		// 近接攻撃
+		{ CEnemyBoss::ACTION_REMOTE, 0.3f },		// 遠隔攻撃
+		{ CEnemyBoss::ACTION_ASSAULT, 0.2f },		// 突撃攻撃
+		{ CEnemyBoss::ACTION_WAIT, 0.0f },			// 待機
+		{ CEnemyBoss::ACTION_SELFEXPLOSION, 0.0f },	// 自爆
+	};
 }
 
 //==========================================================================
@@ -138,18 +156,41 @@ void CEnemyBoss::UpdateAction(void)
 //==========================================================================
 void CEnemyBoss::DrawingAction(void)
 {
-	while (1)
-	{
-		// 行動抽選
-		m_Action = (ACTION)(rand() % ACTION_MAX);
+	// 0～1のランダム値取得
+	float fRandomValue = static_cast<float>(std::rand()) / RAND_MAX;
 
-		if (m_Action != ACTION_SELFEXPLOSION &&
-			m_Action != ACTION_CHASE &&
-			m_Action != ACTION_WAIT)
-		{// 既定行動以外
+	// 確率加算用変数
+	float fDrawingProbability = 0.0;
+
+	// 行動抽選要素分繰り返し
+	for (const auto& candidate : ACT_PROBABILITY)
+	{
+		// 今回の確率分を加算
+		fDrawingProbability += candidate.fProbability;
+
+		if (fRandomValue < fDrawingProbability)
+		{// 今回のランダム値が確率を超えたら
+
+			// 行動決定
+			m_Action = candidate.action;
 			break;
 		}
 	}
+
+
+
+	//while (1)
+	//{
+	//	// 行動抽選
+	//	m_Action = (ACTION)(rand() % ACTION_MAX);
+
+	//	if (m_Action != ACTION_SELFEXPLOSION &&
+	//		m_Action != ACTION_CHASE &&
+	//		m_Action != ACTION_WAIT)
+	//	{// 既定行動以外
+	//		break;
+	//	}
+	//}
 
 	// 次の行動別
 	int nActRand;
@@ -157,7 +198,7 @@ void CEnemyBoss::DrawingAction(void)
 	switch (m_Action)
 	{
 	case CEnemyBoss::ACTION_CHASE:	// 追従
-		if (CalcLenPlayer(LENGTH_CHASEWALK))
+		if (CircleRange3D(GetPosition(), m_TargetPosition, LENGTH_CHASEWALK, 0.0f))
 		{// 歩きの範囲
 			m_ActionBranch = ACTBRANCH_CHASE_SLOW;
 		}
@@ -185,7 +226,7 @@ void CEnemyBoss::DrawingAction(void)
 		}
 
 		// 行動する為の行動決定
-		if (CalcLenPlayer(fLength))
+		if (CircleRange3D(GetPosition(), m_TargetPosition, fLength, 0.0f))
 		{// 攻撃範囲内
 
 			// 追い着いた
@@ -196,7 +237,7 @@ void CEnemyBoss::DrawingAction(void)
 			// 追い着いてない
 			m_bCatchUp = false;
 
-			if (CalcLenPlayer(LENGTH_CHASEWALK))
+			if (CircleRange3D(GetPosition(), m_TargetPosition, LENGTH_CHASEWALK, 0.0f))
 			{// 歩きの範囲
 				m_MakeForActionBranch = ACTBRANCH_CHASE_SLOW;
 			}
@@ -705,6 +746,94 @@ void CEnemyBoss::RotationTarget(void)
 
 	// 目標の向き設定
 	SetRotDest(fRotDest);
+}
+
+//==========================================================================
+// 攻撃時処理
+//==========================================================================
+void CEnemyBoss::AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo)
+{
+	// モーション情報取得
+	int nMotionType = m_pMotion->GetType();
+	D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), ATKInfo);
+
+	// 情報取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
+	// モーション別処理
+	switch (nMotionType)
+	{
+	case MOTION_PUNCH:
+		break;
+
+	case MOTION_KICK:
+		break;
+
+	case MOTION_BEAM:
+	{
+		D3DXCOLOR col = D3DXCOLOR(
+			0.5f + Random(-100, 100) * 0.001f,
+			0.1f + Random(-100, 100) * 0.001f,
+			0.5f + Random(-100, 100) * 0.001f,	// 色
+			1.0f);
+
+		CBeam::Create(
+			weponpos,	// 位置
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y) * 100.0f,
+				cosf(D3DX_PI * 0.55f) * 100.0f,
+				cosf(D3DX_PI + rot.y) * 100.0f),	// 移動量
+			col,	// 色
+			60.0f,	// 半径
+			400.0f,	// 長さ
+			30,		// 寿命
+			32,		// 密度
+			1,		// ダメージ
+			CCollisionObject::TAG_ENEMY	// タグ
+		);
+	}
+	break;
+
+	case MOTION_CHARGE_TACKLE:
+		break;
+
+	case MOTION_TACKLE:
+		break;
+	}
+}
+
+//==========================================================================
+// 攻撃判定中処理
+//==========================================================================
+void CEnemyBoss::AttackInDicision(CMotion::AttackInfo ATKInfo)
+{
+	// 基底の攻撃判定中処理
+	CEnemy::AttackInDicision(ATKInfo);
+
+	// モーション情報取得
+	int nMotionType = m_pMotion->GetType();
+	D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), ATKInfo);
+
+	// モーション別処理
+	switch (nMotionType)
+	{
+	case MOTION_PUNCH:
+		break;
+
+	case MOTION_KICK:
+		break;
+
+	case MOTION_BEAM:
+		my_particle::Create(weponpos, my_particle::TYPE_ATTACK_BODY);
+		break;
+
+	case MOTION_CHARGE_TACKLE:
+		break;
+
+	case MOTION_TACKLE:
+		break;
+	}
 }
 
 //==========================================================================

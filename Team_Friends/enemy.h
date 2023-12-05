@@ -136,6 +136,7 @@ protected:
 
 	virtual void ProcessLanding(void);	// 着地時処理
 	virtual void AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo);	// 攻撃時処理
+	virtual void AttackInDicision(CMotion::AttackInfo ATKInfo);				// 攻撃判定中処理
 	virtual void ChaseMove(float fMove);	// 追い掛け移動
 	virtual void RotationPlayer(void);		// プレイヤーを向く処理
 	virtual bool CalcLenPlayer(float fLen); // プレイヤーとの距離判定

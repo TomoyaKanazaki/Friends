@@ -177,9 +177,8 @@
     <ClCompile Include="cursor.cpp" />
     <ClCompile Include="debugpointnumber.cpp" />
     <ClCompile Include="debugproc.cpp" />
-    <ClCompile Include="decidecharacter.cpp" />
-    <ClCompile Include="decideplayer.cpp" />
-    <ClCompile Include="decideplayer_screen.cpp" />
+    <ClCompile Include="decide.cpp" />
+    <ClCompile Include="decide_menu.cpp" />
     <ClCompile Include="edit.cpp" />
     <ClCompile Include="edit_enemybase.cpp" />
     <ClCompile Include="effect_addscore.cpp" />
@@ -305,9 +304,8 @@
     <ClInclude Include="cursor.h" />
     <ClInclude Include="debugpointnumber.h" />
     <ClInclude Include="debugproc.h" />
-    <ClInclude Include="decidecharacter.h" />
-    <ClInclude Include="decideplayer.h" />
-    <ClInclude Include="decideplayer_screen.h" />
+    <ClInclude Include="decide.h" />
+    <ClInclude Include="decide_menu.h" />
     <ClInclude Include="edit.h" />
     <ClInclude Include="edit_enemybase.h" />
     <ClInclude Include="effect_addscore.h" />

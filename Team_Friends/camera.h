@@ -100,6 +100,7 @@ private:
 	void ResetTitle(void);
 	void ResetResult(void);
 	void ResetRanking(void);
+	void ResetDecide(void);
 
 	D3DXMATRIX	m_mtxProjection;	// プロジェクションマトリックス
 	D3DXMATRIX	m_mtxView;			// ビューマトリックス

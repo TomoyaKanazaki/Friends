@@ -5,7 +5,7 @@
 // 
 //=============================================================================
 #include "decidecharacter.h"
-#include "decideplayer_screen.h"
+#include "decide_menu.h"
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
@@ -43,8 +43,8 @@ const char *CDecideCharacter::m_apTextureFile_Select[VTXCHARACTER_MAX] =	// テク
 CDecideCharacter::CDecideCharacter(int nPriority) : CObject(nPriority)
 {
 	// 値のクリア
-	memset(&m_pObj2D[0], NULL, sizeof(m_pObj2D));				// オブジェクト2Dのオブジェクト
-	memset(&m_pSelect2D[0], NULL, sizeof(m_pSelect2D));			// 選択肢のオブジェクト
+	memset(&m_pObj3D[0], NULL, sizeof(m_pObj3D));				// オブジェクト2Dのオブジェクト
+	memset(&m_pSelect3D[0], NULL, sizeof(m_pSelect3D));			// 選択肢のオブジェクト
 	memset(&m_apCursor[0], NULL, sizeof(m_apCursor));			// カーソルのオブジェクト
 	memset(&m_bDecide[0], false, sizeof(m_bDecide));			// 決定したか
 	m_bAllDecide = false;										// 全て決定したか
@@ -101,16 +101,16 @@ HRESULT CDecideCharacter::Init(void)
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
 		// 生成処理
-		m_pObj2D[nCntSelect] = CObject2D::Create(8);
+		m_pObj3D[nCntSelect] = CObject2D::Create(8);
 
 		// 種類の設定
-		m_pObj2D[nCntSelect]->SetType(TYPE_OBJECT2D);
+		m_pObj3D[nCntSelect]->SetType(TYPE_OBJECT2D);
 
 		// テクスチャの割り当て
 		m_nTexIdx[nCntSelect] = pTexture->Regist(m_apTextureFile[nCntSelect]);
 
 		// テクスチャの割り当て
-		m_pObj2D[nCntSelect]->BindTexture(m_nTexIdx[nCntSelect]);
+		m_pObj3D[nCntSelect]->BindTexture(m_nTexIdx[nCntSelect]);
 
 		// 各種変数の初期化
 		D3DXVECTOR2 size;
@@ -119,9 +119,9 @@ HRESULT CDecideCharacter::Init(void)
 		case VTX_TEXT:
 			// サイズ取得
 			size = pTexture->GetImageSize(m_nTexIdx[nCntSelect]);
-			m_pObj2D[nCntSelect]->SetSize(size * 0.4f);	// サイズ
-			m_pObj2D[nCntSelect]->SetPosition(D3DXVECTOR3(640.0f, 200.0f, 0.0f));	// 位置
-			m_pObj2D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
+			m_pObj3D[nCntSelect]->SetSize(size * 0.4f);	// サイズ
+			m_pObj3D[nCntSelect]->SetPosition(D3DXVECTOR3(640.0f, 200.0f, 0.0f));	// 位置
+			m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
 			break;
 		}
 	}
@@ -129,27 +129,27 @@ HRESULT CDecideCharacter::Init(void)
 	for (int nCntSelect = 0; nCntSelect < VTXCHARACTER_MAX; nCntSelect++)
 	{
 		// 生成処理
-		m_pSelect2D[nCntSelect] = CObject2D::Create(8);
+		m_pSelect3D[nCntSelect] = CObject2D::Create(8);
 
 		// 種類の設定
-		m_pSelect2D[nCntSelect]->SetType(TYPE_OBJECT2D);
+		m_pSelect3D[nCntSelect]->SetType(TYPE_OBJECT2D);
 
 		// テクスチャの割り当て
 		m_nTexIdx_Select[nCntSelect] = pTexture->Regist(m_apTextureFile_Select[nCntSelect]);
 
 		// テクスチャの割り当て
-		m_pSelect2D[nCntSelect]->BindTexture(m_nTexIdx_Select[nCntSelect]);
+		m_pSelect3D[nCntSelect]->BindTexture(m_nTexIdx_Select[nCntSelect]);
 
 		// サイズ取得
 		D3DXVECTOR2 size = pTexture->GetImageSize(m_nTexIdx_Select[nCntSelect]) * 0.2f;
 
-		m_pSelect2D[nCntSelect]->SetSize(size);			// サイズ
-		m_pSelect2D[nCntSelect]->SetSizeOrigin(size);	// 元のサイズ
+		m_pSelect3D[nCntSelect]->SetSize(size);			// サイズ
+		m_pSelect3D[nCntSelect]->SetSizeOrigin(size);	// 元のサイズ
 
 		size *= 1.5f;
 		float fDistance = size.x * 2.0f;
-		m_pSelect2D[nCntSelect]->SetPosition(D3DXVECTOR3(640.0f - (fDistance * 2.0f) + nCntSelect * fDistance + size.x, 600.0f, 0.0f));	// 位置
-		m_pObj2D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
+		m_pSelect3D[nCntSelect]->SetPosition(D3DXVECTOR3(640.0f - (fDistance * 2.0f) + nCntSelect * fDistance + size.x, 600.0f, 0.0f));	// 位置
+		m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
 	}
 
 	for (int i = 0; i < CManager::GetInstance()->GetNumPlayer(); i++)
@@ -171,21 +171,21 @@ void CDecideCharacter::Uninit(void)
 {
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
-		if (m_pObj2D[nCntSelect] != NULL)
+		if (m_pObj3D[nCntSelect] != NULL)
 		{// NULLじゃなかったら
 
 			// 終了処理
-			m_pObj2D[nCntSelect] = NULL;
+			m_pObj3D[nCntSelect] = NULL;
 		}
 	}
 
 	for (int nCntSelect = 0; nCntSelect < VTXCHARACTER_MAX; nCntSelect++)
 	{
-		if (m_pSelect2D[nCntSelect] != NULL)
+		if (m_pSelect3D[nCntSelect] != NULL)
 		{// NULLじゃなかったら
 
 			// 終了処理
-			m_pSelect2D[nCntSelect] = NULL;
+			m_pSelect3D[nCntSelect] = NULL;
 		}
 	}
 
@@ -200,23 +200,23 @@ void CDecideCharacter::Delete(void)
 {
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
-		if (m_pObj2D[nCntSelect] != NULL)
+		if (m_pObj3D[nCntSelect] != NULL)
 		{// NULLじゃなかったら
 
 			// 終了処理
-			m_pObj2D[nCntSelect]->Uninit();
-			m_pObj2D[nCntSelect] = NULL;
+			m_pObj3D[nCntSelect]->Uninit();
+			m_pObj3D[nCntSelect] = NULL;
 		}
 	}
 
 	for (int nCntSelect = 0; nCntSelect < VTXCHARACTER_MAX; nCntSelect++)
 	{
-		if (m_pSelect2D[nCntSelect] != NULL)
+		if (m_pSelect3D[nCntSelect] != NULL)
 		{// NULLじゃなかったら
 
 			// 終了処理
-			m_pSelect2D[nCntSelect]->Uninit();
-			m_pSelect2D[nCntSelect] = NULL;
+			m_pSelect3D[nCntSelect]->Uninit();
+			m_pSelect3D[nCntSelect] = NULL;
 		}
 	}
 
@@ -232,13 +232,13 @@ void CDecideCharacter::Update(void)
 
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
-		if (m_pObj2D[nCntSelect] == NULL)
+		if (m_pObj3D[nCntSelect] == NULL)
 		{// NULLだったら
 			continue;
 		}
 
 		// 頂点情報設定
-		m_pObj2D[nCntSelect]->SetVtx();
+		m_pObj3D[nCntSelect]->SetVtx();
 	}
 
 
@@ -268,7 +268,7 @@ void CDecideCharacter::Update(void)
 		Delete();
 
 		// プレイヤー人数選択画面生成
-		CDecidePlayerScreen::Create();
+		CDecideMenu::Create();
 		return;
 	}
 
@@ -284,7 +284,7 @@ void CDecideCharacter::Update(void)
 
 	for (int nCntSelect = 0; nCntSelect < VTXCHARACTER_MAX; nCntSelect++)
 	{
-		if (m_pSelect2D[nCntSelect] == NULL)
+		if (m_pSelect3D[nCntSelect] == NULL)
 		{// NULLだったら
 			continue;
 		}
@@ -296,7 +296,7 @@ void CDecideCharacter::Update(void)
 		}
 
 		// 頂点情報設定
-		m_pSelect2D[nCntSelect]->SetVtx();
+		m_pSelect3D[nCntSelect]->SetVtx();
 	}
 }
 
@@ -306,9 +306,9 @@ void CDecideCharacter::Update(void)
 bool CDecideCharacter::CollisionSelect(int nCntSelect)
 {
 	// 情報取得
-	D3DXVECTOR3 pos = m_pSelect2D[nCntSelect]->GetPosition();
-	D3DXVECTOR2 size = m_pSelect2D[nCntSelect]->GetSize();
-	D3DXVECTOR2 sizeOrigin = m_pSelect2D[nCntSelect]->GetSizeOrigin();
+	D3DXVECTOR3 pos = m_pSelect3D[nCntSelect]->GetPosition();
+	D3DXVECTOR2 size = m_pSelect3D[nCntSelect]->GetSize();
+	D3DXVECTOR2 sizeOrigin = m_pSelect3D[nCntSelect]->GetSizeOrigin();
 
 	// 四角と円の判定
 	bool bHit = false;
@@ -392,16 +392,16 @@ bool CDecideCharacter::CollisionSelect(int nCntSelect)
 
 	if (m_bDecide[nCntSelect] == true)
 	{
-		m_pSelect2D[nCntSelect]->SetColor(D3DXCOLOR(0.4f, 0.4f, 0.4f, 1.0f));
+		m_pSelect3D[nCntSelect]->SetColor(D3DXCOLOR(0.4f, 0.4f, 0.4f, 1.0f));
 	}
 	else
 	{
-		m_pSelect2D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
+		m_pSelect3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
 	}
 
 	// 情報設定
-	m_pSelect2D[nCntSelect]->SetPosition(pos);
-	m_pSelect2D[nCntSelect]->SetSize(size);
+	m_pSelect3D[nCntSelect]->SetPosition(pos);
+	m_pSelect3D[nCntSelect]->SetSize(size);
 
 	return bHit;
 }

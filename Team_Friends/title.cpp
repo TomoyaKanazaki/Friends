@@ -90,10 +90,10 @@ HRESULT CTitle::Init(void)
 
 	// プレイヤーを置いてみる
 	CUnionTitle::Create(CENTER);
-	//CPlayerTitle::Create(IN_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
-	//CPlayerTitle::Create(IN_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
-	//CPlayerTitle::Create(OUT_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
-	//CPlayerTitle::Create(OUT_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
+	CPlayerTitle::Create(IN_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
+	CPlayerTitle::Create(IN_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
+	CPlayerTitle::Create(OUT_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
+	CPlayerTitle::Create(OUT_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
 
 	// 成功
 	return S_OK;
@@ -152,7 +152,7 @@ void CTitle::Update(void)
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
 	{
 		// モード設定
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDEPLAYER);
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDE);
 	}
 
 	if (m_fCnt >= SWITCH_TIME)
@@ -204,7 +204,7 @@ void CTitle::WhiteOut()
 	if (pInputKeyboard->GetTrigger(DIK_3))
 	{
 		// モード設定
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDEPLAYER);
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDE);
 	}
 
 	if (pInputKeyboard->GetTrigger(DIK_4))

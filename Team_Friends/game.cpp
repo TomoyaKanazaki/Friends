@@ -29,6 +29,7 @@
 #include "player.h"
 #include "player_union.h"
 #include "enemybase.h"
+#include "limitarea.h"
 #include "limitereamanager.h"
 
 //==========================================================================
@@ -37,6 +38,7 @@
 CScore *CGame::m_pScore = NULL;					// スコアのオブジェクト
 CBulletManager *CGame::m_pBulletManager = NULL;		// 弾マネージャのオブジェクト
 CLimitAreaManager *CGame::m_pLimitEreaManager = NULL;	// エリア制限マネージャのオブジェクト
+CLimitArea *CGame::m_pLimitArea = NULL;					// エリア制限のオブジェクト
 CEditEnemyBase *CGame::m_pEditEnemyBase = NULL;		// 敵の拠点エディター
 CStage *CGame::m_pStage = NULL;						// ステージのオブジェクト
 CGameManager *CGame::m_pGameManager = NULL;			// ゲームマネージャのオブジェクト
@@ -154,8 +156,8 @@ HRESULT CGame::Init(void)
 	info.fMaxZ = 785.0f;
 	info.fMinX = -785.0f;
 	info.fMinZ = -785.0f;
-	CLimitArea *pLimitErea = CLimitArea::Create(info);
-	pLimitErea->SetEnableDisp(false);
+	m_pLimitArea = CLimitArea::Create(info);
+	m_pLimitArea->SetEnableDisp(false);
 	//CMeshWall::Create(D3DXVECTOR3(0.0f, 0.0f, 1500.0f), mylib_const::DEFAULT_VECTOR3, 200.0f, 200.0f, 8, 1);
 
 	// 成功
@@ -451,6 +453,13 @@ void CGame::Reset(void)
 		m_pEnemyManager->Kill();
 	}
 
+	// エリア制限
+	if (m_pLimitArea != NULL)
+	{
+		m_pLimitArea->Uninit();
+		m_pLimitArea = NULL;
+	}
+
 	// ステージ
 	m_pStage = CStage::Create("data\\TEXT\\stage\\boss_info.txt");
 
@@ -462,6 +471,13 @@ void CGame::Reset(void)
 	{// NULLだったら
 		return;
 	}
+
+	/*if (m_pLimitArea == NULL)
+	{
+		CLimitArea::sLimitEreaInfo info;
+		info.fMaxX = 8200.0f, info.fMaxZ = 785.0f, info.fMinX = -785.0f, info.fMinZ = -785.0f;
+		m_pLimitArea = CLimitArea::Create(info);
+	}*/
 }
 
 //==========================================================================

@@ -30,7 +30,7 @@ public:
 	{
 		MODE_NONE = 0,		// なし
 		MODE_TITLE,			// タイトル
-		MODE_DECIDEPLAYER,	// プレイヤー決め
+		MODE_DECIDE,		// プレイヤー決め
 		MODE_TUTORIAL,		// チュートリアル
 		MODE_GAME,			// ゲーム
 		MODE_RESULT,		// リザルト

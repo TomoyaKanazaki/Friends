@@ -5,7 +5,7 @@
 // 
 //=============================================================================
 #include "decidecharacter.h"
-#include "decideplayer_screen.h"
+#include "decide_menu.h"
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
@@ -268,7 +268,7 @@ void CDecideCharacter::Update(void)
 		Delete();
 
 		// プレイヤー人数選択画面生成
-		CDecidePlayerScreen::Create();
+		CDecideMenu::Create();
 		return;
 	}
 

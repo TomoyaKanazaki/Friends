@@ -1,10 +1,10 @@
-//=============================================================================
+//==========================================
 // 
-//  タイトル画面処理 [decideplayer_screen.cpp]
-//  Author : 相馬靜雅
+//  人数選択メニュー(decide_menu.cpp)
+//  Author : Tomoya Kanazaki
 // 
-//=============================================================================
-#include "decideplayer_screen.h"
+//==========================================
+#include "decide_menu.h"
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
@@ -15,62 +15,63 @@
 #include "fade.h"
 #include "decidecharacter.h"
 
-//==========================================================================
-// マクロ定義
-//==========================================================================
-#define ALPHATIME	(60)		// 不透明度更新の時間
-
-//==========================================================================
-// 静的メンバ変数宣言
-//==========================================================================
-const char *CDecidePlayerScreen::m_apTextureFile[VTX_MAX] =			// テクスチャのファイル
+//==========================================
+//  定数定義
+//==========================================
+namespace
 {
-	"data\\TEXTURE\\decideplayer_text.png",
-};
+	const int ALPHATIME = 60; // 不透明度更新の時間
 
-const char *CDecidePlayerScreen::m_apTextureFile_Select[VTXSELECT_MAX] =	// テクスチャのファイル
-{
-	"data\\TEXTURE\\decideplayer_select01.png",
-	"data\\TEXTURE\\decideplayer_select02.png",
-	"data\\TEXTURE\\decideplayer_select03.png",
-	"data\\TEXTURE\\decideplayer_select04.png",
-};
+	// テクスチャのファイル
+	const char* m_apTextureFile[CDecideMenu::VTX_MAX] =
+	{
+		"data\\TEXTURE\\decideplayer_text.png",
+	};
 
-//==========================================================================
-// コンストラクタ
-//==========================================================================
-CDecidePlayerScreen::CDecidePlayerScreen(int nPriority) : CObject(nPriority)
-{
-	// 値のクリア
-	memset(&m_pObj2D[0], NULL, sizeof(m_pObj2D));				// オブジェクト2Dのオブジェクト
-	memset(&m_pSelect2D[0], NULL, sizeof(m_pSelect2D));			// 選択肢のオブジェクト
-	memset(&m_nTexIdx[0], 0, sizeof(m_nTexIdx));				// テクスチャのインデックス番号
-	memset(&m_nTexIdx_Select[0], 0, sizeof(m_nTexIdx_Select));	// テクスチャのインデックス番号
-	m_nCntAlpha = 0;		// 不透明度のカウンター
-	m_nNowSelect = 0;		// 現在の選択肢
+	// テクスチャのファイル
+	const char* m_apTextureFile_Select[CDecideMenu::VTXSELECT_MAX] =
+	{
+		"data\\TEXTURE\\decideplayer_select01.png",
+		"data\\TEXTURE\\decideplayer_select02.png",
+		"data\\TEXTURE\\decideplayer_select03.png",
+		"data\\TEXTURE\\decideplayer_select04.png",
+	};
 }
 
-//==========================================================================
-// デストラクタ
-//==========================================================================
-CDecidePlayerScreen::~CDecidePlayerScreen()
+//==========================================
+//  コンストラクタ
+//==========================================
+CDecideMenu::CDecideMenu(int nPriority) : CObject(nPriority),
+	m_nCntAlpha(0),
+	m_nNowSelect(0)
+{
+	memset(&m_pObj2D[0], NULL, sizeof(m_pObj2D)); // オブジェクト2Dのオブジェクト
+	memset(&m_pSelect2D[0], NULL, sizeof(m_pSelect2D)); // 選択肢のオブジェクト
+	memset(&m_nTexIdx[0], 0, sizeof(m_nTexIdx)); // テクスチャのインデックス番号
+	memset(&m_nTexIdx_Select[0], 0, sizeof(m_nTexIdx_Select)); // テクスチャのインデックス番号
+}
+
+//==========================================
+//  デストラクタ
+//==========================================
+CDecideMenu::~CDecideMenu()
 {
 
 }
 
-//==========================================================================
-// 生成処理
-//==========================================================================
-CDecidePlayerScreen *CDecidePlayerScreen::Create(void)
+//==========================================
+//  生成処理
+//==========================================
+CDecideMenu* CDecideMenu::Create(void)
 {
 	// 生成用のオブジェクト
-	CDecidePlayerScreen *pTitleScreen = NULL;
+	CDecideMenu* pTitleScreen = NULL;
 
 	if (pTitleScreen == NULL)
 	{// NULLだったら
 
 		// メモリの確保
-		pTitleScreen = DEBUG_NEW CDecidePlayerScreen;
+		pTitleScreen = DEBUG_NEW CDecideMenu;
 
 		if (pTitleScreen != NULL)
 		{// メモリの確保が出来ていたら
@@ -85,10 +86,10 @@ CDecidePlayerScreen *CDecidePlayerScreen::Create(void)
 	return NULL;
 }
 
-//==========================================================================
-// 初期化処理
-//==========================================================================
-HRESULT CDecidePlayerScreen::Init(void)
+//==========================================
+//  初期化処理
+//==========================================
+HRESULT CDecideMenu::Init(void)
 {
 	// 種類の設定
 	SetType(TYPE_OBJECT2D);
@@ -150,10 +151,10 @@ HRESULT CDecidePlayerScreen::Init(void)
 	return S_OK;
 }
 
-//==========================================================================
-// 終了処理
-//==========================================================================
-void CDecidePlayerScreen::Uninit(void)
+//==========================================
+//  終了処理
+//==========================================
+void CDecideMenu::Uninit(void)
 {
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
@@ -179,10 +180,10 @@ void CDecidePlayerScreen::Uninit(void)
 	Release();
 }
 
-//==========================================================================
-// 削除処理
-//==========================================================================
-void CDecidePlayerScreen::Delete(void)
+//==========================================
+//  削除処理
+//==========================================
+void CDecideMenu::Delete(void)
 {
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
@@ -210,10 +211,10 @@ void CDecidePlayerScreen::Delete(void)
 	Release();
 }
 
-//==========================================================================
-// 更新処理
-//==========================================================================
-void CDecidePlayerScreen::Update(void)
+//==========================================
+//  更新処理
+//==========================================
+void CDecideMenu::Update(void)
 {
 
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
@@ -307,10 +308,10 @@ void CDecidePlayerScreen::Update(void)
 	}
 }
 
-//==========================================================================
-// 選択肢の更新処理
-//==========================================================================
-void CDecidePlayerScreen::UpdateSelect(int nCntSelect)
+//==========================================
+//  選択肢の更新処理
+//==========================================
+void CDecideMenu::UpdateSelect(int nCntSelect)
 {
 	// 色取得
 	D3DXCOLOR col = m_pSelect2D[nCntSelect]->GetColor();
@@ -329,10 +330,10 @@ void CDecidePlayerScreen::UpdateSelect(int nCntSelect)
 	m_pSelect2D[nCntSelect]->SetColor(col);
 }
 
-//==========================================================================
-// 描画処理
-//==========================================================================
-void CDecidePlayerScreen::Draw(void)
+//==========================================
+//  描画処理
+//==========================================
+void CDecideMenu::Draw(void)
 {
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
@@ -353,4 +354,3 @@ void CDecidePlayerScreen::Draw(void)
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 }
-

@@ -1782,74 +1782,8 @@ void CEnemy::Atack(void)
 		if (m_pMotion->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt && m_pMotion->GetAllCount() < aInfo.AttackInfo[nCntAttack]->nMaxCnt)
 		{// 攻撃判定中
 
-			// プレイヤー情報
-			for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
-			{
-				CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
-				if (pPlayer == NULL)
-				{
-					continue;
-				}
-
-				// 武器の位置
-				D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
-#if _DEBUG
-				CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize * 0.5f, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
-#endif
-				// 判定サイズ取得
-				float fRadius = pPlayer->GetRadius();
-
-				if (aInfo.AttackInfo[nCntAttack]->fRangeSize == 0.0f)
-				{
-					continue;
-				}
-
-				if (SphereRange(weponpos, pPlayer->GetPosition(), aInfo.AttackInfo[nCntAttack]->fRangeSize, fRadius))
-				{// 球の判定
-
-#if 0
-					int playerState = pPlayer->GetState();
-					if (playerState != CPlayer::STATE_DMG &&
-						playerState != CPlayer::STATE_KNOCKBACK &&
-						playerState != CPlayer::STATE_DEAD &&
-						playerState != CPlayer::STATE_INVINCIBLE)
-					{
-						D3DXVECTOR3 PlayerRot = pPlayer->GetRotation();
-
-						// ターゲットと敵との向き
-						float fRot = atan2f((pos.x - TargetPos.x), (pos.z - TargetPos.z));
-
-						// 向きを正面にする
-						fRot = D3DX_PI + fRot;
-
-						// 角度の正規化
-						RotNormalize(fRot);
-
-						pPlayer->SetRotation(D3DXVECTOR3(PlayerRot.x, fRot, PlayerRot.z));
-						fRot = pPlayer->GetRotation().y;
-
-						// 吹き飛ばし
-						pPlayer->SetMove(D3DXVECTOR3(
-							sinf(fRot) * 4.0f,
-							12.0f,
-							cosf(fRot) * 4.0f));
-					}
-					if (pPlayer->Hit(aInfo.AttackInfo[nCntAttack]->nDamage) == true)
-					{// 死んでたら
-
-						my_particle::Create(TargetPos, my_particle::TYPE_OFFSETTING);
-
-						// プレイヤー情報
-						CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer();
-						CPlayer **ppPlayer = &pPlayer;
-
-						// プレイヤーをNULL
-						ppPlayer = NULL;
-						int m = 0;
-					}
-#endif
-				}
-			}
+			// 攻撃判定中処理
+			AttackInDicision(*aInfo.AttackInfo[nCntAttack]);
 		}
 	}
 
@@ -1857,9 +1791,9 @@ void CEnemy::Atack(void)
 	SetRotation(rot);
 }
 
-//==========================================
+//==========================================================================
 //  大人の壁
-//==========================================
+//==========================================================================
 void CEnemy::LimitArea(void)
 {
 	// 自身の値を取得
@@ -1908,6 +1842,78 @@ void CEnemy::LimitArea(void)
 void CEnemy::AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo)
 {
 	return;
+}
+
+//==========================================================================
+// 攻撃判定中処理
+//==========================================================================
+void CEnemy::AttackInDicision(CMotion::AttackInfo ATKInfo)
+{
+
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+
+	// 武器の位置
+	D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), ATKInfo);
+
+	if (ATKInfo.fRangeSize == 0.0f)
+	{
+		return;
+	}
+
+#if _DEBUG
+	CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+#endif
+
+	// プレイヤー情報
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	{
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCntPlayer);
+		if (pPlayer == NULL)
+		{
+			continue;
+		}
+
+		// プレイヤーの向き
+		D3DXVECTOR3 PlayerPos = pPlayer->GetRotation();
+
+		// 判定サイズ取得
+		float fRadius = pPlayer->GetRadius();
+
+		if (SphereRange(weponpos, PlayerPos, ATKInfo.fRangeSize, fRadius))
+		{// 球の判定
+
+			// プレイヤーの向き
+			D3DXVECTOR3 PlayerRot = pPlayer->GetRotation();
+
+			// ターゲットと敵との向き
+			float fRot = atan2f((pos.x - PlayerPos.x), (pos.z - PlayerPos.z));
+
+			// 向きを正面にする
+			fRot = D3DX_PI + fRot;
+
+			// 角度の正規化
+			RotNormalize(fRot);
+
+			// 向き設定
+			pPlayer->SetRotation(D3DXVECTOR3(PlayerRot.x, fRot, PlayerRot.z));
+			fRot = pPlayer->GetRotation().y;
+
+			// 吹き飛ばし
+			pPlayer->SetMove(D3DXVECTOR3(
+				sinf(fRot) * 4.0f,
+				12.0f,
+				cosf(fRot) * 4.0f));
+
+			if (pPlayer->Hit(ATKInfo.nDamage) == true)
+			{// 死んでたら
+
+				// なんかする
+				//my_particle::Create(TargetPos, my_particle::TYPE_OFFSETTING);
+			}
+
+		}
+	}
 }
 
 //==========================================================================

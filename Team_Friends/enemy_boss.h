@@ -35,7 +35,7 @@ private:
 	// 列挙型定義
 	//=============================
 	//モーション列挙
-	typedef enum
+	enum MOTION
 	{
 		MOTION_DEF = 0,			// ニュートラルモーション
 		MOTION_WALK,			// 移動モーション
@@ -47,7 +47,7 @@ private:
 		MOTION_TACKLE,			// タックルモーション
 		MOTION_KNOCKBACK,		// やられモーション
 		MOTION_FADEOUT,			// 帰還モーション
-	}MOTION;
+	};
 
 	// 行動列挙
 	enum ACTION
@@ -77,7 +77,7 @@ private:
 	// 関数リスト
 	//=============================
 	typedef void(CEnemyBoss::*ACT_FUNC)(void);
-	static ACT_FUNC m_ActFuncList[];
+	static ACT_FUNC m_ActFuncList[];	// 行動関数リスト
 
 	//=============================
 	// メンバ関数
@@ -86,12 +86,12 @@ private:
 	void ActionSet(void) override;		// 行動の設定
 	void DrawingAction(void);			// 行動抽選
 	void UpdateAction(void) override;	// 行動更新
-	void ActWait(void);				// 待機
-	void ActChase(void);			// 追い掛け
-	void ActAttackProximity(void);	// 近接攻撃
-	void ActAttackRemote(void);		// 遠隔攻撃
-	void ActAttackAssault(void);	// 突撃攻撃
-	void ActAttackExplosion(void);	// 自爆攻撃
+	void ActWait(void);					// 待機
+	void ActChase(void);				// 追い掛け
+	void ActAttackProximity(void);		// 近接攻撃
+	void ActAttackRemote(void);			// 遠隔攻撃
+	void ActAttackAssault(void);		// 突撃攻撃
+	void ActAttackExplosion(void);		// 自爆攻撃
 
 	// 行動内関数
 	void ChaseSlow(void);		// 歩き追い掛け
@@ -105,6 +105,8 @@ private:
 	// その他関数
 	void MotionSet(void) override;	// モーションの設定
 	void RotationTarget(void);		// ターゲットの方を向く
+	void AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo) override;	// 攻撃時処理
+	void AttackInDicision(CMotion::AttackInfo ATKInfo) override;			// 攻撃判定中処理
 
 	//=============================
 	// メンバ変数

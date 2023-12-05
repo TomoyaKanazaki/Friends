@@ -264,7 +264,7 @@ void CEnemyTurret::AttackBeam(void)
 							0.0f,
 							cosf(fRot + D3DX_PI) * MORTAR_SPEED };
 
-		CBeam::Create(GetPosition(), move, BEAM_COLOR, 50.0f, 100.0f, 50, 1, 1);
+		CBeam::Create(GetPosition(), move, BEAM_COLOR, 50.0f, 100.0f, 50, 1, 1, CCollisionObject::TAG_ENEMY);
 
 	 // ë“ã@çsìÆ
 		m_Action = ACTION_WAIT;

@@ -20,7 +20,7 @@
 namespace
 {
 	const float VELOCITY_TACKLE = 2.0f;		// タックル
-	const float MORTAR_SPEED = 1.0f;		// 迫撃弾速度
+	const float MORTAR_SPEED = 0.0f;		// 迫撃弾速度
 	const float TIME_WAIT = 3.0f;			// 待機
 	const float SEARCH_LENGTH = 600.0f;		//エリア生成距離
 	const float AREA_LENGTH = 800.0f;		//ボスエリアサイズ
@@ -149,7 +149,7 @@ void CEnemyTurret::DrawingAction(void)
 	//	}
 	//}
 
-	m_Action = ACTION_MORTAR;
+	m_Action = ACTION_BEAM;
 
 	// 次の行動別
 	int nActRand;
@@ -264,9 +264,9 @@ void CEnemyTurret::AttackBeam(void)
 							0.0f,
 							cosf(fRot + D3DX_PI) * MORTAR_SPEED };
 
-		CBeam::Create(GetPosition(), move, BEAM_COLOR, 50.0f, 100.0f, 50, 1, 1, CCollisionObject::TAG_ENEMY);
+		CBeam::Create(GetPosition(), move, BEAM_COLOR, 50.0f, 2000.0f, 50, 100, 1, CCollisionObject::TAG_ENEMY);
 
-	 // 待機行動
+		// 待機行動
 		m_Action = ACTION_WAIT;
 
 		// 待機モーション設定
@@ -364,9 +364,9 @@ void CEnemyTurret::AttackMortar(void)
 		RotationTarget();
 
 		rot = GetRotation();
-		move = { sinf(rot.y + D3DX_PI) * 100.0f,
-			0.0f,
-			cosf(rot.y + D3DX_PI) * 100.0f };
+		move = {sinf(rot.y + D3DX_PI) * 100.0f,
+				0.0f,
+				cosf(rot.y + D3DX_PI) * 100.0f };
 
 		//弾を放物線上に飛ばす
 		CBullet::Create(CBullet::TYPE_ENEMY, CBullet::MOVETYPE_PARABOLA, GetPosition(), rot, move, 50.0f);
@@ -434,7 +434,7 @@ void CEnemyTurret::MotionSet(void)
 
 			m_sMotionFrag.bCharge = false;
 			// チャージモーション
-			m_pMotion->Set(MOTION_CHARGE_MORTAR);
+			//m_pMotion->Set(MOTION_CHARGE_MORTAR);
 		}
 		else if (m_sMotionFrag.bATK == true)
 		{// 攻撃していたら

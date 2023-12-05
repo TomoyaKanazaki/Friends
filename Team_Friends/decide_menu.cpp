@@ -26,6 +26,9 @@ namespace
 	const D3DXCOLOR COLOR_WALL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f); // 壁の色
 	const float SIZE_WALL = 10.0f; // 壁のサイズ倍率
 	const int ALPHATIME = 60; // 不透明度更新の時間
+	const D3DXVECTOR3 POS_SELECT = D3DXVECTOR3(0.0f, 200.0f, 1400.0f); // 選択肢の基準位置
+	const float LENGTH_SELECT = 800.0f; // 選択肢の基準位置
+	const float SCALE_SELECT = 0.8f; // 選択肢の倍率
 
 	// テクスチャのファイル
 	const char* m_apTextureFile[CDecideMenu::VTX_MAX] =
@@ -335,13 +338,18 @@ void CDecideMenu::CreateSelect(void)
 		// テクスチャの割り当て
 		m_pSelect3D[nCntSelect]->BindTexture(m_nTexIdx_Select[nCntSelect]);
 
-		// サイズ取得
-		D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx_Select[nCntSelect]) * 0.4f;
+		// サイズ設定
+		D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx_Select[nCntSelect]) * SCALE_SELECT;
 		size.z = 0.0f;
-		float fDistance = size.x * 2.0f;
+		m_pSelect3D[nCntSelect]->SetSize(size); // サイズ
 
-		m_pSelect3D[nCntSelect]->SetSize(size);								// サイズ
-		m_pSelect3D[nCntSelect]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 位置
-		m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
+		// 位置設定
+		D3DXVECTOR3 pos = POS_SELECT;
+		pos.x -= 1.5f * LENGTH_SELECT;
+		pos.x += LENGTH_SELECT * nCntSelect;
+		m_pSelect3D[nCntSelect]->SetPosition(pos);
+
+		// 色設定
+		m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
 	}
 }

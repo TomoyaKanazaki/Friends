@@ -1,62 +1,68 @@
-//==========================================
+//==========================================================================
+// 
+//  中ボス(砲台) [enemy_turret.cpp]
+//  Author : 髙田佳依
 //
-//  砲台中ボス敵(enemy_turret.cpp)
-//  Author : Kai Takada
-//
-//==========================================
+//==========================================================================
 #include "enemy_turret.h"
-#include "player.h"
 #include "manager.h"
 #include "debugproc.h"
 #include "calculation.h"
 #include "hp_gauge.h"
-#include "particle.h"
-#include "particle.h"
 #include "limitarea.h"
+#include "beam.h"
+#include "bullet.h"
+#include "player.h"
 
-//==========================================
+//==========================================================================
 //  定数定義
-//==========================================
+//==========================================================================
 namespace
 {
-	const float SEARCH_LENGTH = 300.0f;
-	const float AREA_LENGTH = 800.0f;
-	const float ATTACK_LENGTH = 200.0f;
-	const float MOVE_SPEED = 0.01f;
-	const float ATTACK_SPEED = 10.0f;
-	const float READY_TIME = 3.0f;
-	const float ATTACK_TIME = 1.0f;
-	const float AFTER_TIME = 2.0f;
-	const float SEARCH_ROT = 45.0f;
-	const float AFTER_FIXROT = 0.07f;
+	const float VELOCITY_TACKLE = 2.0f;		// タックル
+	const float MORTAR_SPEED = 1.0f;		// 迫撃弾速度
+	const float TIME_WAIT = 3.0f;			// 待機
+	const float SEARCH_LENGTH = 600.0f;		//エリア生成距離
+	const float AREA_LENGTH = 800.0f;		//ボスエリアサイズ
+	const D3DXCOLOR BEAM_COLOR = {0.1f, 1.0f, 0.1f, 0.5f};		//ボスエリアサイズ
 }
 
-//==========================================
-//  コンストラクタ
-//==========================================
-CEnemyTurret::CEnemyTurret(int nPriority) :
-	m_Act(ACTION_ROAMING),
-	m_Atk(ATTACK_NONE),
-	m_fActionCount(0.0f),
-	m_moveLock(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
-	m_fRotLock(0.0f),
-	m_pLimitArea(nullptr),
-	bArea(false)
+//==========================================================================
+// 関数ポインタ
+//==========================================================================
+CEnemyTurret::ACT_FUNC CEnemyTurret::m_ActFuncList[] =
 {
+	&CEnemyTurret::ActAttackBeam,		// 遠隔
+	&CEnemyTurret::ActAttackMortar,		// 突撃
+	&CEnemyTurret::ActWait,				// 待機
+};
 
+//==========================================================================
+//  コンストラクタ
+//==========================================================================
+CEnemyTurret::CEnemyTurret(int nPriority) : CEnemy(nPriority)
+{
+	m_Action = ACTION_WAIT;		// 行動
+	m_ActionBranch = ACTBRANCH_MORTAR_CHARGE;		// 行動分岐
+	m_MakeForActionBranch = ACTBRANCH_MORTAR_CHARGE;	// 行動する為の行動
+	m_TargetPosition = mylib_const::DEFAULT_VECTOR3;	// 目標の位置
+	m_fActTime = 0.0f;			// 行動カウンター
+	m_fRotLock = 0.0f;
+	m_pLimitArea = nullptr;
+	m_bArea = false;
 }
 
-//==========================================
+//==========================================================================
 //  デストラクタ
-//==========================================
+//==========================================================================
 CEnemyTurret::~CEnemyTurret()
 {
 
 }
 
-//==========================================
+//==========================================================================
 //  初期化処理
-//==========================================
+//==========================================================================
 HRESULT CEnemyTurret::Init(void)
 {
 	//初期化処理
@@ -65,20 +71,17 @@ HRESULT CEnemyTurret::Init(void)
 	// HPの設定
 	m_pHPGauge = CHP_Gauge::Create(100.0f, GetLifeOrigin());
 
+	// 行動
+	m_Action = ACTION_WAIT;
+
 	return S_OK;
 }
 
-//==========================================
+//==========================================================================
 //  終了処理
-//==========================================
+//==========================================================================
 void CEnemyTurret::Uninit(void)
 {
-	//if (m_pLimitArea != nullptr)
-	//{
-	//	m_pLimitArea->Uninit();
-	//	m_pLimitArea = nullptr;
-	//}
-
 	if (m_pLimitArea != nullptr)
 	{
 		m_pLimitArea->SetState(CLimitArea::STATE_FADEOUT);
@@ -88,32 +91,14 @@ void CEnemyTurret::Uninit(void)
 	CEnemy::Uninit();
 }
 
-//==========================================
+//==========================================================================
 //  更新処理
-//==========================================
+//==========================================================================
 void CEnemyTurret::Update(void)
 {
-	if (bArea == false)
-	{
-		if (CalcLenPlayer(SEARCH_LENGTH))
-		{
-			D3DXVECTOR3 pos = GetPosition();
-			CLimitArea::sLimitEreaInfo info = {};
-			info.fMinX = pos.x - AREA_LENGTH;
-			info.fMaxX = pos.x + AREA_LENGTH;
-			info.fMinZ = pos.z - AREA_LENGTH;
-			info.fMaxZ = pos.z + AREA_LENGTH;
-
-			if (m_pLimitArea != nullptr)
-			{
-				m_pLimitArea->Uninit();
-				m_pLimitArea = nullptr;
-			}
-
-			m_pLimitArea = CLimitArea::Create(info);
-
-			bArea = true;
-		}
+	if (m_bArea == false)
+	{//エリア未生成なら
+		SummonArea();
 	}
 
 	// 死亡の判定
@@ -132,303 +117,410 @@ void CEnemyTurret::Update(void)
 }
 
 //==========================================================================
+// 行動設定
+//==========================================================================
+void CEnemyTurret::ActionSet(void)
+{
+
+}
+
+//==========================================================================
 // 行動更新
 //==========================================================================
 void CEnemyTurret::UpdateAction(void)
 {
-	D3DXVECTOR3 pos = GetPosition();
+	// 状態別処理
+	(this->*(m_ActFuncList[m_Action]))();
+}
 
-	// 行動ごとの行動
-	switch (m_Act)
+//==========================================================================
+// 行動抽選
+//==========================================================================
+void CEnemyTurret::DrawingAction(void)
+{
+	//while (true)
+	//{
+	//	// 行動抽選
+	//	m_Action = (ACTION)(rand() % ACTION_MAX);
+
+	//	if (m_Action != ACTION_WAIT)
+	//	{// 既定行動以外
+	//		break;
+	//	}
+	//}
+
+	m_Action = ACTION_MORTAR;
+
+	// 次の行動別
+	int nActRand;
+	float fLength = 0.0f;
+	switch (m_Action)
 	{
-	case CEnemyTurret::ACTION_ROAMING:
-
-		//移動
-		Move();
-
+	case CEnemyTurret::ACTION_BEAM:	// 遠隔攻撃
+		m_ActionBranch = ACTBRANCH_BEAM_CHARGE;
 		break;
 
-	case CEnemyTurret::ACTION_READY:
-
-		//デバッグ用
-		my_particle::Create(pos, my_particle::TYPE_SMOKE);
-
-		// 移動量を設定
-		RotationPlayer();
-
-		break;
-
-	case CEnemyTurret::ACTION_ATTACK:
-
-		//デバッグ用
-		my_particle::Create(pos, my_particle::TYPE_SMOKE_RED);
-
-		// 攻撃
-		Attack();
-
-		break;
-
-	case CEnemyTurret::ACTION_AFTER:
-
-		//デバッグ用
-		my_particle::Create(pos, my_particle::TYPE_SMOKE);
-
-		FixRotation();
-
+	case CEnemyTurret::ACTION_MORTAR:	// 突撃攻撃
+		m_ActionBranch = ACTBRANCH_MORTAR_CHARGE;
 		break;
 
 	default:
 		break;
 	}
+}
 
-	if (m_Act != ACTION_ROAMING)
-	{
-		// カウンターを加算
-		m_fActionCount += CManager::GetInstance()->GetDeltaTime();
+//==========================================================================
+// 待機
+//==========================================================================
+void CEnemyTurret::ActWait(void)
+{
+	// 待機モーション設定
+	m_pMotion->Set(MOTION_DEF);
+
+	// 行動カウンター加算
+	m_fActTime += CManager::GetInstance()->GetDeltaTime();
+
+	// ターゲットの方を向く
+	RotationTarget();
+
+	if (TIME_WAIT <= m_fActTime)
+	{// 待機時間超えたら
+
+	 // 行動抽選
+		DrawingAction();
+		m_fActTime = 0.0f;
 	}
 }
 
-//==========================================
+//==========================================================================
+// ビーム攻撃
+//==========================================================================
+void CEnemyTurret::ActAttackBeam(void)
+{
+	// 攻撃フラグを立てる
+	m_sMotionFrag.bATK = true;
+
+	// ターゲットの方を向く
+	RotationTarget();
+
+	// 行動別移動処理
+	switch (m_ActionBranch)
+	{
+	case CEnemyTurret::ACTBRANCH_BEAM_CHARGE:
+		ChargeBeam();
+		break;
+
+	case CEnemyTurret::ACTBRANCH_BEAM_SHOT:
+		AttackBeam();
+		break;
+
+	default:
+		break;
+	}
+}
+
+//==========================================================================
+// ビームチャージ
+//==========================================================================
+void CEnemyTurret::ChargeBeam(void)
+{
+	int nType = m_pMotion->GetType();
+
+	if (nType == MOTION_CHARGE_BEAM && m_pMotion->IsFinish() == true)
+	{// ビームチャージが終わってたら
+
+	 // ビーム行動
+		m_ActionBranch = ACTBRANCH_BEAM_SHOT;
+
+		// ビーム設定
+		m_pMotion->Set(MOTION_BEAM);
+	}
+
+	if (nType != MOTION_CHARGE_BEAM)
+	{
+		// ビームチャージ設定
+		m_pMotion->Set(MOTION_CHARGE_BEAM);
+	}
+
+	// ターゲットの方を向く
+	RotationTarget();
+
+	// チャージフラグを立てる
+	m_sMotionFrag.bCharge = true;
+}
+
+//==========================================================================
+// ビーム攻撃
+//==========================================================================
+void CEnemyTurret::AttackBeam(void)
+{
+	int nType = m_pMotion->GetType();
+
+	if (nType == MOTION_BEAM && m_pMotion->IsFinish() == true)
+	{// ビーム攻撃が終わってたら
+
+		float fRot = GetRotDest();
+		D3DXVECTOR3 move = {sinf(fRot + D3DX_PI) * MORTAR_SPEED,
+							0.0f,
+							cosf(fRot + D3DX_PI) * MORTAR_SPEED };
+
+		CBeam::Create(GetPosition(), move, BEAM_COLOR, 50.0f, 100.0f, 50, 1, 1, CCollisionObject::TAG_ENEMY);
+
+	 // 待機行動
+		m_Action = ACTION_WAIT;
+
+		// 待機モーション設定
+		m_pMotion->Set(MOTION_DEF);
+		return;
+	}
+
+	if (nType != MOTION_BEAM)
+	{
+		// ビームモーション設定
+		m_pMotion->Set(MOTION_BEAM);
+	}
+
+	// 攻撃フラグを立てる
+	m_sMotionFrag.bATK = true;
+}
+
+//==========================================================================
+// 迫撃攻撃
+//==========================================================================
+void CEnemyTurret::ActAttackMortar(void)
+{
+	// 行動別移動処理
+	switch (m_ActionBranch)
+	{
+	case CEnemyTurret::ACTBRANCH_MORTAR_CHARGE:
+		ChargeMortar();
+		break;
+
+	case CEnemyTurret::ACTBRANCH_MORTAR_SHOT:
+		AttackMortar();
+		break;
+
+	default:
+		break;
+	}
+}
+
+//==========================================================================
+// 迫撃チャージ
+//==========================================================================
+void CEnemyTurret::ChargeMortar(void)
+{
+	int nType = m_pMotion->GetType();
+
+	if (nType == MOTION_CHARGE_MORTAR && m_pMotion->IsFinish() == true)
+	{// タックルチャージが終わってたら
+
+		 // タックル行動
+		m_ActionBranch = ACTBRANCH_MORTAR_SHOT;
+
+		// タックル設定
+		m_pMotion->Set(MOTION_MORTAR);
+
+		return;
+	}
+
+	if (nType != MOTION_CHARGE_MORTAR)
+	{
+		// タックルチャージ設定
+		m_pMotion->Set(MOTION_CHARGE_MORTAR);
+	}
+
+	// ターゲットの方を向く
+	RotationTarget();
+
+	// チャージフラグを立てる
+	m_sMotionFrag.bCharge = true;
+}
+
+//==========================================================================
+// 迫撃発射
+//==========================================================================
+void CEnemyTurret::AttackMortar(void)
+{
+	// 突撃の距離
+	float fMove = GetVelocity();
+
+	D3DXVECTOR3 rot = GetRotation();
+	D3DXVECTOR3 move = GetMove();
+
+	// プレイヤー情報
+	CPlayer* pPlayer = nullptr;
+
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(i);
+
+		if (pPlayer == NULL)
+		{
+			continue;
+		}
+
+		SetTargetPosition(pPlayer->GetPosition());
+		RotationTarget();
+
+		rot = GetRotation();
+		move = { sinf(rot.y + D3DX_PI) * 100.0f,
+			0.0f,
+			cosf(rot.y + D3DX_PI) * 100.0f };
+
+		//弾を放物線上に飛ばす
+		CBullet::Create(CBullet::TYPE_ENEMY, CBullet::MOVETYPE_PARABOLA, GetPosition(), rot, move, 50.0f);
+	}
+
+	// タックル行動
+	m_Action = ACTION_WAIT;
+
+	// タックル設定
+	m_pMotion->Set(MOTION_DEF);
+
+	if (m_pMotion->GetType() != MOTION_MORTAR)
+	{
+		// タックルモーション設定
+		m_pMotion->Set(MOTION_MORTAR);
+	}
+
+	// 攻撃フラグを立てる
+	m_sMotionFrag.bATK = true;
+}
+
+//==========================================================================
 //  描画処理
-//==========================================
+//==========================================================================
 void CEnemyTurret::Draw(void)
 {
 	// 描画処理
 	CEnemy::Draw();
 }
 
-//==========================================
+//==========================================================================
 //  殺す
-//==========================================
+//==========================================================================
 void CEnemyTurret::Kill(void)
 {
 	// 死亡処理
 	CEnemy::Kill();
-
-	if (m_pLimitArea != nullptr)
-	{
-		m_pLimitArea->SetState(CLimitArea::STATE_FADEOUT);
-	}
 }
 
-//==========================================
+//==========================================================================
 //  モーションセット
-//==========================================
+//==========================================================================
 void CEnemyTurret::MotionSet(void)
 {
 	if (m_pMotion->IsFinish() == true)
 	{// 終了していたら
 
-		// 現在の種類取得
+	 // 現在の種類取得
 		int nType = m_pMotion->GetType();
 
-		if (m_sMotionFrag.bKnockback == true)
+		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockback == false && m_sMotionFrag.bATK == false)
+		{// 移動していたら
+
+			 // 攻撃していない
+			m_sMotionFrag.bATK = false;
+		}
+		else if (m_sMotionFrag.bKnockback == true)
 		{// やられ中だったら
 
-			// やられモーション
+			 // やられモーション
 			m_pMotion->Set(MOTION_KNOCKBACK);
+		}
+		else if (m_sMotionFrag.bCharge == true)
+		{// チャージ中だったら
+
+			m_sMotionFrag.bCharge = false;
+			// チャージモーション
+			m_pMotion->Set(MOTION_CHARGE_MORTAR);
 		}
 		else if (m_sMotionFrag.bATK == true)
 		{// 攻撃していたら
 
-			m_sMotionFrag.bATK = false;		// 攻撃判定OFF
+		 // 攻撃判定OFF
+			m_sMotionFrag.bATK = false;
 
-			// 攻撃モーション
-			if (m_Atk == ATTACK_BEAM)
+			// 行動別設定処理
+			switch (m_ActionBranch)
 			{
-				m_pMotion->Set(MOTION_ATK_BEAM);
+			case ACTBRANCH_BEAM_SHOT:
+				m_pMotion->Set(MOTION_BEAM);
+				break;
+
+			case ACTBRANCH_MORTAR_SHOT:
+				m_pMotion->Set(MOTION_MORTAR);
+				break;
 			}
-			else if (m_Atk == ATTACK_MORTAR)
-			{
-				m_pMotion->Set(MOTION_ATK_MORTAR);
-			}
 		}
-		else
-		{
-			// ニュートラルモーション
-			m_pMotion->Set(MOTION_DEF);
-		}
+		//else
+		//{
+		//	// ニュートラルモーション
+		//	m_pMotion->Set(MOTION_DEF);
+		//}
 	}
 }
 
-//==========================================
-//  行動設定
-//==========================================
-void CEnemyTurret::ActionSet(void)
-{
-	switch (m_Act)
-	{
-	case ACTION_ROAMING:
-
-		//攻撃の決定方法どうする
-
-		// 距離が近いと攻撃状態に移行
-		m_Act = ACTION_READY;
-		m_fActionCount = 0.0f;
-		break;
-
-	case ACTION_READY:
-		
-		if (m_fActionCount >= READY_TIME)
-		{
-			m_Act = ACTION_ATTACK;
-			m_fActionCount = 0.0f;
-		}
-		break;
-
-	case ACTION_ATTACK:
-
-		if (m_fActionCount >= ATTACK_TIME)
-		{
-			m_Act = ACTION_AFTER;
-			m_fActionCount = 0.0f;
-			m_moveLock = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-		}
-		break;
-
-	case ACTION_AFTER:
-
-		if (m_fActionCount >= AFTER_TIME)
-		{
-			m_Act = ACTION_ROAMING;
-			m_fActionCount = 0.0f;
-		}
-		break;
-
-	default:
-		break;
-	}
-}
-
-//==========================================
-//  攻撃
-//==========================================
-void CEnemyTurret::Attack(void)
-{
-	D3DXVECTOR3 move = GetMove();
-
-	if (m_moveLock == D3DXVECTOR3(0.0f, 0.0f, 0.0f))
-	{
-		m_sMotionFrag.bATK = true;
-
-		// プレイヤー情報
-		CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
-		if (pPlayer == NULL)
-		{
-			return;
-		}
-
-		// 情報取得
-		D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-		D3DXVECTOR3 pos = GetPosition();
-
-		//攻撃判定アリ凸
-
-		// プレイヤーから自身に向かうベクトルを算出
-		D3DXVECTOR3 vecToPlayer = posPlayer - pos;
-
-		// ベクトルの正規化
-		vecToPlayer.y = 0.0f;
-		D3DXVec3Normalize(&vecToPlayer, &vecToPlayer);
-		vecToPlayer *= ATTACK_SPEED;
-
-		//角度を反転
-		m_fRotLock = GetRotation().y + D3DX_PI;
-		RotNormalize(m_fRotLock);
-
-		// 移動量の設定
-		move.x = vecToPlayer.x;
-		move.z = vecToPlayer.z;
-		SetMove(move);
-
-		m_moveLock = move;
-
-		return;
-	}
-}
-
-//==========================================
-//　向きから移動量を設定
-//==========================================
-void CEnemyTurret::SetMoveRotation(void)
-{
-	D3DXVECTOR3 move = GetMove();
-	D3DXVECTOR3 rot = GetRotation();
-
-	// 移動速度取得
-	float fMove = GetVelocity();
-
-	move.x = sinf(rot.y) * fMove * ATTACK_SPEED;
-	move.z = cosf(rot.y) * fMove * ATTACK_SPEED;
-	SetMove(move);
-}
-
-//==========================================
-//  プレイヤーを探す判定
-//==========================================
-bool CEnemyTurret::TargetPlayer(float fLen)
+//==========================================================================
+// ターゲットの方を向く
+//==========================================================================
+void CEnemyTurret::RotationTarget(void)
 {
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 rot = GetRotation();
-	D3DXVECTOR3 posL = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//索敵扇の左点
-	D3DXVECTOR3 posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//索敵扇の右点
 
-	//float fRot = SEARCH_ROT * D3DX_PI / 180;
-	float fRot = 0.785f;
-
-
-	//プレイヤーの人数を把握
-
-	//一番近いやつを標的にする
-	for (int nCnt = 0; nCnt < mylib_const::MAX_PLAYER; nCnt++)
-	{
-		// プレイヤー情報
-		CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(nCnt);
-		if (pPlayer == NULL)
-		{
-			continue;
-		}
-	}
-
-
-
-	// プレイヤーの位置取得
-	//D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-
-	//// 一定範囲内の判定
-	//if (CollisionFan(pos, posL, posR, posPlayer, fRot))
-	//{
-	//	return true;
-	//}
-
-	return false;
-}
-
-//==========================================
-// 指定方向に向く
-//==========================================
-void CEnemyTurret::FixRotation(void)
-{
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 rot = GetRotation();
+	// 目標の角度を求める
+	float fRotDest = atan2f((pos.x - m_TargetPosition.x), (pos.z - m_TargetPosition.z));
 
 	// 目標との差分
-	float fRotDiff = m_fRotLock - rot.y;
+	float fRotDiff = fRotDest - rot.y;
 
 	//角度の正規化
 	RotNormalize(fRotDiff);
 
 	//角度の補正をする
-	rot.y += fRotDiff * AFTER_FIXROT;
-
-	// 角度の正規化
+	rot.y += fRotDiff * 1.0f;
 	RotNormalize(rot.y);
 
 	// 向き設定
 	SetRotation(rot);
 
 	// 目標の向き設定
-	SetRotDest(m_fRotLock);
+	SetRotDest(fRotDest);
+}
+
+//==========================================================================
+// エリア生成
+//==========================================================================
+void CEnemyTurret::SummonArea(void)
+{
+	if (CalcLenPlayer(SEARCH_LENGTH))
+	{
+		D3DXVECTOR3 pos = GetPosition();
+		CLimitArea::sLimitEreaInfo info = {};
+		info.fMinX = pos.x - AREA_LENGTH;
+		info.fMaxX = pos.x + AREA_LENGTH;
+		info.fMinZ = pos.z - AREA_LENGTH;
+		info.fMaxZ = pos.z + AREA_LENGTH;
+
+		if (m_pLimitArea != nullptr)
+		{
+			m_pLimitArea->Uninit();
+			m_pLimitArea = nullptr;
+		}
+
+		m_pLimitArea = CLimitArea::Create(info);
+
+		m_bArea = true;
+	}
+}
+
+//==========================================================================
+// 目標の位置設定
+//==========================================================================
+void CEnemyTurret::SetTargetPosition(D3DXVECTOR3 pos)
+{
+	m_TargetPosition = pos;
 }

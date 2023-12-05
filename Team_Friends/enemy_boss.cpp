@@ -787,7 +787,6 @@ void CEnemyBoss::AttackInDicision(CMotion::AttackInfo ATKInfo)
 
 	case MOTION_BEAM:
 		my_particle::Create(weponpos, my_particle::TYPE_ATTACK_BODY);
-
 		break;
 
 	case MOTION_CHARGE_TACKLE:

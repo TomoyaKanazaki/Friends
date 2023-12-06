@@ -226,21 +226,21 @@ HRESULT CPlayer::Init(void)
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);
 
-	if (m_nMyPlayerIdx == 2 ||
-		m_nMyPlayerIdx == 3)
-	{// うで
-		SetEvolusion(CGameManager::STATUS_POWER);
-	}
+	//if (m_nMyPlayerIdx == 2 ||
+	//	m_nMyPlayerIdx == 3)
+	//{// うで
+	//	SetEvolusion(CGameManager::STATUS_POWER);
+	//}
 
-	if (m_nMyPlayerIdx == 0)
-	{// 胴
-		SetEvolusion(CGameManager::STATUS_LIFE);
-	}
+	//if (m_nMyPlayerIdx == 0)
+	//{// 胴
+	//	SetEvolusion(CGameManager::STATUS_LIFE);
+	//}
 
-	if (m_nMyPlayerIdx == 1)
-	{// 胴
-		SetEvolusion(CGameManager::STATUS_SPEED);
-	}
+	//if (m_nMyPlayerIdx == 1)
+	//{// 胴
+	//	SetEvolusion(CGameManager::STATUS_SPEED);
+	//}
 	//SetEvolusion(CGameManager::STATUS_POWER);
 
 	// プレイヤー毎のインデックス追加
@@ -1782,6 +1782,7 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 	// 進化先の種類
 	m_nEvolveType = (int)statusType + 1;
 
+#if 1
 	// パーツ変更
 	ChangeObject(m_nEvolveType);
 
@@ -1790,6 +1791,12 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 
 	// プレイヤー毎のインデックス追加
 	BindByPlayerIdxTexture();
+#else
+
+	// パーツ削除
+	DeleteObject(m_nEvolveType);
+
+#endif
 }
 
 //==========================================================================

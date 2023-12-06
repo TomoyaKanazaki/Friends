@@ -441,6 +441,38 @@ void CObjectChara::SetObject(int nNewParts)
 }
 
 //==========================================================================
+// モデル削除
+//==========================================================================
+void CObjectChara::DeleteObject(int nSwitchType)
+{
+	// ファイルインデックス番号取得
+	int nIdx = GetIdxFile();
+	Load LoadData = GetLoadData(nIdx);
+
+	// モデルの切り替え
+	for (int nCntParts = 0; nCntParts < LoadData.nNumModel; nCntParts++)
+	{// パーツ分繰り返し
+
+		if (LoadData.LoadData[nCntParts].nSwitchType != nSwitchType)
+		{// 切り替えの種類が違うとき
+			continue;
+		}
+
+		// 削除するインデックス番号
+		int nDeleteIdx = LoadData.LoadData[nCntParts].nIDSwitchModel;
+
+		if (nDeleteIdx >= 0 && m_apModel[nDeleteIdx] != NULL)
+		{// NULLじゃなかったら
+
+			// モデルの終了処理
+			m_apModel[nDeleteIdx]->Uninit();
+			delete m_apModel[nDeleteIdx];
+			m_apModel[nDeleteIdx] = NULL;
+		}
+	}
+}
+
+//==========================================================================
 // 描画処理
 //==========================================================================
 void CObjectChara::Draw(void)

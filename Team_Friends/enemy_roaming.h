@@ -53,6 +53,7 @@ private:
 	void MotionSet(void) override;		// モーションの設定
 	void UpdateAction(void) override;	// 行動更新
 	void ActionSet(void) override; // 行動の設定
+	void Rotation(void); // 回転
 	void Move(void) override; // 移動
 	void Attack(void); // 攻撃
 

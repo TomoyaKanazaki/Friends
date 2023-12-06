@@ -30,8 +30,8 @@ namespace
 	const float LENGTH_CHASEWALK = 800.0f;	// 歩き追従の長さ
 	const float VELOCITY_WALK = 1.0f;		// 歩き
 	const float VELOCITY_DASH = 3.5f;		// ダッシュ
-	const float VELOCITY_TACKLE = 2.5f;		// タックル
-	const float TIME_WAIT = 3.0f;			// 待機
+	const float VELOCITY_TACKLE = 3.0f;		// タックル
+	const float TIME_WAIT = 2.0f;			// 待機
 	const float TIME_PROXIMITYCHASE = 5.0f;	// 近接攻撃の追従時間最大値
 	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
 	{

@@ -38,8 +38,7 @@ CRanking::CRanking()
 {
 	m_pRankingScore = NULL;	// ランキングスコアのオブジェクト
 	m_nCntSwitch = 0;		// 切り替えのカウンター
-	m_nCntUniCharCre = 0;		//合体キャラの生成カウンター
-	m_nCntUniCharDel = 0;
+	m_nCnt = 0;				// 
 	m_bAllArrival = false;	// 全て到着した判定
 }
 
@@ -109,14 +108,17 @@ void CRanking::Update(void)
 	// 切り替えのカウンター加算
 	m_nCntSwitch++;
 
-	// 合体キャラの生成カウンター加算
-	m_nCntUniCharCre++;
-	m_nCntUniCharDel++;
-
 	if (m_bAllArrival == true)
 	{
-		// モード設定
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
+		m_nCnt++;
+
+		if (m_nCnt >= 60 * 2)
+		{
+			// モード設定
+			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
+
+			m_nCnt = 60 * 2;
+		}
 	}
 
 	// 合体キャラの生成
@@ -125,19 +127,12 @@ void CRanking::Update(void)
 		m_pPlayerUnion->Kill();
 		m_pPlayerUnion->Uninit();
 		UniCharCreate(D3DXVECTOR3(PLAYER_CREATE_POSX, PLAYER_CREATE_POSY, 1300.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f));
-		m_nCntUniCharCre = 0;
-	}
-
-	/*if (m_nCntUniCharDel >= 60 * 5)
-	{
-		
-		m_nCntUniCharDel = 0;
-	}*/
-	
+	}	
 
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
 	{
 		m_bAllArrival = true;
+		m_nCnt = 60 * 2;
 	}
 }
 

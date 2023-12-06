@@ -17,7 +17,7 @@
 namespace
 {
 	const float ATTACK_LENGTH = 200.0f; // 攻撃する距離
-	const float MOVE_SPEED = 0.01f; // 移動速度(倍率)
+	const float ROTATION_SPEED = D3DX_PI * 0.25f; // 回転速度
 }
 
 //==========================================
@@ -90,6 +90,9 @@ void CEnemyRoaming::UpdateAction(void)
 	{
 	case CEnemyRoaming::ACTION_ROAMING:
 
+		// 回転
+		Rotation();
+
 		// 移動
 		Move();
 
@@ -139,7 +142,7 @@ void CEnemyRoaming::MotionSet(void)
 		// 現在の種類取得
 		int nType = m_pMotion->GetType();
 
-		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockback == false)
+		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockback == false && m_sMotionFrag.bATK == false)
 		{// 移動していたら
 			// 攻撃していない
 			m_sMotionFrag.bATK = false;
@@ -192,27 +195,41 @@ void CEnemyRoaming::ActionSet(void)
 }
 
 //==========================================
+//  回転とそれに伴う移動
+//==========================================
+void CEnemyRoaming::Rotation(void)
+{
+	// 今回の回転角度を算出
+	float fRotation = ROTATION_SPEED * CManager::GetInstance()->GetDeltaTime();
+
+	// 現在の角度を取得
+	D3DXVECTOR3 rot = GetRotation();
+
+	// 角度を加算
+	rot.y += fRotation;
+
+	// 角度を適用
+	SetRotation(rot);
+}
+
+//==========================================
 //  移動
 //==========================================
 void CEnemyRoaming::Move(void)
 {
-	// 移動フラグを立てる
-	m_sMotionFrag.bMove = true;
+	// 現在の角度を取得
+	D3DXVECTOR3 rot = GetRotation();
 
-	// 移動カウンターを加算
-	m_fActCounter += MOVE_SPEED;
-
-	// 移動速度取得
+	// 移動量を取得
 	float fMove = GetVelocity();
+	D3DXVECTOR3 move;
+
+	// 角度を分解
+	move.x = -sinf(rot.y) * fMove;
+	move.z = -cosf(rot.y) * fMove;
 
 	// 移動量を適用
-	D3DXVECTOR3 move = GetMove();
-	move.x = sinf(m_fActCounter) * fMove;
-	move.z = cosf(m_fActCounter) * fMove;
 	SetMove(move);
-
-	// 方向転換
-	MoveRotation();
 }
 
 //==========================================

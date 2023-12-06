@@ -33,7 +33,6 @@ public:
 	enum MOVETYPE
 	{
 		MOVETYPE_NORMAL = 0,	// 通常
-		MOVETYPE_CHASE,			// 追従
 		MOVETYPE_PARABOLA,		// 放物線
 		MOVETYPE_MAX
 	};
@@ -60,6 +59,8 @@ public:
 	TYPE GetType(void);			// 種類取得
 	void SetState(STATE state, int nCntState);	// 状態設定
 	STATE GetState(void);	// 状態取得
+	void SetTargetPosition(D3DXVECTOR3 pos);	// 目標の位置
+	void SetParabolaHeight(float fHeight);		// 放物線の最大高さ
 
 	static int GetNumAll(void);
 	static CBullet *Create(TYPE type, MOVETYPE movetype, const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move, const float fSize);
@@ -74,20 +75,23 @@ private:
 	void StateDamage(void);		// ダメージ状態処理
 
 
-	TYPE m_type;							// 弾の種類
+	TYPE m_type;				// 弾の種類
 	STATE m_state;				// 状態
-	MOVETYPE m_MoveType;					// 移動の種類
+	MOVETYPE m_MoveType;		// 移動の種類
+	D3DXVECTOR3 m_OriginPosition;	// 元の位置
+	D3DXVECTOR3 m_TargetPosition;	// 目標の位置
 	int m_nCntState;			// 状態遷移カウンター
-	int m_nIdxBulletManager;			// 弾マネージャのインデックス番号
-	int m_nLife;							// 寿命
-	int m_nLifeMax;					// 寿命の最大値
-	static int m_nNumAll;					// 弾の総数
-	static const char *m_apTextureFile[TYPE_MAX];	// テクスチャのファイル
+	int m_nIdxBulletManager;	// 弾マネージャのインデックス番号
+	int m_nLife;				// 寿命
+	int m_nLifeMax;				// 寿命の最大値
 	int m_nTexIdx;				// テクスチャのインデックス番号
-	int m_nCntEmission;	// 発生物のカウンター
+	int m_nCntEmission;			// 発生物のカウンター
+	float m_fMaxParabolaHeight;	// 放物線の最大高さ
 	CMeshSphere *m_pMeshSphereEffect;	// メッシュスフィアのエフェクト
 	CObjectBillboard *m_pBulletAppearance[mylib_const::BULLETAPPEARANCE_NUM];	// 見た目だけの弾
 	CThunderRing *m_pEffectThunderRing;	// 雷のリングのエフェクト
+	static int m_nNumAll;		// 弾の総数
+	static const char *m_apTextureFile[TYPE_MAX];	// テクスチャのファイル
 
 	//using STATE_FUNC = void(CBullet::*)();
 	typedef void(CBullet::*STATE_FUNC)(void);

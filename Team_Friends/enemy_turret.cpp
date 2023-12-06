@@ -13,18 +13,33 @@
 #include "beam.h"
 #include "bullet.h"
 #include "player.h"
+#include "camera.h"
 
 //==========================================================================
 //  定数定義
 //==========================================================================
 namespace
 {
+	// 行動抽選の構造体
+	struct sProbability
+	{
+		CEnemyTurret::ACTION action;	// 行動
+		float fProbability;			// 確率
+	};
+
 	const float VELOCITY_TACKLE = 2.0f;		// タックル
 	const float MORTAR_SPEED = 0.0f;		// 迫撃弾速度
 	const float TIME_WAIT = 3.0f;			// 待機
 	const float SEARCH_LENGTH = 600.0f;		//エリア生成距離
 	const float AREA_LENGTH = 800.0f;		//ボスエリアサイズ
-	const D3DXCOLOR BEAM_COLOR = {0.1f, 1.0f, 0.1f, 0.5f};		//ボスエリアサイズ
+	const float BEAM_LENGTH = 2000.0f;		//ビームの長さ
+	const D3DXCOLOR BEAM_COLOR = {0.1f, 1.0f, 0.1f, 0.5f};		//ビームの色
+	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
+	{
+		{ CEnemyTurret::ACTION_BEAM, 0.7f },		// 遠隔攻撃
+		{ CEnemyTurret::ACTION_MORTAR, 0.3f },		// 突撃攻撃
+		{ CEnemyTurret::ACTION_WAIT, 0.0f },			// 待機
+	};
 }
 
 //==========================================================================
@@ -129,6 +144,12 @@ void CEnemyTurret::ActionSet(void)
 //==========================================================================
 void CEnemyTurret::UpdateAction(void)
 {
+	//スクリーン内の存在判定
+	if (!CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
+	{
+		return; // 抜ける
+	}
+
 	// 状態別処理
 	(this->*(m_ActFuncList[m_Action]))();
 }
@@ -138,13 +159,26 @@ void CEnemyTurret::UpdateAction(void)
 //==========================================================================
 void CEnemyTurret::DrawingAction(void)
 {
-	//while (true)
-	//{
-	//	// 行動抽選
-	//	m_Action = (ACTION)(rand() % ACTION_MAX);
+	//// 0～1のランダム値取得
+	//float fRandomValue = static_cast<float>(std::rand()) / RAND_MAX;
 
-	//	if (m_Action != ACTION_WAIT)
-	//	{// 既定行動以外
+	//// 確率加算用変数
+	//float fDrawingProbability = 0.0;
+
+	//// 行動抽選要素分繰り返し
+	//for (const auto& candidate : ACT_PROBABILITY)
+	//{
+	//	// 今回の確率分を加算
+	//	fDrawingProbability += candidate.fProbability;
+
+	//	if (fRandomValue < fDrawingProbability)
+	//	{// 今回のランダム値が確率を超えたら
+
+	//	 // 行動決定
+	//		m_Action = candidate.action;
+
+	//		// 行動カウンターリセット
+	//		m_fActTime = 0.0f;
 	//		break;
 	//	}
 	//}
@@ -264,7 +298,7 @@ void CEnemyTurret::AttackBeam(void)
 							0.0f,
 							cosf(fRot + D3DX_PI) * MORTAR_SPEED };
 
-		CBeam::Create(GetPosition(), move, BEAM_COLOR, 50.0f, 2000.0f, 50, 100, 1, CCollisionObject::TAG_ENEMY);
+		CBeam::Create(GetPosition(), move, BEAM_COLOR, 50.0f, BEAM_LENGTH, 50, 100, 1, CCollisionObject::TAG_ENEMY);
 
 		// 待機行動
 		m_Action = ACTION_WAIT;

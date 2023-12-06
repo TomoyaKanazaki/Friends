@@ -234,7 +234,7 @@ HRESULT CPlayer::Init(void)
 
 	if (m_nMyPlayerIdx == 0)
 	{// “·
-		SetEvolusion(CGameManager::STATUS_LIFE);
+		//SetEvolusion(CGameManager::STATUS_LIFE);
 	}
 
 	if (m_nMyPlayerIdx == 1)

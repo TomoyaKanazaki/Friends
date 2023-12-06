@@ -22,17 +22,13 @@
 #include "bulletexplosion.h"
 
 //==========================================================================
-// マクロ定義
+//  定数定義
 //==========================================================================
-#define WIDTH			(30.0f)							// 横幅
-#define HEIGHT			(30.0f)							// 縦幅
-#define MOVE_SPEED		(15.0f)							// 移動速度
-#define ANIM_SPEED		(4)								// 読み込み間隔
-#define MAX_PATTERN_U	(1)								// Uの分割数
-#define MAX_PATTERN_V	(1)								// Vの分割数
-#define MAX_PATTERN		(MAX_PATTERN_U)					// アニメーションパターンの最大数
-#define MOVE_U			(1.0f / (float)MAX_PATTERN_U)	// U座標移動量
-#define MOVE_V			(1.0f / (float)MAX_PATTERN_V)	// V座標移動量
+namespace
+{
+	const int MAX_LIFE = 60 * 2;			// 最大寿命
+	const float DEFAULT_HEIGHT = 400.0f;	// デフォの放物線高さ
+}
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -62,16 +58,19 @@ CBullet::COLLISION_FUNC CBullet::m_CollisionFuncList[] =	// 当たり判定のリスト
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CBullet::CBullet(int nPriority) : CMeshSphere(nPriority), m_nLifeMax(1)
+CBullet::CBullet(int nPriority) : CMeshSphere(nPriority)
 {
 	// 値のクリア
 	m_type = TYPE_PLAYER;
 	m_state = STATE_NONE;			// 状態
 	m_MoveType = MOVETYPE_NORMAL;	// 移動の種類
-	m_nCntState = 0;			// 状態遷移カウンター
+	m_OriginPosition = mylib_const::DEFAULT_VECTOR3;	// 元の位置
+	m_TargetPosition = mylib_const::DEFAULT_VECTOR3;	// 目標の位置
+	m_nCntState = 0;				// 状態遷移カウンター
 	m_nLife = 0;
-	m_nIdxBulletManager = 0;			// 弾マネージャのインデックス番号
-	m_nCntEmission = 0;	// 発生物のカウンター
+	m_nIdxBulletManager = 0;		// 弾マネージャのインデックス番号
+	m_nCntEmission = 0;				// 発生物のカウンター
+	m_fMaxParabolaHeight = 0.0f;	// 放物線の最大高さ
 	m_pMeshSphereEffect = NULL;		// メッシュスフィアのエフェクト
 	m_pEffectThunderRing = NULL;	// 雷のリングのエフェクト
 	memset(&m_pBulletAppearance[0], NULL, sizeof(m_pBulletAppearance));	// 見た目だけの弾
@@ -116,6 +115,7 @@ CBullet *CBullet::Create(TYPE type, MOVETYPE movetype, const D3DXVECTOR3 pos, co
 
 			// 位置割り当て
 			pBullet->SetPosition(pos);
+			pBullet->m_OriginPosition = pos;
 
 			// 位置割り当て
 			pBullet->SetRotation(rot);
@@ -147,9 +147,10 @@ HRESULT CBullet::Init(void)
 	HRESULT hr;
 
 	// 各種変数の初期化
-	m_nLifeMax = 60 * 5;
+	m_nLifeMax = MAX_LIFE;
 	m_nLife = m_nLifeMax;	// 寿命
 	SetColor(D3DXCOLOR(0.3f, 0.3f, 1.0f, 1.0f));
+	m_fMaxParabolaHeight = DEFAULT_HEIGHT;	// 放物線の最大高さ
 
 	// テクスチャの割り当て
 	m_nTexIdx = CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[m_type]);
@@ -408,7 +409,16 @@ void CBullet::UpdatePos(void)
 	D3DXVECTOR3 rot = GetRotation();
 
 	// 位置更新
-	pos += move;
+	switch (m_MoveType)
+	{
+	case CBullet::MOVETYPE_NORMAL:
+		pos += move;
+		break;
+
+	case CBullet::MOVETYPE_PARABOLA:	// 放物線移動
+		pos = GetParabola(m_OriginPosition, m_TargetPosition, m_fMaxParabolaHeight, 1.0f - ((float)m_nLife / (float)m_nLifeMax));
+		break;
+	}
 
 	// 位置設定
 	SetPosition(pos);
@@ -709,6 +719,22 @@ void CBullet::SetType(TYPE type)
 CBullet::TYPE CBullet::GetType(void)
 {
 	return m_type;
+}
+
+//==========================================================================
+// 目標の位置
+//==========================================================================
+void CBullet::SetTargetPosition(D3DXVECTOR3 pos)
+{
+	m_TargetPosition = pos;
+}
+
+//==========================================================================
+// 放物線の最大高さ
+//==========================================================================
+void CBullet::SetParabolaHeight(float fHeight)
+{
+	m_fMaxParabolaHeight = fHeight;
 }
 
 //==========================================================================

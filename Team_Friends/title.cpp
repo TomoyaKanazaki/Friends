@@ -26,11 +26,11 @@ namespace
 	const D3DXCOLOR TARGET_COLOR = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	const float START_LENGTH = 300.0f; // 初期距離
 	const float END_LENGTH = 1000.0f; // 目標距離
-	const float FUNCTION = 0.01f; //倍率
+	const float FUNCTION = 0.02f; //倍率
 	const float SWITCH_TIME = 20.0f;
 
 	//モデルの配置位置
-	const D3DXVECTOR3 CENTER	= D3DXVECTOR3(0.0f, 0.0f, -2800.0f);
+	const D3DXVECTOR3 CENTER	= D3DXVECTOR3(0.0f, 0.0f, -2700.0f);
 	const D3DXVECTOR3 IN_LEFT	= D3DXVECTOR3(-160.0f, 0.0f, -2900.0f);
 	const D3DXVECTOR3 IN_RIGHT	= D3DXVECTOR3(160.0f, 0.0f, -2900.0f);
 	const D3DXVECTOR3 OUT_LEFT	= D3DXVECTOR3(-300.0f, 0.0f, -3000.0f);
@@ -90,10 +90,10 @@ HRESULT CTitle::Init(void)
 
 	// プレイヤーを置いてみる
 	CUnionTitle::Create(CENTER);
-	//CPlayerTitle::Create(IN_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
-	//CPlayerTitle::Create(IN_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
-	//CPlayerTitle::Create(OUT_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
-	//CPlayerTitle::Create(OUT_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
+	CPlayerTitle::Create(IN_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
+	CPlayerTitle::Create(IN_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
+	CPlayerTitle::Create(OUT_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
+	CPlayerTitle::Create(OUT_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
 
 	// 成功
 	return S_OK;
@@ -152,7 +152,7 @@ void CTitle::Update(void)
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
 	{
 		// モード設定
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDEPLAYER);
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDE);
 	}
 
 	if (m_fCnt >= SWITCH_TIME)
@@ -204,7 +204,7 @@ void CTitle::WhiteOut()
 	if (pInputKeyboard->GetTrigger(DIK_3))
 	{
 		// モード設定
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDEPLAYER);
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDE);
 	}
 
 	if (pInputKeyboard->GetTrigger(DIK_4))

@@ -86,10 +86,9 @@ HRESULT CFade::Init(void)
 	}
 
 	m_state = STATE_FADEIN;			// 状態
-	
 #if _DEBUG
-	//m_ModeNext = CScene::MODE_TITLE;	// 次のモード
-	m_ModeNext = CScene::MODE_RANKING;	// 次のモード
+	m_ModeNext = CScene::MODE_TITLE;	// 次のモード
+	//m_ModeNext = CScene::MODE_DECIDE;	// 次のモード
 #else
 	m_ModeNext = CScene::MODE_TITLE;	// 次のモード
 #endif

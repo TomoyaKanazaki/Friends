@@ -1,89 +1,115 @@
-//==========================================
-//
-//  砲台中ボス敵(enemy_turret.h)
-//  Author : Kai Takada
-//
-//==========================================
-#ifndef _ENEMY_TURRET_H_
-#define _ENEMY_TURRET_H_
+//=============================================================================
+// 
+//  中ボス(砲台) [enemy_turret.h]
+//  Author : 髙田佳依
+// 
+//=============================================================================
+
+#ifndef _ENEMYTURRET_H_
+#define _ENEMYTURRET_H_	// 二重インクルード防止
+
 #include "enemy.h"
 
-//==========================================
+//==========================================================================
 // 前方宣言
-//==========================================
+//==========================================================================
 class CLimitArea;
 
-//==========================================
-//  クラス定義
-//==========================================
-class CEnemyTurret: public CEnemy
+//==========================================================================
+// クラス定義
+//==========================================================================
+// ボスクラス定義
+class CEnemyTurret : public CEnemy
 {
 public:
 
-	// オーバーライドされた関数
 	CEnemyTurret(int nPriority = mylib_const::ENEMY_PRIORITY);
 	~CEnemyTurret();
 
+	// オーバーライドされた関数
 	HRESULT Init(void) override;
 	void Uninit(void) override;
 	void Update(void) override;
 	void Draw(void) override;
 	void Kill(void) override;
 
-private:
+	void SetTargetPosition(D3DXVECTOR3 pos);	// 目標の位置設定
 
+	//=============================
+	// 列挙型定義
+	//=============================
 	//モーション列挙
 	enum MOTION
 	{
 		MOTION_DEF = 0,			// ニュートラルモーション
-		MOTION_KNOCKBACK,		// ダメージモーション
-		MOTION_FADEOUT,			// 撃破モーション
-		MOTION_ATK_MORTAR,		// 攻撃モーション(迫撃)
-		MOTION_READY_MORTAR,	// 準備モーション(迫撃)
-		MOTION_AFTER_MORTAR,	// 硬直モーション(迫撃)
-		MOTION_ATK_BEAM,		// 攻撃モーション(ビーム)
-		MOTION_READY_BEAM,		// 準備モーション(ビーム)
-		MOTION_AFTER_BEAM,		// 硬直モーション(ビーム)
-		MOTION_MAX
+		MOTION_CHARGE_BEAM,		// ビームチャージモーション
+		MOTION_BEAM,			// ビームモーション
+		MOTION_CHARGE_MORTAR,	// タックルチャージモーション
+		MOTION_MORTAR,			// タックルモーション
+		MOTION_KNOCKBACK,		// やられモーション
+		MOTION_FADEOUT,			// 帰還モーション
 	};
 
 	// 行動列挙
 	enum ACTION
 	{
-		ACTION_ROAMING = 0,	//徘徊行動
-		ACTION_READY,		//準備行動
-		ACTION_ATTACK,		//攻撃行動
-		ACTION_AFTER,		//攻撃硬直
+		ACTION_BEAM,			// ビーム攻撃
+		ACTION_MORTAR,			// 迫撃攻撃
+		ACTION_WAIT,			// 待機
 		ACTION_MAX
 	};
 
-	// 攻撃列挙
-	enum ATTACK
+	// 行動分岐
+	enum eActionBranch
 	{
-		ATTACK_NONE = 0,	//攻撃と無関係
-		ATTACK_BEAM= 0,		//ビーム
-		ATTACK_MORTAR,		//迫撃砲
-		ATTACK_MAX
+		ACTBRANCH_BEAM_CHARGE,		// ビーム攻撃(溜め)
+		ACTBRANCH_BEAM_SHOT,		// ビーム攻撃(発射)
+		ACTBRANCH_MORTAR_CHARGE,	// 迫撃攻撃(溜め)
+		ACTBRANCH_MORTAR_SHOT,		// 迫撃攻撃(発射)
 	};
 
-	// メンバ変数
-	ACTION m_Act;	//行動状態
-	ATTACK m_Atk;	//攻撃状態
-	float m_fActionCount;	// 移動カウンター
-	D3DXVECTOR3 m_moveLock;	//固定移動量
-	float m_fRotLock;	//向き保存
-	CLimitArea *m_pLimitArea;	//ボス範囲
-	bool bArea;		//エリア展開済みフラグ
+private:
 
+	//=============================
+	// 関数リスト
+	//=============================
+	typedef void(CEnemyTurret::*ACT_FUNC)(void);
+	static ACT_FUNC m_ActFuncList[];
+
+	//=============================
 	// メンバ関数
-	void MotionSet(void) override;		// モーションの設定
+	//=============================
+	// 行動関数
+	void ActionSet(void) override;		// 行動の設定
+	void DrawingAction(void);			// 行動抽選
 	void UpdateAction(void) override;	// 行動更新
-	void ActionSet(void); // 行動の設定
-	void Attack(void); // 攻撃
-	void SetMoveRotation(void); // 向きから移動量を設定する処理
-	bool TargetPlayer(float fLen); // プレイヤーとの距離判定
+	void ActWait(void);				// 待機
+	void ActAttackBeam(void);		// 遠隔攻撃
+	void ActAttackMortar(void);	// 迫撃攻撃
 
-	void FixRotation(void); // 指定方向を向く
+	// 行動内関数
+	void ChargeBeam(void);		// ビームチャージ
+	void AttackBeam(void);		// ビーム攻撃
+	void ChargeMortar(void);	// 迫撃チャージ
+	void AttackMortar(void);	// 迫撃攻撃
+
+	// その他関数
+	void MotionSet(void) override;	// モーションの設定
+	void RotationTarget(void);		// ターゲットの方を向く
+
+	void SummonArea(void);		// エリア生成
+
+	//=============================
+	// メンバ変数
+	//=============================
+	ACTION m_Action;						// 行動
+	eActionBranch m_ActionBranch;			// 行動分岐
+	eActionBranch m_MakeForActionBranch;	// 行動する為の行動
+	D3DXVECTOR3 m_TargetPosition;	// 目標の位置
+	float m_fActTime;				// 行動カウンター
+	float m_fRotLock;			//向き保存
+	CLimitArea *m_pLimitArea;	//ボス範囲
+	bool m_bArea;				//エリア展開フラグ
 };
 
 #endif

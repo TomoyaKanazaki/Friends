@@ -95,7 +95,8 @@ public:
 
 	void ChangeObject(int nDeleteParts, int nNewParts);
 	void ChangeObject(int nSwitchType);		// Ø‚è‘Ö‚¦‚Ìí—Ş
-	void SetObject(int nNewParts);
+	void SetObject(int nNewParts);			// ƒ‚ƒfƒ‹‚Ìİ’è
+	void DeleteObject(int nSwitchType);		// ƒ‚ƒfƒ‹íœ
 
 	CObjectChara *GetObjectChara(void);
 	int GetNumModel(void);		// ƒ‚ƒfƒ‹”æ“¾

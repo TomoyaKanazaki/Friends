@@ -9,6 +9,7 @@
 #define _BEAM_H_	// 二重インクルード防止
 
 #include "object.h"
+#include "collisionobject.h"
 
 //==========================================================================
 // 前方宣言
@@ -37,11 +38,18 @@ public:
 	void Update(void) override;
 	void Draw(void) override;
 
-	static CBeam *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXCOLOR col, const float fRadius, const float fLength, const int nLife, const int nDisity, const int nDamage);
+	static CBeam *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXCOLOR col, const float fRadius, const float fLength, const int nLife, const int nDisity, const int nDamage, CCollisionObject::eMyTag TagType);
 
 private:
 
 	// メンバ変数
+	float m_fRadius;	// 半径
+	float m_fLength;	// 長さ
+	int m_nDisity;		// 密度
+	int m_nDamage;		// ダメージ
+	D3DXCOLOR m_color;	// 色
+	std::vector<CEffect3D*> m_pEffect;	// エフェクトのオブジェクト
+	CCollisionObject::eMyTag m_Tag;	// タグ
 	int m_nLife;	// 寿命
 };
 

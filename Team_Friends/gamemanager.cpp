@@ -312,7 +312,7 @@ void CGameManager::SetEnableEvolusion(void)
 	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
 	{
 		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(i);
-		CPlayer::sStatus status = pPlayer->GetStatus();
+		CPlayer::sStatus status = InitStatus;
 		if (pPlayer != NULL)
 		{
 			status = pPlayer->GetStatus();
@@ -329,7 +329,7 @@ void CGameManager::SetEnableEvolusion(void)
 	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
 	{
 		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(i);
-		CPlayer::sStatus status = pPlayer->GetStatus();
+		CPlayer::sStatus status = InitStatus;
 		if (pPlayer != NULL)
 		{
 			status = pPlayer->GetStatus();
@@ -347,7 +347,7 @@ void CGameManager::SetEnableEvolusion(void)
 	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
 	{
 		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(i);
-		CPlayer::sStatus status = pPlayer->GetStatus();
+		CPlayer::sStatus status = InitStatus;
 		if (pPlayer != NULL)
 		{
 			status = pPlayer->GetStatus();
@@ -375,25 +375,25 @@ void CGameManager::SetEnableEvolusion(void)
 
 
 	// ˜rÝ’è
-	if (CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerLeft) != NULL)
+	if (nIdxPowerLeft >= 0 && CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerLeft) != NULL)
 	{
 		CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerLeft)->SetEvolusion(CGameManager::STATUS_POWER);
 	}
 
 	// ˜rÝ’è
-	if (CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerRight) != NULL)
+	if (nIdxPowerRight >= 0 && CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerRight) != NULL)
 	{
 		CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerRight)->SetEvolusion(CGameManager::STATUS_POWER);
 	}
 
 	// ‹rÝ’è
-	if (CManager::GetInstance()->GetScene()->GetPlayer(nIdxSpeed) != NULL)
+	if (nIdxSpeed >= 0 && CManager::GetInstance()->GetScene()->GetPlayer(nIdxSpeed) != NULL)
 	{
 		CManager::GetInstance()->GetScene()->GetPlayer(nIdxSpeed)->SetEvolusion(CGameManager::STATUS_SPEED);
 	}
 
 	// “·Ý’è
-	if (CManager::GetInstance()->GetScene()->GetPlayer(nIdxLife) != NULL)
+	if (nIdxLife >= 0 && CManager::GetInstance()->GetScene()->GetPlayer(nIdxLife) != NULL)
 	{
 		CManager::GetInstance()->GetScene()->GetPlayer(nIdxLife)->SetEvolusion(CGameManager::STATUS_LIFE);
 	}

@@ -28,11 +28,11 @@ namespace
 	};
 
 	const float VELOCITY_TACKLE = 2.0f;		// タックル
-	const float MORTAR_SPEED = 0.0f;		// 迫撃弾速度
+	const float MORTAR_SPEED = 10.0f;		// 迫撃弾速度
 	const float TIME_WAIT = 3.0f;			// 待機
 	const float SEARCH_LENGTH = 600.0f;		//エリア生成距離
 	const float AREA_LENGTH = 800.0f;		//ボスエリアサイズ
-	const float BEAM_LENGTH = 2000.0f;		//ビームの長さ
+	const float BEAM_LENGTH = 1000.0f;		//ビームの長さ
 	const D3DXCOLOR BEAM_COLOR = {0.1f, 1.0f, 0.1f, 0.5f};		//ビームの色
 	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
 	{
@@ -183,7 +183,7 @@ void CEnemyTurret::DrawingAction(void)
 	//	}
 	//}
 
-	m_Action = ACTION_MORTAR;
+	m_Action = ACTION_BEAM;
 
 	// 次の行動別
 	int nActRand;
@@ -276,6 +276,8 @@ void CEnemyTurret::ChargeBeam(void)
 		m_pMotion->Set(MOTION_CHARGE_BEAM);
 	}
 
+	//一番近いプレイヤーを向く
+
 	// ターゲットの方を向く
 	RotationTarget();
 
@@ -284,7 +286,7 @@ void CEnemyTurret::ChargeBeam(void)
 }
 
 //==========================================================================
-// ビーム攻撃
+// ビーム発射
 //==========================================================================
 void CEnemyTurret::AttackBeam(void)
 {
@@ -293,12 +295,12 @@ void CEnemyTurret::AttackBeam(void)
 	if (nType == MOTION_BEAM && m_pMotion->IsFinish() == true)
 	{// ビーム攻撃が終わってたら
 
-		float fRot = GetRotDest();
+		float fRot = GetRotation().y;
 		D3DXVECTOR3 move = {sinf(fRot + D3DX_PI) * MORTAR_SPEED,
 							0.0f,
 							cosf(fRot + D3DX_PI) * MORTAR_SPEED };
 
-		CBeam::Create(GetPosition(), move, BEAM_COLOR, 50.0f, BEAM_LENGTH, 50, 100, 1, CCollisionObject::TAG_ENEMY);
+		CBeam::Create(GetPosition(), move, BEAM_COLOR, 50.0f, BEAM_LENGTH, 50, 10, 1, CCollisionObject::TAG_ENEMY);
 
 		// 待機行動
 		m_Action = ACTION_WAIT;

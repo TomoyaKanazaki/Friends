@@ -34,7 +34,6 @@ public:
 	void Kill(void) override;
 
 	void SetTargetPosition(D3DXVECTOR3 pos);	// 目標の位置設定
-private:
 
 	//=============================
 	// 列挙型定義
@@ -68,6 +67,8 @@ private:
 		ACTBRANCH_MORTAR_CHARGE,	// 迫撃攻撃(溜め)
 		ACTBRANCH_MORTAR_SHOT,		// 迫撃攻撃(発射)
 	};
+
+private:
 
 	//=============================
 	// 関数リスト

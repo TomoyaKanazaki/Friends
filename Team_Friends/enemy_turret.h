@@ -96,6 +96,7 @@ private:
 	// その他関数
 	void MotionSet(void) override;	// モーションの設定
 	void RotationTarget(void);		// ターゲットの方を向く
+	void SetTargetPlayer(void);		// どのプレイヤーのターゲット
 
 	void SummonArea(void);		// エリア生成
 

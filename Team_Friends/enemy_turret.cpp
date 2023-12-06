@@ -196,7 +196,6 @@ void CEnemyTurret::DrawingAction(void)
 	m_Action = ACTION_BEAM;
 
 	// 次の行動別
-	int nActRand;
 	float fLength = 0.0f;
 	switch (m_Action)
 	{
@@ -286,7 +285,8 @@ void CEnemyTurret::ChargeBeam(void)
 		m_pMotion->Set(MOTION_CHARGE_BEAM);
 	}
 
-	//一番近いプレイヤーを向く
+	//一番近いプレイヤーを認識する
+	SetTargetPlayer();
 
 	// ターゲットの方を向く
 	RotationTarget();
@@ -540,6 +540,40 @@ void CEnemyTurret::RotationTarget(void)
 
 	// 目標の向き設定
 	SetRotDest(fRotDest);
+}
+
+//==========================================================================
+// どのプレイヤーのターゲット
+//==========================================================================
+void CEnemyTurret::SetTargetPlayer(void)
+{
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 posPlayer;
+	float fLength = 0.0f, fLengthDiff = 0.0f;
+	CPlayer* pPlayer = nullptr;
+	// プレイヤー情報
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(i);
+
+		if (pPlayer == NULL)
+		{
+			continue;
+		}
+
+		// プレイヤーの位置取得
+		posPlayer = pPlayer->GetPosition();
+
+		fLength = GetFabsPosLength(pos, posPlayer);
+
+		if (fLength < fLengthDiff)
+		{//より近い
+			m_nTargetPlayerIndex = i;
+			fLengthDiff = fLength;
+			SetTargetPosition(posPlayer);
+		}
+	}
 }
 
 //==========================================================================

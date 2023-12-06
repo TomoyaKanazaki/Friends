@@ -183,7 +183,7 @@ void CEnemyTurret::DrawingAction(void)
 	//	}
 	//}
 
-	m_Action = ACTION_BEAM;
+	m_Action = ACTION_MORTAR;
 
 	// 次の行動別
 	int nActRand;
@@ -403,7 +403,12 @@ void CEnemyTurret::AttackMortar(void)
 				cosf(rot.y + D3DX_PI) * 100.0f };
 
 		//弾を放物線上に飛ばす
-		CBullet::Create(CBullet::TYPE_ENEMY, CBullet::MOVETYPE_PARABOLA, GetPosition(), rot, move, 50.0f);
+		CBullet *pBullet = CBullet::Create(CBullet::TYPE_ENEMY, CBullet::MOVETYPE_PARABOLA, GetPosition(), rot, move, 50.0f);
+		pBullet->SetTargetPosition(pPlayer->GetPosition());
+
+		float fRatio = GetFabsPosLength(GetPosition(), pPlayer->GetPosition()) / 1500.0f;
+		ValueNormalize(fRatio, 1.0f, 0.0f);
+		pBullet->SetParabolaHeight(1000.0f - (1000.0f * fRatio));
 	}
 
 	// タックル行動

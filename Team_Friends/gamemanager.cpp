@@ -38,6 +38,7 @@ CGameManager::CGameManager()
 	m_bEndRush = false;			// ラッシュが終了したか
 	m_bControll = false;		// 操作できるか
 	m_bEndNormalStage = false;	// 通常ステージが終了したか
+	m_bSetEvolusion = false;	// 進化設定してるか
 	m_nNowStage = 0;			// 現在のステージ
 	m_nNumStage = 0;			// ステージの総数
 }
@@ -87,11 +88,10 @@ CGameManager *CGameManager::Create(void)
 //==========================================================================
 HRESULT CGameManager::Init(void)
 {
-	m_bControll = true;		// 操作できるか
+	m_bControll = true;			// 操作できるか
 	m_bEndNormalStage = false;	// 通常ステージが終了したか
 	m_nNowStage = 0;			// 現在のステージ
-
-	//CPlayerUnion::Create();
+	m_bSetEvolusion = false;	// 進化設定してるか
 
 	return S_OK;
 }

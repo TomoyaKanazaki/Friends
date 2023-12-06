@@ -855,9 +855,8 @@ void CPlayer::Controll(void)
 		// アイテムドロップ
 		CItem::Create(D3DXVECTOR3(pos.x, pos.y + 100.0f, pos.z), D3DXVECTOR3(0.0f, Random(-31, 31) * 0.1f, 0.0f));
 	}
-
-	
 #endif
+
 	if (pInputKeyboard->GetTrigger(DIK_LEFT) == true)
 	{
 		CCollisionObject::Create(GetPosition(), mylib_const::DEFAULT_VECTOR3, 10000.0f, 3, 10000, CCollisionObject::TAG_PLAYER);
@@ -1716,7 +1715,19 @@ bool CPlayer::GiveStatus(CGameManager::eStatus status)
 //==========================================================================
 void CPlayer::DrawingEvolusion(void)
 {
+	// 
+	int nIdxPowerLeft = 0, nIdxPowerRight = 0, nIdxSpeed = 0, nIdxLife = 0;
 
+	// プレイヤーの取得
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(i);
+		if (pPlayer == NULL)
+		{
+			continue;
+		}
+
+	}
 }
 
 //==========================================================================

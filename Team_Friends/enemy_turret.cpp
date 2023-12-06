@@ -14,6 +14,8 @@
 #include "bullet.h"
 #include "player.h"
 #include "camera.h"
+#include "game.h"
+#include "gamemanager.h"
 
 //==========================================================================
 //  ’è”’è‹`
@@ -97,6 +99,14 @@ HRESULT CEnemyTurret::Init(void)
 //==========================================================================
 void CEnemyTurret::Uninit(void)
 {
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+	{
+		if (!CGame::GetGameManager()->IsSetEvolusion())
+		{
+			CGame::GetGameManager()->SetEnableEvolusion();
+		}
+	}
+
 	if (m_pLimitArea != nullptr)
 	{
 		m_pLimitArea->SetState(CLimitArea::STATE_FADEOUT);

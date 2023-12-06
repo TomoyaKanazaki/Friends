@@ -1715,7 +1715,7 @@ bool CPlayer::GiveStatus(CGameManager::eStatus status)
 //==========================================================================
 void CPlayer::DrawingEvolusion(void)
 {
-	// 
+	// 進化先のインデックス番号
 	int nIdxPowerLeft = 0, nIdxPowerRight = 0, nIdxSpeed = 0, nIdxLife = 0;
 
 	// プレイヤーの取得
@@ -2325,4 +2325,12 @@ void CPlayer::SetState(STATE state, int nCntState)
 int CPlayer::GetState(void)
 {
 	return m_state;
+}
+
+//==========================================================================
+// ステータス取得
+//==========================================================================
+CPlayer::sStatus CPlayer::GetStatus(void)
+{
+	return m_sStatus;
 }

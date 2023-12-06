@@ -295,6 +295,111 @@ void CGameManager::AddNowStage(void)
 }
 
 //==========================================================================
+// 進化状況設定
+//==========================================================================
+void CGameManager::SetEnableEvolusion(void)
+{
+	// 進化設定フラグ有効
+	m_bSetEvolusion = true;
+
+	// 進化先のインデックス番号
+	int nIdxPowerLeft = -1, nIdxPowerRight = -1, nIdxSpeed = -1, nIdxLife = -1;
+	int nMaxPowerLeft = -1, nMaxPowerRight = -1, nMaxSpeed = -1;
+	CPlayer::sStatus InitStatus;
+	InitStatus.nLife = -1, InitStatus.nPower = -1, InitStatus.nSpeed = -1;
+
+	// パワー
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(i);
+		CPlayer::sStatus status = pPlayer->GetStatus();
+		if (pPlayer != NULL)
+		{
+			status = pPlayer->GetStatus();
+		}
+
+		if (status.nPower > nMaxPowerLeft)
+		{// 最大値を超えたら
+			nMaxPowerLeft = status.nPower;
+			nIdxPowerLeft = i;
+		}
+	}
+
+	// スピード
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(i);
+		CPlayer::sStatus status = pPlayer->GetStatus();
+		if (pPlayer != NULL)
+		{
+			status = pPlayer->GetStatus();
+		}
+
+		if (status.nSpeed > nMaxSpeed &&
+			nIdxPowerLeft != i)
+		{// 最大値を超えたら
+			nMaxSpeed = status.nSpeed;
+			nIdxSpeed = i;
+		}
+	}
+
+	// パワー
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(i);
+		CPlayer::sStatus status = pPlayer->GetStatus();
+		if (pPlayer != NULL)
+		{
+			status = pPlayer->GetStatus();
+		}
+
+		if (status.nPower > nMaxPowerRight &&
+			nIdxSpeed != i &&
+			nIdxPowerLeft != i)
+		{// 最大値を超えたら
+			nMaxPowerRight = status.nPower;
+			nIdxPowerRight = i;
+		}
+	}
+
+	// 残り物を胴
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (nIdxPowerLeft != i &&
+			nIdxPowerRight != i &&
+			nIdxSpeed != i)
+		{
+			nIdxLife = i;
+		}
+	}
+
+
+	// 腕設定
+	if (CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerLeft) != NULL)
+	{
+		CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerLeft)->SetEvolusion(CGameManager::STATUS_POWER);
+	}
+
+	// 腕設定
+	if (CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerRight) != NULL)
+	{
+		CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerRight)->SetEvolusion(CGameManager::STATUS_POWER);
+	}
+
+	// 脚設定
+	if (CManager::GetInstance()->GetScene()->GetPlayer(nIdxSpeed) != NULL)
+	{
+		CManager::GetInstance()->GetScene()->GetPlayer(nIdxSpeed)->SetEvolusion(CGameManager::STATUS_SPEED);
+	}
+
+	// 胴設定
+	if (CManager::GetInstance()->GetScene()->GetPlayer(nIdxLife) != NULL)
+	{
+		CManager::GetInstance()->GetScene()->GetPlayer(nIdxLife)->SetEvolusion(CGameManager::STATUS_LIFE);
+	}
+}
+
+//==========================================================================
 // 現在のステージ取得
 //==========================================================================
 int CGameManager::GetNowStage(void)

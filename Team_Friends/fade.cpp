@@ -89,7 +89,7 @@ HRESULT CFade::Init(void)
 	
 #if _DEBUG
 	//m_ModeNext = CScene::MODE_TITLE;	// 次のモード
-	m_ModeNext = CScene::MODE_DECIDEPLAYER;	// 次のモード
+	m_ModeNext = CScene::MODE_RANKING;	// 次のモード
 #else
 	m_ModeNext = CScene::MODE_TITLE;	// 次のモード
 #endif

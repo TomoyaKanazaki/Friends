@@ -20,7 +20,11 @@
 // マクロ定義
 //==========================================================================
 #define RANKINGFILE			"data\\BIN\\ranking.bin"
-#define NUMBERTEXTURE		"data\\TEXTURE\\number_blackclover_01.png"	// テクスチャのファイル
+#define NUMBERTEXTURE		"data\\TEXTURE\\number_blackclover_03.png"	// テクスチャのファイル
+#define NUMBERTEXTURE_01	"data\\TEXTURE\\number_blackclover_04.png"	// テクスチャのファイル
+#define NUMBERTEXTURE_02	"data\\TEXTURE\\number_blackclover_05.png"	// テクスチャのファイル
+#define NUMBERTEXTURE_03	"data\\TEXTURE\\number_blackclover_06.png"	// テクスチャのファイル
+#define NUMBERTEXTURE_04	"data\\TEXTURE\\number_blackclover_07.png"	// テクスチャのファイル
 #define TEX_U				(0.1f)				// Uの分割
 #define BASE_WIDTH			(0.8f)		// 横幅
 #define BASE_HEIGHT			(1.0f)		// 縦幅
@@ -29,26 +33,29 @@
 #define POSY_BASE			(330.0f)			// Y位置
 #define BASETEXT_POSX		(180.0f)			// X位置
 #define TEXT_MOVETIME		(50000)				// 移動時間
+#define SIZE_MOVETIME		(20)				// 移動時間
 #define INIT_POSX			(1600.0f)			// 初期位置
 #define INIT_POSY			(943.0f)			// 初期位置
 #define INIT_POS_A			(-1)			// 初期位置
-#define INIT_POS_B			(3.5f)			// 初期位置
+#define INIT_POS_B			(3.3f)			// 初期位置
 
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
 const char *CRankingScore::m_apTexture3DFile[VTX3D_MAX] =		// テクスチャのファイル
 {
-	"data\\TEXTURE\\rankingnum_01.png",
 	"data\\TEXTURE\\ranking_virtual_window_00.png",
-	"data\\TEXTURE\\ranking_virtual_window_01.png",
+	"data\\TEXTURE\\ranking_virtual_window_09.png",
 	"data\\TEXTURE\\ranking_shadow_00.png",
 	"data\\TEXTURE\\rankinglogo_02.png",
+	"data\\TEXTURE\\neet_vision2.png",
 };
 
-const char *CRankingScore::m_apTexture3D_WinFile =		// テクスチャのファイル
+const char *CRankingScore::m_apTexture3D_WinFile[POPAPP_TEX_NUM] =		// ポップアップテクスチャのファイル
 {
-	"data\\TEXTURE\\ranking_virtual_window_03.png",
+	"data\\TEXTURE\\ranking_virtual_window_06.jpg",
+	"data\\TEXTURE\\ranking_virtual_window_07.jpg",
+	"data\\TEXTURE\\ranking_virtual_window_08.jpg",
 };
 
 //==========================================================================
@@ -58,18 +65,30 @@ CRankingScore::CRankingScore(int nPriority)
 {
 	// 値のクリア
 	m_nNumRanking = 0;				// ランキング数
-	memset(&m_nScore[0], 0, sizeof(m_nScore));	// スコア
-	memset(&m_nRank[0], 0, sizeof(m_nRank));	// スコア
-	m_nNowScore = 0;		// 今回のスコア
+	memset(&m_nScore[0], 0, sizeof(m_nScore));			// スコア
+	memset(&m_nRank[0], 0, sizeof(m_nRank));			// 順位
+	//memset(&m_nNowScore[0], 0, sizeof(m_nNowScore));	// 今回のスコア
+	m_nNowScore = 0;
 	m_nTexIdxNumber = 0;			// 数字テクスチャのインデックス番号
-	m_nIdxNewRecord = 0;	// テクスチャのインデックス番号
+	m_nIdxNewRecord = 0;			// テクスチャのインデックス番号
 	m_nCntNewRecord = 0;			// ニューレコードのカウンター
-	m_nCnt = 0;
+	m_nCnt = 0;						// 始め何秒か止まる処理
+	m_nNumPA = 0;					// ポップアップウィンドウの数
+	m_nCntCrePA = 0;				// 生成カウンター
+	memset(&m_nCntDelPA[0], 0, sizeof(m_nCntDelPA));	// 削除カウンター
+	m_nCreSecPA = 0;				// 生成する秒数
+	memset(&m_nDelSecPA[0], 0, sizeof(m_nDelSecPA));	// 削除する秒数
+	memset(&m_nPASize[0], 0, sizeof(m_nPASize));		// ポップアップウィンドウのサイズ
+	memset(&m_nPASizeKeep[0], 0, sizeof(m_nPASizeKeep));// ポップアップウィンドウのサイズの保持
+	memset(&m_nPAMag[0], 0, sizeof(m_nPAMag));			// ポップアップウィンドウのXZ座標の倍率
+	memset(&m_nPAHeight[0], 0, sizeof(m_nPAHeight));	// ポップアップウィンドウの高さ
 	memset(&m_fPosDestY[0], 0, sizeof(m_fPosDestY));	// 目標の位置
-	m_bNewRecord = 0;	// オブジェクト2Dのオブジェクト
+	m_bNewRecord = NULL;
 	memset(&m_bArrival[0], NULL, sizeof(m_bArrival));	// 到着判定
-	memset(&m_pScore[0], NULL, sizeof(m_pScore));	// 数字のオブジェクト
-	memset(&m_pRank[0], NULL, sizeof(m_pRank));	// 数字のオブジェクト
+	memset(&m_b[0], NULL, sizeof(m_b));					// 拡大中判定
+	m_bEnd = false;					// スコア終了判定
+	memset(&m_pScore[0], NULL, sizeof(m_pScore));		// 数字のオブジェクト
+	memset(&m_pRank[0], NULL, sizeof(m_pRank));			// 順位のオブジェクト
 }
 
 //==========================================================================
@@ -124,64 +143,66 @@ HRESULT CRankingScore::Init(void)
 		m_nTexIdx3D[nCntVtx] = CManager::GetInstance()->GetTexture()->Regist(m_apTexture3DFile[nCntVtx]);
 
 		// テクスチャの割り当て
-		m_pObj3D[nCntVtx]->GetObject3D()->BindTexture(m_nTexIdx3D[nCntVtx]);
+		m_pObj3D[nCntVtx]->BindTexture(m_nTexIdx3D[nCntVtx]);
 
 		// 各種変数の初期化
 		switch (nCntVtx)
 		{
 		case VTX_LOGO:
-			m_pObj3D[nCntVtx]->GetObject3D()->SetSize(D3DXVECTOR3(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).x * 0.003f,
+			m_pObj3D[nCntVtx]->SetSize(D3DXVECTOR3(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).x * 0.003f,
 				CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).y * 0.003f,
 				0.0f));	// サイズ
 
-			m_pObj3D[nCntVtx]->GetObject3D()->SetPosition(D3DXVECTOR3(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetSize().x + 63.0f - cosf(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetRotation().y) * 6.5f,
+			m_pObj3D[nCntVtx]->SetPosition(D3DXVECTOR3(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetSize().x + 63.0f - cosf(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetRotation().y) * 6.5f,
 				m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetSize().y + INIT_POSY + 5.0f,
 				-150.0f + sinf(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetRotation().y) * 6.5f));	// 位置
 
-			m_pObj3D[nCntVtx]->GetObject3D()->SetRotation(D3DXVECTOR3(0.0f, 0.5f, 0.0f));	// 向き
+			m_pObj3D[nCntVtx]->SetRotation(D3DXVECTOR3(0.0f, 0.5f, 0.0f));	// 向き
 			break;
 
 
 
-		case VTX_NUM:
-			m_pObj3D[nCntVtx]->GetObject3D()->SetSize(D3DXVECTOR3(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).x * 0.5f,
+		case VTX_SCREEN:
+			m_pObj3D[nCntVtx]->SetSize(D3DXVECTOR3(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).x * 0.7f,
 				CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).y * 0.5f,
 				0.0f));	// サイズ
 
-			m_pObj3D[nCntVtx]->SetPosition(D3DXVECTOR3(m_pObj3D[nCntVtx]->GetSize().x, 360.0f, 0.0f));	// 位置
+			m_pObj3D[nCntVtx]->SetPosition(D3DXVECTOR3(-15.0f, 1030.0f , 430.0f));	// 位置
+
+			m_pObj3D[nCntVtx]->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 向き
 			break;
 
 
 
 		case VTX3D_VIRTUAL_WINDOW_00:
-			m_pObj3D[nCntVtx]->GetObject3D()->SetSize(D3DXVECTOR3(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).x * 0.13f,
+			m_pObj3D[nCntVtx]->SetSize(D3DXVECTOR3(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).x * 0.13f,
 				CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).y * 0.13f,
 				0.0f));	// サイズ
 
-			m_pObj3D[nCntVtx]->GetObject3D()->SetPosition(D3DXVECTOR3(m_pObj3D[nCntVtx]->GetSize().x + 63.0f, m_pObj3D[nCntVtx]->GetSize().y + INIT_POSY, -150.0f));	// 位置
-			m_pObj3D[nCntVtx]->GetObject3D()->SetRotation(D3DXVECTOR3(0.0f, 0.5f, 0.0f));	// 向き
+			m_pObj3D[nCntVtx]->SetPosition(D3DXVECTOR3(m_pObj3D[nCntVtx]->GetSize().x + 63.0f, m_pObj3D[nCntVtx]->GetSize().y + INIT_POSY, -150.0f));	// 位置
+			m_pObj3D[nCntVtx]->SetRotation(D3DXVECTOR3(0.0f, 0.5f, 0.0f));	// 向き
 			break;
 
 
 
 		case VTX3D_VIRTUAL_WINDOW_01:
-			m_pObj3D[nCntVtx]->GetObject3D()->SetSize(D3DXVECTOR3(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).x * 0.13f,
+			m_pObj3D[nCntVtx]->SetSize(D3DXVECTOR3(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).x * 0.13f,
 				CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).y * 0.13f,
 				0.0f));	// サイズ
 
-			m_pObj3D[nCntVtx]->GetObject3D()->SetPosition(D3DXVECTOR3(m_pObj3D[nCntVtx]->GetSize().x + 63.0f, m_pObj3D[nCntVtx]->GetSize().y + INIT_POSY, -150.0f));	// 位置
-			m_pObj3D[nCntVtx]->GetObject3D()->SetRotation(D3DXVECTOR3(0.0f, 0.5f, 0.0f));	// 向き
+			m_pObj3D[nCntVtx]->SetPosition(D3DXVECTOR3(m_pObj3D[nCntVtx]->GetSize().x + 63.0f, m_pObj3D[nCntVtx]->GetSize().y + INIT_POSY, -150.0f));	// 位置
+			m_pObj3D[nCntVtx]->SetRotation(D3DXVECTOR3(0.0f, 0.5f, 0.0f));	// 向き
 			break;
 
 
 
 		case VTX3D_SHADOE_00:
-			m_pObj3D[nCntVtx]->GetObject3D()->SetSize(D3DXVECTOR3(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).x * 0.14f,
+			m_pObj3D[nCntVtx]->SetSize(D3DXVECTOR3(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).x * 0.14f,
 				CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).y * 0.14f,
 				0.0f));	// サイズ
 
-			m_pObj3D[nCntVtx]->GetObject3D()->SetPosition(D3DXVECTOR3(m_pObj3D[nCntVtx]->GetSize().x + 66.0f, m_pObj3D[nCntVtx]->GetSize().y + INIT_POSY - 9.0f, -143.0f));	// 位置
-			m_pObj3D[nCntVtx]->GetObject3D()->SetRotation(D3DXVECTOR3(D3DX_PI / 2, 0.5f, 0.0f));	// 向き
+			m_pObj3D[nCntVtx]->SetPosition(D3DXVECTOR3(m_pObj3D[nCntVtx]->GetSize().x + 66.0f, m_pObj3D[nCntVtx]->GetSize().y + INIT_POSY - 9.0f, -143.0f));	// 位置
+			m_pObj3D[nCntVtx]->SetRotation(D3DXVECTOR3(D3DX_PI / 2, 0.5f, 0.0f));	// 向き
 			break;
 
 		default:
@@ -189,67 +210,46 @@ HRESULT CRankingScore::Init(void)
 		}
 
 		// 種類の設定
-		m_pObj3D[nCntVtx]->GetObject3D()->SetType(CObject::TYPE_OBJECT3D);
+		m_pObj3D[nCntVtx]->SetType(CObject::TYPE_OBJECT3D);
 	}
 
-	for (int nCntVtx = 0; nCntVtx < WINDOW_WHITE_NUM; nCntVtx++)
+	//ポップアップウィンドウの情報ロード
+	LoadPopAppInfo();
+
+	// ポップアップウィンドウの生成
+	for (int nCntVtx = 0; nCntVtx < m_nNumPA; nCntVtx++)
 	{
 		// 生成処理
 		m_pObj3D_Win[nCntVtx] = CObject3D::Create(6);
 
-		// テクスチャの割り当て
-		m_nTexIdx3D_Win = CManager::GetInstance()->GetTexture()->Regist(m_apTexture3D_WinFile);
+		int i = Random(0, POPAPP_TEX_NUM - 1);
 
 		// テクスチャの割り当て
-		m_pObj3D_Win[nCntVtx]->GetObject3D()->BindTexture(m_nTexIdx3D_Win);
+		m_nTexIdx3D_Win = CManager::GetInstance()->GetTexture()->Regist(m_apTexture3D_WinFile[i]);
 
-		switch (nCntVtx)
-		{
-		case 0:
-			m_pObj3D_Win[nCntVtx]->GetObject3D()->SetSize(D3DXVECTOR3(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D_Win).x * 0.12f,
-				CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D_Win).y * 0.12f,
-				0.0f));	// サイズ
-
-			m_pObj3D_Win[nCntVtx]->GetObject3D()->SetPosition(D3DXVECTOR3(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetSize().x + 63.0f - cosf(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetRotation().y) * 6.5f,
-				m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetSize().y + INIT_POSY + 1.5f,
-				-150.0f + sinf(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetRotation().y) * 6.5f));	// 位置
-
-			break;
+		// テクスチャの割り当て
+		m_pObj3D_Win[nCntVtx]->BindTexture(m_nTexIdx3D_Win);
 
 
+		m_pObj3D_Win[nCntVtx]->SetSize(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// サイズ
 
-		case 1:
-			m_pObj3D_Win[nCntVtx]->GetObject3D()->SetSize(D3DXVECTOR3(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D_Win).x * 0.08f,
-				CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D_Win).y * 0.08f,
-				0.0f));	// サイズ
+		m_fTexDest[nCntVtx] = m_nPASize[nCntVtx];
+		m_nPASizeKeep[nCntVtx] = m_nPASize[nCntVtx];
 
-			m_pObj3D_Win[nCntVtx]->GetObject3D()->SetPosition(D3DXVECTOR3(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetSize().x + 63.0f - cosf(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetRotation().y) * 4.6f,
-				m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetSize().y + INIT_POSY + 0.2f,
-				-150.0f + sinf(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetRotation().y) * 4.6f));	// 位置
-			break;
+		m_pObj3D_Win[nCntVtx]->SetPosition(D3DXVECTOR3(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetSize().x + 63.0f - cosf(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetRotation().y) * m_nPAMag[nCntVtx],
+			m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetSize().y + INIT_POSY + m_nPAHeight[nCntVtx],
+			-150.0f + sinf(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetRotation().y) * m_nPAMag[nCntVtx]));	// 位置
 
 
-
-		case 2:
-			m_pObj3D_Win[nCntVtx]->GetObject3D()->SetSize(D3DXVECTOR3(CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D_Win).x * 0.1f,
-				CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D_Win).y * 0.1f,
-				0.0f));	// サイズ
-
-			m_pObj3D_Win[nCntVtx]->GetObject3D()->SetPosition(D3DXVECTOR3(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetSize().x + 63.0f - cosf(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetRotation().y) * 5.6f,
-				m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetSize().y + INIT_POSY - 1.6f,
-				-150.0f + sinf(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetRotation().y) * 5.6f));	// 位置
-			break;
-
-		default:
-			break;
-		}
-
-		m_pObj3D_Win[nCntVtx]->GetObject3D()->SetRotation(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetRotation());	// 向き
+		m_pObj3D_Win[nCntVtx]->SetRotation(m_pObj3D[VTX3D_VIRTUAL_WINDOW_00]->GetRotation());	// 向き
+		m_pObj3D_Win[nCntVtx]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.6f));
 
 		// 種類の設定
-		m_pObj3D_Win[nCntVtx]->GetObject3D()->SetType(CObject::TYPE_OBJECT3D);
+		m_pObj3D_Win[nCntVtx]->SetType(CObject::TYPE_OBJECT3D);
 	}
 
+
+	// ランキングのスコア生成
 	for (int nCntRanking = 0; nCntRanking < RANKINGNUM; nCntRanking++)
 	{
 		// 生成処理
@@ -259,6 +259,7 @@ HRESULT CRankingScore::Init(void)
 			D3DXVECTOR2(BASE_WIDTH, BASE_HEIGHT),
 			RANKINGSCORE_DIGIT,
 			CNumber::OBJECTTYPE_3D,
+			NUMBERTEXTURE,
 			true,
 			7);
 
@@ -273,6 +274,23 @@ HRESULT CRankingScore::Init(void)
 		// 目標の位置
 		m_fPosDestY[nCntRanking] = INIT_POSY + 11.0f + RANKINGNUM * DIS_Y;
 
+		m_apTextureRank = NUMBERTEXTURE_04;
+
+		switch (nCntRanking)
+		{
+		case 0:
+			m_apTextureRank = NUMBERTEXTURE_01;
+			break;
+
+		case 1:
+			m_apTextureRank = NUMBERTEXTURE_02;
+			break;
+
+		case 2:
+			m_apTextureRank = NUMBERTEXTURE_03;
+			break;
+		}
+
 
 		m_pRank[nCntRanking] = CMultiNumber::Create(D3DXVECTOR3(m_pScore[nCntRanking]->GetPosition().x - cosf(m_pScore[nCntRanking]->GetRotation().y) * INIT_POS_B,
 			m_pScore[nCntRanking]->GetPosition().y,
@@ -280,6 +298,7 @@ HRESULT CRankingScore::Init(void)
 			D3DXVECTOR2(BASE_WIDTH, BASE_HEIGHT),
 			RANKINGRANK_DIGIT,
 			CNumber::OBJECTTYPE_3D,
+			m_apTextureRank,
 			true,
 			7);
 
@@ -310,6 +329,14 @@ HRESULT CRankingScore::Init(void)
 		// セーブ処理
 		Save();
 	}
+
+	m_nNowScore = 120000;
+
+	// ソート処理
+	Sort();
+
+	// セーブ処理
+	Save();
 
 	return S_OK;
 }
@@ -373,13 +400,40 @@ void CRankingScore::Update(void)
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
 	m_nCnt++;
+	m_nCntCrePA++;
 
+	// 開始時n秒動きを止める
 	if (m_nCnt >= 60 * 2)
 	{
 		// 移動処理
 		MovingScore();
 
 		MovingRank();
+
+		CreatePopApp();
+
+		if (m_bEnd == false)
+		{
+			for (int nCntWindow = 0; nCntWindow < m_nNumPA; nCntWindow++)
+			{
+				if (m_b[nCntWindow] == true)
+				{
+					m_nCntDelPA[nCntWindow]++;
+
+					if (m_nCntDelPA[nCntWindow] <= 60 * m_nDelSecPA[nCntWindow])
+					{
+						ExpansionSize(nCntWindow);
+					}
+
+					else
+					{
+						m_fTexDest[nCntWindow] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+						ReductionSize(nCntWindow);
+					}
+				}
+			}
+		}
 
 		m_nCnt = 60 * 2;
 	}
@@ -396,11 +450,38 @@ void CRankingScore::Update(void)
 		m_pRank[nCntRanking]->Update();
 	}
 
+
 	if (m_bNewRecord == true)
 	{// 記録更新していたら
-
 	 // ニューレコードの更新処理
 		UpdateNewRecord();
+	}
+
+	if (m_bEnd == true)
+	{
+		for (int nCntWindow = 0; nCntWindow < m_nNumPA; nCntWindow++)
+		{
+			if (m_b[nCntWindow] == true)
+			{
+				ReductionSize(nCntWindow);
+			}
+		}	
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
+	{
+		if (m_bEnd == false)
+		{
+			for (int nCntWindow = 0; nCntWindow < m_nNumPA; nCntWindow++)
+			{
+				if (m_b[nCntWindow] == true)
+				{
+					m_fTexDest[nCntWindow] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+				}
+			}
+
+			m_bEnd = true;
+		}
 	}
 }
 
@@ -515,6 +596,13 @@ void CRankingScore::MovingRank(void)
 			if (nCntRanking == RANKINGNUM - 1)
 			{
 				CRanking::SetEnableArrival();
+
+				for (int nCntWindow = 0; nCntWindow < m_nNumPA; nCntWindow++)
+				{
+					m_fTexDest[nCntWindow] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+				}
+
+				m_bEnd = true;
 			}
 
 			//// サウンド再生
@@ -523,6 +611,54 @@ void CRankingScore::MovingRank(void)
 
 		// 位置設定
 		m_pRank[nCntRanking]->SetPosition(pos);
+	}
+}
+
+//==========================================================================
+// 拡大処理
+//==========================================================================
+void CRankingScore::CreatePopApp(void)
+{
+	// n秒後に生成する
+	if (m_nCntCrePA >= 60 * m_nCreSecPA)
+	{
+		// ポップアップを拡大する数
+		int i = Random(2, 4);
+
+		// どのポップアップを拡大するか
+		for (int nCntWindow = 0; nCntWindow < i; nCntWindow++)
+		{
+			int n = Random(0, m_nNumPA - 1);
+
+			while (1)
+			{
+				// 生成されていたら
+				if (m_b[n] == true)
+				{
+					n = Random(0, m_nNumPA - 1);
+				}
+
+				else
+				{
+					break;
+				}
+			}
+
+			m_b[n] = true;
+
+			int m = Random(0, POPAPP_TEX_NUM - 1);
+
+			// テクスチャの割り当て
+			m_nTexIdx3D_Win = CManager::GetInstance()->GetTexture()->Regist(m_apTexture3D_WinFile[m]);
+
+			// テクスチャの割り当て
+			m_pObj3D_Win[n]->GetObject3D()->BindTexture(m_nTexIdx3D_Win);
+
+			m_nDelSecPA[n] = Random(2, 5);
+		}
+
+		m_nCreSecPA = Random(2, 3);
+		m_nCntCrePA = 0;
 	}
 }
 
@@ -546,6 +682,82 @@ void CRankingScore::UpdateNewRecord(void)
 
 	// 色設定
 	m_pScore[m_nIdxNewRecord]->SetColor(col);
+}
+
+//==========================================================================
+// 拡大処理
+//==========================================================================
+void CRankingScore::ExpansionSize(int CntWindow)
+{
+	// 位置取得
+	D3DXVECTOR3 size = m_pObj3D_Win[CntWindow]->GetSize();
+
+	//
+	D3DXVECTOR3 nDest = m_fTexDest[CntWindow];
+
+	// 目標の位置へ補正
+	if (nDest.x > size.x)
+	{
+		size.x += nDest.x / (float)SIZE_MOVETIME;
+	}
+
+	if (nDest.y > size.y)
+	{
+		size.y += nDest.y / (float)SIZE_MOVETIME;
+	}
+
+	// 目標で固定
+	if (nDest.x <= size.x)
+	{
+		size.x = m_fTexDest[CntWindow].x;
+	}
+
+	if (nDest.y <= size.y)
+	{
+		size.y = m_fTexDest[CntWindow].y;
+	}
+
+	// 位置設定
+	m_pObj3D_Win[CntWindow]->SetSize(size);
+}
+
+//==========================================================================
+// 縮小処理
+//==========================================================================
+void CRankingScore::ReductionSize(int CntWindow)
+{
+	// 位置取得
+	D3DXVECTOR3 size = m_pObj3D_Win[CntWindow]->GetSize();
+
+	D3DXVECTOR3 nDest = m_fTexDest[CntWindow] - m_nPASizeKeep[CntWindow];
+
+	// 目標の位置へ補正
+	if (nDest.x < size.x)
+	{
+		size.x += nDest.x / (float)SIZE_MOVETIME / 2;
+	}
+
+	if (nDest.y < size.y)
+	{
+		size.y += nDest.y / (float)SIZE_MOVETIME / 2;
+	}
+
+
+	if (m_fTexDest[CntWindow].x >= size.x)
+	{// 目標で固定
+		size.x = m_fTexDest[CntWindow].x;
+		m_b[CntWindow] = false;
+		m_nCntDelPA[CntWindow] = 0;
+		m_fTexDest[CntWindow] = m_nPASize[CntWindow];
+	}
+
+	if (m_fTexDest[CntWindow].y >= size.y)
+	{// 目標で固定
+		size.y = m_fTexDest[CntWindow].y;
+	}
+
+	// 位置設定
+	m_pObj3D_Win[CntWindow]->SetSize(size);
 }
 
 //==========================================================================
@@ -620,11 +832,14 @@ void CRankingScore::Sort(void)
 		}
 
 		// ランキング最大値よりも今回のが小さかったら
-		if (m_nScore[m_nNumRanking - 1] < m_nNowScore)
-		{// 入れ替え
+		if (m_bNewRecord == false)
+		{
+			if (m_nScore[m_nNumRanking - 1] < m_nNowScore)
+			{// 入れ替え
 
-			m_nScore[m_nNumRanking - 1] = m_nNowScore;	// 最小値と今回のデータ入れ替え
-			m_bNewRecord = true;	// フラグON
+				m_nScore[m_nNumRanking - 1] = m_nNowScore;	// 最小値と今回のデータ入れ替え
+				m_bNewRecord = true;	// フラグON
+			}
 		}
 	}
 
@@ -717,4 +932,41 @@ void CRankingScore::Load(void)
 		// セーブ
 		Save();
 	}
+}
+
+//==============================================================
+// ロード処理
+//==============================================================
+void CRankingScore::LoadPopAppInfo(void)
+{
+	FILE *pFile = NULL;	// ファイルポインタを宣言
+
+						// ファイルを開く
+	pFile = fopen("data\\TEXT\\ranking_PopApp_window.txt", "r");
+
+	if (pFile == NULL)
+	{//ファイルが開けなかった場合
+		return;
+	}
+
+	else if (pFile != NULL)
+	{// ファイルが開けた場合
+
+		fscanf(pFile, "%d", &m_nNumPA);	// 
+
+	 // ファイルに数値を読み込む
+		for (int nCnt = 0; nCnt <= m_nNumPA; nCnt++)
+		{
+			fscanf(pFile, "%f", &m_nPASize[nCnt].x);	// 
+			fscanf(pFile, "%f", &m_nPASize[nCnt].y);	// 
+			fscanf(pFile, "%f", &m_nPASize[nCnt].z);	// 
+
+			fscanf(pFile, "%f", &m_nPAMag[nCnt]);	// 
+
+			fscanf(pFile, "%f", &m_nPAHeight[nCnt]);	// 
+		}
+	}
+
+	// ファイルを閉じる
+	fclose(pFile);
 }

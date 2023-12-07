@@ -29,6 +29,7 @@ CModel::CModel(int nPriority)
 	D3DXMatrixIdentity(&m_mtxWorld);				// ワールドマトリックス
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 位置
 	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 前回の位置
+	m_posOrigin = mylib_const::DEFAULT_VECTOR3;		// 元の位置
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 向き
 	m_rotOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 向き
 	m_nIdxXFile = 0;								// Xファイルのインデックス番号
@@ -124,6 +125,7 @@ CModel *CModel::Create(const char *pFileName, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 
 			// 位置・向き
 			pModel->SetPosition(pos);
+			pModel->m_posOrigin = pos;
 			pModel->SetRotation(rot);
 			pModel->SetOriginRotation(rot);
 		}
@@ -448,6 +450,22 @@ void CModel::SetOldPosition(const D3DXVECTOR3 posOld)
 D3DXVECTOR3 CModel::GetOldPosition(void) const
 {
 	return m_posOld;
+}
+
+//==========================================================================
+// 元の位置設定
+//==========================================================================
+void  CModel::SetOriginPosition(const D3DXVECTOR3 pos)
+{
+	m_posOrigin = pos;
+}
+
+//==========================================================================
+// 元の位置取得
+//==========================================================================
+D3DXVECTOR3  CModel::GetOriginPosition(void) const
+{
+	return m_posOrigin;
 }
 
 //==========================================================================

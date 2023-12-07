@@ -42,6 +42,8 @@ public:
 	D3DXVECTOR3 GetPosition(void) const;		// 位置取得
 	void SetOldPosition(const D3DXVECTOR3 posOld);	// 前回の位置設定
 	D3DXVECTOR3 GetOldPosition(void) const;		// 前回の位置取得
+	void SetOriginPosition(const D3DXVECTOR3 pos);	// 元の位置設定
+	D3DXVECTOR3 GetOriginPosition(void) const;		// 元の位置取得
 	void SetRotation(const D3DXVECTOR3 rot);	// 向き設定
 	D3DXVECTOR3 GetRotation(void) const;		// 向き取得
 	void SetOriginRotation(const D3DXVECTOR3 rot);	// 元の向き設定
@@ -64,6 +66,7 @@ private:
 	D3DXMATRIX	m_mtxWorld;	// ワールドマトリックス
 	D3DXVECTOR3 m_pos;		// 位置
 	D3DXVECTOR3 m_posOld;	// 前回の位置
+	D3DXVECTOR3 m_posOrigin;	// 元の位置
 	D3DXVECTOR3 m_rot;		// 向き
 	D3DXVECTOR3 m_rotOrigin;// 向き
 	int m_nIdxXFile;		// Xファイルのインデックス番号

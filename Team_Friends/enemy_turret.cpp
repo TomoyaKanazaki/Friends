@@ -35,12 +35,12 @@ namespace
 	const float SEARCH_LENGTH = 600.0f;		//エリア生成距離
 	const float AREA_LENGTH = 800.0f;		//ボスエリアサイズ
 	const float BEAM_LENGTH = 1000.0f;		//ビームの長さ
-	const D3DXCOLOR BEAM_COLOR = {0.1f, 1.0f, 0.1f, 0.5f};		//ビームの色
+	const D3DXCOLOR BEAM_COLOR = { 0.5f, 0.1f, 1.0f, 0.5f};		//ビームの色
 	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
 	{
-		{ CEnemyTurret::ACTION_BEAM, 0.7f },		// 遠隔攻撃
-		{ CEnemyTurret::ACTION_MORTAR, 0.3f },		// 突撃攻撃
-		{ CEnemyTurret::ACTION_WAIT, 0.0f },			// 待機
+		{ CEnemyTurret::ACTION_BEAM, 0.3f },		// ビーム攻撃
+		{ CEnemyTurret::ACTION_MORTAR, 0.7f },		// 迫撃攻撃
+		{ CEnemyTurret::ACTION_WAIT, 0.0f },		// 待機
 	};
 }
 
@@ -169,34 +169,31 @@ void CEnemyTurret::UpdateAction(void)
 //==========================================================================
 void CEnemyTurret::DrawingAction(void)
 {
-	//// 0～1のランダム値取得
-	//float fRandomValue = static_cast<float>(std::rand()) / RAND_MAX;
+	// 0～1のランダム値取得
+	float fRandomValue = static_cast<float>(std::rand()) / RAND_MAX;
 
-	//// 確率加算用変数
-	//float fDrawingProbability = 0.0;
+	// 確率加算用変数
+	float fDrawingProbability = 0.0;
 
-	//// 行動抽選要素分繰り返し
-	//for (const auto& candidate : ACT_PROBABILITY)
-	//{
-	//	// 今回の確率分を加算
-	//	fDrawingProbability += candidate.fProbability;
+	// 行動抽選要素分繰り返し
+	for (const auto& candidate : ACT_PROBABILITY)
+	{
+		// 今回の確率分を加算
+		fDrawingProbability += candidate.fProbability;
 
-	//	if (fRandomValue < fDrawingProbability)
-	//	{// 今回のランダム値が確率を超えたら
+		if (fRandomValue < fDrawingProbability)
+		{// 今回のランダム値が確率を超えたら
 
-	//	 // 行動決定
-	//		m_Action = candidate.action;
+		 // 行動決定
+			m_Action = candidate.action;
 
-	//		// 行動カウンターリセット
-	//		m_fActTime = 0.0f;
-	//		break;
-	//	}
-	//}
-
-	m_Action = ACTION_BEAM;
+			// 行動カウンターリセット
+			m_fActTime = 0.0f;
+			break;
+		}
+	}
 
 	// 次の行動別
-	float fLength = 0.0f;
 	switch (m_Action)
 	{
 	case CEnemyTurret::ACTION_BEAM:	// 遠隔攻撃
@@ -527,12 +524,20 @@ void CEnemyTurret::RotationTarget(void)
 
 	// 目標との差分
 	float fRotDiff = fRotDest - rot.y;
-
+	
 	//角度の正規化
 	RotNormalize(fRotDiff);
-
+	
 	//角度の補正をする
-	rot.y += fRotDiff * 1.0f;
+	if (fabsf(fRotDiff) > 0.1f)
+	{
+		rot.y += fRotDiff * 0.05f;
+	}
+	else
+	{
+		rot.y += fRotDiff * 1.0f;
+	}
+
 	RotNormalize(rot.y);
 
 	// 向き設定
@@ -552,6 +557,20 @@ void CEnemyTurret::SetTargetPlayer(void)
 	D3DXVECTOR3 posPlayer;
 	float fLength = 0.0f, fLengthDiff = 0.0f;
 	CPlayer* pPlayer = nullptr;
+
+	//初期値入れ
+	pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(0);
+
+	if (pPlayer == NULL)
+	{
+		return;
+	}
+
+	posPlayer = pPlayer->GetPosition();
+	fLengthDiff = GetFabsPosLength(pos, posPlayer);
+	m_nTargetPlayerIndex = 0;
+	SetTargetPosition(posPlayer);
+
 	// プレイヤー情報
 	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
 	{

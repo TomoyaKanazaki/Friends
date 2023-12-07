@@ -30,7 +30,7 @@ class CEnemy : public CObjectChara
 {
 public:
 	// 敵種類
-	typedef enum
+	enum TYPE
 	{
 		TYPE_BOSS = 0,	// ボス
 		TYPE_FLY,
@@ -40,12 +40,13 @@ public:
 		TYPE_TURRET, // 中ボス(ウィスピーウッズ)
 		TYPE_RIOT, // 中ボス(ギガントエッジ)
 		TYPE_MAX
-	}TYPE;
+	};
 
 	// 状態列挙
-	typedef enum
+	enum STATE
 	{
 		STATE_NONE = 0,		// なにもない
+		STATE_SPAWNWAIT,	// スポーン待機
 		STATE_SPAWN,		// スポーン
 		STATE_DMG,			// ダメージ
 		STATE_DEAD,			// 死
@@ -56,7 +57,7 @@ public:
 		STATE_WAIT,			// 待機
 		STATE_BASECHANGE,	// 拠点切り替え
 		STATE_MAX
-	}STATE;
+	};
 
 	// 行動列挙 : 金崎
 	enum ACTION
@@ -77,8 +78,8 @@ public:
 	virtual void Update(void) override;
 	virtual void Draw(void) override;
 	int GetState(void) override;
-	void SetState(int state) override;		// 状態設定
-	void SetState(int state, int nCntState) override;	// 状態設定
+	void SetState(STATE state);		// 状態設定
+	void SetState(STATE state, int nCntState);	// 状態設定
 	int GetCharaType(void) override;	// 種類取得
 	virtual bool Hit(const int nValue);
 
@@ -148,6 +149,7 @@ protected:
 
 	// 状態更新系
 	virtual void StateNone(void);			// 何もない状態
+	virtual void SpawnWait(void);			// スポーン待機
 	virtual void Spawn(void);				// スポーン
 	virtual void Damage(void);				// ダメージ
 	virtual void Dead(void);				// 死亡
@@ -163,8 +165,6 @@ protected:
 	STATE m_state;							// 状態
 	STATE m_Oldstate;						// 前回の状態
 	int m_nCntState;						// 状態遷移カウンター
-	int m_nSurvivalLife;					// 生存時間
-	int m_nSurvivalLifeOrigin;				// 生存時間
 	int m_nTargetPlayerIndex;				// 追い掛けるプレイヤーのインデックス番号
 	float m_fActCounter;						// 移動カウンター
 	D3DXVECTOR3 m_posOrigin;				// 最初の位置

@@ -1,6 +1,6 @@
-//==========================================
+ï»¿//==========================================
 //
-//  ƒRƒsƒy—p‚Ì“G(enemy_escape.cpp)
+//  ãƒ¡ã‚¿ãƒ«ã‚¹ãƒ©ã‚¤ãƒ (enemy_escape.cpp)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
@@ -12,30 +12,34 @@
 #include "hp_gauge.h"
 
 //==========================================
-//  ’è”’è‹`
+//  å®šæ•°å®šç¾©
 //==========================================
 namespace
 {
 	const float SEARCH_LENGTH = 400.0f;
-	const float MOVE_SPEED = 0.03f;
-	const float ESCAPE_SPEED = 5.00f;
+	const float TURN_SPEED = 0.05f;
+	const float ESCAPE_SPEED = 2.00f;
+	const float WALK_TIME = 1.0f;
 	const float FIND_TIME = 0.5f;
+	const float TURN_TIME = 0.5f;
 	const float ESCAPE_TIME = 3.0f;
 }
 
 //==========================================
-//  ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+//  ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //==========================================
 CEnemyEscape::CEnemyEscape(int nPriority) :
 	m_Act(ACTION_ROAMING),
+	m_fCntWalk(0.0f),
 	m_fCntFind(0.0f),
-	m_fCntEscape(0.0f)
+	m_fCntEscape(0.0f),
+	m_fRot(0.0f)
 {
 
 }
 
 //==========================================
-//  ƒfƒXƒgƒ‰ƒNƒ^
+//  ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //==========================================
 CEnemyEscape::~CEnemyEscape()
 {
@@ -43,55 +47,50 @@ CEnemyEscape::~CEnemyEscape()
 }
 
 //==========================================
-//  ‰Šú‰»ˆ—
+//  åˆæœŸåŒ–å‡¦ç†
 //==========================================
 HRESULT CEnemyEscape::Init(void)
 {
-	//‰Šú‰»ˆ—
+	//åˆæœŸåŒ–å‡¦ç†
 	CEnemy::Init();
 
-	// HP‚Ìİ’è
+	// HPã®è¨­å®š
 	m_pHPGauge = CHP_Gauge::Create(100.0f, GetLifeOrigin());
 
 	return S_OK;
 }
 
 //==========================================
-//  I—¹ˆ—
+//  çµ‚äº†å‡¦ç†
 //==========================================
 void CEnemyEscape::Uninit(void)
 {
-	// I—¹ˆ—
+	// çµ‚äº†å‡¦ç†
 	CEnemy::Uninit();
 }
 
 //==========================================
-//  XVˆ—
+//  æ›´æ–°å‡¦ç†
 //==========================================
 void CEnemyEscape::Update(void)
 {
-	// €–S‚Ì”»’è
+	// æ­»äº¡ã®åˆ¤å®š
 	if (IsDeath() == true)
-	{// €–Sƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚½‚ç
+	{// æ­»äº¡ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ãŸã‚‰
 		return;
 	}
 
-	// XVˆ—
+	// æ›´æ–°å‡¦ç†
 	CEnemy::Update();
 
 	if (IsDeath() == true)
-	{// €–Sƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚½‚ç
+	{// æ­»äº¡ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ãŸã‚‰
 		return;
 	}
-
-	CManager::GetInstance()->GetDebugProc()->Print
-	(
-		"ƒ‚[ƒVƒ‡ƒ“ : %d\n", m_pMotion->GetType()
-	);
 }
 
 //==========================================
-// s“®XV
+// è¡Œå‹•æ›´æ–°
 //==========================================
 void CEnemyEscape::UpdateAction(void)
 {
@@ -101,42 +100,53 @@ void CEnemyEscape::UpdateAction(void)
 		return;
 	}
 
-	// s“®‚²‚Æ‚Ìs“®
+	// è¡Œå‹•ã”ã¨ã®è¡Œå‹•
 	switch (m_Act)
 	{
 	case CEnemyEscape::ACTION_ROAMING:
 
-		// ˆÚ“®
+		RandTurn();
+		// ç§»å‹•
 		Move();
 
 		break;
 
 	case CEnemyEscape::ACTION_FIND:
 
-		// ƒvƒŒƒCƒ„[‚ğŒü‚­
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å‘ã
 		RotationPlayer();
 
-		// ƒJƒEƒ“ƒ^[‚ğ‰ÁZ
+		// ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ã‚’åŠ ç®—
+		m_fCntFind += CManager::GetInstance()->GetDeltaTime();
+
+		break;
+
+	case CEnemyEscape::ACTION_TURN:
+
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã˜ã‚ƒãªã„æ–¹ã‚’å‘ã
+		Turn();
+
+		// ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ã‚’åŠ ç®—
 		m_fCntFind += CManager::GetInstance()->GetDeltaTime();
 
 		break;
 
 	case CEnemyEscape::ACTION_ESCAPE:
 
-		// “¦‘–
+		// é€ƒèµ°
 		Escape();
 
-		// ƒJƒEƒ“ƒ^[‚ğ‰ÁZ
+		// ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ã‚’åŠ ç®—
 		m_fCntEscape += CManager::GetInstance()->GetDeltaTime();
 
 		break;
 
 	case CEnemyEscape::ACTION_FADE:
 
-		// “¦‘–
+		// é€ƒèµ°
 		Escape();
 
-		// Á‚¦‚Ä‚­‚ê
+		// æ¶ˆãˆã¦ãã‚Œ
 		SetState(STATE_FADEOUT);
 
 		break;
@@ -147,76 +157,221 @@ void CEnemyEscape::UpdateAction(void)
 }
 
 //==========================================
-//  •`‰æˆ—
+//  ç§»å‹•
+//==========================================
+void CEnemyEscape::Move(void)
+{
+	// è§’åº¦ã®å–å¾—
+	D3DXVECTOR3 rot = GetRotation();
+
+	// ç§»å‹•é‡ã‚’å–å¾—
+	float fMove = GetVelocity();
+	D3DXVECTOR3 move = GetMove();
+
+	// ç§»å‹•é‡ã‚’åˆ†è§£ã™ã‚‹
+	move.x = -sinf(rot.y) * fMove * CManager::GetInstance()->GetDeltaTime();
+	move.z = -cosf(rot.y) * fMove * CManager::GetInstance()->GetDeltaTime();
+
+	// ç§»å‹•é‡ã‚’é©ç”¨ã™ã‚‹
+	SetMove(move);
+}
+
+//==========================================
+//  ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å‘ã
+//==========================================
+void CEnemyEscape::RotationPlayer(void)
+{
+	// ä½ç½®å–å¾—
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±
+	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
+	if (pPlayer == NULL)
+	{
+		return;
+	}
+
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®å–å¾—
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+
+	// ç›®æ¨™ã®è§’åº¦ã‚’æ±‚ã‚ã‚‹
+	float fRotDest = atan2f((pos.x - posPlayer.x), (pos.z - posPlayer.z));
+
+	// ç›®æ¨™ã¨ã®å·®åˆ†
+	float fRotDiff = fRotDest - rot.y;
+
+	//è§’åº¦ã®æ­£è¦åŒ–
+	RotNormalize(fRotDiff);
+
+	//è§’åº¦ã®è£œæ­£ã‚’ã™ã‚‹
+	rot.y += fRotDiff * TURN_TIME;
+
+	// è§’åº¦ã®æ­£è¦åŒ–
+	RotNormalize(rot.y);
+
+	// å‘ãè¨­å®š
+	SetRotation(rot);
+
+	// ç›®æ¨™ã®å‘ãè¨­å®š
+	SetRotDest(fRotDest);
+}
+
+//==========================================
+//  ãƒ©ãƒ³ãƒ€ãƒ ãªæ–¹å‘è»¢æ›
+//==========================================
+void CEnemyEscape::RandTurn(void)
+{
+	// ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ã®åŠ ç®—
+	m_fCntWalk += CManager::GetInstance()->GetDeltaTime();
+
+	// æ™‚é–“å†…ã ã£ãŸã‚‰é–¢æ•°ã‚’æŠœã‘ã‚‹
+	if (m_fCntWalk < WALK_TIME)
+	{
+		// ç›®æ¨™ã¨ã®å·®åˆ†
+		D3DXVECTOR3 rot = GetRotation();
+		float fRotDiff = m_fRot - rot.y;
+
+		//è§’åº¦ã®æ­£è¦åŒ–
+		RotNormalize(fRotDiff);
+
+		//è§’åº¦ã®è£œæ­£ã‚’ã™ã‚‹
+		rot.y += fRotDiff * TURN_SPEED;
+
+		// è§’åº¦ã®æ­£è¦åŒ–
+		RotNormalize(rot.y);
+
+		// å‘ãè¨­å®š
+		SetRotation(rot);
+
+		return;
+	}
+
+	// ä¸€å®šæ™‚é–“çµŒéã—ã¦ã„ãŸå ´åˆãƒªã‚»ãƒƒãƒˆã™ã‚‹
+	m_fCntWalk = 0.0f;
+
+	// ç§»å‹•æ–¹å‘ã‚’è¨­å®š
+	m_fRot = (float)(rand() % 624) * 0.01f - D3DX_PI;
+}
+
+//==========================================
+//  å‘ãç›´ã‚‹è¡Œå‹•
+//=~========================================
+void CEnemyEscape::Turn(void)
+{
+	// ä½ç½®å–å¾—
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±
+	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
+	if (pPlayer == NULL)
+	{
+		return;
+	}
+
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®å–å¾—
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+
+	// ç›®æ¨™ã®è§’åº¦ã‚’æ±‚ã‚ã‚‹
+	float fRotDest = atan2f((pos.x - posPlayer.x), (pos.z - posPlayer.z));
+
+	// é€†æ–¹å‘ã«è£œæ­£ã™ã‚‹
+	fRotDest += D3DX_PI;
+
+	// è§’åº¦ã®è£œæ­£
+	RotNormalize(fRotDest);
+
+	// ç›®æ¨™ã¨ã®å·®åˆ†
+	float fRotDiff = fRotDest - rot.y;
+
+	//è§’åº¦ã®æ­£è¦åŒ–
+	RotNormalize(fRotDiff);
+
+	//è§’åº¦ã®è£œæ­£ã‚’ã™ã‚‹
+	rot.y += fRotDiff * TURN_SPEED;
+
+	// è§’åº¦ã®æ­£è¦åŒ–
+	RotNormalize(rot.y);
+
+	// å‘ãè¨­å®š
+	SetRotation(rot);
+
+	// ç›®æ¨™ã®å‘ãè¨­å®š
+	SetRotDest(fRotDest);
+}
+
+//==========================================
+//  æç”»å‡¦ç†
 //==========================================
 void CEnemyEscape::Draw(void)
 {
-	// •`‰æˆ—
+	// æç”»å‡¦ç†
 	CEnemy::Draw();
 }
 
 //==========================================
-//  E‚·
+//  æ®ºã™
 //==========================================
 void CEnemyEscape::Kill(void)
 {
-	// €–Sˆ—
+	// æ­»äº¡å‡¦ç†
 	CEnemy::Kill();
 }
 
 //==========================================
-//  ƒ‚[ƒVƒ‡ƒ“ƒZƒbƒg
+//  ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚»ãƒƒãƒˆ
 //==========================================
 void CEnemyEscape::MotionSet(void)
 {
 	if (m_pMotion->IsFinish() == true)
-	{// I—¹‚µ‚Ä‚¢‚½‚ç
+	{// çµ‚äº†ã—ã¦ã„ãŸã‚‰
 
-		// Œ»İ‚Ìí—Şæ“¾
+		// ç¾åœ¨ã®ç¨®é¡å–å¾—
 		int nType = m_pMotion->GetType();
 
 		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockback == false)
-		{// ˆÚ“®‚µ‚Ä‚¢‚½‚ç
-			// UŒ‚‚µ‚Ä‚¢‚È‚¢
+		{// ç§»å‹•ã—ã¦ã„ãŸã‚‰
+			// æ”»æ’ƒã—ã¦ã„ãªã„
 			m_sMotionFrag.bATK = false;
 
-			// ˆÚ“®ƒ‚[ƒVƒ‡ƒ“
+			// ç§»å‹•ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³
 			m_pMotion->Set(MOTION_WALK);
 		}
 		else if (m_sMotionFrag.bKnockback == true)
-		{// ‚â‚ç‚ê’†‚¾‚Á‚½‚ç
+		{// ã‚„ã‚‰ã‚Œä¸­ã ã£ãŸã‚‰
 
-			// ‚â‚ç‚êƒ‚[ƒVƒ‡ƒ“
+			// ã‚„ã‚‰ã‚Œãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³
 			m_pMotion->Set(MOTION_KNOCKBACK);
 		}
 		else if (m_sMotionFrag.bATK == true)
-		{// UŒ‚‚µ‚Ä‚¢‚½‚ç
+		{// æ”»æ’ƒã—ã¦ã„ãŸã‚‰
 
-			m_sMotionFrag.bATK = false;		// UŒ‚”»’èOFF
+			m_sMotionFrag.bATK = false;		// æ”»æ’ƒåˆ¤å®šOFF
 
-			// UŒ‚ƒ‚[ƒVƒ‡ƒ“
+			// æ”»æ’ƒãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³
 			m_pMotion->Set(MOTION_ATK);
 		}
 		else
 		{
-			// ƒjƒ…[ƒgƒ‰ƒ‹ƒ‚[ƒVƒ‡ƒ“
+			// ãƒ‹ãƒ¥ãƒ¼ãƒˆãƒ©ãƒ«ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³
 			m_pMotion->Set(MOTION_DEF);
 		}
 	}
 }
 
 //==========================================
-//  s“®İ’è
+//  è¡Œå‹•è¨­å®š
 //==========================================
 void CEnemyEscape::ActionSet(void)
 {
-	// Á–Åó‘Ô‚Ìê‡‚Í”²‚¯‚é
+	// æ¶ˆæ»…çŠ¶æ…‹ã®å ´åˆã¯æŠœã‘ã‚‹
 	if (m_Act == ACTION_FADE)
 	{
 		return;
 	}
 
-	// “¦‘–ó‘Ô‚©‚çÁ–Å‚·‚é
+	// é€ƒèµ°çŠ¶æ…‹ã‹ã‚‰æ¶ˆæ»…ã™ã‚‹
 	if (m_Act == ACTION_ESCAPE)
 	{
 		if (m_fCntEscape >= ESCAPE_TIME)
@@ -226,11 +381,23 @@ void CEnemyEscape::ActionSet(void)
 		return;
 	}
 
-	// ”­Œ©ó‘Ô‚©‚ç“¦‘–ó‘Ô‚ÖˆÚs‚·‚é
+	// ç™ºè¦‹çŠ¶æ…‹ã‹ã‚‰å‘ãç›´ã‚‹çŠ¶æ…‹ã¸ç§»è¡Œã™ã‚‹
 	if (m_Act == ACTION_FIND)
 	{
 		if (m_fCntFind >= FIND_TIME)
 		{
+			m_fCntFind = 0.0f;
+			m_Act = ACTION_TURN;
+		}
+		return;
+	}
+
+	// å‘ãç›´ã‚‹çŠ¶æ…‹ã‹ã‚‰é€ƒèµ°çŠ¶æ…‹ã¸ç§»è¡Œã™ã‚‹
+	if (m_Act == ACTION_TURN)
+	{
+		if (m_fCntFind >= TURN_TIME)
+		{
+			m_fCntFind = 0.0f;
 			m_Act = ACTION_ESCAPE;
 		}
 		return;
@@ -238,49 +405,26 @@ void CEnemyEscape::ActionSet(void)
 
 	if (CalcLenPlayer(SEARCH_LENGTH))
 	{
-		// ‹——£‚ª‹ß‚¢‚Æ”­Œ©ó‘Ô‚É‚È‚é
+		// è·é›¢ãŒè¿‘ã„ã¨ç™ºè¦‹çŠ¶æ…‹ã«ãªã‚‹
 		m_Act = ACTION_FIND;
 	}
-	else // ã‹LˆÈŠO‚È‚ç‘Ò‹@ó‘Ô
+	else // ä¸Šè¨˜ä»¥å¤–ãªã‚‰å¾…æ©ŸçŠ¶æ…‹
 	{
 		m_Act = ACTION_ROAMING;
 	}
 }
 
 //==========================================
-//  “¦‘–
+//  é€ƒèµ°
 //==========================================
 void CEnemyEscape::Escape(void)
 {
-	// ˆÊ’uæ“¾
-	D3DXVECTOR3 pos = GetPosition();
+	// å‘ãç›´ã‚‹
+	Turn();
 
-	// ƒvƒŒƒCƒ„[î•ñ
-	CPlayer* pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(m_nTargetPlayerIndex);
-	if (pPlayer == NULL)
-	{
-		return;
-	}
+	// ç§»å‹•é‡ã‚’è¨­å®š
+	Move();
 
-	// ƒvƒŒƒCƒ„[‚ÌˆÊ’uæ“¾
-	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-
-	// ƒvƒŒƒCƒ„[‚©‚ç©g‚ÉŒü‚©‚¤ƒxƒNƒgƒ‹‚ğZo
-	D3DXVECTOR3 vecToPlayer = pos - posPlayer;
-
-	// ƒxƒNƒgƒ‹‚Ì³‹K‰»
-	vecToPlayer.y = 0.0f;
-	D3DXVec3Normalize(&vecToPlayer, &vecToPlayer);
-	vecToPlayer *= ESCAPE_SPEED;
-
-	// ˆÚ“®—Ê‚Ìæ“¾
-	D3DXVECTOR3 move = GetMove();
-
-	// ˆÚ“®—Ê‚Ìİ’è
-	move.x = vecToPlayer.x;
-	move.z = vecToPlayer.z;
-	SetMove(move);
-
-	// •ûŒü“]Š·
-	MoveRotation();
+	// ç§»å‹•é‡ã«å€ç‡ã‚’ã‹ã‘ã‚‹
+	SetMove(GetMove() * ESCAPE_SPEED);
 }

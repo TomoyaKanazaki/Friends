@@ -18,10 +18,10 @@
 namespace
 {
 	const float ATTACK_LENGTH = 200.0f; // 攻撃する距離
-	const float MOVE_SPEED = 500.0f; // 移動速度
 	const float WAIT_TIMER = 2.0f; // 初期待機時間
 	const float ROTATION_TIMER = 1.0f; // 軸合わせに要する時間
 	const float TACKLE_TIMER = 1.0f; // 突進する時間
+	const int MAX_ATTACK = 3; // 連続攻撃の最大数
 }
 
 //==========================================
@@ -29,7 +29,8 @@ namespace
 //==========================================
 CEnemyRiot::CEnemyRiot(int nPriority) :
 	m_Act(ACTION_DEF),
-	m_fWaitTime(0.0f)
+	m_fWaitTime(0.0f),
+	m_nCntAction(0)
 {
 
 }
@@ -52,6 +53,9 @@ HRESULT CEnemyRiot::Init(void)
 
 	// HPの設定
 	m_pHPGauge = CHP_Gauge::Create(100.0f, GetLifeOrigin());
+
+	// 出現待機状態にする
+	m_state = STATE_SPAWNWAIT;
 
 	return S_OK;
 }
@@ -82,6 +86,12 @@ void CEnemyRiot::Update(void)
 	if (IsDeath() == true)
 	{// 死亡フラグが立っていたら
 		return;
+	}
+
+	// スクリーン内の存在判定
+	if (m_state == STATE_SPAWNWAIT && CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
+	{
+		m_state = STATE_SPAWN;
 	}
 }
 
@@ -142,17 +152,32 @@ void CEnemyRiot::MotionSet(void)
 }
 
 //==========================================
+// スポーン
+//==========================================
+void CEnemyRiot::Spawn(void)
+{
+	// 髙田くんへ、コピーしてね
+	int nType = m_pMotion->GetType();
+	if (nType == MOTION_SPAWN && m_pMotion->IsFinish() == true)
+	{// 登場が終わってたら
+
+		// なにもない
+		m_state = STATE_NONE;
+		return;
+	}
+
+	if (nType != MOTION_SPAWN)
+	{
+		// 登場モーション設定
+		m_pMotion->Set(MOTION_SPAWN);
+	}
+}
+
+//==========================================
 //  行動セット
 //==========================================
 void CEnemyRiot::ActionSet(void)
 {
-	// デバッグ表示
-	CManager::GetInstance()->GetDebugProc()->Print
-	(
-		"カウンター : %f\n"
-		"中ボスのアクション : ",
-		m_fWaitTime
-	);
 
 	switch (m_Act)
 	{
@@ -171,9 +196,6 @@ void CEnemyRiot::ActionSet(void)
 			// 攻撃をする
 			Attack();
 		}
-
-		// デバッグ表示
-		CManager::GetInstance()->GetDebugProc()->Print("攻撃\n\n");
 
 		break;
 
@@ -196,9 +218,6 @@ void CEnemyRiot::ActionSet(void)
 			Move();
 		}
 
-		// デバッグ表示
-		CManager::GetInstance()->GetDebugProc()->Print("突進\n\n");
-
 		break;
 
 	case ACTION_AXIS: // 軸合わせ状態
@@ -209,13 +228,15 @@ void CEnemyRiot::ActionSet(void)
 			m_fWaitTime = 0.0f;
 
 			// プレイヤーとの距離を計測
-			if (CalcLenPlayer(ATTACK_LENGTH)) // 近ければ攻撃
+			if (CalcLenPlayer(ATTACK_LENGTH) && m_nCntAction <= MAX_ATTACK) // 近ければ攻撃
 			{
 				m_Act = ACTION_ATTACK;
+				++m_nCntAction;
 			}
 			else // 遠かったらタックル
 			{
 				m_Act = ACTION_TACKLE;
+				m_nCntAction = 0;
 			}
 		}
 		else
@@ -226,9 +247,6 @@ void CEnemyRiot::ActionSet(void)
 			// プレイヤーの方向を向く
 			RotationPlayer();
 		}
-
-		// デバッグ表示
-		CManager::GetInstance()->GetDebugProc()->Print("軸合わせ\n\n");
 
 		break;
 
@@ -244,18 +262,9 @@ void CEnemyRiot::ActionSet(void)
 		}
 		else
 		{
-			//スクリーン内の存在判定
-			if (!CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
-			{
-				break; // 抜ける
-			}
-
 			// 待機時間を加算
 			m_fWaitTime += CManager::GetInstance()->GetDeltaTime();
 		}
-
-		// デバッグ表示
-		CManager::GetInstance()->GetDebugProc()->Print("待機\n\n");
 
 		break;
 
@@ -273,11 +282,12 @@ void CEnemyRiot::Move(void)
 	D3DXVECTOR3 rot = GetRotation();
 
 	// 移動量を取得
+	float fMove = GetVelocity();
 	D3DXVECTOR3 move = GetMove();
 
 	// 移動量を分解する
-	move.x = -sinf(rot.y) * MOVE_SPEED * CManager::GetInstance()->GetDeltaTime();
-	move.z = -cosf(rot.y) * MOVE_SPEED * CManager::GetInstance()->GetDeltaTime();
+	move.x = -sinf(rot.y) * fMove * CManager::GetInstance()->GetDeltaTime();
+	move.z = -cosf(rot.y) * fMove * CManager::GetInstance()->GetDeltaTime();
 
 	// 移動量を適用する
 	SetMove(move);

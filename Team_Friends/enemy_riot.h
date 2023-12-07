@@ -52,6 +52,7 @@ private:
 	// メンバ変数
 	ACTION m_Act; //行動状態
 	float m_fWaitTime; // 待機時間
+	int m_nCntAction; // 連続行動回数
 
 	// メンバ関数
 	void MotionSet(void) override;		// モーションの設定

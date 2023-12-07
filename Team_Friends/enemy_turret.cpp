@@ -52,6 +52,7 @@ CEnemyTurret::ACT_FUNC CEnemyTurret::m_ActFuncList[] =
 	&CEnemyTurret::ActAttackBeam,		// 遠隔
 	&CEnemyTurret::ActAttackMortar,		// 突撃
 	&CEnemyTurret::ActWait,				// 待機
+	&CEnemyTurret::Spawn,				// スポーン
 };
 
 //==========================================================================
@@ -89,7 +90,9 @@ HRESULT CEnemyTurret::Init(void)
 	m_pHPGauge = CHP_Gauge::Create(100.0f, GetLifeOrigin());
 
 	// 行動
-	m_Action = ACTION_WAIT;
+	// 出現待機状態にする
+	m_state = CEnemy::STATE_SPAWNWAIT;
+	m_Action = ACTION_SPAWN;
 
 	return S_OK;
 }
@@ -99,11 +102,16 @@ HRESULT CEnemyTurret::Init(void)
 //==========================================================================
 void CEnemyTurret::Uninit(void)
 {
-	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+	CScene *pScene = CManager::GetInstance()->GetScene();
+
+	if (pScene != nullptr)
 	{
-		if (!CGame::GetGameManager()->IsSetEvolusion())
+		if (pScene->GetMode() == CScene::MODE_GAME)
 		{
-			CGame::GetGameManager()->SetEnableEvolusion();
+			if (!CGame::GetGameManager()->IsSetEvolusion())
+			{
+				CGame::GetGameManager()->SetEnableEvolusion();
+			}
 		}
 	}
 
@@ -154,14 +162,38 @@ void CEnemyTurret::ActionSet(void)
 //==========================================================================
 void CEnemyTurret::UpdateAction(void)
 {
-	//スクリーン内の存在判定
-	if (!CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
+	// スクリーン内の存在判定
+	if (m_state == CEnemy::STATE_SPAWNWAIT && CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
 	{
-		return; // 抜ける
+		m_state = STATE_SPAWN;
+		return;
 	}
 
 	// 状態別処理
 	(this->*(m_ActFuncList[m_Action]))();
+}
+
+//==========================================
+// スポーン
+//==========================================
+void CEnemyTurret::Spawn(void)
+{
+	// 髙田くんへ、コピーしてね
+	int nType = m_pMotion->GetType();
+	if (nType == MOTION_SPAWN && m_pMotion->IsFinish() == true)
+	{// 登場が終わってたら
+
+	 // なにもない
+		m_state = STATE_NONE;
+		m_Action = ACTION_WAIT;
+		return;
+	}
+
+	if (nType != MOTION_SPAWN)
+	{
+		// 登場モーション設定
+		m_pMotion->Set(MOTION_SPAWN);
+	}
 }
 
 //==========================================================================

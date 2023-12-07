@@ -48,6 +48,7 @@ public:
 		MOTION_MORTAR,			// タックルモーション
 		MOTION_KNOCKBACK,		// やられモーション
 		MOTION_FADEOUT,			// 帰還モーション
+		MOTION_SPAWN,			// 出現モーション
 	};
 
 	// 行動列挙
@@ -56,6 +57,7 @@ public:
 		ACTION_BEAM,			// ビーム攻撃
 		ACTION_MORTAR,			// 迫撃攻撃
 		ACTION_WAIT,			// 待機
+		ACTION_SPAWN,			// 出現行動
 		ACTION_MAX
 	};
 
@@ -85,7 +87,8 @@ private:
 	void UpdateAction(void) override;	// 行動更新
 	void ActWait(void);				// 待機
 	void ActAttackBeam(void);		// 遠隔攻撃
-	void ActAttackMortar(void);	// 迫撃攻撃
+	void ActAttackMortar(void);		// 迫撃攻撃
+	void Spawn(void) override;		// スポーン
 
 	// 行動内関数
 	void ChargeBeam(void);		// ビームチャージ

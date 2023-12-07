@@ -43,22 +43,18 @@
 #include "enemy_riot.h"
 
 //==========================================================================
-// マクロ定義
+// 無名名前空間
 //==========================================================================
-#define WIDTH			(60.0f)		// 横幅
-#define HEIGHT			(60.0f)		// 縦幅
-#define MAX_LIFE		(5)			// 体力
-#define PLAYER_SERCH	(800.0f)	// プレイヤー探索範囲
-#define CHACE_DISTABCE	(50.0f)		// 追い掛ける時の間隔
-#define JUMP			(12.0f)		// ジャンプ力初期値
-#define SURVIVALLIFE	(60 * 20)	// 生存時間
-#define FADEOUT_TIME	(40)		// フェードアウト時間
+namespace
+{
+	const float PLAYER_SERCH = 800.0f;	// プレイヤー探索範囲
+	const float CHACE_DISTABCE = 50.0f;	// 追い掛ける時の間隔
+}
 
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
 CListManager *CEnemy::m_pListManager = NULL;	// リストマネージャ
-
 
 //==========================================================================
 // コンストラクタ
@@ -78,8 +74,6 @@ CEnemy::CEnemy(int nPriority) : CObjectChara(nPriority)
 	m_nTexIdx = 0;			// テクスチャのインデックス番号
 	m_nNumChild = 0;		// この数
 	m_nIdxManager = 0;		// マネージャのインデックス番号
-	m_nSurvivalLife = 0;	// 生存時間
-	m_nSurvivalLifeOrigin = 0;	// 生存時間
 	m_nTargetPlayerIndex = 0;	// 追い掛けるプレイヤーのインデックス番号
 	m_fActCounter = 0.0f;		// 移動カウンター
 	m_bAddScore = false;	// スコア加算するかの判定
@@ -193,7 +187,6 @@ HRESULT CEnemy::Init(void)
 	m_state = STATE_NONE;	// 状態
 	m_Oldstate = STATE_PLAYERCHASE;
 	m_nCntState = 0;		// 状態遷移カウンター
-	m_nSurvivalLife = SURVIVALLIFE;	// 生存時間
 	m_posKnokBack = m_posOrigin;	// ノックバックの位置
 	m_bAddScore = true;	// スコア加算するかの判定
 
@@ -208,9 +201,6 @@ HRESULT CEnemy::Init(void)
 
 	// ポーズのリセット
 	m_pMotion->ResetPose(0);
-
-	// 生存時間
-	m_nSurvivalLifeOrigin = m_nSurvivalLife;
 
 	//if (m_pListManager == NULL)
 	//{
@@ -894,8 +884,6 @@ void CEnemy::Move(void)
 //==========================================================================
 void CEnemy::UpdateState(void)
 {
-	//return;
-#if TOPCUR
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 pos11 = D3DXVECTOR3(GetObjectChara()->GetModel()[0]->GetWorldMtx()._41, GetObjectChara()->GetModel()[0]->GetWorldMtx()._42, GetObjectChara()->GetModel()[0]->GetWorldMtx()._43);
@@ -910,6 +898,10 @@ void CEnemy::UpdateState(void)
 	{
 	case STATE_NONE:
 		StateNone();
+		break;
+
+	case STATE_SPAWNWAIT:	// スポーン待機
+		SpawnWait();
 		break;
 
 	case STATE_SPAWN:
@@ -947,9 +939,13 @@ void CEnemy::UpdateState(void)
 	case STATE_BASECHANGE:
 		ChangeBase();
 		break;
-
 	}
-#endif
+
+	if (m_state != STATE_SPAWNWAIT && IsDisp() == false)
+	{
+		// 描画する
+		SetEnableDisp(true);
+	}
 }
 
 //==========================================================================
@@ -978,35 +974,39 @@ void CEnemy::StateNone(void)
 }
 
 //==========================================================================
+// スポーン待機
+//==========================================================================
+void CEnemy::SpawnWait(void)
+{
+	// 状態カウンターリセット
+	m_nCntState = 0;
+
+	// 描画しない
+	SetEnableDisp(false);
+}
+
+//==========================================================================
 // 出現
 //==========================================================================
 void CEnemy::Spawn(void)
 {
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
+	// 髙田くんへ、コピーしてね
+#if 0
+	int nType = m_pMotion->GetType();
+	if (nType == MOTION_SPAWN && m_pMotion->IsFinish() == true)
+	{// 登場が終わってたら
 
-	// 移動量取得
-	D3DXVECTOR3 move = GetMove();
-
-	// 状態遷移カウンター減算
-	m_nCntState++;
-
-	// 位置更新
-	pos = (D3DXVECTOR3(0.0f, SPAWN_GRAVITY, 0.0f) * (float)(m_nCntState * m_nCntState) + move * (float)m_nCntState) + m_posOrigin;
-
-	// 起伏との判定
-	if (CGame::GetElevation()->IsHit(pos))
-	{// 地面と当たっていたら
-		m_state = m_Oldstate;	// 過去の情報保存
-		m_nCntState = 0;		// 遷移カウンター設定
-		move.y = 0.0f;			// 移動量ゼロ
+		// なにない
+		m_state = STATE_NONE;
+		return;
 	}
 
-	// 位置設定
-	SetPosition(pos);
-
-	// 移動量設定
-	SetMove(move);
+	if (nType != MOTION_SPAWN)
+	{
+		// 登場モーション設定
+		m_pMotion->Set(MOTION_SPAWN);
+	}
+#endif
 }
 
 //==========================================================================
@@ -1977,7 +1977,7 @@ D3DXVECTOR3 CEnemy::GetSpawnPosition(void)
 //==========================================================================
 // 状態設定
 //==========================================================================
-void CEnemy::SetState(int state)
+void CEnemy::SetState(STATE state)
 {
 	m_state = (STATE)state;
 }
@@ -1985,9 +1985,9 @@ void CEnemy::SetState(int state)
 //==========================================================================
 // 状態設定
 //==========================================================================
-void CEnemy::SetState(int state, int nCntState)
+void CEnemy::SetState(STATE state, int nCntState)
 {
-	m_state = (STATE)state;
+	m_state = state;
 	m_nCntState = nCntState;
 }
 

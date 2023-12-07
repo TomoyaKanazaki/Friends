@@ -43,6 +43,7 @@ private:
 	{
 		ACTION_ROAMING = 0, // 徘徊行動
 		ACTION_FIND, // 発見行動
+		ACTION_TURN, // 向き直る行動
 		ACTION_ESCAPE, // 逃走行動
 		ACTION_FADE, // 消滅行動
 		MAX
@@ -50,14 +51,21 @@ private:
 
 	// メンバ変数
 	ACTION m_Act; //行動状態
+	float m_fCntWalk; // 方向転換
 	float m_fCntFind; // 発見カウンター
 	float m_fCntEscape; // 逃走カウンター
+	float m_fRot; // 向きたいとこ～
 
 	// メンバ関数
 	void MotionSet(void) override;		// モーションの設定
 	void UpdateAction(void) override;	// 行動更新
+	void Move(void) override; // 移動
+	void RotationPlayer(void) override; // プレイヤーを向く
+	void RandTurn(void); // ランダムな方向転換
+	void Turn(void); // 向き直る
 	void ActionSet(void); // 行動の設定
 	void Escape(void); // 逃走
+
 };
 
 #endif

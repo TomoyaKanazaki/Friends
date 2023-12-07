@@ -99,6 +99,7 @@ public:
 	static bool ZSort(const CObject *obj1, const CObject *obj2);	// Zソートの比較関数
 	int GetPriority(void) { return m_nPriority; }	// 優先順位取得
 	void SetEnableDisp(bool bDisp) { m_bDisp = bDisp; }		// 描画設定
+	bool IsDisp(void) { return m_bDisp; }					// 描画状況取得
 
 	int SetEffectParent(CEffect3D *pEffect3D);	// エフェクト設定
 	CEffect3D *GetEffectParent(int nIdx);	// 親設定したエフェクト取得

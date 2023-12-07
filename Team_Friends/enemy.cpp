@@ -438,8 +438,12 @@ void CEnemy::Update(void)
 		return;
 	}
 
-	// 行動の設定
-	ActionSet();
+	if (m_state != STATE_SPAWN &&
+		m_state != STATE_SPAWNWAIT)
+	{
+		// 行動の設定
+		ActionSet();
+	}
 
 	// 行動更新
 	UpdateAction();

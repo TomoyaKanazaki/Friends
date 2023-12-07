@@ -16,6 +16,9 @@
 #include "camera.h"
 #include "game.h"
 #include "gamemanager.h"
+#include "particle.h"
+#include "3D_Effect.h"
+#include "impactwave.h"
 
 //==========================================================================
 //  定数定義
@@ -35,12 +38,12 @@ namespace
 	const float SEARCH_LENGTH = 600.0f;		//エリア生成距離
 	const float AREA_LENGTH = 800.0f;		//ボスエリアサイズ
 	const float BEAM_LENGTH = 1000.0f;		//ビームの長さ
-	const D3DXCOLOR BEAM_COLOR = {0.1f, 1.0f, 0.1f, 0.5f};		//ビームの色
+	const D3DXCOLOR BEAM_COLOR = { 0.5f, 0.1f, 1.0f, 0.5f};		//ビームの色
 	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
 	{
-		{ CEnemyTurret::ACTION_BEAM, 0.7f },		// 遠隔攻撃
-		{ CEnemyTurret::ACTION_MORTAR, 0.3f },		// 突撃攻撃
-		{ CEnemyTurret::ACTION_WAIT, 0.0f },			// 待機
+		{ CEnemyTurret::ACTION_BEAM, 0.3f },		// ビーム攻撃
+		{ CEnemyTurret::ACTION_MORTAR, 0.7f },		// 迫撃攻撃
+		{ CEnemyTurret::ACTION_WAIT, 0.0f },		// 待機
 	};
 }
 
@@ -52,6 +55,7 @@ CEnemyTurret::ACT_FUNC CEnemyTurret::m_ActFuncList[] =
 	&CEnemyTurret::ActAttackBeam,		// 遠隔
 	&CEnemyTurret::ActAttackMortar,		// 突撃
 	&CEnemyTurret::ActWait,				// 待機
+	&CEnemyTurret::Spawn,				// スポーン
 };
 
 //==========================================================================
@@ -88,8 +92,9 @@ HRESULT CEnemyTurret::Init(void)
 	// HPの設定
 	m_pHPGauge = CHP_Gauge::Create(100.0f, GetLifeOrigin());
 
-	// 行動
-	m_Action = ACTION_WAIT;
+	// 出現待機状態にする
+	m_state = CEnemy::STATE_SPAWNWAIT;
+	m_Action = ACTION_SPAWN;
 
 	return S_OK;
 }
@@ -99,11 +104,17 @@ HRESULT CEnemyTurret::Init(void)
 //==========================================================================
 void CEnemyTurret::Uninit(void)
 {
-	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+	CScene *pScene = CManager::GetInstance()->GetScene();
+
+	//ゲームならプレイヤー進化
+	if (pScene != nullptr)
 	{
-		if (!CGame::GetGameManager()->IsSetEvolusion())
+		if (pScene->GetMode() == CScene::MODE_GAME)
 		{
-			CGame::GetGameManager()->SetEnableEvolusion();
+			if (!CGame::GetGameManager()->IsSetEvolusion())
+			{
+				CGame::GetGameManager()->SetEnableEvolusion();
+			}
 		}
 	}
 
@@ -139,6 +150,12 @@ void CEnemyTurret::Update(void)
 	{// 死亡フラグが立っていたら
 		return;
 	}
+
+	// スクリーン内の存在判定
+	if (m_state == CEnemy::STATE_SPAWNWAIT && CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
+	{
+		m_state = STATE_SPAWN;
+	}
 }
 
 //==========================================================================
@@ -154,14 +171,75 @@ void CEnemyTurret::ActionSet(void)
 //==========================================================================
 void CEnemyTurret::UpdateAction(void)
 {
-	//スクリーン内の存在判定
-	if (!CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
-	{
-		return; // 抜ける
-	}
-
 	// 状態別処理
 	(this->*(m_ActFuncList[m_Action]))();
+}
+
+//==========================================
+// スポーン
+//==========================================
+void CEnemyTurret::Spawn(void)
+{
+	if (m_state == STATE_SPAWNWAIT)
+	{
+		return;
+	}
+
+	int nType = m_pMotion->GetType();
+
+	if (nType == MOTION_SPAWN && m_pMotion->IsFinish() == true)
+	{// 登場が終わってたら
+
+	 // なにもない
+		m_state = STATE_NONE;
+		m_Action = ACTION_WAIT;
+		return;
+	}
+
+	// モーションカウンター取得
+	float fAllCount = m_pMotion->GetAllCount();
+	if ((int)fAllCount % 10 == 0)
+	{
+		// 角度の取得
+		D3DXVECTOR3 rot = GetRotation();
+
+		// 衝撃波生成
+		CImpactWave *pWave = CImpactWave::Create
+		(
+			GetCenterPosition(),	// 位置
+			D3DXVECTOR3((float)Random(-31, 31) * 0.1f, D3DX_PI * 0.5f + rot.y, 0.0f),	// 向き
+			D3DXCOLOR(0.9f, 0.2f, 0.9f, 0.8f),	// 色
+			150.0f,								// 幅
+			0.0f,								// 高さ
+			90.0f,								// 中心からの間隔
+			20,									// 寿命
+			8.0f,								// 幅の移動量
+			CImpactWave::TYPE_GIZAGRADATION,	// テクスチャタイプ
+			true								// 加算合成するか
+		);
+	}
+
+	if ((int)fAllCount % 12 == 0)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			int repeat = (int)(fAllCount / 12.0f);
+			CEffect3D::Create(
+				GetCenterPosition(),
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.9f, 0.2f, 0.9f, 1.0f),
+				20.0f, 20, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_NORMAL, repeat * 2.0f);
+		}
+	}
+
+	// 登場演出
+	my_particle::Create(GetCenterPosition(), my_particle::TYPE_UNDERBOSS_SPAWN);
+
+	if (nType != MOTION_SPAWN)
+	{
+		// 登場モーション設定
+		m_pMotion->Set(MOTION_SPAWN);
+	}
 }
 
 //==========================================================================
@@ -169,34 +247,31 @@ void CEnemyTurret::UpdateAction(void)
 //==========================================================================
 void CEnemyTurret::DrawingAction(void)
 {
-	//// 0～1のランダム値取得
-	//float fRandomValue = static_cast<float>(std::rand()) / RAND_MAX;
+	// 0～1のランダム値取得
+	float fRandomValue = static_cast<float>(std::rand()) / RAND_MAX;
 
-	//// 確率加算用変数
-	//float fDrawingProbability = 0.0;
+	// 確率加算用変数
+	float fDrawingProbability = 0.0;
 
-	//// 行動抽選要素分繰り返し
-	//for (const auto& candidate : ACT_PROBABILITY)
-	//{
-	//	// 今回の確率分を加算
-	//	fDrawingProbability += candidate.fProbability;
+	// 行動抽選要素分繰り返し
+	for (const auto& candidate : ACT_PROBABILITY)
+	{
+		// 今回の確率分を加算
+		fDrawingProbability += candidate.fProbability;
 
-	//	if (fRandomValue < fDrawingProbability)
-	//	{// 今回のランダム値が確率を超えたら
+		if (fRandomValue < fDrawingProbability)
+		{// 今回のランダム値が確率を超えたら
 
-	//	 // 行動決定
-	//		m_Action = candidate.action;
+		 // 行動決定
+			m_Action = candidate.action;
 
-	//		// 行動カウンターリセット
-	//		m_fActTime = 0.0f;
-	//		break;
-	//	}
-	//}
-
-	m_Action = ACTION_BEAM;
+			// 行動カウンターリセット
+			m_fActTime = 0.0f;
+			break;
+		}
+	}
 
 	// 次の行動別
-	float fLength = 0.0f;
 	switch (m_Action)
 	{
 	case CEnemyTurret::ACTION_BEAM:	// 遠隔攻撃
@@ -527,12 +602,20 @@ void CEnemyTurret::RotationTarget(void)
 
 	// 目標との差分
 	float fRotDiff = fRotDest - rot.y;
-
+	
 	//角度の正規化
 	RotNormalize(fRotDiff);
-
+	
 	//角度の補正をする
-	rot.y += fRotDiff * 1.0f;
+	if (fabsf(fRotDiff) > 0.1f)
+	{
+		rot.y += fRotDiff * 0.05f;
+	}
+	else
+	{
+		rot.y += fRotDiff * 1.0f;
+	}
+
 	RotNormalize(rot.y);
 
 	// 向き設定
@@ -549,9 +632,23 @@ void CEnemyTurret::SetTargetPlayer(void)
 {
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 posPlayer;
+	D3DXVECTOR3 posPlayer = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	float fLength = 0.0f, fLengthDiff = 0.0f;
 	CPlayer* pPlayer = nullptr;
+
+	//初期値入れ
+	pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(0);
+
+	if (pPlayer == NULL)
+	{
+		return;
+	}
+
+	posPlayer = pPlayer->GetPosition();
+	fLengthDiff = GetFabsPosLength(pos, posPlayer);
+	m_nTargetPlayerIndex = 0;
+	SetTargetPosition(posPlayer);
+
 	// プレイヤー情報
 	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
 	{

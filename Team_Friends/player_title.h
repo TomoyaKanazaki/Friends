@@ -38,12 +38,15 @@ public:
 	void Draw(void) override;
 
 	// 静的メンバ関数
-	static CPlayerTitle* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MODEL type);
+	static CPlayerTitle* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MODEL type = PLAYER_UNION);
 
 private:
 
 	//メンバ変数
 	int m_nModelType;
+
+	// 静的メンバ変数
+	static int m_nIdx; // インデックス
 
 };
 

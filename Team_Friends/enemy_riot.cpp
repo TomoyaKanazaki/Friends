@@ -54,6 +54,7 @@ HRESULT CEnemyRiot::Init(void)
 
 	// 出現待機状態にする
 	m_state = STATE_SPAWNWAIT;
+	m_Act = ACTION_SPAWN;
 
 	return S_OK;
 }
@@ -141,10 +142,6 @@ void CEnemyRiot::MotionSet(void)
 		case ACTION_ATTACK: // 攻撃行動
 			m_pMotion->Set(MOTION_ATK); // 攻撃モーション
 			break;
-
-		default:
-			m_pMotion->Set(MOTION_DEF); // 待機モーション
-			break;
 		}
 	}
 }
@@ -161,6 +158,7 @@ void CEnemyRiot::Spawn(void)
 
 		// なにもない
 		m_state = STATE_NONE;
+		m_Act = ACTION_DEF;
 		return;
 	}
 

@@ -47,6 +47,7 @@ private:
 		ACTION_ATTACK, // 通常攻撃行動
 		ACTION_TACKLE, // 突進攻撃行動
 		ACTION_AXIS, // 軸合わせ行動
+		ACTION_SPAWN, // 出現行動
 		MAX
 	};
 

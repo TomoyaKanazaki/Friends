@@ -19,6 +19,7 @@
 #include "particle.h"
 #include "3D_Effect.h"
 #include "impactwave.h"
+#include "shadow.h"
 
 //==========================================================================
 //  定数定義
@@ -71,6 +72,12 @@ CEnemyTurret::CEnemyTurret(int nPriority) : CEnemy(nPriority)
 	m_fRotLock = 0.0f;
 	m_pLimitArea = nullptr;
 	m_bArea = false;
+	pBullet = nullptr;
+
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		m_pShadow[i] = nullptr;
+	}
 }
 
 //==========================================================================
@@ -150,6 +157,8 @@ void CEnemyTurret::Update(void)
 	{// 死亡フラグが立っていたら
 		return;
 	}
+
+	DeleteShadow();
 
 	// スクリーン内の存在判定
 	if (m_state == CEnemy::STATE_SPAWNWAIT && CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
@@ -490,12 +499,21 @@ void CEnemyTurret::AttackMortar(void)
 				cosf(rot.y + D3DX_PI) * 100.0f };
 
 		//弾を放物線上に飛ばす
-		CBullet *pBullet = CBullet::Create(CBullet::TYPE_ENEMY, CBullet::MOVETYPE_PARABOLA, GetPosition(), rot, move, 50.0f);
+		if (pBullet != nullptr)
+		{
+			pBullet->Uninit();
+			pBullet = nullptr;
+		}
+
+		pBullet = CBullet::Create(CBullet::TYPE_ENEMY, CBullet::MOVETYPE_PARABOLA, GetPosition(), rot, move, 50.0f);
 		pBullet->SetTargetPosition(pPlayer->GetPosition());
 
 		float fRatio = GetFabsPosLength(GetPosition(), pPlayer->GetPosition()) / 1500.0f;
 		ValueNormalize(fRatio, 1.0f, 0.0f);
 		pBullet->SetParabolaHeight(1000.0f - (1000.0f * fRatio));
+
+		//着弾地点にマーク表示
+		m_pShadow[i] = CShadow::Create(pPlayer->GetPosition());
 	}
 
 	// タックル行動
@@ -696,6 +714,34 @@ void CEnemyTurret::SummonArea(void)
 		m_pLimitArea = CLimitArea::Create(info);
 
 		m_bArea = true;
+	}
+}
+
+//==========================================================================
+// 影消し
+//==========================================================================
+void CEnemyTurret::DeleteShadow(void)
+{
+	if (pBullet == nullptr)
+	{
+		return;
+	}
+
+	//弾を放物線上に飛ばす
+	if (!pBullet->IsDeath())
+	{
+		return;
+	}
+
+	pBullet = nullptr;
+	
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pShadow[i] != nullptr)
+		{
+			m_pShadow[i]->Uninit();
+			m_pShadow[i] = nullptr;
+		}
 	}
 }
 

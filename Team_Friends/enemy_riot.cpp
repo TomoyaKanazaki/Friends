@@ -11,6 +11,9 @@
 #include "calculation.h"
 #include "hp_gauge.h"
 #include "camera.h"
+#include "particle.h"
+#include "3D_Effect.h"
+#include "impactwave.h"
 
 //==========================================
 //  定数定義
@@ -163,6 +166,45 @@ void CEnemyRiot::Spawn(void)
 		m_Act = ACTION_DEF;
 		return;
 	}
+
+	// モーションカウンター取得
+	float fAllCount = m_pMotion->GetAllCount();
+	if ((int)fAllCount % 10 == 0)
+	{
+		// 角度の取得
+		D3DXVECTOR3 rot = GetRotation();
+
+		// 衝撃波生成
+		CImpactWave *pWave = CImpactWave::Create
+		(
+			GetCenterPosition(),	// 位置
+			D3DXVECTOR3((float)Random(-31, 31) * 0.1f, D3DX_PI * 0.5f + rot.y, 0.0f),	// 向き
+			D3DXCOLOR(0.9f, 0.2f, 0.9f, 0.8f),	// 色
+			150.0f,								// 幅
+			0.0f,								// 高さ
+			90.0f,								// 中心からの間隔
+			20,									// 寿命
+			8.0f,								// 幅の移動量
+			CImpactWave::TYPE_GIZAGRADATION,	// テクスチャタイプ
+			true								// 加算合成するか
+		);
+	}
+
+	if ((int)fAllCount % 12 == 0)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			int repeat = (int)(fAllCount / 12.0f);
+			CEffect3D::Create(
+				GetCenterPosition(),
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.9f, 0.2f, 0.9f, 1.0f),
+				20.0f, 20, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_NORMAL, repeat * 2.0f);
+		}
+	}
+
+	// 登場演出
+	my_particle::Create(GetCenterPosition(), my_particle::TYPE_UNDERBOSS_SPAWN);
 
 	if (nType != MOTION_SPAWN)
 	{

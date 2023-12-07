@@ -25,7 +25,7 @@ MODEL_FILENAME = data/MODEL/ENEMY/escape/leg.x			# [5]後脚
 # キャラクター情報
 #------------------------------------------------------------------------------
 CHARACTERSET
-	VELOCITY = 0.45		
+	VELOCITY = 100.0		
 	JUMP = 0.00		
 	RADIUS = 100.00		
 	HEIGHT = 0.00		

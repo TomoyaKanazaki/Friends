@@ -18,7 +18,6 @@
 namespace
 {
 	const float ATTACK_LENGTH = 200.0f; // 攻撃する距離
-	const float MOVE_SPEED = 500.0f; // 移動速度
 	const float WAIT_TIMER = 2.0f; // 初期待機時間
 	const float ROTATION_TIMER = 1.0f; // 軸合わせに要する時間
 	const float TACKLE_TIMER = 1.0f; // 突進する時間
@@ -146,14 +145,6 @@ void CEnemyRiot::MotionSet(void)
 //==========================================
 void CEnemyRiot::ActionSet(void)
 {
-	// デバッグ表示
-	CManager::GetInstance()->GetDebugProc()->Print
-	(
-		"カウンター : %f\n"
-		"中ボスのアクション : ",
-		m_fWaitTime
-	);
-
 	switch (m_Act)
 	{
 	case ACTION_ATTACK: // 攻撃状態
@@ -171,9 +162,6 @@ void CEnemyRiot::ActionSet(void)
 			// 攻撃をする
 			Attack();
 		}
-
-		// デバッグ表示
-		CManager::GetInstance()->GetDebugProc()->Print("攻撃\n\n");
 
 		break;
 
@@ -195,9 +183,6 @@ void CEnemyRiot::ActionSet(void)
 			// タックル
 			Move();
 		}
-
-		// デバッグ表示
-		CManager::GetInstance()->GetDebugProc()->Print("突進\n\n");
 
 		break;
 
@@ -227,9 +212,6 @@ void CEnemyRiot::ActionSet(void)
 			RotationPlayer();
 		}
 
-		// デバッグ表示
-		CManager::GetInstance()->GetDebugProc()->Print("軸合わせ\n\n");
-
 		break;
 
 	case ACTION_DEF: // 初期待機状態
@@ -254,9 +236,6 @@ void CEnemyRiot::ActionSet(void)
 			m_fWaitTime += CManager::GetInstance()->GetDeltaTime();
 		}
 
-		// デバッグ表示
-		CManager::GetInstance()->GetDebugProc()->Print("待機\n\n");
-
 		break;
 
 	default:
@@ -273,11 +252,12 @@ void CEnemyRiot::Move(void)
 	D3DXVECTOR3 rot = GetRotation();
 
 	// 移動量を取得
+	float fMove = GetVelocity();
 	D3DXVECTOR3 move = GetMove();
 
 	// 移動量を分解する
-	move.x = -sinf(rot.y) * MOVE_SPEED * CManager::GetInstance()->GetDeltaTime();
-	move.z = -cosf(rot.y) * MOVE_SPEED * CManager::GetInstance()->GetDeltaTime();
+	move.x = -sinf(rot.y) * fMove * CManager::GetInstance()->GetDeltaTime();
+	move.z = -cosf(rot.y) * fMove * CManager::GetInstance()->GetDeltaTime();
 
 	// 移動量を適用する
 	SetMove(move);

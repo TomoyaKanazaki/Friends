@@ -22,7 +22,7 @@ MODEL_FILENAME = data/MODEL/papion/02_LWing.x	# [2]体
 # キャラクター情報
 #------------------------------------------------------------------------------
 CHARACTERSET
-	VELOCITY = 0.45					# 移動量
+	VELOCITY = 1000.0					# 移動量
 	JUMP = 8.65						# ジャンプ量
 	RADIUS = 100.0					# 半径
 	HEIGHT = 80.0					# 高さ

@@ -21,6 +21,7 @@ namespace
 	const float WAIT_TIMER = 2.0f; // 初期待機時間
 	const float ROTATION_TIMER = 1.0f; // 軸合わせに要する時間
 	const float TACKLE_TIMER = 1.0f; // 突進する時間
+	const int MAX_ATTACK = 3; // 連続攻撃の最大数
 }
 
 //==========================================
@@ -28,7 +29,8 @@ namespace
 //==========================================
 CEnemyRiot::CEnemyRiot(int nPriority) :
 	m_Act(ACTION_DEF),
-	m_fWaitTime(0.0f)
+	m_fWaitTime(0.0f),
+	m_nCntAction(0)
 {
 
 }
@@ -224,13 +226,15 @@ void CEnemyRiot::ActionSet(void)
 			m_fWaitTime = 0.0f;
 
 			// プレイヤーとの距離を計測
-			if (CalcLenPlayer(ATTACK_LENGTH)) // 近ければ攻撃
+			if (CalcLenPlayer(ATTACK_LENGTH) && m_nCntAction <= MAX_ATTACK) // 近ければ攻撃
 			{
 				m_Act = ACTION_ATTACK;
+				++m_nCntAction;
 			}
 			else // 遠かったらタックル
 			{
 				m_Act = ACTION_TACKLE;
+				m_nCntAction = 0;
 			}
 		}
 		else

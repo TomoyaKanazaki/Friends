@@ -54,6 +54,9 @@ HRESULT CEnemyRiot::Init(void)
 	// HPの設定
 	m_pHPGauge = CHP_Gauge::Create(100.0f, GetLifeOrigin());
 
+	// 出現待機状態にする
+	m_state = STATE_SPAWNWAIT;
+
 	return S_OK;
 }
 
@@ -83,6 +86,12 @@ void CEnemyRiot::Update(void)
 	if (IsDeath() == true)
 	{// 死亡フラグが立っていたら
 		return;
+	}
+
+	// スクリーン内の存在判定
+	if (m_state == STATE_SPAWNWAIT && CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
+	{
+		m_state = STATE_SPAWN;
 	}
 }
 
@@ -143,10 +152,33 @@ void CEnemyRiot::MotionSet(void)
 }
 
 //==========================================
+// スポーン
+//==========================================
+void CEnemyRiot::Spawn(void)
+{
+	// 髙田くんへ、コピーしてね
+	int nType = m_pMotion->GetType();
+	if (nType == MOTION_SPAWN && m_pMotion->IsFinish() == true)
+	{// 登場が終わってたら
+
+		// なにもない
+		m_state = STATE_NONE;
+		return;
+	}
+
+	if (nType != MOTION_SPAWN)
+	{
+		// 登場モーション設定
+		m_pMotion->Set(MOTION_SPAWN);
+	}
+}
+
+//==========================================
 //  行動セット
 //==========================================
 void CEnemyRiot::ActionSet(void)
 {
+
 	switch (m_Act)
 	{
 	case ACTION_ATTACK: // 攻撃状態
@@ -230,12 +262,6 @@ void CEnemyRiot::ActionSet(void)
 		}
 		else
 		{
-			//スクリーン内の存在判定
-			if (!CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
-			{
-				break; // 抜ける
-			}
-
 			// 待機時間を加算
 			m_fWaitTime += CManager::GetInstance()->GetDeltaTime();
 		}

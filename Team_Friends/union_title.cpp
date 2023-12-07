@@ -52,7 +52,7 @@ HRESULT CUnionTitle::Init(void)
 HRESULT CUnionTitle::CreateParts(void)
 {
 	// •¡”ƒLƒƒƒ‰“Ç‚İ‚İ
-	ReadMultiCharacter("data\\TEXT\\multicharacter\\SuperUnion.txt");
+	ReadMultiCharacter("data\\TEXT\\multicharacter\\SuperUnion_title.txt");
 
 	return S_OK;
 }

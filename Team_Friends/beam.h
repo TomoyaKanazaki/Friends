@@ -43,6 +43,13 @@ public:
 private:
 
 	// メンバ変数
+	float m_fRadius;	// 半径
+	float m_fLength;	// 長さ
+	int m_nDisity;		// 密度
+	int m_nDamage;		// ダメージ
+	D3DXCOLOR m_color;	// 色
+	std::vector<CEffect3D*> m_pEffect;	// エフェクトのオブジェクト
+	CCollisionObject::eMyTag m_Tag;	// タグ
 	int m_nLife;	// 寿命
 };
 

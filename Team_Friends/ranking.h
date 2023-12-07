@@ -43,8 +43,7 @@ private:
 	void UniCharCreate(D3DXVECTOR3 pos, D3DXVECTOR3 rot);		//合体キャラの生成
 
 	int m_nCntSwitch;		// 切り替えのカウンター
-	int m_nCntUniCharCre;		// 合体キャラの生成カウンター
-	int m_nCntUniCharDel;		// 合体キャラの生成カウンター
+	int m_nCnt;				//
 	static bool m_bAllArrival;		// 全て到着した判定
 	static int m_nRandStage;		// ステージのランダムインデックス番号
 	static CRankingScore *m_pRankingScore;		// ランキングスコアのオブジェクト

@@ -15,29 +15,17 @@
 #include "ballast.h"
 
 //==========================================================================
-// 無名名前空間
-//==========================================================================
-namespace
-{
-	float radius;		// 半径
-	float length;		// 長さ
-	int disity;			// 密度
-	int damage;			// ダメージ
-	D3DXCOLOR color;	// 色
-	std::vector<CEffect3D*> effect;	// エフェクトのオブジェクト
-	CCollisionObject::eMyTag tag;	// タグ
-}
-
-//==========================================================================
-// 静的メンバ変数宣言
-//==========================================================================
-
-//==========================================================================
 // コンストラクタ
 //==========================================================================
 CBeam::CBeam(int nPriority) : CObject(nPriority)
 {
-
+	m_fRadius = 0.0f;	// 半径
+	m_fLength = 0.0f;	// 長さ
+	m_nDisity = 0;		// 密度
+	m_nDamage = 0;		// ダメージ
+	m_color = mylib_const::DEFAULT_COLOR;	// 色
+	m_pEffect.clear();	// エフェクトのオブジェクト
+	m_Tag = CCollisionObject::TAG_NONE;	// タグ
 }
 
 //==========================================================================
@@ -68,15 +56,15 @@ CBeam *CBeam::Create(
 		if (pBallast != NULL)
 		{// メモリの確保が出来ていたら
 
-			radius = fRadius;			// 半径
-			length = fLength;			// 長さ
-			pBallast->m_nLife = nLife;	// 寿命
-			pBallast->SetPosition(pos);	// 位置
-			pBallast->SetMove(move);	// 移動量
-			color = col;				// 色
-			disity = nDisity;			// 密度
-			damage = nDamage;			// ダメージ
-			tag = TagType;				// タグ
+			pBallast->m_fRadius = fRadius;	// 半径
+			pBallast->m_fLength = fLength;	// 長さ
+			pBallast->m_nLife = nLife;		// 寿命
+			pBallast->SetPosition(pos);		// 位置
+			pBallast->SetMove(move);		// 移動量
+			pBallast->m_color = col;		// 色
+			pBallast->m_nDisity = nDisity;	// 密度
+			pBallast->m_nDamage = nDamage;	// ダメージ
+			pBallast->m_Tag = TagType;		// タグ
 
 			// 初期化処理
 			HRESULT hr = pBallast->Init();
@@ -108,26 +96,26 @@ HRESULT CBeam::Init(void)
 	// ベクトルを正規化
 	D3DXVec3Normalize(&vecmove, &vecmove);
 
-	float fDistance = length / (float)disity;
+	float fDistance = m_fLength / (float)m_nDisity;
 	float fLen = 0.0f;
-	for (int nCntBallast = 0; nCntBallast < disity; nCntBallast++)
+	for (int nCntBallast = 0; nCntBallast < m_nDisity; nCntBallast++)
 	{
 		// 生成処理
 		CEffect3D *pEffect = CEffect3D::Create(
 			pos + vecmove * fLen,
 			move,
-			color,
-			radius,
+			m_color,
+			m_fRadius,
 			m_nLife,
 			CEffect3D::MOVEEFFECT_SUB,
 			CEffect3D::TYPE_NORMAL,
 			0.0f);
 
 		// エフェクト追加
-		effect.push_back(pEffect);
+		m_pEffect.push_back(pEffect);
 
 		// 当たり判定オブジェクト生成
-		CCollisionObject::Create(pos + vecmove * fLen, move, radius, m_nLife, damage, tag);
+		CCollisionObject::Create(pos + vecmove * fLen, move, m_fRadius, m_nLife, m_nDamage, m_Tag);
 
 		// 距離加算
 		fLen += fDistance;
@@ -142,7 +130,7 @@ HRESULT CBeam::Init(void)
 void CBeam::Uninit(void)
 {
 	// 要素全削除
-	effect.clear();
+	m_pEffect.clear();
 
 	// 情報削除
 	Release();
@@ -162,15 +150,15 @@ void CBeam::Update(void)
 		return;
 	}
 
-	for (int i = 0; i < static_cast<int>(effect.size()); i++)
+	for (int i = 0; i < static_cast<int>(m_pEffect.size()); i++)
 	{
-		if (effect[i] == nullptr)
+		if (m_pEffect[i] == nullptr)
 		{
 			continue;
 		}
 
 		// 位置取得
-		D3DXVECTOR3 pos = effect[i]->GetPosition();
+		D3DXVECTOR3 pos = m_pEffect[i]->GetPosition();
 
 		if (CGame::GetElevation()->IsHit(pos) == true)
 		{
@@ -183,11 +171,11 @@ void CBeam::Update(void)
 			// ビームヒットパーティクル
 			my_particle::Create(pos, my_particle::TYPE_BEAMHIT_FIELD);
 
-			effect[i]->Uninit();
-			effect[i] = nullptr;
+			m_pEffect[i]->Uninit();
+			m_pEffect[i] = nullptr;
 
 			// 着地したものを削除
-			effect.erase(effect.begin() + i);
+			m_pEffect.erase(m_pEffect.begin() + i);
 		}
 	}
 }

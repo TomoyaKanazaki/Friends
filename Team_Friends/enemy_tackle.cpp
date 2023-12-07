@@ -276,9 +276,6 @@ void CEnemyTackle::Attack(void)
 	D3DXVECTOR3 move = GetMove();
 	D3DXVECTOR3 pos = GetPosition();//îØÉQÅ[Ç∂Ç·ÇÒ
 
-	//çUåÇîªíË
-	CCollisionObject::Create(D3DXVECTOR3(pos.x, pos.y + 40.0f, pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 30.0f, 5, ATTACK, CCollisionObject::TAG_ENEMY);
-
 	if (m_moveLock == D3DXVECTOR3(0.0f, 0.0f, 0.0f))
 	{
 		m_sMotionFrag.bATK = true;

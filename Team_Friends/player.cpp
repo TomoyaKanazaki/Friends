@@ -231,7 +231,6 @@ HRESULT CPlayer::Init(void)
 	{// うで
 		SetEvolusion(CGameManager::STATUS_POWER);
 	}
-
 	if (m_nMyPlayerIdx == 0)
 	{// 胴
 		SetEvolusion(CGameManager::STATUS_LIFE);
@@ -855,9 +854,8 @@ void CPlayer::Controll(void)
 		// アイテムドロップ
 		CItem::Create(D3DXVECTOR3(pos.x, pos.y + 100.0f, pos.z), D3DXVECTOR3(0.0f, Random(-31, 31) * 0.1f, 0.0f));
 	}
-
-	
 #endif
+
 	if (pInputKeyboard->GetTrigger(DIK_LEFT) == true)
 	{
 		CCollisionObject::Create(GetPosition(), mylib_const::DEFAULT_VECTOR3, 10000.0f, 3, 10000, CCollisionObject::TAG_PLAYER);
@@ -1716,7 +1714,19 @@ bool CPlayer::GiveStatus(CGameManager::eStatus status)
 //==========================================================================
 void CPlayer::DrawingEvolusion(void)
 {
+	// 進化先のインデックス番号
+	int nIdxPowerLeft = 0, nIdxPowerRight = 0, nIdxSpeed = 0, nIdxLife = 0;
 
+	// プレイヤーの取得
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		CPlayer *pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(i);
+		if (pPlayer == NULL)
+		{
+			continue;
+		}
+
+	}
 }
 
 //==========================================================================
@@ -1771,6 +1781,7 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 	// 進化先の種類
 	m_nEvolveType = (int)statusType + 1;
 
+#if 1
 	// パーツ変更
 	ChangeObject(m_nEvolveType);
 
@@ -1779,6 +1790,12 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 
 	// プレイヤー毎のインデックス追加
 	BindByPlayerIdxTexture();
+#else
+
+	// パーツ削除
+	DeleteObject(m_nEvolveType);
+
+#endif
 }
 
 //==========================================================================
@@ -2314,4 +2331,12 @@ void CPlayer::SetState(STATE state, int nCntState)
 int CPlayer::GetState(void)
 {
 	return m_state;
+}
+
+//==========================================================================
+// ステータス取得
+//==========================================================================
+CPlayer::sStatus CPlayer::GetStatus(void)
+{
+	return m_sStatus;
 }

@@ -58,6 +58,8 @@ public:
 	void SetEnableControll(bool bControll) { m_bControll = bControll; }		// 操作フラグを切り替えする
 	bool IsControll(void) { return m_bControll; }				// 操作のフラグ取得
 	bool IsEndNormalStage(void) { return m_bEndNormalStage; }	// 通常ステージのア終了判定
+	void SetEnableEvolusion(void);								// 進化設定有効
+	bool IsSetEvolusion(void) { return m_bSetEvolusion; }		// 進化設定してるか
 	void AddNowStage(void);	// ステージの加算
 	int GetNowStage(void);	// 現在のステージ取得
 	void SetNumStage(int nStage) { m_nNumStage = nStage; }	// ステージの総数設定
@@ -76,6 +78,7 @@ private:
 	bool m_bEndRush;		// ラッシュが終了したか
 	bool m_bControll;		// 操作できるか
 	bool m_bEndNormalStage;	// 通常ステージが終了したか
+	bool m_bSetEvolusion;	// 進化設定してるか
 	int m_nNowStage;		// 現在のステージ
 	int m_nNumStage;		// ステージの総数
 };

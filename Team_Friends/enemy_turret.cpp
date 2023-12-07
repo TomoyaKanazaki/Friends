@@ -13,18 +13,35 @@
 #include "beam.h"
 #include "bullet.h"
 #include "player.h"
+#include "camera.h"
+#include "game.h"
+#include "gamemanager.h"
 
 //==========================================================================
 //  定数定義
 //==========================================================================
 namespace
 {
+	// 行動抽選の構造体
+	struct sProbability
+	{
+		CEnemyTurret::ACTION action;	// 行動
+		float fProbability;			// 確率
+	};
+
 	const float VELOCITY_TACKLE = 2.0f;		// タックル
-	const float MORTAR_SPEED = 0.0f;		// 迫撃弾速度
+	const float MORTAR_SPEED = 10.0f;		// 迫撃弾速度
 	const float TIME_WAIT = 3.0f;			// 待機
 	const float SEARCH_LENGTH = 600.0f;		//エリア生成距離
 	const float AREA_LENGTH = 800.0f;		//ボスエリアサイズ
-	const D3DXCOLOR BEAM_COLOR = {0.1f, 1.0f, 0.1f, 0.5f};		//ボスエリアサイズ
+	const float BEAM_LENGTH = 1000.0f;		//ビームの長さ
+	const D3DXCOLOR BEAM_COLOR = {0.1f, 1.0f, 0.1f, 0.5f};		//ビームの色
+	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
+	{
+		{ CEnemyTurret::ACTION_BEAM, 0.7f },		// 遠隔攻撃
+		{ CEnemyTurret::ACTION_MORTAR, 0.3f },		// 突撃攻撃
+		{ CEnemyTurret::ACTION_WAIT, 0.0f },			// 待機
+	};
 }
 
 //==========================================================================
@@ -82,6 +99,14 @@ HRESULT CEnemyTurret::Init(void)
 //==========================================================================
 void CEnemyTurret::Uninit(void)
 {
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+	{
+		if (!CGame::GetGameManager()->IsSetEvolusion())
+		{
+			CGame::GetGameManager()->SetEnableEvolusion();
+		}
+	}
+
 	if (m_pLimitArea != nullptr)
 	{
 		m_pLimitArea->SetState(CLimitArea::STATE_FADEOUT);
@@ -129,6 +154,12 @@ void CEnemyTurret::ActionSet(void)
 //==========================================================================
 void CEnemyTurret::UpdateAction(void)
 {
+	//スクリーン内の存在判定
+	if (!CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
+	{
+		return; // 抜ける
+	}
+
 	// 状態別処理
 	(this->*(m_ActFuncList[m_Action]))();
 }
@@ -138,13 +169,26 @@ void CEnemyTurret::UpdateAction(void)
 //==========================================================================
 void CEnemyTurret::DrawingAction(void)
 {
-	//while (true)
-	//{
-	//	// 行動抽選
-	//	m_Action = (ACTION)(rand() % ACTION_MAX);
+	//// 0～1のランダム値取得
+	//float fRandomValue = static_cast<float>(std::rand()) / RAND_MAX;
 
-	//	if (m_Action != ACTION_WAIT)
-	//	{// 既定行動以外
+	//// 確率加算用変数
+	//float fDrawingProbability = 0.0;
+
+	//// 行動抽選要素分繰り返し
+	//for (const auto& candidate : ACT_PROBABILITY)
+	//{
+	//	// 今回の確率分を加算
+	//	fDrawingProbability += candidate.fProbability;
+
+	//	if (fRandomValue < fDrawingProbability)
+	//	{// 今回のランダム値が確率を超えたら
+
+	//	 // 行動決定
+	//		m_Action = candidate.action;
+
+	//		// 行動カウンターリセット
+	//		m_fActTime = 0.0f;
 	//		break;
 	//	}
 	//}
@@ -152,7 +196,6 @@ void CEnemyTurret::DrawingAction(void)
 	m_Action = ACTION_BEAM;
 
 	// 次の行動別
-	int nActRand;
 	float fLength = 0.0f;
 	switch (m_Action)
 	{
@@ -242,6 +285,9 @@ void CEnemyTurret::ChargeBeam(void)
 		m_pMotion->Set(MOTION_CHARGE_BEAM);
 	}
 
+	//一番近いプレイヤーを認識する
+	SetTargetPlayer();
+
 	// ターゲットの方を向く
 	RotationTarget();
 
@@ -250,7 +296,7 @@ void CEnemyTurret::ChargeBeam(void)
 }
 
 //==========================================================================
-// ビーム攻撃
+// ビーム発射
 //==========================================================================
 void CEnemyTurret::AttackBeam(void)
 {
@@ -259,12 +305,12 @@ void CEnemyTurret::AttackBeam(void)
 	if (nType == MOTION_BEAM && m_pMotion->IsFinish() == true)
 	{// ビーム攻撃が終わってたら
 
-		float fRot = GetRotDest();
+		float fRot = GetRotation().y;
 		D3DXVECTOR3 move = {sinf(fRot + D3DX_PI) * MORTAR_SPEED,
 							0.0f,
 							cosf(fRot + D3DX_PI) * MORTAR_SPEED };
 
-		CBeam::Create(GetPosition(), move, BEAM_COLOR, 50.0f, 2000.0f, 50, 100, 1, CCollisionObject::TAG_ENEMY);
+		CBeam::Create(GetPosition(), move, BEAM_COLOR, 50.0f, BEAM_LENGTH, 50, 10, 1, CCollisionObject::TAG_ENEMY);
 
 		// 待機行動
 		m_Action = ACTION_WAIT;
@@ -369,7 +415,12 @@ void CEnemyTurret::AttackMortar(void)
 				cosf(rot.y + D3DX_PI) * 100.0f };
 
 		//弾を放物線上に飛ばす
-		CBullet::Create(CBullet::TYPE_ENEMY, CBullet::MOVETYPE_PARABOLA, GetPosition(), rot, move, 50.0f);
+		CBullet *pBullet = CBullet::Create(CBullet::TYPE_ENEMY, CBullet::MOVETYPE_PARABOLA, GetPosition(), rot, move, 50.0f);
+		pBullet->SetTargetPosition(pPlayer->GetPosition());
+
+		float fRatio = GetFabsPosLength(GetPosition(), pPlayer->GetPosition()) / 1500.0f;
+		ValueNormalize(fRatio, 1.0f, 0.0f);
+		pBullet->SetParabolaHeight(1000.0f - (1000.0f * fRatio));
 	}
 
 	// タックル行動
@@ -489,6 +540,40 @@ void CEnemyTurret::RotationTarget(void)
 
 	// 目標の向き設定
 	SetRotDest(fRotDest);
+}
+
+//==========================================================================
+// どのプレイヤーのターゲット
+//==========================================================================
+void CEnemyTurret::SetTargetPlayer(void)
+{
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 posPlayer;
+	float fLength = 0.0f, fLengthDiff = 0.0f;
+	CPlayer* pPlayer = nullptr;
+	// プレイヤー情報
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		pPlayer = CManager::GetInstance()->GetScene()->GetPlayer(i);
+
+		if (pPlayer == NULL)
+		{
+			continue;
+		}
+
+		// プレイヤーの位置取得
+		posPlayer = pPlayer->GetPosition();
+
+		fLength = GetFabsPosLength(pos, posPlayer);
+
+		if (fLength < fLengthDiff)
+		{//より近い
+			m_nTargetPlayerIndex = i;
+			fLengthDiff = fLength;
+			SetTargetPosition(posPlayer);
+		}
+	}
 }
 
 //==========================================================================

@@ -564,16 +564,6 @@ void CEnemy::Collision(void)
 	}
 
 
-	// ” 
-	float fLen = CGame::GetElevation()->GetWidthLen();
-	int nBlock = CGame::GetElevation()->GetWidthBlock();
-	nBlock /= 2;
-	if (pos.x + GetRadius() > fLen * nBlock) { pos.x = fLen * nBlock - GetRadius();}
-	if (pos.x - GetRadius() < -fLen * nBlock) { pos.x = -fLen * nBlock + GetRadius(); }
-	if (pos.z + GetRadius() > fLen * nBlock) { pos.z = fLen * nBlock - GetRadius(); }
-	if (pos.z - GetRadius() < -fLen * nBlock) { pos.z = -fLen * nBlock + GetRadius(); }
-
-
 	if (pos.y <= -800.0f)
 	{
 		pos.y = -800.0f;

@@ -29,41 +29,6 @@ class CObjectCircleGauge2D;
 // プレイヤークラス定義
 class CPlayer : public CObjectChara
 {
-public:
-
-	// 状態定義
-	enum STATE
-	{
-		STATE_NONE = 0,		// なにもない
-		STATE_INVINCIBLE,	// 無敵
-		STATE_DMG,			// ダメージ
-		STATE_KNOCKBACK,	// ノックバック
-		STATE_DEAD,			// 死
-		STATE_FADEOUT,		// フェードアウト
-		STATE_ATTACK,		// 攻撃処理
-		STATE_COMPACTUNION,	// 簡易合体
-		STATE_RELEASEUNION,	// 合体解除
-		STATE_MAX
-	};
-
-	CPlayer(int nPriority = mylib_const::PRIORITY_DEF2D);
-	~CPlayer();
-
-	// オーバーライドされた関数
-	virtual HRESULT Init(void);
-	virtual void Uninit(void);
-	virtual void Update(void);
-	virtual void Draw(void);
-	bool Hit(const int nValue);	// ヒット処理
-	virtual int GetState(void) override;
-
-	bool GiveStatus(CGameManager::eStatus status);	// ステータス付与
-	void SetState(STATE state, int nCntState = 0);	// 状態設定
-	static CPlayer *Create(int nIdx);	// 生成
-	void UninitByMode(void);	// モード別終了
-	virtual void Kill(void);	// 死亡処理
-
-	void DrawingEvolusion(void);	// 進化先抽選
 protected:
 	// 列挙型定義
 	enum MOTION
@@ -89,6 +54,23 @@ protected:
 		bool bMove;			// 移動中かどうか
 	};
 
+public:
+
+	// 状態定義
+	enum STATE
+	{
+		STATE_NONE = 0,		// なにもない
+		STATE_INVINCIBLE,	// 無敵
+		STATE_DMG,			// ダメージ
+		STATE_KNOCKBACK,	// ノックバック
+		STATE_DEAD,			// 死
+		STATE_FADEOUT,		// フェードアウト
+		STATE_ATTACK,		// 攻撃処理
+		STATE_COMPACTUNION,	// 簡易合体
+		STATE_RELEASEUNION,	// 合体解除
+		STATE_MAX
+	};
+
 	// ステータスの構造体
 	struct sStatus
 	{
@@ -100,8 +82,30 @@ protected:
 		float fLifeBuff;	// 耐久バフ
 	};
 
-	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
+	CPlayer(int nPriority = mylib_const::PRIORITY_DEF2D);
+	~CPlayer();
+
+	// オーバーライドされた関数
+	virtual HRESULT Init(void);
+	virtual void Uninit(void);
+	virtual void Update(void);
+	virtual void Draw(void);
+	bool Hit(const int nValue);	// ヒット処理
+	virtual int GetState(void) override;
+
+	bool GiveStatus(CGameManager::eStatus status);	// ステータス付与
+	CPlayer::sStatus GetStatus(void);				// ステータス取得
+	void SetState(STATE state, int nCntState = 0);	// 状態設定
+	static CPlayer *Create(int nIdx);	// 生成
+	void UninitByMode(void);	// モード別終了
+	virtual void Kill(void);	// 死亡処理
+
+	static void DrawingEvolusion(void);	// 進化先抽選
 	void SetEvolusion(CGameManager::eStatus statusType);	// 進化先設定
+
+protected:
+
+	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
 	void BindByPlayerIdxTexture(void);	// プレイヤーインデックス毎のテクスチャ設定
 
 	bool m_bJump;				// ジャンプ中かどうか

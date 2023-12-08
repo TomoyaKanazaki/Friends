@@ -685,7 +685,7 @@ void CUnion_ArntoArm::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo 
 {
 
 	// •Ší‚ÌˆÊ’u
-	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_pObjChara[nIdx]->GetModel(), ATKInfo);
+	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
 
 	// Ží—Þ•Ê
 	switch (m_pMotion[nIdx]->GetType())
@@ -699,10 +699,7 @@ void CUnion_ArntoArm::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo 
 		break;
 
 	case MOTION_APPEARANCE:
-		if (nIdx == 2)
-		{
-			my_particle::Create(weponpos, my_particle::TYPE_APPEARANCE_ARMTOARM);
-		}
+		my_particle::Create(weponpos, my_particle::TYPE_APPEARANCE_ARMTOARM);
 		break;
 	}
 }

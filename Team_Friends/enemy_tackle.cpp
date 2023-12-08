@@ -25,9 +25,7 @@ namespace
 	const float ATTACK_LENGTH = 200.0f;		//攻撃距離
 	const float MOVE_SPEED = 1.0f;			//徘徊時速度
 	const float ATTACK_SPEED = 10.0f;		//突撃速度
-	const float READY_TIME = 3.0f;			//準備時間
 	const float ATTACK_TIME = 1.0f;			//突撃時間
-	const float AFTER_TIME = 2.0f;			//硬直時間
 	const float SEARCH_ROT = 0.785f;		//正面からの索敵範囲(計算に変更)
 	const float AFTER_FIXROT = 0.07f;		//硬直時の方向修正速度
 	const float FIXROT_GRACE = 0.5f;		//方向修正までの猶予
@@ -132,7 +130,6 @@ void CEnemyTackle::Update(void)
 			}
 		}
 	}
-
 }
 
 //==========================================
@@ -216,10 +213,8 @@ void CEnemyTackle::MotionSet(void)
 		// 現在の種類取得
 		int nType = m_pMotion->GetType();
 
-		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockback == false)
+		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockback == false && m_sMotionFrag.bATK == false)
 		{// 移動していたら
-			// 攻撃していない
-			m_sMotionFrag.bATK = false;
 
 			// 移動モーション
 			m_pMotion->Set(MOTION_WALK);
@@ -261,18 +256,18 @@ void CEnemyTackle::ActionSet(void)
 		 // 距離が近いと攻撃状態になる
 			m_Act = ACTION_READY;
 			m_fActionCount = 0.0f;
+			m_pMotion->Set(MOTION_READY);
 		}
 
 		break;
 
 	case CEnemyTackle::ACTION_READY:
 
-		// 準備モーション設定
-		m_pMotion->Set(MOTION_READY);
-		if (m_fActionCount >= READY_TIME)
-		{
+		if (m_pMotion->IsFinish() == true)
+		{//モーションが終わったら(終わらない)
 			m_Act = ACTION_ATTACK;
 			m_fActionCount = 0.0f;
+			m_pMotion->Set(MOTION_ATK);
 		}
 
 		break;
@@ -290,10 +285,11 @@ void CEnemyTackle::ActionSet(void)
 
 	case CEnemyTackle::ACTION_AFTER:
 
-		if (m_fActionCount >= AFTER_TIME)
-		{
+		if (m_pMotion->IsFinish() == true)
+		{//モーションが終わったら(終わらない)
 			m_Act = ACTION_ROAMING;
 			m_fActionCount = 0.0f;
+			m_pMotion->Set(MOTION_AFTER);
 		}
 
 		break;
@@ -356,7 +352,7 @@ void CEnemyTackle::Attack(void)
 			if (pEffect != NULL)
 			{
 				// セットアップ位置設定
-				pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+				//pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
 			}
 
 			fRot = Random(-20, 20) * 0.01f;
@@ -376,7 +372,7 @@ void CEnemyTackle::Attack(void)
 			if (pEffect != NULL)
 			{
 				// セットアップ位置設定
-				pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+				//pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
 			}
 		}
 	}
@@ -577,7 +573,7 @@ void CEnemyTackle::Roaming(void)
 			if (pEffect != NULL)
 			{
 				// セットアップ位置設定
-				pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+				//pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
 			}
 		}
 	}
@@ -612,7 +608,14 @@ void CEnemyTackle::RotationPlayer(void)
 	RotNormalize(fRotDiff);
 
 	//角度の補正をする
-	rot.y += fRotDiff;
+	if (fabsf(fRotDiff) > 0.1f)
+	{
+		rot.y += fRotDiff * 0.05f;
+	}
+	else
+	{
+		rot.y += fRotDiff * 1.0f;
+	}
 
 	// 角度の正規化
 	RotNormalize(rot.y);

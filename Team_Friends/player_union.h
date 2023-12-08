@@ -81,21 +81,6 @@ public:
 
 protected:
 
-	// 列挙型定義
-	enum MOTION
-	{
-		MOTION_DEF = 0,			// ニュートラルモーション
-		MOTION_WALK,			// 移動モーション
-		MOTION_ATK,				// 攻撃
-		MOTION_CHARGE,			// チャージ
-		MOTION_KNOCKBACK,		// やられモーション
-		MOTION_DEAD,			// 死亡モーション
-		MOTION_JUMP,			// ジャンプ
-		MOTION_FALL,			// 落下中
-		MOTION_APPEARANCE,		// 出現
-		MOTION_MAX
-	};
-
 	// モーションの判定
 	struct SMotionFrag
 	{
@@ -115,11 +100,14 @@ protected:
 	virtual void Invincible(void);	// 無敵
 	virtual void Appearance(void);	// 出現
 
+	void BindByPlayerIdxTexture(int nIdx, int nPartsIdx);	// プレイヤーインデックス毎のテクスチャ設定
 	void ReadMultiCharacter(const char *pTextFile);			// 複数キャラクター読み込み
 	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
 	virtual void AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo);	// 攻撃時処理
+	virtual void AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo);				// 攻撃判定中処理
 	virtual void ControllParts(void);	// パーツのコントロール処理
 	virtual void MotionSet(int nIdx);	// モーションの設定
+	virtual void Atack(int nIdx);		// 攻撃
 	bool ControllMove(int nIdx);	// 移動操作
 	virtual HRESULT CreateParts(void);	// パーツの設定
 	
@@ -151,12 +139,28 @@ protected:
 	CMotion *m_pMotion[PARTS_MAX];			// パーツ分のモーションポインタ
 	SMotionFrag m_sMotionFrag[PARTS_MAX];	// モーションのフラグ
 	CObjectChara *m_pObjChara[PARTS_MAX];	// パーツ分のオブジェクトキャラクターポインタ
+	CModel *m_apModel[mylib_const::MAX_MODEL];	// モデル(パーツ)のポインタ
 private:
 
 	// コンボ時ワザの種類
 	enum eSPSkill
 	{
 		SKILL_MAX
+	};
+
+	// 列挙型定義
+	enum MOTION
+	{
+		MOTION_DEF = 0,			// ニュートラルモーション
+		MOTION_WALK,			// 移動モーション
+		MOTION_ATK,				// 攻撃
+		MOTION_CHARGE,			// チャージ
+		MOTION_KNOCKBACK,		// やられモーション
+		MOTION_DEAD,			// 死亡モーション
+		MOTION_JUMP,			// ジャンプ
+		MOTION_FALL,			// 落下中
+		MOTION_APPEARANCE,		// 出現
+		MOTION_MAX
 	};
 
 	// メンバ関数
@@ -166,7 +170,6 @@ private:
 	void ControllRightArm(int nIdx);	// 右腕操作
 	void ControllLeftArm(int nIdx);		// 左腕操作
 
-	void Atack(int nIdx);		// 攻撃
 
 
 	int m_nTexIdx;				// テクスチャのインデックス番号
@@ -177,6 +180,7 @@ private:
 	CHP_GaugePlayer *m_pHPGauge;	// HPゲージの情報
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定
+
 };
 
 

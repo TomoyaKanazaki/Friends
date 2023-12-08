@@ -67,7 +67,7 @@ public:
 	void SetPositionDest(D3DXVECTOR3 pos);	// 目標の位置設定
 	void SetEnableGravity(void) { m_bGravity = true; }	// 重力有効
 	void SetGravityValue(float fValue);					// 重力の値設定
-	void SetUp(D3DXVECTOR3 setup, CObject *pObj, int nParentIdx);	// セットアップ
+	void SetUp(D3DXVECTOR3 setup, D3DXMATRIX *pMtxParent, CObject *pObj, int nParentIdx);	// セットアップ
 	void UpdatePosition(D3DXMATRIX mtx, D3DXVECTOR3 rot);	// 位置更新
 	void UninitParent(void);	// 親の破棄
 	static int GetNumAll(void);	// 総数取得
@@ -88,6 +88,7 @@ private:
 	D3DXVECTOR3 m_setupRotation;	// セットアップ位置
 	D3DXVECTOR3 m_posDest;			// 目標の位置
 	D3DXCOLOR m_colOrigin;		// 色
+	D3DXMATRIX *m_pMtxParent;	// 親マトリックスのポインタ
 	float m_fRadius;			// 半径
 	float m_fMaxRadius;			// 最大半径
 	float m_fAddSizeValue;		// サイズ変更量

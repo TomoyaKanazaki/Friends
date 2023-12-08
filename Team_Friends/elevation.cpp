@@ -845,7 +845,7 @@ HRESULT CElevation::Load(const char *pText)
 		break;
 
 	default:
-		pFile = fopen("data\\TEXT\\elevation\\field_outgame.txt", "r");
+		pFile = fopen("data\\TEXT\\elevation\\field_city.txt", "r");
 		break;
 	}
 

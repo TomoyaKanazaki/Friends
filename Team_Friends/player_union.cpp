@@ -1,6 +1,6 @@
 //=============================================================================
 // 
-//  プレイヤー処理 [player_union.cpp]
+//  合体プレイヤー処理 [player_union.cpp]
 //  Author : 相馬靜雅
 // 
 //=============================================================================
@@ -47,8 +47,38 @@
 #include "union_legtoarm.h"
 
 //==========================================================================
-// マクロ定義
+// 定数定義
 //==========================================================================
+namespace
+{
+	char* TEXTURE_INITPLAYER[mylib_const::MAX_PLAYER][mylib_const::MAX_PLAYER] =	// 初期プレイヤーのテクスチャ
+	{
+		{// 胴
+			"data\\TEXTURE\\union\\SuperUnion\\Head\\union_head_UV_Red.jpg",
+			"data\\TEXTURE\\union\\SuperUnion\\Head\\union_head_UV_Blue.jpg",
+			"data\\TEXTURE\\union\\SuperUnion\\Head\\union_head_UV_Green.jpg",
+			"data\\TEXTURE\\union\\SuperUnion\\Head\\union_head_UV_Yellow.jpg",
+		},
+		{// 脚
+			"data\\TEXTURE\\union\\SuperUnion\\Feet\\union_feet_UV_Red.jpg",
+			"data\\TEXTURE\\union\\SuperUnion\\Feet\\union_feet_UV_Blue.jpg",
+			"data\\TEXTURE\\union\\SuperUnion\\Feet\\union_feet_UV_Green.jpg",
+			"data\\TEXTURE\\union\\SuperUnion\\Feet\\union_feet_UV_Yellow.jpg",
+		},
+		{// 腕
+			"data\\TEXTURE\\union\\SuperUnion\\Arm\\union_arm_UV_Red.jpg",
+			"data\\TEXTURE\\union\\SuperUnion\\Arm\\union_arm_UV_Blue.jpg",
+			"data\\TEXTURE\\union\\SuperUnion\\Arm\\union_arm_UV_Green.jpg",
+			"data\\TEXTURE\\union\\SuperUnion\\Arm\\union_arm_UV_Yellow.jpg",
+		},
+		{// 腕
+			"data\\TEXTURE\\union\\SuperUnion\\Arm\\union_arm_UV_Red.jpg",
+			"data\\TEXTURE\\union\\SuperUnion\\Arm\\union_arm_UV_Blue.jpg",
+			"data\\TEXTURE\\union\\SuperUnion\\Arm\\union_arm_UV_Green.jpg",
+			"data\\TEXTURE\\union\\SuperUnion\\Arm\\union_arm_UV_Yellow.jpg",
+		}
+	};
+}
 #define JUMP			(20.0f * 1.5f)	// ジャンプ力初期値
 #define MAX_LIFE		(100)			// 体力
 #define TARGET_LEN		(400.0f)		// 目標までの距離
@@ -104,6 +134,7 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_pShadow = NULL;			// 影の情報
 	m_pTargetP = NULL;	// 目標の地点
 	m_pHPGauge = NULL;	// HPゲージの情報
+	memset(&m_apModel[0], NULL, sizeof(m_apModel));	// モデル(パーツ)のポインタ
 }
 
 //==========================================================================
@@ -214,6 +245,11 @@ HRESULT CPlayerUnion::CreateParts(void)
 	// 複数キャラ読み込み
 	ReadMultiCharacter("data\\TEXT\\multicharacter\\SuperUnion.txt");
 
+	// プレイヤーインデックス毎のテクスチャ設定
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		BindByPlayerIdxTexture(i, CManager::GetInstance()->GetByPlayerPartsType(i));
+	}
 	return S_OK;
 }
 
@@ -972,113 +1008,27 @@ void CPlayerUnion::Atack(int nIdx)
 			continue;
 		}
 
+		// 攻撃情報保存
+		CMotion::AttackInfo atkInfo = *aInfo.AttackInfo[nCntAttack];
+
+		if (atkInfo.bOnlyOneTime && nIdx != 0)
+		{// 1度だけ判定を取る場合
+			return;
+		}
+
 		if (m_pMotion[nIdx]->GetAllCount() == aInfo.AttackInfo[nCntAttack]->nInpactCnt)
 		{// 衝撃のカウントと同じとき
-
-			// 攻撃情報保存
-			CMotion::AttackInfo atkInfo = *aInfo.AttackInfo[nCntAttack];
 
 			// 攻撃時処理
 			AttackAction(nIdx, atkInfo.nCollisionNum, atkInfo);
 		}
 
 		// モーションカウンター取得
-		if (m_pMotion[nIdx]->GetAllCount() > aInfo.AttackInfo[nCntAttack]->nMinCnt && m_pMotion[nIdx]->GetAllCount() < aInfo.AttackInfo[nCntAttack]->nMaxCnt)
+		if (m_pMotion[nIdx]->GetAllCount() > atkInfo.nMinCnt && m_pMotion[nIdx]->GetAllCount() < atkInfo.nMaxCnt)
 		{// 攻撃判定中
-
-			// 武器の位置
-			D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_pObjChara[nIdx]->GetModel(), *aInfo.AttackInfo[nCntAttack]);
-
-#if _DEBUG
-			CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
-#endif
-#if 1
-			// 敵取得
-			CEnemy **ppEnemy = CGame::GetEnemyManager()->GetEnemy();
-
-			// 総数取得
-			int nNumAll = CGame::GetEnemyManager()->GetNumAll();
-			int i = -1, nCntEnemy = 0;
-
-			while (1)
-			{
-				if (nCntEnemy >= nNumAll)
-				{// 総数超えたら終わり
-					break;
-				}
-
-				// インデックス加算
-				i++;
-				if (ppEnemy[i] == NULL)
-				{
-					continue;
-				}
-
-				// 敵の位置取得
-				D3DXVECTOR3 TargetPos = ppEnemy[i]->GetPosition();
-
-				// 判定サイズ取得
-				float fTargetRadius = ppEnemy[i]->GetRadius();
-
-				if (SphereRange(weponpos, TargetPos, aInfo.AttackInfo[nCntAttack]->fRangeSize, fTargetRadius))
-				{// 球の判定
-
-					if (ppEnemy[i]->Hit(aInfo.AttackInfo[nCntAttack]->nDamage) == true)
-					{// 当たってたら
-
-					}
-				}
-
-				// 敵の数加算
-				nCntEnemy++;
-			}
-#else
-
-			// 敵のリスト取得
-			CListManager *pEnemyList = CEnemy::GetEnemyList();
-
-			pEnemyList->GetTop();
-
-			// 先頭を保存
-			CList *pList = pEnemyList->GetTop();
-
-			while (pList != NULL)
-			{// NULLが来るまで無限ループ
-
-				// 次のオブジェクトを一時保存
-				CList *pListNext = pList->GetNext();
-
-				// 死亡の判定
-				if (pList->IsDeath() == true)
-				{// 死亡フラグが立っていたら
-
-					// 次のオブジェクトを代入
-					pList = pListNext;
-					continue;
-				}
-
-				// 敵の位置取得
-				D3DXMATRIX mtxOrigin = pList->GetObjectChara()->GetModel()[0]->GetWorldMtx();
-				D3DXVECTOR3 TargetPos = D3DXVECTOR3(mtxOrigin._41, mtxOrigin._42, mtxOrigin._43);
-
-				// 判定サイズ取得
-				float fRadius = pList->GetObjectChara()->RADIUS;
-
-				if (SphereRange(weponpos, TargetPos, aInfo.AttackInfo[nCntAttack]->fRangeSize, fRadius))
-				{// 球の判定
-
-					if (pList->Hit(aInfo.AttackInfo[nCntAttack]->nDamage) == true)
-					{// 死んでたら
-
-						my_particle::Create(TargetPos, my_particle::TYPE_OFFSETTING);
-					}
-				}
-
-				// 次のオブジェクトを代入
-				pList = pListNext;
-			}
-
-#endif
+			
+			// 攻撃判定中処理
+			AttackInDicision(nIdx, atkInfo);
 		}
 	}
 
@@ -1093,67 +1043,80 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 {
 
 	// 武器の位置
-	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_pObjChara[nIdx]->GetModel(), ATKInfo);
+	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
 
 	// 種類別
 	switch (m_pMotion[nIdx]->GetType())
 	{
 	case MOTION_ATK:
-		//// パーティクル生成
-		//my_particle::Create(weponpos, my_particle::TYPE_SUPERATTACK);
-
-		//// チャージカウントリセット
-		////CGame::GetPowerGauge()->SetChargeCount(0);
-
-		//// 衝撃波生成
-		//CImpactWave::Create
-		//(
-		//	D3DXVECTOR3(pos.x, pos.y + 80.0f, pos.z),	// 位置
-		//	D3DXVECTOR3(0.0f, 0.0f, 0.0f),				// 向き
-		//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f),			// 色
-		//	100.0f,										// 幅
-		//	20.0f,										// 高さ
-		//	20,											// 寿命
-		//	28.0f,										// 幅の移動量
-		//	CImpactWave::TYPE_BLACK2,					// テクスチャタイプ
-		//	true										// 加算合成するか
-		//);
-
-		//CImpactWave::Create
-		//(
-		//	D3DXVECTOR3(pos.x, pos.y + 150.0f, pos.z),	// 位置
-		//	D3DXVECTOR3(0.0f, 0.0f, D3DX_PI),				// 向き
-		//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f),			// 色
-		//	180.0f,										// 幅
-		//	150.0f,										// 高さ
-		//	14,											// 寿命
-		//	4.0f,										// 幅の移動量
-		//	CImpactWave::TYPE_GIZAWHITE,				// テクスチャタイプ
-		//	false										// 加算合成するか
-		//);
-
-		// 振動
-		//CManager::GetInstance()->GetCamera()->SetShake(20, 10.0f, 0.0f);
-
-		// 斬撃生成
-		//CSlash::Create
-		//(
-		//	D3DXVECTOR3(pos.x, pos.y + 50.0f, pos.z),	// 位置
-		//	D3DXVECTOR3(0.0f, 0.0f, 0.0f),		// 向き
-		//	D3DXVECTOR3(m_fAtkStickRot, D3DX_PI + fRotY, 0.0f),		// 向き
-		//	D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),	// 色
-		//	200.0f,								// 幅
-		//	50.0f,								// 中心からの間隔
-		//	10,									// 寿命
-		//	40.0f,								// 幅の移動量
-		//	CImpactWave::TYPE_PURPLE4,			// テクスチャの種類
-		//	true,								// 加算合成するかどうか
-		//	GetMoveAngle()
-		//);
 
 		// 歩行音再生
 		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_SWING);
 		break;
+	}
+}
+
+//==========================================================================
+// 攻撃判定中処理
+//==========================================================================
+void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
+{
+	if (ATKInfo.fRangeSize == 0.0f)
+	{
+		return;
+	}
+
+	// 武器の位置
+	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
+
+#if _DEBUG
+	CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+#endif
+
+	// 敵取得
+	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
+	if (pEnemyManager == NULL)
+	{
+		return;
+	}
+
+	CEnemy **ppEnemy = pEnemyManager->GetEnemy();
+
+	// 総数取得
+	int nNumAll = pEnemyManager->GetNumAll();
+	int i = -1, nCntEnemy = 0;
+
+	while (1)
+	{
+		if (nCntEnemy >= nNumAll)
+		{// 総数超えたら終わり
+			break;
+		}
+
+		// インデックス加算
+		i++;
+		if (ppEnemy[i] == NULL)
+		{
+			continue;
+		}
+
+		// 敵の位置取得
+		D3DXVECTOR3 TargetPos = ppEnemy[i]->GetPosition();
+
+		// 判定サイズ取得
+		float fTargetRadius = ppEnemy[i]->GetRadius();
+
+		if (SphereRange(weponpos, TargetPos, ATKInfo.fRangeSize, fTargetRadius))
+		{// 球の判定
+
+			if (ppEnemy[i]->Hit(ATKInfo.nDamage) == true)
+			{// 当たってたら
+
+			}
+		}
+
+		// 敵の数加算
+		nCntEnemy++;
 	}
 }
 
@@ -1921,6 +1884,39 @@ void CPlayerUnion::Draw(void)
 	}
 }
 
+
+//==========================================================================
+// プレイヤーインデックス毎のテクスチャ設定
+//==========================================================================
+void CPlayerUnion::BindByPlayerIdxTexture(int nIdx, int nPartsIdx)
+{
+	// ファイルインデックス番号取得
+	int nIdxXFile = m_pObjChara[nIdx]->GetIdxFile();
+	CObjectChara::Load LoadData = m_pObjChara[nIdx]->GetLoadData(nIdxXFile);
+
+	// モデル取得
+	CModel **ppModel = m_pObjChara[nIdx]->GetModel();
+
+	// 初期テクスチャ
+	int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[nIdx][nPartsIdx]);
+	for (int i = 0; i < m_pObjChara[nIdx]->GetNumModel(); i++)
+	{
+		if (ppModel[i] == NULL)
+		{
+			continue;
+		}
+
+		// Xファイルのデータ取得
+		CXLoad::SXFile *pXData = CScene::GetXLoad()->GetMyObject(ppModel[i]->GetIdxXFile());
+
+		for (int nMat = 0; nMat < (int)pXData->dwNumMat; nMat++)
+		{
+			ppModel[i]->SetIdxTexture(nMat, nIdxTex);
+		}
+	}
+
+}
+
 //==========================================================================
 // 複数キャラクター読み込み
 //==========================================================================
@@ -1942,6 +1938,7 @@ void CPlayerUnion::ReadMultiCharacter(const char *pTextFile)
 	std::string MotionFile;
 	int nCntFileName = 0;
 	int nNumParts = 0;
+	int nCntModel = 0;
 
 	while (1)
 	{// END_SCRIPTが来るまで繰り返す
@@ -2007,6 +2004,13 @@ void CPlayerUnion::ReadMultiCharacter(const char *pTextFile)
 					// ポーズのリセット
 					m_pMotion[nCntFileName]->ResetPose(MOTION_DEF);
 
+					// モデルコピー
+					CModel **ppModel = pObjChar->GetModel();
+					for (int i = 0; i < pObjChar->GetNumModel(); i++)
+					{
+						m_apModel[nCntModel] = ppModel[i];
+						nCntModel++;
+					}
 
 					nCntFileName++;	// ファイル数加算
 				}

@@ -47,7 +47,10 @@ public:
 	static CObject3D *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 	CObject3D *GetObject3D(void);
 	virtual CObject3DMesh *GetObject3DMesh(void);
+
 protected:
+
+	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファ
 
 private:
 	D3DXMATRIX	m_mtxWorld;		// ワールドマトリックス
@@ -56,7 +59,6 @@ private:
 	D3DXVECTOR2 m_fTex[32];		// テクスチャ座標
 	D3DXCOLOR m_col;			// 色
 	D3DXVECTOR3 m_fSize;		// サイズ
-	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファ
 	int m_nTexIdx;					// テクスチャのインデックス番号
 };
 

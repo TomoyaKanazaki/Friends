@@ -89,7 +89,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -148,7 +149,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -169,6 +170,7 @@
     <ClCompile Include="bulletexplosion.cpp" />
     <ClCompile Include="bulletmanager.cpp" />
     <ClCompile Include="bullet_obstacle.cpp" />
+    <ClCompile Include="bullet_point.cpp" />
     <ClCompile Include="calculation.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collision.cpp" />
@@ -184,6 +186,7 @@
     <ClCompile Include="effect_addscore.cpp" />
     <ClCompile Include="effect_enemyspawn.cpp" />
     <ClCompile Include="effect_slashhit.cpp" />
+    <ClCompile Include="effect_startupeye.cpp" />
     <ClCompile Include="effect_thunderring.cpp" />
     <ClCompile Include="elevation.cpp" />
     <ClCompile Include="enemy.cpp" />
@@ -238,7 +241,9 @@
     <ClCompile Include="object2D.cpp" />
     <ClCompile Include="object3D.cpp" />
     <ClCompile Include="object3DMesh.cpp" />
+    <ClCompile Include="object3D_Anim.cpp" />
     <ClCompile Include="objectBillboard.cpp" />
+    <ClCompile Include="objectBillboard_Anim.cpp" />
     <ClCompile Include="objectChara.cpp" />
     <ClCompile Include="objectX.cpp" />
     <ClCompile Include="object_circlegauge2D.cpp" />
@@ -295,6 +300,7 @@
     <ClInclude Include="bulletexplosion.h" />
     <ClInclude Include="bulletmanager.h" />
     <ClInclude Include="bullet_obstacle.h" />
+    <ClInclude Include="bullet_point.h" />
     <ClInclude Include="calculation.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision.h" />
@@ -311,6 +317,7 @@
     <ClInclude Include="effect_addscore.h" />
     <ClInclude Include="effect_enemyspawn.h" />
     <ClInclude Include="effect_slashhit.h" />
+    <ClInclude Include="effect_startupeye.h" />
     <ClInclude Include="effect_thunderring.h" />
     <ClInclude Include="elevation.h" />
     <ClInclude Include="enemy.h" />
@@ -365,7 +372,9 @@
     <ClInclude Include="object2D.h" />
     <ClInclude Include="object3D.h" />
     <ClInclude Include="object3DMesh.h" />
+    <ClInclude Include="object3D_Anim.h" />
     <ClInclude Include="objectBillboard.h" />
+    <ClInclude Include="objectBillboard_Anim.h" />
     <ClInclude Include="objectChara.h" />
     <ClInclude Include="objectX.h" />
     <ClInclude Include="object_circlegauge2D.h" />

@@ -91,18 +91,19 @@ HRESULT CPlayerTitle::Init(void)
 	switch (m_nModelType)
 	{
 	case PLAYER_BODY:
-		SetEvolusion(CGameManager::STATUS_LIFE);
+		SetEvolusion(CGameManager::STATUS_LIFE, true);
 		break;
 
 	case PLAYER_ARM:
-		SetEvolusion(CGameManager::STATUS_POWER);
+		SetEvolusion(CGameManager::STATUS_POWER, true);
 		break;
 
 	case PLAYER_LEG:
-		SetEvolusion(CGameManager::STATUS_SPEED);
+		SetEvolusion(CGameManager::STATUS_SPEED, true);
 		break;
 
 	default:
+		return E_FAIL;
 		break;
 	}
 

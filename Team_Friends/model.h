@@ -38,6 +38,7 @@ public:
 	int GetIdxXFile(void) const { return m_nIdxXFile; }
 	void SetWorldMtx(const D3DXMATRIX mtx);		// マトリックス設定
 	D3DXMATRIX GetWorldMtx(void) const;			// マトリックス取得
+	D3DXMATRIX *GetPtrWorldMtx(void);			// ポインタマトリックス取得
 	void SetPosition(const D3DXVECTOR3 pos);	// 位置設定
 	D3DXVECTOR3 GetPosition(void) const;		// 位置取得
 	void SetOldPosition(const D3DXVECTOR3 posOld);	// 前回の位置設定

@@ -24,9 +24,11 @@
 CObjectBillboard::CObjectBillboard(int nPriority) : CObject(nPriority)
 {
 	D3DXMatrixIdentity(&m_mtxWorld);			// ワールドマトリックス
+	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 色
 	m_fSize = D3DXVECTOR2(0.0f, 0.0f);			// サイズ
 	m_sizeOrigin = D3DXVECTOR2(0.0f, 0.0f);		// 元のサイズ
-	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 色
+	m_fLength = 0.0f;							// 対角線の長さ
+	m_fAngle = 0.0f;							// 対角線の向き
 	m_nTexIdx = 0;	// テクスチャのインデックス番号
 	m_pVtxBuff = NULL;		// 頂点バッファ
 
@@ -260,12 +262,25 @@ void CObjectBillboard::SetVtx(void)
 
 	D3DXVECTOR2 size = GetSize();
 	D3DXCOLOR col = GetColor();
+	D3DXVECTOR3 rot = GetRotation();
 
-	// 位置を更新
-	pVtx[0].pos = D3DXVECTOR3(-size.x, size.y, 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(size.x, size.y, 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(-size.x, -size.y, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(size.x, -size.y, 0.0f);
+	// 頂点座標の設定
+	pVtx[0].pos.x = sinf(rot.z - D3DX_PI + m_fAngle) * m_fLength;
+	pVtx[0].pos.y = cosf(rot.z - m_fAngle) * m_fLength;
+	pVtx[0].pos.z = 0.0f;
+
+	pVtx[1].pos.x = sinf(rot.z + D3DX_PI - m_fAngle) * m_fLength;
+	pVtx[1].pos.y = cosf(rot.z + m_fAngle) * m_fLength;
+	pVtx[1].pos.z = 0.0f;
+
+	pVtx[2].pos.x = sinf(rot.z - m_fAngle) * m_fLength;
+	pVtx[2].pos.y = cosf(rot.z - D3DX_PI + m_fAngle) * m_fLength;
+	pVtx[2].pos.z = 0.0f;
+
+	pVtx[3].pos.x = sinf(rot.z + m_fAngle) * m_fLength;
+	pVtx[3].pos.y = cosf(rot.z + D3DX_PI - m_fAngle) * m_fLength;
+	pVtx[3].pos.z = 0.0f;
+
 
 	// 法線ベクトルの設定
 	pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
@@ -287,6 +302,18 @@ void CObjectBillboard::SetVtx(void)
 
 	// 頂点バッファをアンロックロック
 	m_pVtxBuff->Unlock();
+}
+
+
+//==========================================================================
+// 向き設定
+//==========================================================================
+void CObjectBillboard::SetRotation(const D3DXVECTOR3 rot)
+{
+	// 向き設定
+	CObject::SetRotation(rot);
+	m_fLength = sqrtf(m_fSize.x * m_fSize.x + m_fSize.y * m_fSize.y);	// 対角線の長さ
+	m_fAngle = atan2f(m_fSize.x, m_fSize.y);							// 対角線の向き
 }
 
 //==========================================================================
@@ -327,6 +354,8 @@ D3DXCOLOR CObjectBillboard::GetColor(void) const
 void CObjectBillboard::SetSize(const D3DXVECTOR2 size)
 {
 	m_fSize = size;
+	m_fLength = sqrtf(m_fSize.x * m_fSize.x + m_fSize.y * m_fSize.y);	// 対角線の長さ
+	m_fAngle = atan2f(m_fSize.x, m_fSize.y);							// 対角線の向き
 }
 
 //==========================================================================

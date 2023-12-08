@@ -46,7 +46,7 @@
 #include "tutorialplayer.h"
 
 //==========================================================================
-// 静的メンバ変数宣言
+// 定数定義
 //==========================================================================
 namespace
 {
@@ -94,7 +94,10 @@ namespace
 	const int MAX_BUFFSTATUS = 100;		// ステータスのバフ最大値
 }
 
-bool CPlayer::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
+//==========================================================================
+// 静的メンバ変数宣言
+//==========================================================================
+bool CPlayer::m_bAllLandInjectionTable = false;						// 全員の射出台着地判定
 bool CPlayer::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// 射出台の着地判定
 int CPlayer::m_nChaseTopIdx = 0;	// 追従の先頭インデックス番号
 
@@ -226,20 +229,20 @@ HRESULT CPlayer::Init(void)
 	// ポーズのリセット
 	m_pMotion->ResetPose(MOTION_DEF);
 
-	if (m_nMyPlayerIdx == 2 ||
-		m_nMyPlayerIdx == 3)
-	{// うで
-		SetEvolusion(CGameManager::STATUS_POWER);
-	}
-	if (m_nMyPlayerIdx == 0)
-	{// 胴
-		SetEvolusion(CGameManager::STATUS_LIFE);
-	}
+	//if (m_nMyPlayerIdx == 2 ||
+	//	m_nMyPlayerIdx == 3)
+	//{// うで
+	//	SetEvolusion(CGameManager::STATUS_POWER);
+	//}
+	//if (m_nMyPlayerIdx == 0)
+	//{// 胴
+	//	SetEvolusion(CGameManager::STATUS_LIFE);
+	//}
 
-	if (m_nMyPlayerIdx == 1)
-	{// 胴
-		SetEvolusion(CGameManager::STATUS_SPEED);
-	}
+	//if (m_nMyPlayerIdx == 1)
+	//{// 胴
+	//	SetEvolusion(CGameManager::STATUS_SPEED);
+	//}
 	//SetEvolusion(CGameManager::STATUS_POWER);
 
 	// プレイヤー毎のインデックス追加
@@ -484,7 +487,8 @@ void CPlayer::Controll(void)
 			m_state != STATE_DEAD &&
 			m_state != STATE_FADEOUT &&
 			m_state != STATE_COMPACTUNION &&
-			m_state != STATE_RELEASEUNION)
+			m_state != STATE_RELEASEUNION &&
+			m_state != STATE_EVOLUSION)
 		{// 移動可能モーションの時
 
 			if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).x < 0)
@@ -567,26 +571,13 @@ void CPlayer::Controll(void)
 				m_sMotionFrag.bMove = false;
 			}
 
-			// ジャンプ
-#if 0
-			if (m_bJump == false &&
-				(pInputKeyboard->GetTrigger(DIK_SPACE) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LB, m_nMyPlayerIdx)))
-			{//SPACEが押された,ジャンプ
-
-				m_bJump = true;
-				m_sMotionFrag.bJump = true;
-				move.y += 17.0f;
-
-				// サウンド再生
-				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
-			}
-#endif
 		}
 		else if (m_pMotion->IsGetMove(nMotionType) == 0 &&
 			m_state != STATE_DEAD &&
 			m_state != STATE_FADEOUT &&
 			m_state != STATE_COMPACTUNION &&
-			m_state != STATE_RELEASEUNION)
+			m_state != STATE_RELEASEUNION&&
+			m_state != STATE_EVOLUSION)
 		{
 			if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(m_nMyPlayerIdx).x < 0)
 			{//←キーが押された,左移動
@@ -674,7 +665,7 @@ void CPlayer::Controll(void)
 				if (pEffect != NULL)
 				{
 					// セットアップ位置設定
-					pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+					pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
 				}
 
 				fRot = Random(-20, 20) * 0.01f;
@@ -693,7 +684,7 @@ void CPlayer::Controll(void)
 				if (pEffect != NULL)
 				{
 					// セットアップ位置設定
-					pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+					pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
 				}
 			}
 		}
@@ -1005,6 +996,21 @@ void CPlayer::Atack(void)
 				// スイング音再生
 				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_SWING);
 				break;
+
+			case MOTION_EVOLUTION:
+				// パーツ変更
+				ChangeObject(m_nEvolveType);
+
+				// モーション切り替え
+				ChangeMotion(EVOLUSIONFILE[static_cast<int>(m_nEvolveType) - 1]);
+
+				// プレイヤー毎のインデックス追加
+				BindByPlayerIdxTexture();
+
+				// ポーズのリセット
+				//m_pMotion->ResetPose(MOTION_EVOLUTION);
+				m_pMotion->Set(MOTION_EVOLUTION);
+				break;
 			}
 		}
 
@@ -1015,6 +1021,53 @@ void CPlayer::Atack(void)
 			
 			// 武器の位置
 			D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetObjectChara()->GetModel(), *aInfo.AttackInfo[nCntAttack]);
+
+			switch (m_pMotion->GetType())
+			{
+			case MOTION_EVOLUTION:
+				D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
+
+				D3DXVECTOR3 nor = (aInfo.AttackInfo[nCntAttack]->Offset);
+				D3DXVec3Normalize(&nor, &nor);
+
+				D3DXVECTOR3 move = D3DXVECTOR3(10.0f, 0.0f, 0.0f);
+
+				// 炎
+				float fMove = 5.5f + Random(-20, 20) * 0.1f;
+				float fRot = Random(-20, 20) * 0.01f;
+
+				CEffect3D *pEffect = CEffect3D::Create(
+					weponpos,
+					(fMove * nor),
+					D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
+					20.0f + (float)Random(-10, 10),
+					15,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_SMOKE);
+
+				if (pEffect != NULL)
+				{
+					// セットアップ位置設定
+					pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+				}
+
+				fRot = Random(-20, 20) * 0.01f;
+				// 炎
+				pEffect = CEffect3D::Create(
+					weponpos,
+					(fMove * nor),
+					D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
+					12.0f + (float)Random(-5, 5),
+					15,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_SMOKE);
+				if (pEffect != NULL)
+				{
+					// セットアップ位置設定
+					pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+				}
+				break;
+			}
 
 			// 進化先別
 			switch (CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx))
@@ -1732,7 +1785,7 @@ void CPlayer::DrawingEvolusion(void)
 //==========================================================================
 // 進化先設定
 //==========================================================================
-void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
+void CPlayer::SetEvolusion(CGameManager::eStatus statusType, bool bFast)
 {
 	// プレイヤー毎の担当パーツ種類設定
 	switch (statusType)
@@ -1781,21 +1834,31 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType)
 	// 進化先の種類
 	m_nEvolveType = (int)statusType + 1;
 
-#if 1
-	// パーツ変更
-	ChangeObject(m_nEvolveType);
+	if (bFast)
+	{
+		// パーツ変更
+		ChangeObject(m_nEvolveType);
 
-	// モーション切り替え
-	ChangeMotion(EVOLUSIONFILE[(int)statusType]);
+		// モーション切り替え
+		ChangeMotion(EVOLUSIONFILE[(int)statusType]);
 
-	// プレイヤー毎のインデックス追加
-	BindByPlayerIdxTexture();
-#else
+		// プレイヤー毎のインデックス追加
+		BindByPlayerIdxTexture();
+	}
+	else
+	{
+		// パーツ削除
+		//DeleteObject(m_nEvolveType);
 
-	// パーツ削除
-	DeleteObject(m_nEvolveType);
+		// 進化状態にする
+		m_state = STATE_EVOLUSION;
 
-#endif
+		// 進化モーション設定
+		m_pMotion->Set(MOTION_EVOLUTION);
+
+		// 目標の向き設定
+		SetRotDest(0.0f);
+	}
 }
 
 //==========================================================================
@@ -1935,6 +1998,10 @@ void CPlayer::UpdateState(void)
 
 	case STATE_RELEASEUNION:
 		StateReleaseUnion();
+		break;
+
+	case STATE_EVOLUSION:
+		StateEvolusion();
 		break;
 	}
 }
@@ -2292,6 +2359,43 @@ void CPlayer::StateReleaseUnion(void)
 			m_pShadow = CShadow::Create(GetPosition(), 50.0f);
 		}
 		return;
+	}
+}
+
+//==========================================================================
+// 進化
+//==========================================================================
+void CPlayer::StateEvolusion(void)
+{
+	int nType = m_pMotion->GetType();
+	if (nType == MOTION_EVOLUTION && m_pMotion->IsFinish() == true)
+	{// キック攻撃が終わってたら
+
+		// 通常状態にする
+		m_state = STATE_NONE;
+
+		// 待機モーション設定
+		m_pMotion->Set(MOTION_DEF);
+		return;
+	}
+
+	// 向き取得
+	D3DXVECTOR3 rot = GetRotation();
+
+	// 目標の向き取得
+	float fRotDest = GetRotDest();
+
+	// 補正
+	rot.y += (fRotDest - rot.y) * 0.1f;
+
+	// 向きの設定
+	RotNormalize(rot.y);
+	SetRotation(rot);
+
+	if (nType != MOTION_EVOLUTION)
+	{
+		// 進化モーション設定
+		m_pMotion->Set(MOTION_EVOLUTION);
 	}
 }
 

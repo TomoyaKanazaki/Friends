@@ -141,6 +141,11 @@ int CXLoad::XLoad(const char *pFileName)
 	int nNumAll = GetNumAll() + 1;
 	int nNowLen = 0;
 
+	if (nNumAll == 73)
+	{
+		int a = 0;
+	}
+
 	if (pFileName != NULL)
 	{
 		nNowLen = strlen(pFileName);

@@ -19,7 +19,7 @@
 // マクロ定義
 //==========================================================================
 #define PLAYER_CREATE_POSX				(1200.0f)		// スポーンX座標
-#define PLAYER_CREATE_POSY				(900.0f)		// スポーンY座標
+#define PLAYER_CREATE_POSY				(240.0f)		// スポーンY座標
 #define PLAYER_DELETE_POSX				(-1200.0f)		// デスポーンX座標
 
 //==========================================================================
@@ -65,7 +65,7 @@ HRESULT CRanking::Init(void)
 	}
 
 	// 生成処理
-	CObjectX *p = CObjectX::Create(m_apModelFile, D3DXVECTOR3(0.0f, 1000.0f, 0.0f));
+	CObjectX *p = CObjectX::Create(m_apModelFile, D3DXVECTOR3(0.0f, 410.0f, 0.0f));
 	p->SetType(CObject::TYPE_OBJECTX);
 
 	// 合体キャラの生成

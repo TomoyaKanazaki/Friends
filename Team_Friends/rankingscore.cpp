@@ -35,7 +35,7 @@
 #define TEXT_MOVETIME		(50000)				// 移動時間
 #define SIZE_MOVETIME		(20)				// 移動時間
 #define INIT_POSX			(1600.0f)			// 初期位置
-#define INIT_POSY			(943.0f)			// 初期位置
+#define INIT_POSY			(353.0f)			// 初期位置
 #define INIT_POS_A			(-1)			// 初期位置
 #define INIT_POS_B			(3.3f)			// 初期位置
 
@@ -167,7 +167,7 @@ HRESULT CRankingScore::Init(void)
 				CManager::GetInstance()->GetTexture()->GetImageSize(m_nTexIdx3D[nCntVtx]).y * 0.5f,
 				0.0f));	// サイズ
 
-			m_pObj3D[nCntVtx]->SetPosition(D3DXVECTOR3(-15.0f, 1030.0f , 430.0f));	// 位置
+			m_pObj3D[nCntVtx]->SetPosition(D3DXVECTOR3(-15.0f, INIT_POSY + 87.0f , 430.0f));	// 位置
 
 			m_pObj3D[nCntVtx]->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 向き
 			break;

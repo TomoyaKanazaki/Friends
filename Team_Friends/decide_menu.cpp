@@ -23,13 +23,13 @@
 namespace
 {
 	const D3DXVECTOR3 POS_UI = D3DXVECTOR3(0.0f, 1000.0f, 0.0f); // UIの位置
-	const D3DXVECTOR3 POS_WALL = D3DXVECTOR3(0.0f, 1000.0f, 5000.0f); // 壁の位置
+	const D3DXVECTOR3 POS_WALL = D3DXVECTOR3(0.0f, 0.0f, 100.0f); // 壁の位置
 	const D3DXCOLOR COLOR_WALL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f); // 壁の色
-	const float SIZE_WALL = 10.0f; // 壁のサイズ倍率
+	const float SIZE_WALL = 1.0f; // 壁のサイズ倍率
 	const int ALPHATIME = 60; // 不透明度更新の時間
-	const D3DXVECTOR3 POS_SELECT = D3DXVECTOR3(0.0f, 200.0f, 1400.0f); // 選択肢の基準位置
-	const float LENGTH_SELECT = 800.0f; // 選択肢の基準位置
-	const float SCALE_SELECT = 0.8f; // 選択肢の倍率
+	const D3DXVECTOR3 POS_SELECT = D3DXVECTOR3(0.0f, 30.0f, 0.0f); // 選択肢の基準位置
+	const float LENGTH_SELECT = 150.0f; // 選択肢の基準位置
+	const float SCALE_SELECT = 0.15f; // 選択肢の倍率
 
 	// テクスチャのファイル
 	const char* m_apTextureFile[CDecideMenu::VTX_MAX] =
@@ -84,7 +84,7 @@ HRESULT CDecideMenu::Init(void)
 	SetType(TYPE_OBJECT3D);
 
 	// UIの生成
-	CreateUI();
+	//CreateUI();
 
 	// 選択対象の生成
 	CreateSelect();
@@ -223,6 +223,17 @@ void CDecideMenu::Update(void)
 	(
 		"選択人数 : %d\n\n", m_nNowSelect + 1
 	);
+
+#ifdef _DEBUG
+	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_LSHIFT))
+	{
+		Go(VTXSELECT_SELECT1P);
+	}
+	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_RSHIFT))
+	{
+		Back(VTXSELECT_SELECT1P);
+	}
+#endif
 }
 
 //==========================================
@@ -368,7 +379,7 @@ void CDecideMenu::CreateSelect(void)
 		m_pSelect3D[nCntSelect]->SetPosition(pos);
 
 		// 色設定
-		m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
+		m_pSelect3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
 	}
 }
 
@@ -378,8 +389,24 @@ void CDecideMenu::CreateSelect(void)
 void CDecideMenu::CretePlayer(void)
 {
 	// プレイヤーの生成
-	m_apPlayer[VTXSELECT_SELECT1P] = CPlayerTitle::Create(D3DXVECTOR3(-300.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apPlayer[VTXSELECT_SELECT2P] = CPlayerTitle::Create(D3DXVECTOR3(-100.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apPlayer[VTXSELECT_SELECT3P] = CPlayerTitle::Create(D3DXVECTOR3(100.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apPlayer[VTXSELECT_SELECT4P] = CPlayerTitle::Create(D3DXVECTOR3(300.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	m_apPlayer[VTXSELECT_SELECT1P] = CPlayerTitle::Create(m_pSelect3D[VTXSELECT_SELECT1P]->GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	m_apPlayer[VTXSELECT_SELECT2P] = CPlayerTitle::Create(m_pSelect3D[VTXSELECT_SELECT2P]->GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	m_apPlayer[VTXSELECT_SELECT3P] = CPlayerTitle::Create(m_pSelect3D[VTXSELECT_SELECT3P]->GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	m_apPlayer[VTXSELECT_SELECT4P] = CPlayerTitle::Create(m_pSelect3D[VTXSELECT_SELECT4P]->GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+}
+
+//==========================================
+//  進む
+//==========================================
+void CDecideMenu::Go(int Idx)
+{
+	m_apPlayer[Idx]->SetTarget(m_pSelect3D[Idx]->GetPosition() + D3DXVECTOR3(0.0f, 0.0f, 300.0f), m_pSelect3D[Idx]->GetPosition());
+}
+
+//==========================================
+//  戻る
+//==========================================
+void CDecideMenu::Back(int Idx)
+{
+	m_apPlayer[Idx]->SetTarget(m_pSelect3D[Idx]->GetPosition(), m_pSelect3D[Idx]->GetPosition() + D3DXVECTOR3(0.0f, 0.0f, 300.0f));
 }

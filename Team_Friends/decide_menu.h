@@ -58,6 +58,8 @@ private:
 	void CreateUI(void); // UIの生成
 	void CreateSelect(void); // 選択対象の生成
 	void CretePlayer(void); // プレイヤーの生成
+	void Go(int Idx); // 進む
+	void Back(int Idx); // 戻る
 
 	// メンバ変数
 	int m_nCntAlpha;		// 不透明度のカウンター

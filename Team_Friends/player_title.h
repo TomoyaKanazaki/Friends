@@ -37,13 +37,23 @@ public:
 	void Update(void) override;
 	void Draw(void) override;
 
+	// メンバ関数
+	void SetTarget(const D3DXVECTOR3 start, const D3DXVECTOR3 end);
+
 	// 静的メンバ関数
 	static CPlayerTitle* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MODEL type = PLAYER_UNION);
 
 private:
 
+	// メンバ関数
+	void Rotation(void); // 回転
+	void Move(void); // 移動
+
 	//メンバ変数
 	int m_nModelType;
+	float m_fSec; // 目的地に到着する時間
+	D3DXVECTOR3 m_posTarget; // 目的地
+	D3DXVECTOR3 m_posDef; // 初期地点
 
 	// 静的メンバ変数
 	static int m_nIdx; // インデックス

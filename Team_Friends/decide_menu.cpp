@@ -15,6 +15,7 @@
 #include "fade.h"
 #include "debugproc.h"
 #include "fog.h"
+#include "player_title.h"
 
 //==========================================
 //  定数定義
@@ -58,6 +59,12 @@ CDecideMenu::CDecideMenu(int nPriority) : CObject(nPriority),
 	memset(&m_pSelect3D[0], NULL, sizeof(m_pSelect3D)); // 選択肢のオブジェクト
 	memset(&m_nTexIdx[0], 0, sizeof(m_nTexIdx)); // テクスチャのインデックス番号
 	memset(&m_nTexIdx_Select[0], 0, sizeof(m_nTexIdx_Select)); // テクスチャのインデックス番号
+
+	// プレイヤーポインタの初期化
+	for (int nCnt = 0; nCnt < VTXSELECT_MAX; ++nCnt)
+	{
+		m_apPlayer[nCnt] = nullptr;
+	}
 }
 
 //==========================================
@@ -81,6 +88,9 @@ HRESULT CDecideMenu::Init(void)
 
 	// 選択対象の生成
 	CreateSelect();
+
+	// プレイヤーの生成
+	CretePlayer();
 
 	return S_OK;
 }
@@ -107,6 +117,14 @@ void CDecideMenu::Uninit(void)
 
 			// 終了処理
 			m_pSelect3D[nCntSelect] = NULL;
+		}
+	}
+
+	for (int nCnt = 0; nCnt < VTXSELECT_MAX; ++nCnt)
+	{
+		if (m_apPlayer[nCnt] != nullptr)
+		{
+			m_apPlayer[nCnt] = nullptr;
 		}
 	}
 
@@ -352,4 +370,16 @@ void CDecideMenu::CreateSelect(void)
 		// 色設定
 		m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
 	}
+}
+
+//==========================================
+//  プレイヤーの生成
+//==========================================
+void CDecideMenu::CretePlayer(void)
+{
+	// プレイヤーの生成
+	m_apPlayer[VTXSELECT_SELECT1P] = CPlayerTitle::Create(D3DXVECTOR3(-300.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	m_apPlayer[VTXSELECT_SELECT2P] = CPlayerTitle::Create(D3DXVECTOR3(-100.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	m_apPlayer[VTXSELECT_SELECT3P] = CPlayerTitle::Create(D3DXVECTOR3(100.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	m_apPlayer[VTXSELECT_SELECT4P] = CPlayerTitle::Create(D3DXVECTOR3(300.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 }

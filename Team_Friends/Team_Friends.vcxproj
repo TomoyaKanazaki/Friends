@@ -169,6 +169,7 @@
     <ClCompile Include="bulletexplosion.cpp" />
     <ClCompile Include="bulletmanager.cpp" />
     <ClCompile Include="bullet_obstacle.cpp" />
+    <ClCompile Include="bullet_point.cpp" />
     <ClCompile Include="calculation.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collision.cpp" />
@@ -295,6 +296,7 @@
     <ClInclude Include="bulletexplosion.h" />
     <ClInclude Include="bulletmanager.h" />
     <ClInclude Include="bullet_obstacle.h" />
+    <ClInclude Include="bullet_point.h" />
     <ClInclude Include="calculation.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision.h" />

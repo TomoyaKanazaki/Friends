@@ -11,7 +11,6 @@
 #include "debugproc.h"
 #include "sound.h"
 #include "decide_menu.h"
-#include "player_title.h"
 
 //==========================================
 //  コンストラクタ
@@ -45,12 +44,6 @@ HRESULT CDecide::Init(void)
 
 	// 選択メニューの生成
 	CDecideMenu::Create();
-
-	// プレイヤーの生成
-	CPlayerTitle::Create(D3DXVECTOR3(-300.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	CPlayerTitle::Create(D3DXVECTOR3(-100.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	CPlayerTitle::Create(D3DXVECTOR3(100.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	CPlayerTitle::Create(D3DXVECTOR3(300.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	// 成功
 	return S_OK;

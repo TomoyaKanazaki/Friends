@@ -9,6 +9,6 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------------------
 # モーションファイル名
 #------------------------------------------------------------------------------
-MOTION_FILENAME = data\TEXT\motion_enemy_roaming.txt
+MOTION_FILENAME = data\TEXT\motion_enemy_tackle.txt
 
 END_SCRIPT		# この行は絶対消さないこと！

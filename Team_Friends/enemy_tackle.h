@@ -51,11 +51,12 @@ private:
 	};
 
 	// メンバ変数
-	ACTION m_Act; //行動状態
-	float m_fActionCount; // 移動カウンター
-	D3DXVECTOR3 m_moveLock;	//固定移動量
-	float m_fRotLock;	//向き保存
-	int m_nAttack;		//攻撃力
+	ACTION m_Act;			// 行動状態
+	float m_fActionCount;	// 移動カウンター
+	D3DXVECTOR3 m_moveLock;	// 固定移動量
+	float m_fRotLock;		// 向き保存
+	float m_fEmissionTime;	// 発生物のタイマー
+	int m_nAttack;			// 攻撃力
 
 	// メンバ関数
 	void MotionSet(void) override;		// モーションの設定

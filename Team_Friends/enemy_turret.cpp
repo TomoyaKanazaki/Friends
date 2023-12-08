@@ -16,6 +16,10 @@
 #include "camera.h"
 #include "game.h"
 #include "gamemanager.h"
+#include "particle.h"
+#include "3D_Effect.h"
+#include "impactwave.h"
+#include "shadow.h"
 
 //==========================================================================
 //  定数定義
@@ -68,6 +72,12 @@ CEnemyTurret::CEnemyTurret(int nPriority) : CEnemy(nPriority)
 	m_fRotLock = 0.0f;
 	m_pLimitArea = nullptr;
 	m_bArea = false;
+	pBullet = nullptr;
+
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		m_pShadow[i] = nullptr;
+	}
 }
 
 //==========================================================================
@@ -89,7 +99,6 @@ HRESULT CEnemyTurret::Init(void)
 	// HPの設定
 	m_pHPGauge = CHP_Gauge::Create(100.0f, GetLifeOrigin());
 
-	// 行動
 	// 出現待機状態にする
 	m_state = CEnemy::STATE_SPAWNWAIT;
 	m_Action = ACTION_SPAWN;
@@ -104,6 +113,7 @@ void CEnemyTurret::Uninit(void)
 {
 	CScene *pScene = CManager::GetInstance()->GetScene();
 
+	//ゲームならプレイヤー進化
 	if (pScene != nullptr)
 	{
 		if (pScene->GetMode() == CScene::MODE_GAME)
@@ -147,6 +157,14 @@ void CEnemyTurret::Update(void)
 	{// 死亡フラグが立っていたら
 		return;
 	}
+
+	DeleteShadow();
+
+	// スクリーン内の存在判定
+	if (m_state == CEnemy::STATE_SPAWNWAIT && CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
+	{
+		m_state = STATE_SPAWN;
+	}
 }
 
 //==========================================================================
@@ -162,13 +180,6 @@ void CEnemyTurret::ActionSet(void)
 //==========================================================================
 void CEnemyTurret::UpdateAction(void)
 {
-	// スクリーン内の存在判定
-	if (m_state == CEnemy::STATE_SPAWNWAIT && CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
-	{
-		m_state = STATE_SPAWN;
-		return;
-	}
-
 	// 状態別処理
 	(this->*(m_ActFuncList[m_Action]))();
 }
@@ -178,8 +189,13 @@ void CEnemyTurret::UpdateAction(void)
 //==========================================
 void CEnemyTurret::Spawn(void)
 {
-	// 髙田くんへ、コピーしてね
+	if (m_state == STATE_SPAWNWAIT)
+	{
+		return;
+	}
+
 	int nType = m_pMotion->GetType();
+
 	if (nType == MOTION_SPAWN && m_pMotion->IsFinish() == true)
 	{// 登場が終わってたら
 
@@ -188,6 +204,45 @@ void CEnemyTurret::Spawn(void)
 		m_Action = ACTION_WAIT;
 		return;
 	}
+
+	// モーションカウンター取得
+	float fAllCount = m_pMotion->GetAllCount();
+	if ((int)fAllCount % 10 == 0)
+	{
+		// 角度の取得
+		D3DXVECTOR3 rot = GetRotation();
+
+		// 衝撃波生成
+		CImpactWave *pWave = CImpactWave::Create
+		(
+			GetCenterPosition(),	// 位置
+			D3DXVECTOR3((float)Random(-31, 31) * 0.1f, D3DX_PI * 0.5f + rot.y, 0.0f),	// 向き
+			D3DXCOLOR(0.9f, 0.2f, 0.9f, 0.8f),	// 色
+			150.0f,								// 幅
+			0.0f,								// 高さ
+			90.0f,								// 中心からの間隔
+			20,									// 寿命
+			8.0f,								// 幅の移動量
+			CImpactWave::TYPE_GIZAGRADATION,	// テクスチャタイプ
+			true								// 加算合成するか
+		);
+	}
+
+	if ((int)fAllCount % 12 == 0)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			int repeat = (int)(fAllCount / 12.0f);
+			CEffect3D::Create(
+				GetCenterPosition(),
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.9f, 0.2f, 0.9f, 1.0f),
+				20.0f, 20, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_NORMAL, repeat * 2.0f);
+		}
+	}
+
+	// 登場演出
+	my_particle::Create(GetCenterPosition(), my_particle::TYPE_UNDERBOSS_SPAWN);
 
 	if (nType != MOTION_SPAWN)
 	{
@@ -444,12 +499,21 @@ void CEnemyTurret::AttackMortar(void)
 				cosf(rot.y + D3DX_PI) * 100.0f };
 
 		//弾を放物線上に飛ばす
-		CBullet *pBullet = CBullet::Create(CBullet::TYPE_ENEMY, CBullet::MOVETYPE_PARABOLA, GetPosition(), rot, move, 50.0f);
+		if (pBullet != nullptr)
+		{
+			pBullet->Uninit();
+			pBullet = nullptr;
+		}
+
+		pBullet = CBullet::Create(CBullet::TYPE_ENEMY, CBullet::MOVETYPE_PARABOLA, GetPosition(), rot, move, 50.0f);
 		pBullet->SetTargetPosition(pPlayer->GetPosition());
 
 		float fRatio = GetFabsPosLength(GetPosition(), pPlayer->GetPosition()) / 1500.0f;
 		ValueNormalize(fRatio, 1.0f, 0.0f);
 		pBullet->SetParabolaHeight(1000.0f - (1000.0f * fRatio));
+
+		//着弾地点にマーク表示
+		m_pShadow[i] = CShadow::Create(pPlayer->GetPosition());
 	}
 
 	// タックル行動
@@ -586,7 +650,7 @@ void CEnemyTurret::SetTargetPlayer(void)
 {
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 posPlayer;
+	D3DXVECTOR3 posPlayer = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	float fLength = 0.0f, fLengthDiff = 0.0f;
 	CPlayer* pPlayer = nullptr;
 
@@ -650,6 +714,34 @@ void CEnemyTurret::SummonArea(void)
 		m_pLimitArea = CLimitArea::Create(info);
 
 		m_bArea = true;
+	}
+}
+
+//==========================================================================
+// 影消し
+//==========================================================================
+void CEnemyTurret::DeleteShadow(void)
+{
+	if (pBullet == nullptr)
+	{
+		return;
+	}
+
+	//弾を放物線上に飛ばす
+	if (!pBullet->IsDeath())
+	{
+		return;
+	}
+
+	pBullet = nullptr;
+	
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pShadow[i] != nullptr)
+		{
+			m_pShadow[i]->Uninit();
+			m_pShadow[i] = nullptr;
+		}
 	}
 }
 

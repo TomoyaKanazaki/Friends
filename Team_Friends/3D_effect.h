@@ -68,7 +68,7 @@ public:
 	void SetEnableGravity(void) { m_bGravity = true; }	// 重力有効
 	void SetGravityValue(float fValue);					// 重力の値設定
 	void SetUp(D3DXVECTOR3 setup, CObject *pObj, int nParentIdx);	// セットアップ
-	void UpdatePosition(D3DXVECTOR3 pos, D3DXVECTOR3 rot);	// 位置更新
+	void UpdatePosition(D3DXMATRIX mtx, D3DXVECTOR3 rot);	// 位置更新
 	void UninitParent(void);	// 親の破棄
 	static int GetNumAll(void);	// 総数取得
 
@@ -85,13 +85,12 @@ private:
 	D3DXVECTOR3 m_posOrigin;		// 原点
 	D3DXVECTOR3 m_updatePosition;	// 更新後の位置
 	D3DXVECTOR3 m_setupPosition;	// セットアップ位置
+	D3DXVECTOR3 m_setupRotation;	// セットアップ位置
 	D3DXVECTOR3 m_posDest;			// 目標の位置
 	D3DXCOLOR m_colOrigin;		// 色
 	float m_fRadius;			// 半径
 	float m_fMaxRadius;			// 最大半径
 	float m_fAddSizeValue;		// サイズ変更量
-	float m_fSetupRotation;		// セットアップの向き
-	float m_fSetupVec;			// セットアップの強さ
 	float m_fGravity;			// 重力
 	int m_nLife;				// 寿命
 	int m_nMaxLife;				// 最大寿命(固定)

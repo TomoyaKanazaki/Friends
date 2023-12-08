@@ -12,11 +12,9 @@
 #include "hp_gauge.h"
 #include "bullet.h"
 #include "collisionobject.h"
-
-//デバッグ
-#if _DEBUG
+#include "model.h"
 #include "particle.h"
-#endif
+#include "3D_Effect.h"
 
 //==========================================
 //  定数定義
@@ -34,6 +32,8 @@ namespace
 	const float AFTER_FIXROT = 0.07f;		//硬直時の方向修正速度
 	const float FIXROT_GRACE = 0.5f;		//方向修正までの猶予
 	const float ROAM_CHANGE_ROT = 3.0f;		//徘徊時の方向転換タイミング
+	const float TIME_ROMINGSMOKE = (1.0f / (60.0f / (float)4));	// 徘徊時の煙
+	const float TIME_TACKLEFIRE = (1.0f / (60.0f / (float)1));	// タックル時の火
 	const int ATTACK = 1;		//攻撃力
 	const int FIXROT = 16;		//方向転換の片分割
 }
@@ -46,6 +46,7 @@ CEnemyTackle::CEnemyTackle(int nPriority) :
 	m_fActionCount(0.0f),
 	m_moveLock(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_fRotLock(0.0f),
+	m_fEmissionTime(0.0f),
 	m_nAttack(0)
 {
 
@@ -100,6 +101,38 @@ void CEnemyTackle::Update(void)
 	{// 死亡フラグが立っていたら
 		return;
 	}
+
+	// 発生物のタイマー加算
+	m_fEmissionTime += CManager::GetInstance()->GetDeltaTime();
+
+	// モーションの情報取得
+	if (m_pMotion != NULL)
+	{
+		CMotion::Info aInfo = m_pMotion->GetInfo(0);
+
+		// 攻撃情報の総数取得
+		int nNumAttackInfo = aInfo.nNumAttackInfo;
+
+		int nCntEffect = 0;
+		int nNumEffect = GetEffectParentNum();
+		for (int i = 0; i < mylib_const::MAX_OBJ; i++)
+		{
+			CEffect3D *pEffect = GetEffectParent(i);
+			if (pEffect == NULL)
+			{// NULLだったら
+				continue;
+			}
+
+			// エフェクトの位置更新
+			pEffect->UpdatePosition(GetModel()[aInfo.AttackInfo[0]->nCollisionNum]->GetWorldMtx(), GetRotation());
+			nCntEffect++;
+			if (nNumEffect <= nCntEffect)
+			{
+				break;
+			}
+		}
+	}
+
 }
 
 //==========================================
@@ -234,6 +267,8 @@ void CEnemyTackle::ActionSet(void)
 
 	case CEnemyTackle::ACTION_READY:
 
+		// 準備モーション設定
+		m_pMotion->Set(MOTION_READY);
 		if (m_fActionCount >= READY_TIME)
 		{
 			m_Act = ACTION_ATTACK;
@@ -273,8 +308,78 @@ void CEnemyTackle::ActionSet(void)
 //==========================================
 void CEnemyTackle::Attack(void)
 {
+	m_sMotionFrag.bATK = true;
+
+	// 攻撃モーション設定
+	m_pMotion->Set(MOTION_ATK);
+
 	D3DXVECTOR3 move = GetMove();
 	D3DXVECTOR3 pos = GetPosition();//髪ゲーじゃん
+
+	if (m_fEmissionTime >= TIME_TACKLEFIRE)
+	{
+		m_fEmissionTime = 0.0f;
+	}
+
+	if (m_fEmissionTime == 0.0f)
+	{
+		// モーションの情報取得
+		CMotion::Info aInfo = m_pMotion->GetInfo(0);
+		D3DXVECTOR3 rot = GetRotation();
+
+		// 攻撃情報の総数取得
+		int nNumAttackInfo = aInfo.nNumAttackInfo;
+
+		CEffect3D *pEffect = NULL;
+		// 武器の位置
+		for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
+		{
+			D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
+
+			// 炎
+			float fMove = 7.5f + Random(-20, 20) * 0.1f;
+			fMove *= -1;
+			float fRot = Random(-20, 20) * 0.01f;
+
+			pEffect = CEffect3D::Create(
+				weponpos,
+				D3DXVECTOR3(
+					sinf(D3DX_PI + rot.y + fRot) * fMove,
+					Random(-10, 10) * 0.1f,
+					cosf(D3DX_PI + rot.y + fRot) * fMove),
+				D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
+				40.0f + (float)Random(-10, 10),
+				15,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_SMOKE);
+
+			if (pEffect != NULL)
+			{
+				// セットアップ位置設定
+				pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+			}
+
+			fRot = Random(-20, 20) * 0.01f;
+			// 炎
+			pEffect = CEffect3D::Create(
+				weponpos,
+				D3DXVECTOR3(
+					sinf(D3DX_PI + rot.y + fRot) * fMove,
+					Random(-10, 10) * 0.1f,
+					cosf(D3DX_PI + rot.y + fRot) * fMove),
+				D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
+				25.0f + (float)Random(-5, 5),
+				15,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_SMOKE);
+
+			if (pEffect != NULL)
+			{
+				// セットアップ位置設定
+				pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+			}
+		}
+	}
 
 	if (m_moveLock == D3DXVECTOR3(0.0f, 0.0f, 0.0f))
 	{
@@ -431,6 +536,50 @@ void CEnemyTackle::Roaming(void)
 	else
 	{
 		FixRotation();
+	}
+
+	if (m_fEmissionTime >= TIME_ROMINGSMOKE)
+	{
+		m_fEmissionTime = 0.0f;
+	}
+	if (m_fEmissionTime == 0.0f)
+	{
+		// モーションの情報取得
+		CMotion::Info aInfo = m_pMotion->GetInfo(0);
+		D3DXVECTOR3 rot = GetRotation();
+
+		// 攻撃情報の総数取得
+		int nNumAttackInfo = aInfo.nNumAttackInfo;
+
+		CEffect3D *pEffect = NULL;
+		// 武器の位置
+		for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
+		{
+			D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
+
+			// 炎
+			float fMove = 5.5f + Random(-20, 20) * 0.1f;
+			fMove *= -1;
+			float fRot = Random(-20, 20) * 0.01f;
+
+			pEffect = CEffect3D::Create(
+				weponpos,
+				D3DXVECTOR3(
+					sinf(D3DX_PI + rot.y + fRot) * fMove,
+					Random(-10, 10) * 0.1f,
+					cosf(D3DX_PI + rot.y + fRot) * fMove),
+				D3DXCOLOR(0.4f + Random(-10, 0) * 0.01f, 0.4f + Random(-10, 0) * 0.01f, 0.4f + Random(-10, 0) * 0.01f, 1.0f),
+				30.0f + (float)Random(-10, 10),
+				15,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_SMOKEBLACK);
+
+			if (pEffect != NULL)
+			{
+				// セットアップ位置設定
+				pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+			}
+		}
 	}
 }
 

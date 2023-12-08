@@ -35,6 +35,7 @@ private:
 		MOTION_ATK,			// 攻撃モーション
 		MOTION_KNOCKBACK,	// やられモーション
 		MOTION_FADEOUT,		// 帰還モーション
+		MOTION_SPAWN,		// 出現モーション
 		MOTION_MAX
 	};
 
@@ -46,14 +47,17 @@ private:
 		ACTION_ATTACK, // 通常攻撃行動
 		ACTION_TACKLE, // 突進攻撃行動
 		ACTION_AXIS, // 軸合わせ行動
+		ACTION_SPAWN, // 出現行動
 		MAX
 	};
 
 	// メンバ変数
 	ACTION m_Act; //行動状態
 	float m_fWaitTime; // 待機時間
+	int m_nCntAction; // 連続行動回数
 
 	// メンバ関数
+	void Spawn(void) override;			// スポーン
 	void MotionSet(void) override;		// モーションの設定
 	void ActionSet(void) override; // 行動の設定
 	void Move(void) override; // 移動

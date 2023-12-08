@@ -54,6 +54,7 @@ void AppearanceUnion(void);
 void AppearanceArmToArm(void);
 void AttackBody(void);
 void BeamHitField(void);
+void UnderBossSpawn(void);
 
 //==========================================================================
 // パーティクルの初期化処理
@@ -241,6 +242,10 @@ void my_particle::Create(D3DXVECTOR3 pos, TYPE nType)
 
 	case TYPE_BEAMHIT_FIELD:			// ビームヒット(地面)
 		BeamHitField();
+		break;
+
+	case TYPE_UNDERBOSS_SPAWN:
+		UnderBossSpawn();
 		break;
 	}
 }
@@ -1606,5 +1611,46 @@ void BeamHitField(void)
 
 		// 目標の位置設定
 		pEffect->SetGravityValue(0.4f);
+	}
+}
+
+//==========================================================================
+// 中ボススポーン
+//==========================================================================
+void UnderBossSpawn(void)
+{
+	D3DXVECTOR3 pos = mylib_const::DEFAULT_VECTOR3;
+
+	for (int nCntUse = 0; nCntUse < 2; nCntUse++)
+	{
+		float fBuff = (float)Random(80, 100) * 0.01f;
+		float fDistance = 350.0f * fBuff;
+		m_nLife = (int)(20.0f * fBuff);
+
+		// 出現位置
+		pos = GetRandomSpherePosition(m_pos, fDistance);
+
+		m_col = D3DXCOLOR(
+			0.9f + Random(-100, 100) * 0.001f,
+			0.2f + Random(-100, 100) * 0.001f,
+			0.9f + Random(-100, 100) * 0.001f,
+			1.0f);
+
+		// 半径設定
+		m_fRadius = 180.0f * fBuff;
+
+		// エフェクトの設定
+		CEffect3D *pEffect = CEffect3D::Create(
+			pos,
+			mylib_const::DEFAULT_VECTOR3,
+			m_col,
+			m_fRadius,
+			m_nLife,
+			CEffect3D::MOVEEFFECT_SUB,
+			CEffect3D::TYPE_POINT,
+			0.0f);
+
+		// 目標の位置設定
+		pEffect->SetPositionDest(m_pos);
 	}
 }

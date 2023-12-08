@@ -14,6 +14,8 @@
 // 前方宣言
 //==========================================================================
 class CLimitArea;
+class CShadow;
+class CBullet;
 
 //==========================================================================
 // クラス定義
@@ -48,6 +50,7 @@ public:
 		MOTION_MORTAR,			// タックルモーション
 		MOTION_KNOCKBACK,		// やられモーション
 		MOTION_FADEOUT,			// 帰還モーション
+		MOTION_SPAWN,			// 出現モーション
 	};
 
 	// 行動列挙
@@ -56,6 +59,7 @@ public:
 		ACTION_BEAM,			// ビーム攻撃
 		ACTION_MORTAR,			// 迫撃攻撃
 		ACTION_WAIT,			// 待機
+		ACTION_SPAWN,			// 出現行動
 		ACTION_MAX
 	};
 
@@ -85,7 +89,8 @@ private:
 	void UpdateAction(void) override;	// 行動更新
 	void ActWait(void);				// 待機
 	void ActAttackBeam(void);		// 遠隔攻撃
-	void ActAttackMortar(void);	// 迫撃攻撃
+	void ActAttackMortar(void);		// 迫撃攻撃
+	void Spawn(void) override;		// スポーン
 
 	// 行動内関数
 	void ChargeBeam(void);		// ビームチャージ
@@ -99,6 +104,7 @@ private:
 	void SetTargetPlayer(void);		// どのプレイヤーのターゲット
 
 	void SummonArea(void);		// エリア生成
+	void DeleteShadow(void);		// 影消し
 
 	//=============================
 	// メンバ変数
@@ -111,6 +117,8 @@ private:
 	float m_fRotLock;			//向き保存
 	CLimitArea *m_pLimitArea;	//ボス範囲
 	bool m_bArea;				//エリア展開フラグ
+	CShadow *m_pShadow[mylib_const::MAX_PLAYER];			// 影の情報
+	CBullet *pBullet;		//影判定用の弾p
 };
 
 #endif

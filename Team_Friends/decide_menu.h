@@ -12,6 +12,7 @@
 //  前方宣言
 //==========================================
 class CObject3D;
+class CPlayerTitle;
 
 //==========================================
 //  クラス定義
@@ -56,6 +57,7 @@ private:
 	void UpdateSelect(int nCntSelect);	// 選択肢の更新処理
 	void CreateUI(void); // UIの生成
 	void CreateSelect(void); // 選択対象の生成
+	void CretePlayer(void); // プレイヤーの生成
 
 	// メンバ変数
 	int m_nCntAlpha;		// 不透明度のカウンター
@@ -64,6 +66,7 @@ private:
 	int m_nTexIdx_Select[VTXSELECT_MAX];						// テクスチャのインデックス番号
 	CObject3D*m_pObj3D[VTX_MAX];					// オブジェクト2Dのオブジェクト
 	CObject3D*m_pSelect3D[VTXSELECT_MAX];				// 選択肢のオブジェクト
+	CPlayerTitle *m_apPlayer[VTXSELECT_MAX]; // プレイヤーのポインタ配列
 };
 
 #endif

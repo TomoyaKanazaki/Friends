@@ -415,7 +415,7 @@ void CPlayer::Update(void)
 			}
 
 			// エフェクトの位置更新
-			pEffect->UpdatePosition(WorldMtxChangeToPosition(GetModel()[aInfo.AttackInfo[0]->nCollisionNum]->GetWorldMtx()), GetRotation());
+			pEffect->UpdatePosition(GetModel()[aInfo.AttackInfo[0]->nCollisionNum]->GetWorldMtx(), GetRotation());
 			nCntEffect++;
 			if (nNumEffect <= nCntEffect)
 			{

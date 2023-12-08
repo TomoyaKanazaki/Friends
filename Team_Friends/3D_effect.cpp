@@ -56,8 +56,6 @@ CEffect3D::CEffect3D(int nPriority) : CObjectBillboard(nPriority)
 	m_fRadius = 0.0f;							// 半径
 	m_fMaxRadius = 0.0f;						// 最大半径
 	m_fAddSizeValue = 0.0f;						// サイズ変更量
-	m_fSetupRotation = 0.0f;					// セットアップの向き
-	m_fSetupVec = 0.0f;							// セットアップの強さ
 	m_fGravity = 0.0f;							// 重力
 	m_nLife = 0;								// 寿命
 	m_nMaxLife = 0;								// 最大寿命(固定)
@@ -452,31 +450,32 @@ void CEffect3D::SetUp(D3DXVECTOR3 setup, CObject *pObj, int nParentIdx)
 
 	// セットアップ位置
 	m_setupPosition = setup;
-
-	// セットアップの向き
-	m_fSetupRotation = atan2f((0.0f - m_setupPosition.x), (0.0f - m_setupPosition.z));
-
-	// セットアップの強さ
-	m_fSetupVec =
-		sqrtf((0.0f - m_setupPosition.x) * (0.0f - m_setupPosition.x)
-			+ (0.0f - m_setupPosition.z) * (0.0f - m_setupPosition.z));
 }
 
 //==================================================================================
 // 位置更新
 //==================================================================================
-void CEffect3D::UpdatePosition(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+void CEffect3D::UpdatePosition(D3DXMATRIX mtx, D3DXVECTOR3 rot)
 {
-	// 原点更新
-	m_posOrigin =
-		D3DXVECTOR3(
-			pos.x + sinf(rot.y + m_fSetupRotation) * m_fSetupVec,
-			pos.y,
-			pos.z + cosf(rot.y + m_fSetupRotation) * m_fSetupVec) +
-		D3DXVECTOR3(
-			sinf(rot.y + m_fSetupRotation) * m_fSetupVec,
-			m_setupPosition.y,
-			cosf(rot.y + m_fSetupRotation) * m_fSetupVec);
+
+	D3DXMATRIX mtxRot, mtxTrans, mtxWorld;	// 計算用マトリックス宣言
+
+	// ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&mtxWorld);
+
+	// 向きを反映する
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
+	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+
+	// 位置を反映する
+	D3DXMatrixTranslation(&mtxTrans, m_setupPosition.x, m_setupPosition.y, m_setupPosition.z);
+	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
+
+	// 自分に親のワールドマトリックスを掛ける
+	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtx);
+
+	m_posOrigin = WorldMtxChangeToPosition(mtxWorld);
+
 }
 
 //==================================================================================

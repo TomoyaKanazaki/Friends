@@ -330,6 +330,11 @@ void CMotion::Update(float fBuff)
 			continue;
 		}
 
+		if (m_aInfo[m_nType].AttackInfo[nCntAttack]->nInpactCnt < 0)
+		{
+			continue;
+		}
+
 		// まだ衝撃カウントの行動をしてない状態にする
 		m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactAct = false;
 

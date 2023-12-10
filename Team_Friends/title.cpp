@@ -95,6 +95,12 @@ HRESULT CTitle::Init(void)
 	CPlayerTitle::Create(OUT_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
 	CPlayerTitle::Create(OUT_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
 
+	// 進化先設定後リセット
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		CManager::GetInstance()->SetByPlayerPartsType(i, -1);
+	}
+
 	// 成功
 	return S_OK;
 }

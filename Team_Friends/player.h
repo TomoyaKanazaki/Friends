@@ -13,11 +13,8 @@
 #include "motion.h"
 
 //==========================================================================
-// マクロ定義
-//==========================================================================
-#define SLIDEMOVE		(2.05f)			// 坂の移動量
-
 // 前方宣言
+//==========================================================================
 class CShadow;
 class CTargetPoint;
 class CHP_GaugePlayer;
@@ -41,6 +38,7 @@ protected:
 		MOTION_DEAD,			// 死亡モーション
 		MOTION_JUMP,			// ジャンプ
 		MOTION_FALL,			// 落下中
+		MOTION_EVOLUTION,		// 進化中
 		MOTION_MAX
 	};
 
@@ -68,6 +66,7 @@ public:
 		STATE_ATTACK,		// 攻撃処理
 		STATE_COMPACTUNION,	// 簡易合体
 		STATE_RELEASEUNION,	// 合体解除
+		STATE_EVOLUSION,	// 強化
 		STATE_MAX
 	};
 
@@ -101,7 +100,7 @@ public:
 	virtual void Kill(void);	// 死亡処理
 
 	static void DrawingEvolusion(void);	// 進化先抽選
-	void SetEvolusion(CGameManager::eStatus statusType);	// 進化先設定
+	void SetEvolusion(CGameManager::eStatus statusType, bool bFast = false);	// 進化先設定
 
 protected:
 
@@ -132,6 +131,7 @@ private:
 	void Invincible(void);	// 無敵
 	void StateCompactUnion(void);		// 簡易合体
 	void StateReleaseUnion(void);		// 合体解除
+	void StateEvolusion(void);		// 進化
 	virtual void Controll(void);	// 操作
 	void MotionSet(void);	// モーションの設定
 	void Atack(void);		// 攻撃
@@ -141,7 +141,7 @@ private:
 	void AttackLeg(CMotion::AttackInfo attackInfo);		// 脚攻撃
 	void AttackBody(CMotion::AttackInfo attackInfo);	// 胴攻撃
 
-	void ChangeMotion(const char* pMotionFile);	// モーションファイル
+	void ChangeMotion(const char* pMotionFile);	// モーションファイル変更
 
 	sStatus m_sStatus;			// ステータス情報
 	STATE m_Oldstate;			// 前回の状態

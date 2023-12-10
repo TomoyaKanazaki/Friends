@@ -143,83 +143,91 @@ CTitleLogo* CTitleLogo::Create()
 //==========================================
 void CTitleLogo::UpdateState()
 {
-	//Š®¬‚µ‚Ä‚¢‚È‚¢‚Æ‚«
-	if (!m_bComplete)
+	switch (m_State)
 	{
-		switch (m_State)
+	case DEFAULT: // MECHANION‚µ‚©‚È‚¢
+
+		if (m_pMech != nullptr && m_pMech->GetComplete())
 		{
-		case DEFAULT: // MECHANION‚µ‚©‚È‚¢
-
-			if (m_pMech != nullptr && m_pMech->GetComplete())
+			//ƒƒJƒjƒIƒ“ƒƒS‚ð•\Ž¦
+			if (m_pMeka == nullptr)
 			{
-				//ƒƒJƒjƒIƒ“ƒƒS‚ð•\Ž¦
-				if (m_pMeka == nullptr)
-				{
-					m_pMeka = CLogo_Meka::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-				}
-
-				//ó‘Ô‚ði‚ß‚é
-				m_State = WAKE;
+				m_pMeka = CLogo_Meka::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			}
-			break;
 
-		case WAKE: // ƒƒJƒjƒIƒ“‚Ü‚Åo‚Ä‚é
-
-			if (m_pMeka != nullptr && m_pMeka->GetComplete())
-			{
-				//í‘àƒƒS‚ð•\Ž¦
-				if (m_pSqou == nullptr)
-				{
-					m_pSqou = CLogo_Sqou::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-				}
-
-				//ó‘Ô‚ði‚ß‚é
-				m_State = FLASH;
-			}
-			break;
-
-		case FLASH: //í‘à‚Ü‚Åo‚Ä‚é
-
-			if (m_pSqou != nullptr && m_pSqou->GetComplete())
-			{
-				//MECHANIONƒƒS‚ð”jŠü
-				if (m_pMech != nullptr)
-				{
-					m_pMech->Uninit();
-					m_pMech = nullptr;
-				}
-
-				//ƒƒJƒjƒIƒ“ƒƒS‚ð”jŠü
-				if (m_pMeka != nullptr)
-				{
-					m_pMeka->Uninit();
-					m_pMeka = nullptr;
-				}
-
-				//í‘àƒƒS‚ð”jŠü
-				if (m_pSqou != nullptr)
-				{
-					m_pSqou->Uninit();
-					m_pSqou = nullptr;
-				}
-
-				//Š®¬‚µ‚½ƒƒS‚ð•\Ž¦
-				if (m_pComp == nullptr)
-				{
-					m_pComp = CLogo_Comp::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-				}
-
-				//ó‘Ô‚ði‚ß‚é
-				m_State = COMPLETE;
-			}
-			break;
-
-		case COMPLETE: // Š®¬‚µ‚Ä‚¢‚é
-			m_bComplete = true; // ƒ^ƒCƒgƒ‹ƒƒS‚ðŠ®¬
-			break;
-
-		default:
-			break;
+			//ó‘Ô‚ði‚ß‚é
+			m_State = WAKE;
 		}
+		break;
+
+	case WAKE: // ƒƒJƒjƒIƒ“‚Ü‚Åo‚Ä‚é
+
+		if (m_pMeka != nullptr && m_pMeka->GetComplete())
+		{
+			//í‘àƒƒS‚ð•\Ž¦
+			if (m_pSqou == nullptr)
+			{
+				m_pSqou = CLogo_Sqou::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			}
+
+			//ó‘Ô‚ði‚ß‚é
+			m_State = FLASH;
+		}
+		break;
+
+	case FLASH: //í‘à‚Ü‚Åo‚Ä‚é
+
+		if (m_pSqou != nullptr && m_pSqou->GetComplete())
+		{
+			//MECHANIONƒƒS‚ð”jŠü
+			if (m_pMech != nullptr)
+			{
+				m_pMech->Uninit();
+				m_pMech = nullptr;
+			}
+
+			//ƒƒJƒjƒIƒ“ƒƒS‚ð”jŠü
+			if (m_pMeka != nullptr)
+			{
+				m_pMeka->Uninit();
+				m_pMeka = nullptr;
+			}
+
+			//í‘àƒƒS‚ð”jŠü
+			if (m_pSqou != nullptr)
+			{
+				m_pSqou->Uninit();
+				m_pSqou = nullptr;
+			}
+
+			//Š®¬‚µ‚½ƒƒS‚ð•\Ž¦
+			if (m_pComp == nullptr)
+			{
+				//m_pComp = CLogo_Comp::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			}
+
+			//ó‘Ô‚ði‚ß‚é
+			m_State = COMPLETE;
+		}
+		break;
+
+	case COMPLETE: // Š®¬‚µ‚Ä‚¢‚é
+	{
+		m_bComplete = true; // ƒ^ƒCƒgƒ‹ƒƒS‚ðŠ®¬
+
+		D3DXVECTOR3 pos = CManager::GetInstance()->GetCamera()->GetPositionV() + DIFF_POS;
+
+		// ƒƒS‚ÌˆÊ’u‚ðÝ’è
+		SetPosition(pos);
+
+		if (m_pComp != nullptr)
+		{
+			m_pComp->SetPosition(pos);
+		}
+	}
+	break;
+
+	default:
+		break;
 	}
 }

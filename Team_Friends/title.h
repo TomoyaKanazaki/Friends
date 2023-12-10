@@ -35,7 +35,8 @@ public:
 	void Draw(void);
 
 	static void SetEnablePressEnter(void) { m_bPressEnter = true; }	// エンター押下判定有効
-	static bool IsPressEnter(void) { return m_bPressEnter; }		// エンター押下判定取得
+	static bool IsPressEnter(void) { return m_bPressEnter; }			// エンター押下判定取得
+
 private:
 
 	// メンバ関数
@@ -49,7 +50,7 @@ private:
 	int m_nCntEmission;	// 発生物カウンター
 	CTitleLogo *m_pLogo;
 	CUnionTitle *m_pUnionTitle;	// タイトルの合体プレイヤーオブジェクト
-	static bool m_bPressEnter;	// エンター押下判定
+	static bool m_bPressEnter;			// エンター押下判定
 
 };
 

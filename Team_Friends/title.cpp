@@ -24,7 +24,7 @@
 //==========================================
 namespace
 {
-	const D3DXCOLOR TARGET_COLOR = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	const D3DXCOLOR TARGET_COLOR = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
 	const float START_LENGTH = 300.0f; // 初期距離
 	const float END_LENGTH = 2000.0f; // 目標距離
 	const float FUNCTION = 0.02f; //倍率
@@ -51,6 +51,7 @@ m_fLength(START_LENGTH)
 	m_pLogo = nullptr;
 	m_nCntEmission = 0;	// 発生物カウンター
 	m_pUnionTitle = nullptr;	// タイトルの合体プレイヤーオブジェクト
+	m_bPressEnter = false;		// エンター押下判定
 }
 
 //==========================================================================
@@ -162,7 +163,16 @@ void CTitle::Update(void)
 	//フォグを引く
 	WhiteOut();
 
-	m_nCntEmission = (m_nCntEmission + 1) % 16;	// 発生物カウンター
+	// 発生物のインターバル
+	int nIntervalEmission = 16;
+	int nLife = 360;
+	if (m_bPressEnter)
+	{
+		nIntervalEmission = 4;
+		nLife = 90;
+	}
+
+	m_nCntEmission = (m_nCntEmission + 1) % nIntervalEmission;	// 発生物カウンター
 
 	if (m_nCntEmission == 0)
 	{
@@ -186,7 +196,7 @@ void CTitle::Update(void)
 				mylib_const::DEFAULT_VECTOR3,
 				D3DXCOLOR(0.6f + fColRand, 0.6f + fColRand, 0.6f + fColRand, 1.0f),
 				150.0f + (float)Random(-5, 5) * 10.0f,
-				360,
+				nLife,
 				CEffect3D::MOVEEFFECT_ADD,
 				CEffect3D::TYPE_SMOKEBLACK);
 
@@ -201,10 +211,7 @@ void CTitle::Update(void)
 
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
 	{
-		// キーフラグON
-		m_bPressEnter = true;
-
-#if 0
+#if 1
 		if (m_pUnionTitle != nullptr)
 		{
 			m_pUnionTitle->SetEnablePressEnter();

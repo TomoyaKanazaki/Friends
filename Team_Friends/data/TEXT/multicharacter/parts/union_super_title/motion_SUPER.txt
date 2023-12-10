@@ -22,7 +22,7 @@ MOTIONSET
 		ATTACKRANGE = 0.00
 		OFFSET = 0.00 0.00 0.00
 		ATTACKCOUNT = 0 0
-		INPACTCOUNT = 0
+		INPACTCOUNT = -1
 		DAMAGE = 0
 	END_ATTACKINFO
 	
@@ -214,17 +214,17 @@ MOTIONSET
 	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
 	NUM_KEY = 9		# キー数
 	MOVE = 0		# 移動できるかどうか[0:移動できない / 1:移動できる]
-
+	
 	#===================
 	# 攻撃情報
 	#===================
 	ATTACKINFO
-		COLLISIONPARTS = 9
+		COLLISIONPARTS = 2
 		ATTACKRANGE = 0.00
-		OFFSET = 0.00 0.00 0.00
-		ATTACKCOUNT = 0 0
+		OFFSET = 0.00 150.00 -150.00
+		ATTACKCOUNT = 276 387
 		INPACTCOUNT = 54
-		DAMAGE = 0
+		DAMAGE = -1
 		ONLYONETIME = 1
 	END_ATTACKINFO
 
@@ -318,7 +318,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << KEY : 1 / 9 >> ---
-		FRAME = 39
+		FRAME = 80
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.66 0.00 0.00
 			POS = 0.00 -366.00 0.00

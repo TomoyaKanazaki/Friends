@@ -29821,7 +29821,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\aa\\Friends\\Team_Friends\\data\\TEXTURE\\error\\error_00.png";
+    "data\\TEXTURE\\error\\error_00.png";
    }
   }
   Material {
@@ -29830,7 +29830,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\aa\\Friends\\Team_Friends\\data\\TEXTURE\\error\\error_01.png";
+    "data\\TEXTURE\\error\\error_01.png";
    }
   }
   Material {
@@ -29839,7 +29839,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\aa\\Friends\\Team_Friends\\data\\TEXTURE\\error\\error_02.png";
+    "data\\TEXTURE\\error\\error_02.png";
    }
   }
   Material {

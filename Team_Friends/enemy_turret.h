@@ -14,6 +14,8 @@
 // 前方宣言
 //==========================================================================
 class CLimitArea;
+class CBulletPoint;
+class CBullet;
 
 //==========================================================================
 // クラス定義
@@ -102,6 +104,7 @@ private:
 	void SetTargetPlayer(void);		// どのプレイヤーのターゲット
 
 	void SummonArea(void);		// エリア生成
+	void DeleteShadow(void);		// 影消し
 
 	//=============================
 	// メンバ変数
@@ -114,6 +117,9 @@ private:
 	float m_fRotLock;			//向き保存
 	CLimitArea *m_pLimitArea;	//ボス範囲
 	bool m_bArea;				//エリア展開フラグ
+	CBulletPoint *m_pBulletPoint[mylib_const::MAX_PLAYER];			// 影の情報
+	CBullet *m_pBullet[mylib_const::MAX_PLAYER];			// 弾の情報
+	bool m_bMortar;		//迫撃フラグ
 };
 
 #endif

@@ -46,7 +46,7 @@
 #include "tutorialplayer.h"
 
 //==========================================================================
-// 静的メンバ変数宣言
+// 定数定義
 //==========================================================================
 namespace
 {
@@ -94,7 +94,10 @@ namespace
 	const int MAX_BUFFSTATUS = 100;		// ステータスのバフ最大値
 }
 
-bool CPlayer::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
+//==========================================================================
+// 静的メンバ変数宣言
+//==========================================================================
+bool CPlayer::m_bAllLandInjectionTable = false;						// 全員の射出台着地判定
 bool CPlayer::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// 射出台の着地判定
 int CPlayer::m_nChaseTopIdx = 0;	// 追従の先頭インデックス番号
 

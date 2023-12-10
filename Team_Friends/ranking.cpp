@@ -115,7 +115,7 @@ void CRanking::Update(void)
 		if (m_nCnt >= 60 * 2)
 		{
 			// ƒ‚[ƒhÝ’è
-			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
+			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
 
 			m_nCnt = 60 * 2;
 		}

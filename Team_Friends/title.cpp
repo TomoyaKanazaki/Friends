@@ -17,6 +17,7 @@
 #include "player_title.h"
 #include "union_title.h"
 #include "enemy.h"
+#include "3D_Effect.h"
 
 //==========================================
 //  定数定義 金崎
@@ -25,17 +26,18 @@ namespace
 {
 	const D3DXCOLOR TARGET_COLOR = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	const float START_LENGTH = 300.0f; // 初期距離
-	const float END_LENGTH = 1500.0f; // 目標距離
+	const float END_LENGTH = 2000.0f; // 目標距離
 	const float FUNCTION = 0.02f; //倍率
-	const float SWITCH_TIME = 20.0f;
+	const float SWITCH_TIME = 140.0f;
 
 	//モデルの配置位置
-	const D3DXVECTOR3 CENTER	= D3DXVECTOR3(0.0f, 0.0f, -2200.0f);
+	const D3DXVECTOR3 CENTER	= D3DXVECTOR3(0.0f, 0.0f, -2000.0f);
 	const D3DXVECTOR3 IN_LEFT	= D3DXVECTOR3(-160.0f, 0.0f, -2900.0f);
 	const D3DXVECTOR3 IN_RIGHT	= D3DXVECTOR3(160.0f, 0.0f, -2900.0f);
 	const D3DXVECTOR3 OUT_LEFT	= D3DXVECTOR3(-300.0f, 0.0f, -3000.0f);
 	const D3DXVECTOR3 OUT_RIGHT	= D3DXVECTOR3(300.0f, 0.0f, -3000.0f);
 }
+bool CTitle::m_bPressEnter = false;	// エンター押下判定
 
 //==========================================================================
 // コンストラクタ
@@ -47,6 +49,8 @@ m_fLength(START_LENGTH)
 	// 値のクリア
 	m_fCnt = 0.0f;		// 切り替えのカウンター
 	m_pLogo = nullptr;
+	m_nCntEmission = 0;	// 発生物カウンター
+	m_pUnionTitle = nullptr;	// タイトルの合体プレイヤーオブジェクト
 }
 
 //==========================================================================
@@ -62,6 +66,9 @@ CTitle::~CTitle()
 //==========================================================================
 HRESULT CTitle::Init(void)
 {
+	// 判定リセット
+	m_bPressEnter = false;
+
 	//プレイヤー数をリセット
 	CManager::GetInstance()->SetNumPlayer(0);
 
@@ -89,7 +96,7 @@ HRESULT CTitle::Init(void)
 	Fog::SetCol(m_col);
 
 	// プレイヤーを置いてみる
-	CUnionTitle::Create(CENTER);
+	m_pUnionTitle = CUnionTitle::Create(CENTER);
 	CPlayerTitle::Create(IN_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
 	CPlayerTitle::Create(IN_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
 	CPlayerTitle::Create(OUT_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
@@ -118,6 +125,9 @@ void CTitle::Uninit(void)
 	{
 		m_pLogo = nullptr;
 	}
+
+	// 合体プレイヤーをnull
+	m_pUnionTitle = nullptr;
 
 	// 終了処理
 	CScene::Uninit();
@@ -152,13 +162,57 @@ void CTitle::Update(void)
 	//フォグを引く
 	WhiteOut();
 
+	m_nCntEmission = (m_nCntEmission + 1) % 16;	// 発生物カウンター
+
+	if (m_nCntEmission == 0)
+	{
+		int nWidth = 20;
+		float fWidthDistance = 100.0f;
+		for (int i = 0; i < nWidth; i++)
+		{
+			D3DXVECTOR3 pos = CENTER;
+			pos.x = ((static_cast<float>(nWidth) * 0.5f) * fWidthDistance) - fWidthDistance * i;
+			pos.y = CENTER.y + 50.0f;
+			pos.z += 400.0f + Random(-50, 50);
+
+			D3DXVECTOR3 posDest = pos;
+			posDest.z -= 1800.0f;
+			posDest.y = 0.0f;
+			posDest.x += Random(-20, 20) * 10.0f;
+
+			float fColRand = Random(-20, 20) * 0.01f;
+			CEffect3D *pEffect = CEffect3D::Create(
+				pos,
+				mylib_const::DEFAULT_VECTOR3,
+				D3DXCOLOR(0.6f + fColRand, 0.6f + fColRand, 0.6f + fColRand, 1.0f),
+				150.0f + (float)Random(-5, 5) * 10.0f,
+				360,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_SMOKEBLACK);
+
+			// 目標の位置設定
+			pEffect->SetPositionDest(posDest);
+			pEffect->SetRotation(D3DXVECTOR3(0.0f, GetRandomCircleValue(), 0.0f));
+		}
+	}
+
 	// 切り替えのカウンター加算
 	m_fCnt += CManager::GetInstance()->GetDeltaTime();
 
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
 	{
+		// キーフラグON
+		m_bPressEnter = true;
+
+#if 0
+		if (m_pUnionTitle != nullptr)
+		{
+			m_pUnionTitle->SetEnablePressEnter();
+		}
+#else
 		// モード設定
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDE);
+#endif
 	}
 
 	if (m_fCnt >= SWITCH_TIME)

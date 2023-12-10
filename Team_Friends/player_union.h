@@ -115,6 +115,7 @@ protected:
 	virtual void Invincible(void);	// 無敵
 	virtual void Appearance(void);	// 出現
 
+	void BindByPlayerIdxTexture(int nIdx, int nPartsIdx);	// プレイヤーインデックス毎のテクスチャ設定
 	void ReadMultiCharacter(const char *pTextFile);			// 複数キャラクター読み込み
 	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
 	virtual void AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo);	// 攻撃時処理
@@ -151,6 +152,7 @@ protected:
 	CMotion *m_pMotion[PARTS_MAX];			// パーツ分のモーションポインタ
 	SMotionFrag m_sMotionFrag[PARTS_MAX];	// モーションのフラグ
 	CObjectChara *m_pObjChara[PARTS_MAX];	// パーツ分のオブジェクトキャラクターポインタ
+	CModel *m_apModel[mylib_const::MAX_MODEL];	// モデル(パーツ)のポインタ
 private:
 
 	// コンボ時ワザの種類
@@ -177,6 +179,7 @@ private:
 	CHP_GaugePlayer *m_pHPGauge;	// HPゲージの情報
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定
+
 };
 
 

@@ -672,7 +672,7 @@ void CMotion::Set(int nType, bool bBlend)
 		{
 			aPartsOld[nCntParts].rot = m_ppModel[nCntModel]->GetRotation();
 
-			if (nStartIdx == nCntModel)
+			if (nStartIdx == nCntParts)
 			{
 				aPartsOld[nCntParts].pos = m_ppModel[nCntModel]->GetPosition() - m_pObjChara->GetOriginPosition();
 			}
@@ -845,6 +845,28 @@ D3DXVECTOR3 CMotion::GetAttackPosition(CModel **ppModel, AttackInfo attackInfo)
 
 	// 判定するパーツのマトリックス取得
 	D3DXMATRIX mtxWepon = ppModel[attackInfo.nCollisionNum]->GetWorldMtx();
+
+	// 位置を反映する
+	D3DXMatrixTranslation(&mtxTrans, attackInfo.Offset.x, attackInfo.Offset.y, attackInfo.Offset.z);
+	D3DXMatrixMultiply(&mtxWepon, &mtxTrans, &mtxWepon);
+
+	return D3DXVECTOR3(mtxWepon._41, mtxWepon._42, mtxWepon._43);
+}
+
+//==========================================================================
+// 攻撃の位置取得
+//==========================================================================
+D3DXVECTOR3 CMotion::GetAttackPosition(CModel *pModel, AttackInfo attackInfo)
+{
+	D3DXMATRIX mtxTrans;	// 計算用マトリックス宣言
+
+	if (pModel == NULL)
+	{// NULLだったら
+		return mylib_const::DEFAULT_VECTOR3;
+	}
+
+	// 判定するパーツのマトリックス取得
+	D3DXMATRIX mtxWepon = pModel->GetWorldMtx();
 
 	// 位置を反映する
 	D3DXMatrixTranslation(&mtxTrans, attackInfo.Offset.x, attackInfo.Offset.y, attackInfo.Offset.z);
@@ -1028,6 +1050,16 @@ void CMotion::ReadText(const std::string pTextFile)
 
 							fscanf(pFile, "%s", &aComment[0]);		// =の分
 							fscanf(pFile, "%d", &m_aLoadAttackData[m_nNumLoad][nCntMotion][nNowAttackNum].nDamage);	// 攻撃力
+						}
+
+						if (strcmp(aComment, "ONLYONETIME") == 0)
+						{// ONLYONETIMEが来たら一回のみか読み込み
+							int nFrag = 0;
+							fscanf(pFile, "%s", &aComment[0]);		// =の分
+							fscanf(pFile, "%d", &nFrag);	// 1度だけかの判定
+
+							if (nFrag == 0) { m_aLoadAttackData[m_nNumLoad][nCntMotion][nNowAttackNum].bOnlyOneTime = false; }
+							else { m_aLoadAttackData[m_nNumLoad][nCntMotion][nNowAttackNum].bOnlyOneTime = true; }
 						}
 					}
 

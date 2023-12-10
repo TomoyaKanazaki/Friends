@@ -134,7 +134,7 @@ HRESULT CScene::Init(void)
 	//**********************************
 	// ‹N•š‚Ì’n–Ê
 	//**********************************
-	m_pObject3DMesh = CElevation::Create("data\\TEXT\\elevation\\elevation_field.txt");
+	m_pObject3DMesh = CElevation::Create("data\\TEXT\\elevation\\field_mountain.txt");
 
 	// ‰Šú‰»ˆ—
 	hr = m_pXLoad->Init();

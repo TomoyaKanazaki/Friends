@@ -15,6 +15,7 @@
 //  前方宣言
 //==========================================
 class CTitleLogo;
+class CUnionTitle;
 
 //==========================================================================
 // クラス定義
@@ -33,6 +34,9 @@ public:
 	void Update(void);
 	void Draw(void);
 
+	static void SetEnablePressEnter(void) { m_bPressEnter = true; }	// エンター押下判定有効
+	static bool IsPressEnter(void) { return m_bPressEnter; }			// エンター押下判定取得
+
 private:
 
 	// メンバ関数
@@ -43,7 +47,10 @@ private:
 	float m_fLength;
 
 	float m_fCnt;		// 切り替えのカウンター
+	int m_nCntEmission;	// 発生物カウンター
 	CTitleLogo *m_pLogo;
+	CUnionTitle *m_pUnionTitle;	// タイトルの合体プレイヤーオブジェクト
+	static bool m_bPressEnter;			// エンター押下判定
 
 };
 

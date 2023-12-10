@@ -62,6 +62,9 @@ public:
 	void SetTargetPosition(D3DXVECTOR3 pos);	// 目標の位置
 	void SetParabolaHeight(float fHeight);		// 放物線の最大高さ
 
+	void SetDesableAutoDeath(void) { m_bAutoDeath = false; }	// 自動削除の判定削除
+	bool IsFinish(void) { return m_bFinish; }					// 終了の判定
+
 	static int GetNumAll(void);
 	static CBullet *Create(TYPE type, MOVETYPE movetype, const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move, const float fSize);
 
@@ -90,6 +93,8 @@ private:
 	CMeshSphere *m_pMeshSphereEffect;	// メッシュスフィアのエフェクト
 	CObjectBillboard *m_pBulletAppearance[mylib_const::BULLETAPPEARANCE_NUM];	// 見た目だけの弾
 	CThunderRing *m_pEffectThunderRing;	// 雷のリングのエフェクト
+	bool m_bAutoDeath;		// 自動削除のフラグ
+	bool m_bFinish;			// アニメーションが終わった判定
 	static int m_nNumAll;		// 弾の総数
 	static const char *m_apTextureFile[TYPE_MAX];	// テクスチャのファイル
 

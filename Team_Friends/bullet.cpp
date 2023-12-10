@@ -74,6 +74,8 @@ CBullet::CBullet(int nPriority) : CMeshSphere(nPriority)
 	m_pMeshSphereEffect = NULL;		// メッシュスフィアのエフェクト
 	m_pEffectThunderRing = NULL;	// 雷のリングのエフェクト
 	memset(&m_pBulletAppearance[0], NULL, sizeof(m_pBulletAppearance));	// 見た目だけの弾
+	m_bAutoDeath = false;	// 自動削除のフラグ
+	m_bFinish = false;		// アニメーションが終わった判定
 
 	// テクスチャデータの配列分繰り返す
 	m_nTexIdx = 0;		// テクスチャのインデックス番号
@@ -151,6 +153,7 @@ HRESULT CBullet::Init(void)
 	m_nLife = m_nLifeMax;	// 寿命
 	SetColor(D3DXCOLOR(0.3f, 0.3f, 1.0f, 1.0f));
 	m_fMaxParabolaHeight = DEFAULT_HEIGHT;	// 放物線の最大高さ
+	m_bAutoDeath = true;	// 自動削除にする
 
 	// テクスチャの割り当て
 	m_nTexIdx = CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[m_type]);
@@ -386,7 +389,16 @@ void CBullet::Update(void)
 			CExplosion::Create(GetPosition());
 		}
 
-		Uninit();
+		// 終了状態
+		m_bFinish = true;
+
+		if (m_bAutoDeath == true)
+		{
+			// オブジェクト破棄
+			Uninit();
+			return;
+		}
+
 		return;
 	}
 

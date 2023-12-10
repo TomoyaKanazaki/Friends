@@ -14,6 +14,7 @@
 #include "effect_slashhit.h"
 #include "effect_thunderring.h"
 #include "effect_enemyspawn.h"
+#include "effect_startupeye.h"
 
 //==========================================================================
 // マクロ定義
@@ -73,6 +74,9 @@ HRESULT CTexture::LoadAll(void)
 
 	// 敵スポーン
 	CEffectEnemySpawn::LoadTexture();
+
+	// 起動時の目
+	CEffectStartupEye::LoadTexture();
 
 	return S_OK;
 }

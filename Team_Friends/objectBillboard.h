@@ -30,6 +30,7 @@ public:
 	void Draw(void);
 	virtual void SetVtx(void);
 	void BindTexture(int nIdx);
+	virtual void SetRotation(const D3DXVECTOR3 rot) override;		// 向き設定
 
 	virtual void SetWorldMtx(const D3DXMATRIX mtx);		// マトリックス設定
 	virtual D3DXMATRIX GetWorldMtx(void) const;			// マトリックス取得
@@ -46,7 +47,12 @@ public:
 	static CObjectBillboard *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 	CObjectBillboard *GetObjectBillBoard(void);
 	LPDIRECT3DVERTEXBUFFER9 GetVtxBuff(void) const;
+
 protected:
+
+	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファ
+	float m_fLength;			// 対角線の長さ
+	float m_fAngle;				// 対角線の向き
 
 private:
 	D3DXMATRIX	m_mtxWorld;	// ワールドマトリックス
@@ -55,7 +61,6 @@ private:
 	D3DXVECTOR2 m_sizeOrigin;	// 元のサイズ
 	D3DXVECTOR2 m_fTex[32];	// テクスチャ座標
 	int m_nTexIdx;			// テクスチャのインデックス番号
-	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファ
 };
 
 

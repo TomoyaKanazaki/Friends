@@ -53,6 +53,7 @@ CEffect3D::CEffect3D(int nPriority) : CObjectBillboard(nPriority)
 	m_setupPosition = mylib_const::DEFAULT_VECTOR3;		// セットアップ位置
 	m_posDest = mylib_const::DEFAULT_VECTOR3;			// 目標の位置
 	m_colOrigin = mylib_const::DEFAULT_COLOR;	// 色の元
+	m_pMtxParent = NULL;						// 親マトリックスのポインタ
 	m_fRadius = 0.0f;							// 半径
 	m_fMaxRadius = 0.0f;						// 最大半径
 	m_fAddSizeValue = 0.0f;						// サイズ変更量
@@ -437,13 +438,15 @@ void CEffect3D::UpdateMove(void)
 //==================================================================================
 // セットアップ
 //==================================================================================
-void CEffect3D::SetUp(D3DXVECTOR3 setup, CObject *pObj, int nParentIdx)
+void CEffect3D::SetUp(D3DXVECTOR3 setup, D3DXMATRIX *pMtxParent, CObject *pObj, int nParentIdx)
 {
 	// 親のポインタ渡す
 	if (m_pParent == NULL)
 	{
 		m_pParent = pObj;
 	}
+
+	m_pMtxParent = pMtxParent;
 
 	// 親のインデックス番号
 	m_nParentIdx = nParentIdx;
@@ -472,7 +475,7 @@ void CEffect3D::UpdatePosition(D3DXMATRIX mtx, D3DXVECTOR3 rot)
 	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
 
 	// 自分に親のワールドマトリックスを掛ける
-	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtx);
+	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, m_pMtxParent);
 
 	m_posOrigin = WorldMtxChangeToPosition(mtxWorld);
 

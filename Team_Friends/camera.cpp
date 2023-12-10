@@ -764,35 +764,8 @@ void CCamera::SetCameraRTitle(void)
 	else
 	{// 追従ON
 
-		float fYcamera = 100.0f;
-
-		if (m_TargetPos.y >= 50.0f)
-		{
-			fYcamera = (m_TargetPos.y - 50.0f) + 100.0f;
-		}
-		else if (m_TargetPos.y <= -50.0f)
-		{
-			fYcamera = (m_TargetPos.y + 50.0f) + 100.0f;
-		}
-
-		fYcamera = m_TargetPos.y + 100.0f;
-
-		if (fYcamera <= 0.0f)
-		{
-			m_fDiffHeightSave += -fYcamera;
-		}
-
-		// 目標の高さの差分を代入
-		m_fDiffHeightDest = m_fDiffHeightSave;
-
-		// 高さの差分を補正する
-		m_fDiffHeight += (m_fDiffHeightDest - m_fDiffHeight) * 0.001f;
-
-
 		// 注視点の代入処理
-		m_posRDest.x = m_TargetPos.x;
-		m_posRDest.z = m_TargetPos.z;
-		m_posRDest.y = fYcamera - m_fDiffHeight;
+		m_posRDest = m_TargetPos;
 
 		// 補正する
 		m_posR += (m_posRDest - m_posR) * 0.08f;
@@ -1155,7 +1128,7 @@ void CCamera::ResetTitle(void)
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);				// 移動量
 	m_rot = TITLECAMERAROT_NONE;						// 向き
 	m_rotVDest = m_rot;									// 目標の視点の向き
-	m_TargetPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 目標の位置
+	m_TargetPos = m_posR;								// 目標の位置
 	m_fDistance = TITLE_LEN_DEST;						// 距離
 	m_fDestDistance = TITLE_LEN_DEST;					// 目標の距離
 	m_fOriginDistance = TITLE_LEN_DEST;					// 元の距離
@@ -1169,7 +1142,7 @@ void CCamera::ResetTitle(void)
 	m_fDistanceCorrection = 0;							// 距離の慣性補正係数
 	m_fDistanceDecrementValue = 0.0f;					// 距離の減少係数
 	m_fHeightMaxDest = 0.0f;							// カメラの最大高さの目標
-	m_bFollow = false; // 追従しないでね
+	m_bFollow = true;									// 追従フラグ
 }
 
 //==========================================================================

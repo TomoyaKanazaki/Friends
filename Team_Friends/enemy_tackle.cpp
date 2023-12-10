@@ -352,7 +352,7 @@ void CEnemyTackle::Attack(void)
 			if (pEffect != NULL)
 			{
 				// セットアップ位置設定
-				pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+				//pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
 			}
 
 			fRot = Random(-20, 20) * 0.01f;
@@ -372,7 +372,7 @@ void CEnemyTackle::Attack(void)
 			if (pEffect != NULL)
 			{
 				// セットアップ位置設定
-				pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+				//pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
 			}
 		}
 	}
@@ -573,7 +573,7 @@ void CEnemyTackle::Roaming(void)
 			if (pEffect != NULL)
 			{
 				// セットアップ位置設定
-				pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+				//pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
 			}
 		}
 	}

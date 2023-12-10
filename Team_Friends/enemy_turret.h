@@ -14,7 +14,7 @@
 // 前方宣言
 //==========================================================================
 class CLimitArea;
-class CShadow;
+class CBulletPoint;
 class CBullet;
 
 //==========================================================================
@@ -117,8 +117,9 @@ private:
 	float m_fRotLock;			//向き保存
 	CLimitArea *m_pLimitArea;	//ボス範囲
 	bool m_bArea;				//エリア展開フラグ
-	CShadow *m_pShadow[mylib_const::MAX_PLAYER];			// 影の情報
-	CBullet *pBullet;		//影判定用の弾p
+	CBulletPoint *m_pBulletPoint[mylib_const::MAX_PLAYER];			// 影の情報
+	CBullet *m_pBullet[mylib_const::MAX_PLAYER];			// 弾の情報
+	bool m_bMortar;		//迫撃フラグ
 };
 
 #endif

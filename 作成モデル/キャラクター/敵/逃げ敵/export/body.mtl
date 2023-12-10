@@ -10,7 +10,7 @@ illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd arm_UV_Blue.jpg
+map_Kd box_UV_.jpg
 Ni 1.00
 newmtl pasted__lambert2SG
 illum 4

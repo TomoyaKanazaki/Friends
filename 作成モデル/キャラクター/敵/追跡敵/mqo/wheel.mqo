@@ -18,7 +18,7 @@ Scene {
 	}
 }
 Material 1 {
-	"lambert5SG" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("init_UV_Blue.jpg")
+	"lambert5SG" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("chase_UV.jpg")
 }
 Object "obj1" {
 	visible 15

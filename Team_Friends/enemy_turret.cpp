@@ -42,10 +42,8 @@ namespace
 	const D3DXCOLOR BEAM_COLOR = { 0.5f, 0.1f, 1.0f, 0.5f};		//ビームの色
 	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
 	{
-		//{ CEnemyTurret::ACTION_BEAM, 0.3f },		// ビーム攻撃
-		//{ CEnemyTurret::ACTION_MORTAR, 0.7f },		// 迫撃攻撃
-		{ CEnemyTurret::ACTION_BEAM, 0.0f },		// ビーム攻撃
-		{ CEnemyTurret::ACTION_MORTAR, 1.0f },		// 迫撃攻撃
+		{ CEnemyTurret::ACTION_BEAM, 0.4f },		// ビーム攻撃
+		{ CEnemyTurret::ACTION_MORTAR, 0.6f },		// 迫撃攻撃
 		{ CEnemyTurret::ACTION_WAIT, 0.0f },		// 待機
 	};
 }
@@ -74,7 +72,6 @@ CEnemyTurret::CEnemyTurret(int nPriority) : CEnemy(nPriority)
 	m_fRotLock = 0.0f;
 	m_pLimitArea = nullptr;
 	m_bArea = false;
-	m_bMortar = false;
 
 	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
 	{
@@ -183,7 +180,7 @@ void CEnemyTurret::Update(void)
 	}
 
 	//影消し
-	DeleteShadow();
+	DeleteTarget();
 
 	// スクリーン内の存在判定
 	if (m_state == CEnemy::STATE_SPAWNWAIT && CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
@@ -539,15 +536,12 @@ void CEnemyTurret::AttackMortar(void)
 		//弾を放物線上に飛ばす
 		m_pBullet[i] = CBullet::Create(CBullet::TYPE_ENEMY, CBullet::MOVETYPE_PARABOLA, GetPosition(), rot, move, 50.0f);
 		m_pBullet[i]->SetTargetPosition(m_pBulletPoint[i]->GetPosition());
-		m_pBullet[i]->SetDesableAutoDeath();	// 自動削除の判定削除
+		m_pBullet[i]->SetReverseAutoDeath();	// 自動削除の判定削除
 
 		float fRatio = GetFabsPosLength(GetPosition(), m_pBulletPoint[i]->GetPosition()) / 1500.0f;
 		ValueNormalize(fRatio, 1.0f, 0.0f);
 		m_pBullet[i]->SetParabolaHeight(1000.0f - (1000.0f * fRatio));
 	}
-
-	// 攻撃フラグ
-	m_bMortar = true;
 
 	// 行動
 	m_Action = ACTION_WAIT;
@@ -754,25 +748,20 @@ void CEnemyTurret::SummonArea(void)
 //==========================================================================
 // 影消し
 //==========================================================================
-void CEnemyTurret::DeleteShadow(void)
+void CEnemyTurret::DeleteTarget(void)
 {
-	if (m_bMortar == false)
-	{
-		return;
-	}
-
-	// フラグを折る
-	m_bMortar = false;
-
 	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
 	{
 		if (m_pBullet[i] == nullptr)
 		{
 			continue;
 		}
-		//まだ
+		
 		if (m_pBullet[i]->IsFinish())
 		{
+			m_pBullet[i]->Uninit();
+			m_pBullet[i] = nullptr;
+
 			if (m_pBulletPoint[i] != nullptr)
 			{
 				m_pBulletPoint[i]->Uninit();

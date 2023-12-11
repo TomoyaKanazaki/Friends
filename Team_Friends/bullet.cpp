@@ -200,6 +200,7 @@ HRESULT CBullet::Init(void)
 //==========================================================================
 void CBullet::Uninit(void)
 {
+	
 	// 削除
 	if (CManager::GetInstance()->GetMode() == CScene::MODE_GAME && CGame::GetBulletManager() != NULL)
 	{// 弾マネージャの削除
@@ -389,16 +390,12 @@ void CBullet::Update(void)
 			CExplosion::Create(GetPosition());
 		}
 
-		// 終了状態
 		m_bFinish = true;
 
-		if (m_bAutoDeath == true)
+		if (m_bAutoDeath)
 		{
-			// オブジェクト破棄
 			Uninit();
-			return;
 		}
-
 		return;
 	}
 
@@ -522,8 +519,13 @@ void CBullet::CollisionPlayer(void)
 				m_pEffectThunderRing->Uninit();
 				m_pEffectThunderRing = NULL;
 			}
-			// 終了処理
-			Uninit();
+
+			m_bFinish = true;
+
+			if (m_bAutoDeath)
+			{
+				Uninit();
+			}
 			break;
 		}
 	}
@@ -589,8 +591,12 @@ void CBullet::CollisionEnemy(void)
 		// 弾の生成処理
 		CBulletExplosion::Create(pos, fRadius + 200.0f);
 
-		// 終了処理
-		Uninit();
+		m_bFinish = true;
+
+		if (m_bAutoDeath)
+		{
+			Uninit();
+		}
 		return;
 	}
 

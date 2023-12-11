@@ -31,6 +31,7 @@ namespace
 	const float LENGTH_SELECT = 150.0f; // 選択肢の基準位置
 	const float SCALE_SELECT = 0.15f; // 選択肢の倍率
 	const float PLAYER_SPEED = 5.0f; // プレイヤーの移動量
+	const float PLAYER_TARGET = 500.0f; // プレイヤーの座標
 
 	// テクスチャのファイル
 	const char* m_apTextureFile[CDecideMenu::VTX_MAX] =
@@ -219,6 +220,25 @@ void CDecideMenu::Update(void)
 		return;
 	}
 
+	// 移動
+	for (int nCnt = 0; nCnt < VTXSELECT_MAX; ++nCnt)
+	{
+		if (nCnt <= m_nNowSelect)
+		{
+			if (m_apPlayer[nCnt]->GetPosition().z != 0.0f)
+			{
+				Go(nCnt);
+			}
+		}
+		else
+		{
+			if (m_apPlayer[nCnt]->GetPosition().z != PLAYER_TARGET)
+			{
+				Back(nCnt);
+			}
+		}
+	}
+
 	// デバッグ表示
 	CManager::GetInstance()->GetDebugProc()->Print
 	(
@@ -254,7 +274,7 @@ void CDecideMenu::Go(int nIdx)
 	D3DXVECTOR3 move = m_apPlayer[nIdx]->GetMove();
 
 	// 値を代入
-	move.z = PLAYER_SPEED;
+	move.z = -PLAYER_SPEED;
 
 	// 値を適用
 	m_apPlayer[nIdx]->SetMove(move);
@@ -269,10 +289,13 @@ void CDecideMenu::Back(int nIdx)
 	D3DXVECTOR3 move = m_apPlayer[nIdx]->GetMove();
 
 	// 値を代入
-	move.z = -PLAYER_SPEED;
+	move.z = PLAYER_SPEED;
 
 	// 値を適用
 	m_apPlayer[nIdx]->SetMove(move);
+
+	// 目的地を設定
+	m_apPlayer[nIdx]->SetTarget(PLAYER_TARGET);
 }
 
 //==========================================

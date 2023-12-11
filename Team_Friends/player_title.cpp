@@ -103,7 +103,6 @@ HRESULT CPlayerTitle::Init(void)
 		break;
 
 	default:
-		return E_FAIL;
 		break;
 	}
 

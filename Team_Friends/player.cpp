@@ -832,12 +832,6 @@ void CPlayer::Controll(void)
 		}
 	}
 
-	static CGameManager::eStatus s_statusType = CGameManager::STATUS_SPEED;
-	if (pInputKeyboard->GetTrigger(DIK_RIGHT) == true)
-	{// ←キーが押された,左移動
-		s_statusType = (CGameManager::eStatus)(((int)s_statusType + 1) % (int)CGameManager::STATUS_MAX);
-		SetEvolusion(s_statusType);
-	}
 #if _DEBUG
 	if (pInputKeyboard->GetTrigger(DIK_RIGHT) == true)
 	{// ←キーが押された,左移動

@@ -48,13 +48,13 @@ MODEL_FILENAME = data/MODEL/player/pUP_body01/Rhand.x		# [23]右手
 
 #強化[脚]01
 #変更タグ＝2
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\thighs.x		# [20]強化[脚]腿
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lleg.x		# [21]強化[脚]左脛
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lankle.x		# [22]強化[脚]左足首
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lfeet.x		# [23]強化[脚]左足
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rleg.x		# [24]強化[脚]右脛
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rankle.x		# [25]強化[脚]右足首
-MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rfeet.x		# [26]強化[脚]右足
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\thighs.x		# [24]強化[脚]腿
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lleg.x		# [25]強化[脚]左脛
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lankle.x		# [26]強化[脚]左足首
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Lfeet.x		# [27]強化[脚]左足
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rleg.x		# [28]強化[脚]右脛
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rankle.x		# [29]強化[脚]右足首
+MODEL_FILENAME = data\MODEL\player\pUP_leg01\Rfeet.x		# [30]強化[脚]右足
 
 #------------------------------------------------------------------------------
 # キャラクター情報

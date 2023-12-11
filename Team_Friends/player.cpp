@@ -84,6 +84,13 @@ namespace
 			"data\\TEXTURE\\player\\pUP_body01\\body_UV_Yellow.jpg",
 		}
 	};
+	const D3DXCOLOR EFFECTCOLOR[mylib_const::MAX_PLAYER] =	// エフェクトの色
+	{
+		{ 0.9f, 0.1f, 0.1f, 1.0f },
+		{ 0.1f, 0.1f, 0.9f, 1.0f },
+		{ 0.1f, 0.9f, 0.1f, 1.0f },
+		{ 0.9f, 0.6f, 0.1f, 1.0f },
+	};
 	const float JUMP = 20.0f * 1.5f;	// ジャンプ力初期値
 	const int INVINCIBLE_INT = 2;		// 無敵の間隔
 	const int INVINCIBLE_TIME = 90;		// 無敵の時間
@@ -833,6 +840,7 @@ void CPlayer::Controll(void)
 	}
 
 #if _DEBUG
+	static CGameManager::eStatus s_statusType;
 	if (pInputKeyboard->GetTrigger(DIK_RIGHT) == true)
 	{// ←キーが押された,左移動
 		s_statusType = (CGameManager::eStatus)(((int)s_statusType + 1) % (int)CGameManager::STATUS_MAX);
@@ -1093,7 +1101,7 @@ void CPlayer::Atack(void)
 						CEffect3D::Create(
 							D3DXVECTOR3(GetCenterPosition().x, GetCenterPosition().y + 100.0f, GetCenterPosition().z - 200.0f),
 							D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-							D3DXCOLOR(0.9f, 0.1f, 0.1f, 1.0f),
+							EFFECTCOLOR[m_nMyPlayerIdx],
 							20.0f, 20, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_NORMAL, repeat * 1.1f);
 					}
 				}

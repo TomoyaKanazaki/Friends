@@ -64,6 +64,7 @@ public:
 	void Draw(void);
 	void SetVtx(void);
 
+	void SetDisableAddAlpha(void) { m_bAddAlpha = false; }	// 加算合成取り消し
 	void SetPositionDest(D3DXVECTOR3 pos);	// 目標の位置設定
 	void SetEnableGravity(void) { m_bGravity = true; }	// 重力有効
 	void SetGravityValue(float fValue);					// 重力の値設定

@@ -839,6 +839,7 @@ void CPlayer::Controll(void)
 		}
 	}
 
+
 #if _DEBUG
 	static CGameManager::eStatus s_statusType;
 	if (pInputKeyboard->GetTrigger(DIK_RIGHT) == true)

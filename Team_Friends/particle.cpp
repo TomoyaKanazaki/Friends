@@ -283,7 +283,6 @@ void Check(void)
 	}
 }
 
-
 //==================================================================================
 // チェック用
 //==================================================================================
@@ -1016,7 +1015,6 @@ void WaveSmoke(void)
 #endif
 }
 
-
 //==========================================================================
 // 円形波の煙
 //==========================================================================
@@ -1716,25 +1714,29 @@ void EvolusionDecide(void)
 //==========================================================================
 void BeamCharge(void)
 {
+	//寿命で動く
 	D3DXVECTOR3 pos = mylib_const::DEFAULT_VECTOR3;
 
 	for (int nCntUse = 0; nCntUse < 20; nCntUse++)
 	{
+		//ランダム付与値
 		float fBuff = (float)Random(80, 100) * 0.01f;
+
+		//発生位置
 		float fDistance = 300.0f * fBuff;
-		m_nLife = (int)(20.0f * fBuff);
+		m_nLife = (int)(60.0f * fBuff);
 
 		// 出現位置
 		pos = GetRandomSpherePosition(m_pos, fDistance);
 
 		m_col = D3DXCOLOR(
-			0.7f + Random(-100, 100) * 0.001f,
-			0.2f + Random(-100, 100) * 0.001f,
-			0.9f + Random(-100, 100) * 0.001f,
+			mylib_const::ENEMYBEAM_COLOR.r + Random(-100, 100) * 0.001f,
+			mylib_const::ENEMYBEAM_COLOR.g + Random(-100, 100) * 0.001f,
+			mylib_const::ENEMYBEAM_COLOR.b + Random(-100, 100) * 0.001f,
 			1.0f);
 
 		// 半径設定
-		m_fRadius = 120.0f * fBuff;
+		m_fRadius = 300.0f * fBuff;
 
 		// エフェクトの設定
 		CEffect3D *pEffect = CEffect3D::Create(
@@ -1749,5 +1751,6 @@ void BeamCharge(void)
 
 		// 目標の位置設定
 		pEffect->SetPositionDest(m_pos);
+		pEffect->SetDisableAddAlpha();
 	}
 }

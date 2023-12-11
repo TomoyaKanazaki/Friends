@@ -39,7 +39,6 @@ namespace
 	const float SEARCH_LENGTH = 600.0f;		//エリア生成距離
 	const float AREA_LENGTH = 800.0f;		//ボスエリアサイズ
 	const float BEAM_LENGTH = 1000.0f;		//ビームの長さ
-	const D3DXCOLOR BEAM_COLOR = { 1.0f, 1.0f, 1.0f, 1.0f};		//ビームの色
 	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
 	{
 		//{ CEnemyTurret::ACTION_BEAM, 0.4f },		// ビーム攻撃
@@ -426,7 +425,8 @@ void CEnemyTurret::AttackBeam(void)
 		D3DXVECTOR3 pos = GetPosition();
 		pos.y += 100.0f;
 
-		CBeam::Create(pos, move, BEAM_COLOR, 50.0f, BEAM_LENGTH, 50, 40, 1, CCollisionObject::TAG_ENEMY);
+		CBeam *pBeam = CBeam::Create(pos, move, mylib_const::ENEMYBEAM_COLOR, 50.0f, BEAM_LENGTH, 50, 40, 1, CCollisionObject::TAG_ENEMY);
+		//pBeam->SetDisableAddAlpha();
 
 		// 待機行動
 		m_Action = ACTION_WAIT;

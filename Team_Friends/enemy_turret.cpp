@@ -182,6 +182,8 @@ void CEnemyTurret::Update(void)
 	//‰eÁ‚µ
 	DeleteTarget();
 
+	bool bIn = CManager::GetInstance()->GetCamera()->OnScreen(GetPosition());
+
 	// ƒXƒNƒŠ[ƒ““à‚Ì‘¶Ý”»’è
 	if (m_state == CEnemy::STATE_SPAWNWAIT && CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
 	{

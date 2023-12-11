@@ -66,6 +66,9 @@ private:
 	void ActionSet(void); // 行動の設定
 	void Escape(void); // 逃走
 
+	// メンバ変数
+	D3DXVECTOR3 m_rotParts;	// パーツ回転用
+
 };
 
 #endif

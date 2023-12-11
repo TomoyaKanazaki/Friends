@@ -25,8 +25,6 @@ namespace
 	{
 		"data\\TEXT\\character\\player\\motion_player.txt"
 	};
-
-	const float POS_TARGET = 500.0f; // 目的地
 }
 
 //==========================================
@@ -39,8 +37,7 @@ int CPlayerTitle::m_nIdx = 0;
 //==========================================================================
 CPlayerTitle::CPlayerTitle(int nPriority) : CPlayer(nPriority),
 m_nModelType(NONE),
-m_fSec(0.0f),
-m_posTarget(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
+m_posTarget(0.0f)
 {
 	// 値のクリア
 	
@@ -171,21 +168,6 @@ void CPlayerTitle::Draw(void)
 }
 
 //==========================================
-//  目的地の設定
-//==========================================
-void CPlayerTitle::SetTarget(const D3DXVECTOR3 start, const D3DXVECTOR3 end)
-{
-	// 目的地を設定
-	m_posTarget = end;
-
-	// 時間をリセット
-	m_fSec = 0.0f;
-
-	// 初期地点を保存
-	m_posDef = start;
-}
-
-//==========================================
 //  生成処理 : 金崎朋弥
 //==========================================
 CPlayerTitle* CPlayerTitle::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MODEL type)
@@ -202,7 +184,6 @@ CPlayerTitle* CPlayerTitle::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MODEL type)
 	// 値を保存
 	pPlayer->SetPosition(pos);
 	pPlayer->SetRotation(rot);
-	pPlayer->SetTarget(pPlayer->GetPosition(), pPlayer->GetPosition());
 
 	return pPlayer;
 }
@@ -250,10 +231,10 @@ void CPlayerTitle::Move(void)
 	D3DXVECTOR3 move = GetMove(); // 移動量
 
 	// 移動制限
-	if (pos.z > POS_TARGET) // 移動量制限
+	if (pos.z > m_posTarget) // 移動量制限
 	{
 		// 停止
-		pos.z = POS_TARGET;
+		pos.z = m_posTarget;
 		move.z = 0.0f;
 
 		// 待機モーションにする

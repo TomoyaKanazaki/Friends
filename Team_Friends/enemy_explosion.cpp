@@ -354,10 +354,6 @@ void CEnemyExplosion::Flash(void)
 	// マテリアルカラーを更新
 	m_mMatcol.g = cosf(m_fCol) * 0.5f + 0.5f;
 	m_mMatcol.b = cosf(m_fCol) * 0.5f + 0.5f;
-	CManager::GetInstance()->GetDebugProc()->Print
-	(
-		"点滅～～ : %f\n", sinf(m_fCol) * 0.5f + 0.5f
-	);
 
 	// カウンタを追加
 	m_fCol += CManager::GetInstance()->GetDeltaTime() * FLASH_SPEED;

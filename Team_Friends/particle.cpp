@@ -54,6 +54,7 @@ void AttackBody(void);
 void BeamHitField(void);
 void UnderBossSpawn(void);
 void EvolusionDecide(void);
+void BeamCharge(void);
 
 //==========================================================================
 // パーティクルの初期化処理
@@ -251,6 +252,9 @@ void my_particle::Create(D3DXVECTOR3 pos, TYPE nType)
 		EvolusionDecide();
 		break;
 
+	case TYPE_BEAM_CHARGE:			//ビームチャージ中
+		BeamCharge();
+		break;
 	}
 }
 
@@ -1549,9 +1553,9 @@ void AttackBody(void)
 		pos = GetRandomSpherePosition(m_pos, fDistance);
 
 		m_col = D3DXCOLOR(
-			0.9f + Random(-100, 100) * 0.001f,
-			0.2f + Random(-100, 100) * 0.001f,
-			0.9f + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.r + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.g + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.b + Random(-100, 100) * 0.001f,
 			1.0f);
 
 		// 半径設定
@@ -1595,9 +1599,9 @@ void BeamHitField(void)
 		m_move.z = vecSphere.z * fMove;
 
 		m_col = D3DXCOLOR(
-			0.9f + Random(-100, 100) * 0.001f,
-			0.2f + Random(-100, 100) * 0.001f,
-			0.9f + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.r + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.g + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.b + Random(-100, 100) * 0.001f,
 			1.0f);
 
 		// 半径設定
@@ -1704,5 +1708,46 @@ void EvolusionDecide(void)
 
 		// 目標の位置設定
 		pEffect->SetGravityValue(0.6f);
+	}
+}
+
+//==========================================================================
+// ビームをチャージ
+//==========================================================================
+void BeamCharge(void)
+{
+	D3DXVECTOR3 pos = mylib_const::DEFAULT_VECTOR3;
+
+	for (int nCntUse = 0; nCntUse < 20; nCntUse++)
+	{
+		float fBuff = (float)Random(80, 100) * 0.01f;
+		float fDistance = 300.0f * fBuff;
+		m_nLife = (int)(20.0f * fBuff);
+
+		// 出現位置
+		pos = GetRandomSpherePosition(m_pos, fDistance);
+
+		m_col = D3DXCOLOR(
+			0.7f + Random(-100, 100) * 0.001f,
+			0.2f + Random(-100, 100) * 0.001f,
+			0.9f + Random(-100, 100) * 0.001f,
+			1.0f);
+
+		// 半径設定
+		m_fRadius = 120.0f * fBuff;
+
+		// エフェクトの設定
+		CEffect3D *pEffect = CEffect3D::Create(
+			pos,
+			mylib_const::DEFAULT_VECTOR3,
+			m_col,
+			m_fRadius,
+			m_nLife,
+			CEffect3D::MOVEEFFECT_SUB,
+			CEffect3D::TYPE_POINT,
+			0.0f);
+
+		// 目標の位置設定
+		pEffect->SetPositionDest(m_pos);
 	}
 }

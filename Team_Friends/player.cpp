@@ -832,8 +832,14 @@ void CPlayer::Controll(void)
 		}
 	}
 
+	static CGameManager::eStatus s_statusType = CGameManager::STATUS_SPEED;
+	if (pInputKeyboard->GetTrigger(DIK_RIGHT) == true)
+	{// ←キーが押された,左移動
+		s_statusType = (CGameManager::eStatus)(((int)s_statusType + 1) % (int)CGameManager::STATUS_MAX);
+		SetEvolusion(s_statusType);
+	}
 #if _DEBUG
-	static CGameManager::eStatus s_statusType;
+	static CGameManager::eStatus s_statusType = CGameManager::STATUS_SPEED;
 	if (pInputKeyboard->GetTrigger(DIK_RIGHT) == true)
 	{// ←キーが押された,左移動
 		s_statusType = (CGameManager::eStatus)(((int)s_statusType + 1) % (int)CGameManager::STATUS_MAX);
@@ -1088,14 +1094,14 @@ void CPlayer::Atack(void)
 
 				if ((int)fAllCount % 8 == 0)
 				{
-					for (int i = 0; i < 2; i++)
+					for (int i = 0; i < 1; i++)
 					{
 						int repeat = (int)(fAllCount / 8.0f);
 						CEffect3D::Create(
-							GetCenterPosition(),
+							D3DXVECTOR3(GetCenterPosition().x, GetCenterPosition().y + 100.0f, GetCenterPosition().z - 200.0f),
 							D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-							D3DXCOLOR(0.9f, 0.6f, 0.1f, 1.0f),
-							20.0f, 20, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_POINT, repeat * 2.0f);
+							D3DXCOLOR(0.9f, 0.1f, 0.1f, 1.0f),
+							20.0f, 20, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_NORMAL, repeat * 1.1f);
 					}
 				}
 			}
@@ -1117,7 +1123,7 @@ void CPlayer::Atack(void)
 							CEffect3D::Create(
 								weponpos,
 								D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-								D3DXCOLOR(0.9f, 0.2f, 0.9f, 1.0f),
+								mylib_const::PLAYERBEAM_COLOR,
 								20.0f, 16, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_POINT, repeat * 4.0f);
 						}
 					}
@@ -1310,9 +1316,9 @@ void CPlayer::AttackBody(CMotion::AttackInfo attackInfo)
 	int nDamage = (int)((float)attackInfo.nDamage * m_sStatus.fPowerBuff);
 	float fMove = 28.0f;
 	D3DXCOLOR col = D3DXCOLOR(
-		0.9f + Random(-100, 100) * 0.001f,
-		0.2f + Random(-100, 100) * 0.001f,
-		0.9f + Random(-100, 100) * 0.001f,	// 色
+		mylib_const::PLAYERBEAM_COLOR.r + Random(-100, 100) * 0.001f,
+		mylib_const::PLAYERBEAM_COLOR.g + Random(-100, 100) * 0.001f,
+		mylib_const::PLAYERBEAM_COLOR.b + Random(-100, 100) * 0.001f,	// 色
 		1.0f);
 
 	switch (m_pMotion->GetType())

@@ -26,7 +26,7 @@ namespace
 		"data\\TEXT\\character\\player\\motion_player.txt"
 	};
 
-	const float DeadZone = 1.0f; // 目的地との誤差範囲
+	const float POS_TARGET = 500.0f; // 目的地
 }
 
 //==========================================
@@ -138,11 +138,12 @@ void CPlayerTitle::Update(void)
 	// 過去の位置保存
 	SetOldPosition(GetPosition());
 
-	// 回転処理
-	Rotation();
-
-	// 移動処理
-	Move();
+	// シーンを取得
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_DECIDE)
+	{
+		// 移動処理
+		Move();
+	}
 
 	// モーション更新
 	if (m_pMotion != NULL)
@@ -212,25 +213,13 @@ CPlayerTitle* CPlayerTitle::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MODEL type)
 //==========================================
 void CPlayerTitle::Rotation(void)
 {
-	// 位置の取得
-	D3DXVECTOR3 diff = m_posTarget - GetPosition(); // 目的との差分
-
-	// 目的地への到達を判定
-	if (fabsf(diff.x) <= DeadZone && fabsf(diff.y) <= DeadZone && fabsf(diff.z) <= DeadZone)
-	{ // 到達していた場合
-
-		// 待機モーションにする
-		m_pMotion->Set(CPlayer::MOTION_DEF);
-
-		return;
-	}
-
 	// 移動モーションにする
 	m_pMotion->Set(CPlayer::MOTION_WALK);
 
 	// 移動方向を算出
+	D3DXVECTOR3 move = -GetMove();
 	D3DXVECTOR3 rotTarget = GetRotation();
-	rotTarget.y = atan2f(diff.x, diff.z);
+	rotTarget.y = atan2f(move.x, move.z);
 
 	// 角度の正規化
 	RotNormalize(rotTarget);
@@ -253,35 +242,45 @@ void CPlayerTitle::Rotation(void)
 }
 
 //==========================================
-//  移動
+//  移動する処理
 //==========================================
 void CPlayerTitle::Move(void)
 {
-	// 位置の取得
-	D3DXVECTOR3 diff = m_posTarget - GetPosition(); // 目的との差分
+	// 値の取得
+	D3DXVECTOR3 pos = GetPosition(); // 位置
+	D3DXVECTOR3 move = GetMove(); // 移動量
 
-	// 目的地への到達を判定
-	if (fabsf(diff.x) <= DeadZone && fabsf(diff.y) <= DeadZone && fabsf(diff.z) <= DeadZone)
-	{ // 到達していた場合
-		return;
-	}
-
-	// 今回の移動量を取得
-	m_fSec += CManager::GetInstance()->GetDeltaTime();
-	float velocity = EasingLinear(m_posDef.z, m_posTarget.z, m_fSec);
-
-	// 移動量を適用
-	if (m_posTarget.z == 300.0f)
+	// 移動制限
+	if (pos.z > POS_TARGET) // 移動量制限
 	{
-		SetPosition(m_posDef + D3DXVECTOR3(0.0f, 0.0f, velocity));
+		// 停止
+		pos.z = POS_TARGET;
+		move.z = 0.0f;
+
+		// 待機モーションにする
+		m_pMotion->Set(CPlayer::MOTION_DEF);
 	}
-	else
+	else if (pos.z < 0.0f) // 移動量制限
 	{
-		SetPosition(m_posDef - D3DXVECTOR3(0.0f, 0.0f, velocity));
+		// 停止
+		pos.z = 0.0f;
+		move.z = 0.0f;
+
+		// 待機モーションにする
+		m_pMotion->Set(CPlayer::MOTION_DEF);
 	}
 
-	CManager::GetInstance()->GetDebugProc()->Print("現在値 : %f\n", GetPosition().z);
-	CManager::GetInstance()->GetDebugProc()->Print("初期値 : %f\n", m_posDef.z);
-	CManager::GetInstance()->GetDebugProc()->Print("目的値 : %f\n", m_posTarget.z);
-	CManager::GetInstance()->GetDebugProc()->Print("移動値 : %f\n", velocity);
+	// あたいってばさいきょーね！
+	pos += move;
+
+	// 動いてるときは向きを変える
+	if (move.z != 0.0f)
+	{
+		// 回転処理
+		Rotation();
+	}
+
+	// 値の適用
+	SetPosition(pos);
+	SetMove(move);
 }

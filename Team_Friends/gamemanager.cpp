@@ -377,19 +377,19 @@ void CGameManager::SetEnableEvolusion(void)
 	// ˜rİ’è
 	if (nIdxPowerLeft >= 0 && CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerLeft) != NULL)
 	{
-		CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerLeft)->SetEvolusion(CGameManager::STATUS_POWER);
+		CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerLeft)->SetEvolusion(CGameManager::STATUS_LIFE);
 	}
 
 	// ˜rİ’è
 	if (nIdxPowerRight >= 0 && CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerRight) != NULL)
 	{
-		CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerRight)->SetEvolusion(CGameManager::STATUS_POWER);
+		CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerRight)->SetEvolusion(CGameManager::STATUS_LIFE);
 	}
 
 	// ‹rİ’è
 	if (nIdxSpeed >= 0 && CManager::GetInstance()->GetScene()->GetPlayer(nIdxSpeed) != NULL)
 	{
-		CManager::GetInstance()->GetScene()->GetPlayer(nIdxSpeed)->SetEvolusion(CGameManager::STATUS_SPEED);
+		CManager::GetInstance()->GetScene()->GetPlayer(nIdxSpeed)->SetEvolusion(CGameManager::STATUS_LIFE);
 	}
 
 	// “·İ’è

@@ -160,6 +160,11 @@ HRESULT CGame::Init(void)
 	m_pLimitArea->SetEnableDisp(false);
 	//CMeshWall::Create(D3DXVECTOR3(0.0f, 0.0f, 1500.0f), mylib_const::DEFAULT_VECTOR3, 200.0f, 200.0f, 8, 1);
 
+	// 進化先設定後リセット
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		CManager::GetInstance()->SetByPlayerPartsType(i, -1);
+	}
 	// 成功
 	return S_OK;
 }

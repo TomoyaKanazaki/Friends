@@ -1549,9 +1549,9 @@ void AttackBody(void)
 		pos = GetRandomSpherePosition(m_pos, fDistance);
 
 		m_col = D3DXCOLOR(
-			0.9f + Random(-100, 100) * 0.001f,
-			0.2f + Random(-100, 100) * 0.001f,
-			0.9f + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.r + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.g + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.b + Random(-100, 100) * 0.001f,
 			1.0f);
 
 		// îºåaê›íË
@@ -1595,9 +1595,9 @@ void BeamHitField(void)
 		m_move.z = vecSphere.z * fMove;
 
 		m_col = D3DXCOLOR(
-			0.9f + Random(-100, 100) * 0.001f,
-			0.2f + Random(-100, 100) * 0.001f,
-			0.9f + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.r + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.g + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.b + Random(-100, 100) * 0.001f,
 			1.0f);
 
 		// îºåaê›íË

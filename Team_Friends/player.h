@@ -150,6 +150,7 @@ private:
 	D3DXVECTOR3 m_KnokBackMove;	// ノックバックの移動量
 	int m_nCntState;			// 状態遷移カウンター
 	int m_nEvolveType;			// 進化先の種類
+	int m_nNextEvolveType;		// 次の進化先
 	CTargetPoint *m_pTargetP;	// 目標の地点
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定

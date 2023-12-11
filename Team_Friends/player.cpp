@@ -132,6 +132,7 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 	m_KnokBackMove = mylib_const::DEFAULT_VECTOR3;	// ノックバックの移動量
 	m_nCntState = 0;								// 状態遷移カウンター
 	m_nEvolveType = 0;								// 進化先の種類
+	m_nNextEvolveType = 0;							// 次の進化先
 	m_nMyPlayerIdx = 0;								// プレイヤーインデックス番号
 	m_pShadow = NULL;								// 影の情報
 	m_pTargetP = NULL;								// 目標の地点
@@ -998,18 +999,35 @@ void CPlayer::Atack(void)
 				break;
 
 			case MOTION_EVOLUTION:
-				// パーツ変更
-				ChangeObject(m_nEvolveType);
 
-				// モーション切り替え
-				ChangeMotion(EVOLUSIONFILE[static_cast<int>(m_nEvolveType) - 1]);
+				// 進化先別
+				switch ((m_nEvolveType - 1))
+				{
+				case CGameManager::STATUS_LIFE:
+				case CGameManager::STATUS_POWER:
+				case CGameManager::STATUS_SPEED:
+					my_particle::Create(GetCenterPosition(), my_particle::TYPE_EVOLUSION_DECIDE);
+					break;
 
-				// プレイヤー毎のインデックス追加
-				BindByPlayerIdxTexture();
+				default:
 
-				// ポーズのリセット
-				//m_pMotion->ResetPose(MOTION_EVOLUTION);
-				m_pMotion->Set(MOTION_EVOLUTION);
+					// 進化先変更
+					m_nEvolveType = m_nNextEvolveType;
+
+					// パーツ変更
+					ChangeObject(m_nEvolveType);
+
+					// モーション切り替え
+					ChangeMotion(EVOLUSIONFILE[static_cast<int>(m_nEvolveType) - 1]);
+
+					// プレイヤー毎のインデックス追加
+					BindByPlayerIdxTexture();
+
+					// ポーズのリセット
+					m_pMotion->ResetPose(MOTION_EVOLUTION);
+					m_pMotion->Set(MOTION_EVOLUTION);
+					break;
+				}
 				break;
 			}
 		}
@@ -1020,23 +1038,24 @@ void CPlayer::Atack(void)
 		{// 攻撃判定中
 			
 			// 武器の位置
-			D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetObjectChara()->GetModel(), *aInfo.AttackInfo[nCntAttack]);
+			D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
+
+			CEffect3D *pEffect = NULL;
 
 			switch (m_pMotion->GetType())
 			{
 			case MOTION_EVOLUTION:
-				D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
-
+			{
 				D3DXVECTOR3 nor = (aInfo.AttackInfo[nCntAttack]->Offset);
 				D3DXVec3Normalize(&nor, &nor);
 
 				D3DXVECTOR3 move = D3DXVECTOR3(10.0f, 0.0f, 0.0f);
 
 				// 炎
-				float fMove = 5.5f + Random(-20, 20) * 0.1f;
+				float fMove = 4.5f + Random(-10, 10) * 0.1f;
 				float fRot = Random(-20, 20) * 0.01f;
 
-				CEffect3D *pEffect = CEffect3D::Create(
+				pEffect = CEffect3D::Create(
 					weponpos,
 					(fMove * nor),
 					D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
@@ -1066,37 +1085,54 @@ void CPlayer::Atack(void)
 					// セットアップ位置設定
 					pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
 				}
-				break;
-			}
-
-			// 進化先別
-			switch (CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx))
-			{
-			case CPlayerUnion::PARTS_BODY:
-				my_particle::Create(weponpos, my_particle::TYPE_ATTACK_BODY);
 
 				if ((int)fAllCount % 8 == 0)
 				{
-					for (int i = 0; i < 4; i++)
+					for (int i = 0; i < 2; i++)
 					{
 						int repeat = (int)(fAllCount / 8.0f);
 						CEffect3D::Create(
-							weponpos,
+							GetCenterPosition(),
 							D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-							D3DXCOLOR(0.9f, 0.2f, 0.9f, 1.0f),
-							20.0f, 16, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_POINT, repeat * 4.0f);
+							D3DXCOLOR(0.9f, 0.6f, 0.1f, 1.0f),
+							20.0f, 20, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_POINT, repeat * 2.0f);
 					}
 				}
+			}
 				break;
 
-			case CPlayerUnion::PARTS_R_ARM:
-			case CPlayerUnion::PARTS_L_ARM:
-				break;
+			case MOTION_ATK:
+			case MOTION_ATK2:
+				// 進化先別
+				switch (CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx))
+				{
+				case CPlayerUnion::PARTS_BODY:
+					my_particle::Create(weponpos, my_particle::TYPE_ATTACK_BODY);
 
-			case CPlayerUnion::PARTS_LEG:
-				break;
+					if ((int)fAllCount % 8 == 0)
+					{
+						for (int i = 0; i < 4; i++)
+						{
+							int repeat = (int)(fAllCount / 8.0f);
+							CEffect3D::Create(
+								weponpos,
+								D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+								D3DXCOLOR(0.9f, 0.2f, 0.9f, 1.0f),
+								20.0f, 16, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_POINT, repeat * 4.0f);
+						}
+					}
+					break;
 
-			default:
+				case CPlayerUnion::PARTS_R_ARM:
+				case CPlayerUnion::PARTS_L_ARM:
+					break;
+
+				case CPlayerUnion::PARTS_LEG:
+					break;
+
+				default:
+					break;
+				}
 				break;
 			}
 
@@ -1831,11 +1867,11 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType, bool bFast)
 		break;
 	}
 
-	// 進化先の種類
-	m_nEvolveType = (int)statusType + 1;
-
 	if (bFast)
 	{
+		// 進化先の種類
+		m_nEvolveType = (int)statusType + 1;
+
 		// パーツ変更
 		ChangeObject(m_nEvolveType);
 
@@ -1847,8 +1883,8 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType, bool bFast)
 	}
 	else
 	{
-		// パーツ削除
-		//DeleteObject(m_nEvolveType);
+		// 次の進化先
+		m_nNextEvolveType = (int)statusType + 1;
 
 		// 進化状態にする
 		m_state = STATE_EVOLUSION;

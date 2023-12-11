@@ -5,6 +5,7 @@
 //
 //==========================================
 #include "title_logo.h"
+#include "title.h"
 #include "logo_complete.h"
 #include "logo_mechanion.h"
 #include "logo_mekanion.h"
@@ -203,7 +204,7 @@ void CTitleLogo::UpdateState()
 			//Š®¬‚µ‚½ƒƒS‚ğ•\¦
 			if (m_pComp == nullptr)
 			{
-				//m_pComp = CLogo_Comp::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				m_pComp = CLogo_Comp::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			}
 
 			//ó‘Ô‚ği‚ß‚é
@@ -227,7 +228,25 @@ void CTitleLogo::UpdateState()
 	}
 	break;
 
+	case STARTUP:
+		// Š®¬ƒƒSíœ
+		if (m_pComp != nullptr)
+		{
+			m_pComp->Uninit();
+			m_pComp = nullptr;
+			return;
+		}
+		break;
+
 	default:
 		break;
 	}
+}
+
+//==========================================
+// ó‘Ôİ’è
+//==========================================
+void CTitleLogo::SetState(STATE state)
+{
+	m_State = state;
 }

@@ -13,8 +13,6 @@ using namespace my_particle;	// 名前空間を指定
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
-//==========================================================================
-//==========================================================================
 D3DXVECTOR3 m_pos;		// 位置
 D3DXVECTOR3 m_move;		// 移動量
 D3DXCOLOR m_col;		// 色
@@ -55,6 +53,7 @@ void AppearanceArmToArm(void);
 void AttackBody(void);
 void BeamHitField(void);
 void UnderBossSpawn(void);
+void EvolusionDecide(void);
 
 //==========================================================================
 // パーティクルの初期化処理
@@ -247,6 +246,11 @@ void my_particle::Create(D3DXVECTOR3 pos, TYPE nType)
 	case TYPE_UNDERBOSS_SPAWN:
 		UnderBossSpawn();
 		break;
+
+	case TYPE_EVOLUSION_DECIDE:		// 進化完了
+		EvolusionDecide();
+		break;
+
 	}
 }
 
@@ -1652,5 +1656,53 @@ void UnderBossSpawn(void)
 
 		// 目標の位置設定
 		pEffect->SetPositionDest(m_pos);
+	}
+}
+
+//==========================================================================
+// 進化完了
+//==========================================================================
+void EvolusionDecide(void)
+{
+	int nCircleDivision = 32;
+	float fff = (D3DX_PI * 2.0f) / nCircleDivision;
+
+	for (int nCntUse = 0; nCntUse < nCircleDivision; nCntUse++)
+	{
+		float fRot = fff * nCntUse;
+		float fBuff = (float)Random(80, 100) * 0.01f;
+		m_nLife = (int)(50.0f * fBuff);
+
+		float fMove = 6.0f * fBuff;		// 移動量
+
+		// 球範囲ランダムベクトル取得
+		D3DXVECTOR3 vecSphere = GetRandomSphereVec();
+
+		// 移動量の設定
+		m_move.x = sinf(fRot) * fMove;
+		m_move.y = Random(10, 15);
+		m_move.z = cosf(fRot) * fMove;
+
+		m_col = D3DXCOLOR(
+			0.9f + Random(-100, 100) * 0.001f,
+			0.4f + Random(-100, 100) * 0.001f,
+			0.1f + Random(-100, 100) * 0.001f,
+			1.0f);
+
+		// 半径設定
+		m_fRadius = 80.0f * fBuff;
+
+		// エフェクトの設定
+		CEffect3D *pEffect = CEffect3D::Create(
+			m_pos,
+			m_move,
+			m_col,
+			m_fRadius,
+			m_nLife,
+			CEffect3D::MOVEEFFECT_SUB,
+			CEffect3D::TYPE_JUJI2);
+
+		// 目標の位置設定
+		pEffect->SetGravityValue(0.6f);
 	}
 }

@@ -13,7 +13,7 @@
 #include "beam.h"
 #include "bullet.h"
 #include "player.h"				//プレイヤー感知
-#include "camera.h"
+#include "camera.h"				//出現演出のためのカメラ判定
 #include "game.h"
 #include "gamemanager.h"
 #include "particle.h"			//出現演出
@@ -39,11 +39,13 @@ namespace
 	const float SEARCH_LENGTH = 600.0f;		//エリア生成距離
 	const float AREA_LENGTH = 800.0f;		//ボスエリアサイズ
 	const float BEAM_LENGTH = 1000.0f;		//ビームの長さ
-	const D3DXCOLOR BEAM_COLOR = { 0.5f, 0.1f, 1.0f, 0.5f};		//ビームの色
+	const D3DXCOLOR BEAM_COLOR = { 0.8f, 0.1f, 1.0f, 1.0f};		//ビームの色
 	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
 	{
-		{ CEnemyTurret::ACTION_BEAM, 0.4f },		// ビーム攻撃
-		{ CEnemyTurret::ACTION_MORTAR, 0.6f },		// 迫撃攻撃
+		//{ CEnemyTurret::ACTION_BEAM, 0.4f },		// ビーム攻撃
+		//{ CEnemyTurret::ACTION_MORTAR, 0.6f },		// 迫撃攻撃
+		{ CEnemyTurret::ACTION_BEAM, 1.0f },		// ビーム攻撃
+		{ CEnemyTurret::ACTION_MORTAR, 0.0f },		// 迫撃攻撃
 		{ CEnemyTurret::ACTION_WAIT, 0.0f },		// 待機
 	};
 }
@@ -391,6 +393,8 @@ void CEnemyTurret::ChargeBeam(void)
 		m_pMotion->Set(MOTION_CHARGE_BEAM);
 	}
 
+	my_particle::Create(GetPosition(), my_particle::TYPE_ATTACK_BODY);
+
 	//一番近いプレイヤーを認識する
 	SetTargetPlayer();
 
@@ -416,7 +420,10 @@ void CEnemyTurret::AttackBeam(void)
 							0.0f,
 							cosf(fRot + D3DX_PI) * MORTAR_SPEED };
 
-		CBeam::Create(GetPosition(), move, BEAM_COLOR, 50.0f, BEAM_LENGTH, 50, 10, 1, CCollisionObject::TAG_ENEMY);
+		D3DXVECTOR3 pos = GetPosition();
+		pos.y += 100.0f;
+
+		CBeam::Create(pos, move, BEAM_COLOR, 50.0f, BEAM_LENGTH, 50, 40, 1, CCollisionObject::TAG_ENEMY);
 
 		// 待機行動
 		m_Action = ACTION_WAIT;

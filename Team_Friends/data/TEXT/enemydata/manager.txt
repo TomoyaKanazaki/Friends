@@ -9,7 +9,7 @@ SCRIPT			# ‚±‚Ìs‚Íâ‘ÎÁ‚³‚È‚¢‚±‚ÆI
 #------------------------------------------------------------------
 # ƒLƒƒƒ‰ƒNƒ^[”
 #------------------------------------------------------------------
-NUM_CHARACTER = 7
+NUM_CHARACTER = 8
 
 #------------------------------------------------------------------
 # ƒLƒƒƒ‰ƒNƒ^[ƒtƒ@ƒCƒ‹–¼
@@ -21,6 +21,7 @@ MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_escape.txt			# [3]ƒƒ^ƒ
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_tackle.txt			# [4]“ËŒ‚’–
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_turret.txt			# [5]’†ƒ{ƒX-–C‘äŒ^
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [6]’†ƒ{ƒX-ƒMƒKƒ“ƒgƒGƒbƒW
+MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_roaming.txt			# [7]ƒNƒŠ[ƒp[
 
 #===================================================================================================
 # “G‚Ìî•ñ
@@ -80,6 +81,13 @@ PATTERNSET
 	
 	ENEMYSET
 		TYPE = 4		# ƒLƒƒƒ‰‚Ìí—Ş
+		INDEX = 0
+		POS = 800.00 0.00 0.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+
+	ENEMYSET
+		TYPE = 7		# ƒLƒƒƒ‰‚Ìí—Ş
 		INDEX = 0
 		POS = 800.00 0.00 0.00
 		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€

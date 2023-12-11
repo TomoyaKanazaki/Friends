@@ -216,6 +216,7 @@ void CTitle::Update(void)
 		{
 			m_pUnionTitle->SetEnablePressEnter();
 		}
+		m_pLogo->SetState(CTitleLogo::STARTUP);
 #else
 		// ƒ‚[ƒhÝ’è
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDE);

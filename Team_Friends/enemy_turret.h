@@ -119,7 +119,6 @@ private:
 	bool m_bArea;				//エリア展開フラグ
 	CBulletPoint *m_pBulletPoint[mylib_const::MAX_PLAYER];			// 影の情報
 	CBullet *m_pBullet[mylib_const::MAX_PLAYER];			// 弾の情報
-	bool m_bMortar;		//迫撃フラグ
 };
 
 #endif

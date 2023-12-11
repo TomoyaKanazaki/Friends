@@ -182,7 +182,7 @@ void CEnemyTurret::Update(void)
 	}
 
 	//âeè¡Çµ
-	DeleteShadow();
+	DeleteTarget();
 
 	// ÉXÉNÉäÅ[Éìì‡ÇÃë∂ç›îªíË
 	if (m_state == CEnemy::STATE_SPAWNWAIT && CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
@@ -750,7 +750,7 @@ void CEnemyTurret::SummonArea(void)
 //==========================================================================
 // âeè¡Çµ
 //==========================================================================
-void CEnemyTurret::DeleteShadow(void)
+void CEnemyTurret::DeleteTarget(void)
 {
 	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
 	{

@@ -104,7 +104,7 @@ private:
 	void SetTargetPlayer(void);		// どのプレイヤーのターゲット
 
 	void SummonArea(void);		// エリア生成
-	void DeleteShadow(void);		// 影消し
+	void DeleteTarget(void);		// 影消し
 
 	//=============================
 	// メンバ変数

@@ -10,8 +10,8 @@
 #include "calculation.h"
 #include "hp_gauge.h"
 #include "limitarea.h"			//ボスエリア
-#include "beam.h"
-#include "bullet.h"
+#include "beam.h"				//ビーム
+#include "bullet.h"				//迫撃
 #include "player.h"				//プレイヤー感知
 #include "camera.h"				//出現演出のためのカメラ判定
 #include "game.h"
@@ -39,7 +39,7 @@ namespace
 	const float SEARCH_LENGTH = 600.0f;		//エリア生成距離
 	const float AREA_LENGTH = 800.0f;		//ボスエリアサイズ
 	const float BEAM_LENGTH = 1000.0f;		//ビームの長さ
-	const D3DXCOLOR BEAM_COLOR = { 0.8f, 0.1f, 1.0f, 1.0f};		//ビームの色
+	const D3DXCOLOR BEAM_COLOR = { 1.0f, 1.0f, 1.0f, 1.0f};		//ビームの色
 	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
 	{
 		//{ CEnemyTurret::ACTION_BEAM, 0.4f },		// ビーム攻撃
@@ -393,7 +393,10 @@ void CEnemyTurret::ChargeBeam(void)
 		m_pMotion->Set(MOTION_CHARGE_BEAM);
 	}
 
-	my_particle::Create(GetPosition(), my_particle::TYPE_ATTACK_BODY);
+	D3DXVECTOR3 pos = GetPosition();
+	pos.y += 100.0f;
+
+	my_particle::Create(pos, my_particle::TYPE_BEAM_CHARGE);
 
 	//一番近いプレイヤーを認識する
 	SetTargetPlayer();

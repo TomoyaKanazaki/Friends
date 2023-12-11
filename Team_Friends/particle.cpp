@@ -1717,14 +1717,14 @@ void BeamCharge(void)
 	//寿命で動く
 	D3DXVECTOR3 pos = mylib_const::DEFAULT_VECTOR3;
 
-	for (int nCntUse = 0; nCntUse < 20; nCntUse++)
+	for (int nCntUse = 0; nCntUse < 2; nCntUse++)
 	{
 		//ランダム付与値
 		float fBuff = (float)Random(80, 100) * 0.01f;
 
 		//発生位置
 		float fDistance = 300.0f * fBuff;
-		m_nLife = (int)(60.0f * fBuff);
+		m_nLife = (int)(20.0f * fBuff);
 
 		// 出現位置
 		pos = GetRandomSpherePosition(m_pos, fDistance);

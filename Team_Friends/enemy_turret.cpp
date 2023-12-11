@@ -425,8 +425,7 @@ void CEnemyTurret::AttackBeam(void)
 		D3DXVECTOR3 pos = GetPosition();
 		pos.y += 100.0f;
 
-		CBeam *pBeam = CBeam::Create(pos, move, mylib_const::ENEMYBEAM_COLOR, 50.0f, BEAM_LENGTH, 50, 40, 1, CCollisionObject::TAG_ENEMY);
-		//pBeam->SetDisableAddAlpha();
+		CBeam::Create(pos, move, mylib_const::ENEMYBEAM_COLOR, 50.0f, BEAM_LENGTH, 50, 40, 1, CCollisionObject::TAG_ENEMY);
 
 		// ë“ã@çsìÆ
 		m_Action = ACTION_WAIT;

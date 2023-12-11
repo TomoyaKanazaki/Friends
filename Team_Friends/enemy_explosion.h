@@ -1,23 +1,23 @@
 //==========================================
 //
-//  メタルスライム(enemy_escape.h)
+//  自爆する敵(enemy_explosion.h)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
-#ifndef _ENEMY_ESCAPE_H_
-#define _ENEMY_ESCAPE_H_
+#ifndef _ENEMY_EXPLOSION_H_
+#define _ENEMY_EXPLOSION_H_
 #include "enemy.h"
 
 //==========================================
 //  クラス定義
 //==========================================
-class CEnemyEscape : public CEnemy
+class CEnemyExplosion : public CEnemy
 {
 public:
 
 	// オーバーライドされた関数
-	CEnemyEscape(int nPriority = mylib_const::ENEMY_PRIORITY);
-	~CEnemyEscape();
+	CEnemyExplosion(int nPriority = mylib_const::ENEMY_PRIORITY);
+	~CEnemyExplosion();
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;
@@ -42,9 +42,9 @@ private:
 	enum ACTION
 	{
 		ACTION_ROAMING = 0, // 徘徊行動
-		ACTION_FIND, // 発見行動
-		ACTION_TURN, // 向き直る行動
-		ACTION_ESCAPE, // 逃走行動
+		ACTION_CHASE, // 追跡行動
+		ACTION_COUNTDOWN, // カウントダウン行動
+		ACTION_EXPROSION, // 自爆行動
 		ACTION_FADE, // 消滅行動
 		MAX
 	};
@@ -55,19 +55,16 @@ private:
 	float m_fCntFind; // 発見カウンター
 	float m_fCntEscape; // 逃走カウンター
 	float m_fRot; // 向きたいとこ～
+	float m_fCountDawn; // 自爆カウントダウン
+	float m_fCol; // マテリアルカラー変える
 
 	// メンバ関数
 	void MotionSet(void) override;		// モーションの設定
 	void UpdateAction(void) override;	// 行動更新
 	void Move(void) override; // 移動
-	void RotationPlayer(void) override; // プレイヤーを向く
 	void RandTurn(void); // ランダムな方向転換
-	void Turn(void); // 向き直る
 	void ActionSet(void); // 行動の設定
-	void Escape(void); // 逃走
-
-	// メンバ変数
-	D3DXVECTOR3 m_rotParts;	// パーツ回転用
+	void Flash(void); // 点滅
 
 };
 

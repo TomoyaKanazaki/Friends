@@ -39,6 +39,7 @@ public:
 		TYPE_TACKLE, // 突撃猪
 		TYPE_TURRET, // 中ボス(ウィスピーウッズ)
 		TYPE_RIOT, // 中ボス(ギガントエッジ)
+		TYPE_EXPLOSION, // クリーパー
 		TYPE_MAX
 	};
 

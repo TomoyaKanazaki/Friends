@@ -99,9 +99,13 @@ public:
 	void SubNumAttackInfo(int nType);	// 攻撃情報の総数減算
 
 	void ReadText(const std::string pTextFile);
+	Parts GetPartsOld(int nParts) { return aPartsOld[nParts]; }
+	void SetPartsOld(int nParts, Parts parts) { aPartsOld[nParts] = parts; }
 	void SetInfo(Info info);	// モーション情報の登録
+	void SetInfoData(int nType, Info info);	// モーション情報の登録
 	void SetAttackInfo(AttackInfo info);	// 攻撃情報の登録
 	Info GetInfo(int nType);	// モーション情報の取得
+	Info *GetInfoPtr(int nType);	// モーション情報の取得
 	void SetInfoSave(int nType, int nKey, int nParts, D3DXVECTOR3 rot);	// モーション情報の登録
 	void ChangeKeyNum(int nType, int nNum);	// キー総数変更
 	void ChangeKeyFrame(int nType, int nKey, int nNum);	// キーフレーム変更
@@ -109,6 +113,7 @@ public:
 	int IsGetMove(int nType);	// 移動の判定取得
 	void SetModel(CModel **pModel, int nNumModel, CObjectChara *pObjChara);	// モーションをするモデルの登録
 	void ResetPose(int nType);	// ポーズのリセット
+
 private:
 	// 列挙型定義
 	typedef enum

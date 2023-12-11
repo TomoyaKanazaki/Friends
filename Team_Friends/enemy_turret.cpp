@@ -42,10 +42,8 @@ namespace
 	const D3DXCOLOR BEAM_COLOR = { 0.5f, 0.1f, 1.0f, 0.5f};		//ビームの色
 	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
 	{
-		//{ CEnemyTurret::ACTION_BEAM, 0.3f },		// ビーム攻撃
-		//{ CEnemyTurret::ACTION_MORTAR, 0.7f },		// 迫撃攻撃
-		{ CEnemyTurret::ACTION_BEAM, 0.0f },		// ビーム攻撃
-		{ CEnemyTurret::ACTION_MORTAR, 1.0f },		// 迫撃攻撃
+		{ CEnemyTurret::ACTION_BEAM, 0.4f },		// ビーム攻撃
+		{ CEnemyTurret::ACTION_MORTAR, 0.6f },		// 迫撃攻撃
 		{ CEnemyTurret::ACTION_WAIT, 0.0f },		// 待機
 	};
 }

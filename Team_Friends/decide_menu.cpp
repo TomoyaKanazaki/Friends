@@ -30,6 +30,7 @@ namespace
 	const D3DXVECTOR3 POS_SELECT = D3DXVECTOR3(0.0f, 30.0f, 0.0f); // 選択肢の基準位置
 	const float LENGTH_SELECT = 150.0f; // 選択肢の基準位置
 	const float SCALE_SELECT = 0.15f; // 選択肢の倍率
+	const float PLAYER_SPEED = 5.0f; // プレイヤーの移動量
 
 	// テクスチャのファイル
 	const char* m_apTextureFile[CDecideMenu::VTX_MAX] =
@@ -227,11 +228,11 @@ void CDecideMenu::Update(void)
 #ifdef _DEBUG
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_LSHIFT))
 	{
-		Go(VTXSELECT_SELECT1P);
+		Go(0);
 	}
 	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_RSHIFT))
 	{
-		Back(VTXSELECT_SELECT1P);
+		Back(0);
 	}
 #endif
 }
@@ -242,6 +243,36 @@ void CDecideMenu::Update(void)
 void CDecideMenu::Draw(void)
 {
 
+}
+
+//==========================================
+//  前に進む処理
+//==========================================
+void CDecideMenu::Go(int nIdx)
+{
+	// 値を取得
+	D3DXVECTOR3 move = m_apPlayer[nIdx]->GetMove();
+
+	// 値を代入
+	move.z = PLAYER_SPEED;
+
+	// 値を適用
+	m_apPlayer[nIdx]->SetMove(move);
+}
+
+//==========================================
+//  後ろに下がる処理
+//==========================================
+void CDecideMenu::Back(int nIdx)
+{
+	// 値を取得
+	D3DXVECTOR3 move = m_apPlayer[nIdx]->GetMove();
+
+	// 値を代入
+	move.z = -PLAYER_SPEED;
+
+	// 値を適用
+	m_apPlayer[nIdx]->SetMove(move);
 }
 
 //==========================================
@@ -393,20 +424,4 @@ void CDecideMenu::CretePlayer(void)
 	m_apPlayer[VTXSELECT_SELECT2P] = CPlayerTitle::Create(m_pSelect3D[VTXSELECT_SELECT2P]->GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	m_apPlayer[VTXSELECT_SELECT3P] = CPlayerTitle::Create(m_pSelect3D[VTXSELECT_SELECT3P]->GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	m_apPlayer[VTXSELECT_SELECT4P] = CPlayerTitle::Create(m_pSelect3D[VTXSELECT_SELECT4P]->GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-}
-
-//==========================================
-//  進む
-//==========================================
-void CDecideMenu::Go(int Idx)
-{
-	m_apPlayer[Idx]->SetTarget(m_pSelect3D[Idx]->GetPosition() + D3DXVECTOR3(0.0f, 0.0f, 300.0f), m_pSelect3D[Idx]->GetPosition());
-}
-
-//==========================================
-//  戻る
-//==========================================
-void CDecideMenu::Back(int Idx)
-{
-	m_apPlayer[Idx]->SetTarget(m_pSelect3D[Idx]->GetPosition(), m_pSelect3D[Idx]->GetPosition() + D3DXVECTOR3(0.0f, 0.0f, 300.0f));
 }

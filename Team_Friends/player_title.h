@@ -49,6 +49,7 @@ private:
 	void Move(void); // 移動
 	void Fly(void); // 飛び上がる
 	void Forward(void); // 走り出す
+	void Fire(void); // エフェクトを呼び出す
 
 	//メンバ変数
 	int m_nModelType;

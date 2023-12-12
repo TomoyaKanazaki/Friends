@@ -25,6 +25,8 @@ namespace
 	{
 		"data\\TEXT\\character\\player\\motion_player.txt"
 	};
+
+	const float MOVE_SPEED = 1.5f; // 移動量倍率
 }
 
 //==========================================
@@ -37,7 +39,8 @@ int CPlayerTitle::m_nIdx = 0;
 //==========================================================================
 CPlayerTitle::CPlayerTitle(int nPriority) : CPlayer(nPriority),
 m_nModelType(NONE),
-m_posTarget(0.0f)
+m_posTarget(0.0f),
+m_bMove(false)
 {
 	// 値のクリア
 	
@@ -133,6 +136,24 @@ void CPlayerTitle::Update(void)
 
 	// 過去の位置保存
 	SetOldPosition(GetPosition());
+
+	// 動き出す処理
+	if (m_bMove)
+	{
+		if (m_nModelType == PLAYER_ARM) // 腕は飛び上がる
+		{
+			Fly();
+		}
+		else // その他は走り出す
+		{
+			Forward();
+		}
+
+		// 位置を更新
+		D3DXVECTOR3 pos = GetPosition();
+		pos += GetMove();
+		SetPosition(pos);
+	}
 
 	// シーンを取得
 	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_DECIDE)
@@ -262,5 +283,47 @@ void CPlayerTitle::Move(void)
 
 	// 値の適用
 	SetPosition(pos);
+	SetMove(move);
+}
+
+//==========================================
+//  飛び上がる
+//==========================================
+void CPlayerTitle::Fly(void)
+{
+	// 角度の取得
+	D3DXVECTOR3 rot = GetRotation();
+
+	// 移動量を取得
+	float fMove = GetVelocity();
+	D3DXVECTOR3 move = GetMove();
+
+	// 移動量を分解する
+	move.y = fMove * MOVE_SPEED;
+
+	// 移動量を適用する
+	SetMove(move);
+}
+
+//==========================================
+//  走り出す
+//==========================================
+void CPlayerTitle::Forward(void)
+{
+	// 移動モーションにする
+	m_pMotion->Set(CPlayer::MOTION_WALK);
+
+	// 角度の取得
+	D3DXVECTOR3 rot = GetRotation();
+
+	// 移動量を取得
+	float fMove = GetVelocity();
+	D3DXVECTOR3 move = GetMove();
+
+	// 移動量を分解する
+	move.x = -sinf(rot.y) * fMove * MOVE_SPEED;
+	move.z = -cosf(rot.y) * fMove * MOVE_SPEED;
+
+	// 移動量を適用する
 	SetMove(move);
 }

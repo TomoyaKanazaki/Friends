@@ -418,12 +418,16 @@ void CEnemy::Update(void)
 		return;
 	}
 
+	if (!CGame::GetGameManager()->IsControll())
+	{// s“®‚Å‚«‚é‚Æ‚«
+		return;
+	}
+
 	// ‰ß‹‚ÌˆÊ’uİ’è
 	SetOldPosition(GetPosition());
 
 	// “–‚½‚è”»’è
 	Collision();
-	//CollisionPlayer();
 
 	// €–S‚Ì”»’è
 	if (IsDeath() == true)

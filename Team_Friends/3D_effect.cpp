@@ -446,6 +446,7 @@ void CEffect3D::SetUp(D3DXVECTOR3 setup, D3DXMATRIX *pMtxParent, CObject *pObj, 
 		m_pParent = pObj;
 	}
 
+	// 親マトリックスのポインタ
 	m_pMtxParent = pMtxParent;
 
 	// 親のインデックス番号
@@ -458,7 +459,7 @@ void CEffect3D::SetUp(D3DXVECTOR3 setup, D3DXMATRIX *pMtxParent, CObject *pObj, 
 //==================================================================================
 // 位置更新
 //==================================================================================
-void CEffect3D::UpdatePosition(D3DXMATRIX mtx, D3DXVECTOR3 rot)
+void CEffect3D::UpdatePosition(D3DXVECTOR3 rot)
 {
 
 	D3DXMATRIX mtxRot, mtxTrans, mtxWorld;	// 計算用マトリックス宣言

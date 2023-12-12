@@ -41,6 +41,7 @@
 #include "collisionobject.h"
 #include "limitereamanager.h"
 #include "beam.h"
+#include "statusup.h"
 
 // 派生先
 #include "tutorialplayer.h"
@@ -426,7 +427,7 @@ void CPlayer::Update(void)
 			}
 
 			// エフェクトの位置更新
-			pEffect->UpdatePosition(GetModel()[aInfo.AttackInfo[0]->nCollisionNum]->GetWorldMtx(), GetRotation());
+			pEffect->UpdatePosition(GetRotation());
 			nCntEffect++;
 			if (nNumEffect <= nCntEffect)
 			{
@@ -1803,6 +1804,15 @@ bool CPlayer::GiveStatus(CGameManager::eStatus status)
 			pStatusWindow->GetGauge(status)->SetRateDest(fRate);
 		}
 	}
+
+	if (bGet)
+	{// 取得している場合
+		D3DXVECTOR3 pos = GetPosition();
+		pos.y += 50.0f;
+
+		// ステータス上昇UI生成
+		CStatusUp::Create(pos, status);
+	}
 	return bGet;
 }
 
@@ -1902,6 +1912,9 @@ void CPlayer::SetEvolusion(CGameManager::eStatus statusType, bool bFast)
 
 		// 目標の向き設定
 		SetRotDest(0.0f);
+
+		// 進化中
+		CGame::GetGameManager()->SetType(CGameManager::SCENE_EVOLUSION);
 	}
 }
 
@@ -2420,6 +2433,9 @@ void CPlayer::StateEvolusion(void)
 
 		// 待機モーション設定
 		m_pMotion->Set(MOTION_DEF);
+
+		// 元に戻す
+		CGame::GetGameManager()->SetType(CGameManager::SCENE_MAIN);
 		return;
 	}
 

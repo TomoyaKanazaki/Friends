@@ -11,6 +11,7 @@
 #include "calculation.h"
 #include "hp_gauge.h"
 #include "model.h"
+#include "game.h"
 
 //==========================================
 //  定数定義
@@ -86,6 +87,10 @@ void CEnemyEscape::Update(void)
 
 	if (IsDeath() == true)
 	{// 死亡フラグが立っていたら
+		return;
+	}
+	if (!CGame::GetGameManager()->IsControll())
+	{// 行動できるとき
 		return;
 	}
 

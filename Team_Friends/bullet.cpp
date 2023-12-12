@@ -387,7 +387,7 @@ void CBullet::Update(void)
 		else
 		{
 			// îöî≠ÇÃê∂ê¨
-			CExplosion::Create(GetPosition());
+			//CExplosion::Create(GetPosition());
 		}
 
 		m_bFinish = true;

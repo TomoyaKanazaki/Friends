@@ -69,7 +69,7 @@ public:
 	void SetEnableGravity(void) { m_bGravity = true; }	// 重力有効
 	void SetGravityValue(float fValue);					// 重力の値設定
 	void SetUp(D3DXVECTOR3 setup, D3DXMATRIX *pMtxParent, CObject *pObj, int nParentIdx);	// セットアップ
-	void UpdatePosition(D3DXMATRIX mtx, D3DXVECTOR3 rot);	// 位置更新
+	void UpdatePosition(D3DXVECTOR3 rot);	// 位置更新
 	void UninitParent(void);	// 親の破棄
 	static int GetNumAll(void);	// 総数取得
 

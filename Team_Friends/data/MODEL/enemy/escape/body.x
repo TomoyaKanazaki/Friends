@@ -2207,7 +2207,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "box_UV_.jpg";
+    "data\\TEXTURE\\enemy\\escape\\box_UV_.jpg";
    }
   }
  }

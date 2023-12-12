@@ -469,7 +469,7 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="enemy_explosion.cpp">
-      <Filter>ソース ファイル\enemy</Filter>
+      <Filter>enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

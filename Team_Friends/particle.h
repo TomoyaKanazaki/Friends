@@ -51,6 +51,7 @@ namespace my_particle
 		TYPE_UNDERBOSS_SPAWN,		// 中ボススポーン
 		TYPE_EVOLUSION_DECIDE,		// 進化完了
 		TYPE_BEAM_CHARGE,		// ビームチャージ中
+		TYPE_MORTAR_CHARGE,		// 迫撃チャージ中
 		TYPE_MAX
 	}TYPE;
 

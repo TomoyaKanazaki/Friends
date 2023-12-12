@@ -41,10 +41,8 @@ namespace
 	const float BEAM_LENGTH = 1000.0f;		//ビームの長さ
 	std::vector<sProbability> ACT_PROBABILITY =	// 行動の抽選確率
 	{
-		//{ CEnemyTurret::ACTION_BEAM, 0.4f },		// ビーム攻撃
-		//{ CEnemyTurret::ACTION_MORTAR, 0.6f },		// 迫撃攻撃
-		{ CEnemyTurret::ACTION_BEAM, 1.0f },		// ビーム攻撃
-		{ CEnemyTurret::ACTION_MORTAR, 0.0f },		// 迫撃攻撃
+		{ CEnemyTurret::ACTION_BEAM, 0.3f },		// ビーム攻撃
+		{ CEnemyTurret::ACTION_MORTAR, 0.7f },		// 迫撃攻撃
 		{ CEnemyTurret::ACTION_WAIT, 0.0f },		// 待機
 	};
 }
@@ -401,6 +399,7 @@ void CEnemyTurret::ChargeBeam(void)
 	D3DXVECTOR3 pos = GetPosition();
 	pos.y += 100.0f;
 
+	//チャージエフェクト
 	my_particle::Create(pos, my_particle::TYPE_BEAM_CHARGE);
 
 	//一番近いプレイヤーを認識する
@@ -518,6 +517,12 @@ void CEnemyTurret::ChargeMortar(void)
 		//着弾地点にマーク表示
 		m_pBulletPoint[i] = CBulletPoint::Create(pPlayer->GetPosition());
 	}
+
+	D3DXVECTOR3 pos = GetPosition();
+	pos.y += 100.0f;
+
+	//チャージエフェクト
+	my_particle::Create(pos, my_particle::TYPE_MORTAR_CHARGE);
 
 	// ターゲットの方を向く
 	RotationTarget();

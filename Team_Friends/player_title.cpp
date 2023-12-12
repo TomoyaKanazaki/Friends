@@ -15,6 +15,7 @@
 #include "shadow.h"
 #include "calculation.h"
 #include "3D_effect.h"
+#include "camera.h"
 
 //==========================================
 //  定数定義 : 金崎朋弥
@@ -28,12 +29,15 @@ namespace
 	};
 
 	const float MOVE_SPEED = 1.8f; // 移動量倍率
+	const float FLY_SPEED = 2.5f; // 上昇量倍率
+	const float MOVE_ROT = 0.02f; // 回転量
 }
 
 //==========================================
 //  静的メンバ変数宣言
 //==========================================
 int CPlayerTitle::m_nIdx = 0;
+bool CPlayerTitle::m_bOut = false;
 
 //==========================================================================
 // コンストラクタ
@@ -41,7 +45,10 @@ int CPlayerTitle::m_nIdx = 0;
 CPlayerTitle::CPlayerTitle(int nPriority) : CPlayer(nPriority),
 m_nModelType(NONE),
 m_posTarget(0.0f),
-m_bMove(false)
+m_bMove(false),
+m_bScrew(false),
+m_posBase(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
+m_side(SIDE_NONE)
 {
 	// 値のクリア
 	
@@ -143,12 +150,18 @@ void CPlayerTitle::Update(void)
 	{
 		if (m_nModelType == PLAYER_ARM) // 腕は飛び上がる
 		{
-			Fly();
+			if (m_bOut)
+			{
+				Fly();
+			}
 		}
 		else // その他は走り出す
 		{
 			Forward();
 		}
+
+		// 移動モーションにする
+		m_pMotion->Set(CPlayer::MOTION_WALK);
 
 		// 位置を更新
 		D3DXVECTOR3 pos = GetPosition();
@@ -295,7 +308,10 @@ void CPlayerTitle::Move(void)
 //==========================================
 void CPlayerTitle::Fly(void)
 {
-	// 角度の取得
+	// 回転
+	Screws();
+
+	// 角度を取得
 	D3DXVECTOR3 rot = GetRotation();
 
 	// 移動量を取得
@@ -303,7 +319,9 @@ void CPlayerTitle::Fly(void)
 	D3DXVECTOR3 move = GetMove();
 
 	// 移動量を分解する
-	move.y = fMove * MOVE_SPEED;
+	move.y = fMove * FLY_SPEED;
+	move.x = -sinf(rot.y) * fMove * FLY_SPEED;
+	move.z = -cosf(rot.y) * fMove * FLY_SPEED;
 
 	// 移動量を適用する
 	SetMove(move);
@@ -314,9 +332,6 @@ void CPlayerTitle::Fly(void)
 //==========================================
 void CPlayerTitle::Forward(void)
 {
-	// 移動モーションにする
-	m_pMotion->Set(CPlayer::MOTION_WALK);
-
 	// 角度の取得
 	D3DXVECTOR3 rot = GetRotation();
 
@@ -330,6 +345,12 @@ void CPlayerTitle::Forward(void)
 
 	// 移動量を適用する
 	SetMove(move);
+
+	// 画面外判定
+	if (!CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
+	{
+		m_bOut = true;
+	}
 }
 
 //==========================================
@@ -396,4 +417,58 @@ void CPlayerTitle::Fire(void)
 			pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
 		}
 	}
+}
+
+//==========================================
+//  回転していく～
+//==========================================
+void CPlayerTitle::Screws(void)
+{
+	// 初回のみ基準位置を設定する
+	if (!m_bScrew)
+	{
+		// 基準位置を設定
+		m_posBase = GetPosition();
+
+		// どーっちどっちどーっちどっち
+		if (m_posBase.x < 0.0f)
+		{
+			m_side = SIDE_LEFT;
+		}
+		else
+		{
+			m_side = SIDE_RIGHT;
+		}
+
+		// 基準位置を補正
+		m_posBase.x = 0.0f;
+
+		// フラグを立てる
+		m_bScrew = true;
+	}
+
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
+	// 目標の角度を求める
+	float fRotDest = -atan2f((pos.x - m_posBase.x), (pos.z - m_posBase.z));
+
+	// 目標との差分
+	float fRotDiff = fRotDest - rot.y;
+
+	//角度の正規化
+	RotNormalize(fRotDiff);
+
+	//角度の補正をする
+	rot.y += fRotDiff * MOVE_ROT;
+
+	// 角度の正規化
+	RotNormalize(rot.y);
+
+	// 向き設定
+	SetRotation(rot);
+
+	// 目標の向き設定
+	SetRotDest(fRotDest);
 }

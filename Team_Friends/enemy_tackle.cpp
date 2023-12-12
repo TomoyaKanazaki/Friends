@@ -15,6 +15,7 @@
 #include "model.h"
 #include "particle.h"
 #include "3D_Effect.h"
+#include "game.h"
 
 //==========================================
 //  定数定義
@@ -99,6 +100,10 @@ void CEnemyTackle::Update(void)
 	{// 死亡フラグが立っていたら
 		return;
 	}
+	if (!CGame::GetGameManager()->IsControll())
+	{// 行動できるとき
+		return;
+	}
 
 	// 発生物のタイマー加算
 	m_fEmissionTime += CManager::GetInstance()->GetDeltaTime();
@@ -122,7 +127,7 @@ void CEnemyTackle::Update(void)
 			}
 
 			// エフェクトの位置更新
-			pEffect->UpdatePosition(GetModel()[aInfo.AttackInfo[0]->nCollisionNum]->GetWorldMtx(), GetRotation());
+			pEffect->UpdatePosition(GetRotation());
 			nCntEffect++;
 			if (nNumEffect <= nCntEffect)
 			{
@@ -137,6 +142,12 @@ void CEnemyTackle::Update(void)
 //==========================================
 void CEnemyTackle::UpdateAction(void)
 {
+	if (m_state == STATE_DEAD ||
+		m_state == STATE_FADEOUT)
+	{
+		return;
+	}
+
 	D3DXVECTOR3 pos = GetPosition();
 
 	// 行動ごとの行動
@@ -352,7 +363,7 @@ void CEnemyTackle::Attack(void)
 			if (pEffect != NULL)
 			{
 				// セットアップ位置設定
-				//pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+				pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
 			}
 
 			fRot = Random(-20, 20) * 0.01f;
@@ -372,7 +383,7 @@ void CEnemyTackle::Attack(void)
 			if (pEffect != NULL)
 			{
 				// セットアップ位置設定
-				//pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+				pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
 			}
 		}
 	}
@@ -573,7 +584,7 @@ void CEnemyTackle::Roaming(void)
 			if (pEffect != NULL)
 			{
 				// セットアップ位置設定
-				//pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, CObject::GetObject(), SetEffectParent(pEffect));
+				pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
 			}
 		}
 	}

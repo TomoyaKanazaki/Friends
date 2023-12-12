@@ -201,6 +201,12 @@ void CEnemyTurret::ActionSet(void)
 //==========================================================================
 void CEnemyTurret::UpdateAction(void)
 {
+	if (m_state == STATE_DEAD ||
+		m_state == STATE_FADEOUT)
+	{
+		return;
+	}
+
 	// ó‘Ô•Êˆ—
 	(this->*(m_ActFuncList[m_Action]))();
 }

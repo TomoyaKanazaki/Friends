@@ -654,7 +654,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "init_UV_Blue.jpg";
+    "data\\TEXTURE\\enemy\\tackle\\chase_UV.jpg";
    }
   }
  }

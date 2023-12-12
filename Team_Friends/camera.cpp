@@ -16,6 +16,7 @@
 #include "enemymanager.h"
 #include "title.h"
 #include "instantfade.h"
+#include "light.h"
 
 //==========================================================================
 // マクロ定義
@@ -159,7 +160,7 @@ void CCamera::Update(void)
 		MoveCameraV();
 		MoveCameraDistance();
 		MoveCameraDistance();
-		//UpdateByMode();
+		UpdateSpotLightVec();
 
 		if (m_state == CAMERASTATE_SHAKE)
 		{
@@ -889,6 +890,24 @@ void CCamera::SetCamera(void)
 	// ビューマトリックスの設定
 	pDevice->SetTransform(D3DTS_VIEW, &m_mtxView);
 
+}
+
+//==================================================================================
+// スポットライトのベクトル更新
+//==================================================================================
+void CCamera::UpdateSpotLightVec(void)
+{
+	// 方向ベクトル
+	D3DXVECTOR3 vec = mylib_const::DEFAULT_VECTOR3;
+
+	// 視点から注視点への向き
+	vec = m_posR - m_posV;
+
+	// 正規化
+	D3DXVec3Normalize(&vec, &vec);
+
+	// スポットライトの方向設定
+	CManager::GetInstance()->GetLight()->UpdateSpotLightDirection(vec);
 }
 
 //==================================================================================

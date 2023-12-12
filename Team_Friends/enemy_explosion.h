@@ -61,6 +61,8 @@ private:
 	// メンバ関数
 	void MotionSet(void) override;		// モーションの設定
 	void UpdateAction(void) override;	// 行動更新
+	void AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo) override;	// 攻撃時処理
+	void AttackInDicision(CMotion::AttackInfo ATKInfo) override;			// 攻撃判定中処理
 	void Move(void) override; // 移動
 	void RandTurn(void); // ランダムな方向転換
 	void ActionSet(void); // 行動の設定

@@ -85,6 +85,12 @@ void CEnemyRoaming::Update(void)
 //==========================================
 void CEnemyRoaming::UpdateAction(void)
 {
+	if (m_state == STATE_DEAD ||
+		m_state == STATE_FADEOUT)
+	{
+		return;
+	}
+
 	// çsìÆÇ≤Ç∆ÇÃçsìÆ
 	switch (m_Act)
 	{

@@ -44,6 +44,14 @@ public:
 
 private:
 
+	// 右左
+	enum SIDE
+	{
+		SIDE_LEFT = 0, // 左
+		SIDE_RIGHT, // 右
+		SIDE_NONE
+	};
+
 	// メンバ関数
 	void Rotation(void); // 回転
 	void Move(void); // 移動
@@ -55,9 +63,11 @@ private:
 	int m_nModelType;
 	float m_posTarget; // 目的地
 	bool m_bMove; // 移動フラグ
+	float m_fLog; // x
 
 	// 静的メンバ変数
 	static int m_nIdx; // インデックス
+	static bool m_bOut; // 画面外のフラグ
 
 };
 

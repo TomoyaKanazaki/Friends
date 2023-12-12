@@ -10,6 +10,8 @@
 #include "debugproc.h"
 #include "calculation.h"
 #include "hp_gauge.h"
+#include "explosion.h"
+#include "camera.h"
 
 //==========================================
 //  定数定義
@@ -357,4 +359,49 @@ void CEnemyExplosion::Flash(void)
 
 	// カウンタを追加
 	m_fCol += CManager::GetInstance()->GetDeltaTime() * FLASH_SPEED;
+}
+
+
+//==========================================================================
+// 攻撃時処理
+//==========================================================================
+void CEnemyExplosion::AttackAction(int nModelNum, CMotion::AttackInfo ATKInfo)
+{
+	// モーション情報取得
+	int nMotionType = m_pMotion->GetType();
+	D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), ATKInfo);
+
+	// 情報取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
+	// モーション別処理
+	switch (nMotionType)
+	{
+	case MOTION_ATK:
+		CExplosion::Create(CExplosion::TYPE_ENEMY, pos, 180.0f);
+		// 振動
+		CManager::GetInstance()->GetCamera()->SetShake(12, 20.0f, 0.0f);
+		break;
+	}
+}
+
+//==========================================================================
+// 攻撃判定中処理
+//==========================================================================
+void CEnemyExplosion::AttackInDicision(CMotion::AttackInfo ATKInfo)
+{
+	// 基底の攻撃判定中処理
+	CEnemy::AttackInDicision(ATKInfo);
+
+	// モーション情報取得
+	int nMotionType = m_pMotion->GetType();
+	D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), ATKInfo);
+
+	// モーション別処理
+	switch (nMotionType)
+	{
+	case MOTION_ATK:
+		break;
+	}
 }

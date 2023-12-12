@@ -15,6 +15,7 @@
 #include "shadow.h"
 #include "calculation.h"
 #include "3D_effect.h"
+#include "camera.h"
 
 //==========================================
 //  定数定義 : 金崎朋弥
@@ -28,12 +29,14 @@ namespace
 	};
 
 	const float MOVE_SPEED = 1.8f; // 移動量倍率
+	const float MOVE_ROT = 0.02f; // 回転量
 }
 
 //==========================================
 //  静的メンバ変数宣言
 //==========================================
 int CPlayerTitle::m_nIdx = 0;
+bool CPlayerTitle::m_bOut = false;
 
 //==========================================================================
 // コンストラクタ
@@ -41,7 +44,8 @@ int CPlayerTitle::m_nIdx = 0;
 CPlayerTitle::CPlayerTitle(int nPriority) : CPlayer(nPriority),
 m_nModelType(NONE),
 m_posTarget(0.0f),
-m_bMove(false)
+m_bMove(false),
+m_fLog(0.0f)
 {
 	// 値のクリア
 	
@@ -143,12 +147,18 @@ void CPlayerTitle::Update(void)
 	{
 		if (m_nModelType == PLAYER_ARM) // 腕は飛び上がる
 		{
-			Fly();
+			if (m_bOut)
+			{
+				Fly();
+			}
 		}
 		else // その他は走り出す
 		{
 			Forward();
 		}
+
+		// 移動モーションにする
+		m_pMotion->Set(CPlayer::MOTION_WALK);
 
 		// 位置を更新
 		D3DXVECTOR3 pos = GetPosition();
@@ -229,7 +239,7 @@ void CPlayerTitle::Rotation(void)
 	// 角度の正規化
 	RotNormalize(rotTarget);
 
-	// 目的の方向と現在の方向の佐分を算出
+	// 目的の方向と現在の方向の差分を算出
 	D3DXVECTOR3 rot = GetRotation();
 	D3DXVECTOR3 rotdiff = rotTarget - rot;
 
@@ -295,18 +305,29 @@ void CPlayerTitle::Move(void)
 //==========================================
 void CPlayerTitle::Fly(void)
 {
-	// 角度の取得
+	// 角度を取得
 	D3DXVECTOR3 rot = GetRotation();
 
 	// 移動量を取得
 	float fMove = GetVelocity();
 	D3DXVECTOR3 move = GetMove();
 
-	// 移動量を分解する
-	move.y = fMove * MOVE_SPEED;
+	// xの値を加算
+	m_fLog += CManager::GetInstance()->GetDeltaTime();
 
-	// 移動量を適用する
+	// 移動量を分解する
+	move.y = fMove * (m_fLog * m_fLog * m_fLog);
+
+	// 移動量を適用
 	SetMove(move);
+
+	// 前に進む
+	Forward();
+
+	CManager::GetInstance()->GetDebugProc()->Print
+	(
+		"ここ : %f\n", GetPosition().z
+	);
 }
 
 //==========================================
@@ -314,9 +335,6 @@ void CPlayerTitle::Fly(void)
 //==========================================
 void CPlayerTitle::Forward(void)
 {
-	// 移動モーションにする
-	m_pMotion->Set(CPlayer::MOTION_WALK);
-
 	// 角度の取得
 	D3DXVECTOR3 rot = GetRotation();
 
@@ -330,6 +348,12 @@ void CPlayerTitle::Forward(void)
 
 	// 移動量を適用する
 	SetMove(move);
+
+	// 画面外判定
+	if (!CManager::GetInstance()->GetCamera()->OnScreen(GetPosition()))
+	{
+		m_bOut = true;
+	}
 }
 
 //==========================================

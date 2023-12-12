@@ -21,14 +21,6 @@
 #include "player_union.h"
 
 //==========================================================================
-// マクロ定義
-//==========================================================================
-
-//==========================================================================
-// 静的メンバ変数宣言
-//==========================================================================
-
-//==========================================================================
 // コンストラクタ
 //==========================================================================
 CGameManager::CGameManager()
@@ -126,6 +118,10 @@ void CGameManager::Update(void)
 
 	case CGameManager::SCENE_MAINCLEAR:
 		m_bControll = true;
+		break;
+
+	case CGameManager::SCENE_EVOLUSION:
+		m_bControll = false;
 		break;
 
 	case CGameManager::SCENE_RUSH:
@@ -377,19 +373,19 @@ void CGameManager::SetEnableEvolusion(void)
 	// 腕設定
 	if (nIdxPowerLeft >= 0 && CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerLeft) != NULL)
 	{
-		CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerLeft)->SetEvolusion(CGameManager::STATUS_LIFE);
+		CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerLeft)->SetEvolusion(CGameManager::STATUS_POWER);
 	}
 
 	// 腕設定
 	if (nIdxPowerRight >= 0 && CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerRight) != NULL)
 	{
-		CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerRight)->SetEvolusion(CGameManager::STATUS_LIFE);
+		CManager::GetInstance()->GetScene()->GetPlayer(nIdxPowerRight)->SetEvolusion(CGameManager::STATUS_POWER);
 	}
 
 	// 脚設定
 	if (nIdxSpeed >= 0 && CManager::GetInstance()->GetScene()->GetPlayer(nIdxSpeed) != NULL)
 	{
-		CManager::GetInstance()->GetScene()->GetPlayer(nIdxSpeed)->SetEvolusion(CGameManager::STATUS_LIFE);
+		CManager::GetInstance()->GetScene()->GetPlayer(nIdxSpeed)->SetEvolusion(CGameManager::STATUS_SPEED);
 	}
 
 	// 胴設定

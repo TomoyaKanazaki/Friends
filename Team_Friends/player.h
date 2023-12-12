@@ -96,8 +96,8 @@ public:
 	CPlayer::sStatus GetStatus(void);				// ステータス取得
 	void SetState(STATE state, int nCntState = 0);	// 状態設定
 	static CPlayer *Create(int nIdx);	// 生成
-	void UninitByMode(void);	// モード別終了
-	virtual void Kill(void);	// 死亡処理
+	void UninitByMode(void);			// モード別終了
+	virtual void Kill(void);			// 死亡処理
 
 	static void DrawingEvolusion(void);	// 進化先抽選
 	void SetEvolusion(CGameManager::eStatus statusType, bool bFast = false);	// 進化先設定

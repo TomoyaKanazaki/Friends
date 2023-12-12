@@ -85,12 +85,6 @@
     <Filter Include="ヘッダー ファイル\mode\title\logos">
       <UniqueIdentifier>{0542ee3f-e9f5-4796-a92e-85af29a9e997}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ランキング触るよ">
-      <UniqueIdentifier>{9509972c-4eb0-4652-b547-39881d5a58bb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="enemy">
-      <UniqueIdentifier>{ac86d4c0-d54a-4a3b-9eae-e9dca4a79c9f}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="2D_effect.cpp">
@@ -387,53 +381,11 @@
     <ClCompile Include="statuswindow_base.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ranking.cpp">
-      <Filter>ランキング触るよ</Filter>
-    </ClCompile>
-    <ClCompile Include="rankingmanager.cpp">
-      <Filter>ランキング触るよ</Filter>
-    </ClCompile>
-    <ClCompile Include="rankingscore.cpp">
-      <Filter>ランキング触るよ</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy.cpp">
-      <Filter>enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_fly.cpp">
-      <Filter>enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_papion.cpp">
-      <Filter>enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemybase.cpp">
-      <Filter>enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemymanager.cpp">
-      <Filter>enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_roaming.cpp">
-      <Filter>enemy</Filter>
-    </ClCompile>
     <ClCompile Include="collisionobject.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="enemy_escape.cpp">
-      <Filter>enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="player_ranking.cpp">
-      <Filter>ランキング触るよ</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_tackle.cpp">
-      <Filter>enemy</Filter>
-    </ClCompile>
     <ClCompile Include="union_title.cpp">
       <Filter>ソース ファイル\mode\title</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_boss.cpp">
-      <Filter>enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy_turret.cpp">
-      <Filter>enemy</Filter>
     </ClCompile>
     <ClCompile Include="limitarea.cpp">
       <Filter>ソース ファイル</Filter>
@@ -450,9 +402,6 @@
     <ClCompile Include="impactwave.cpp">
       <Filter>ソース ファイル\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="enemy_riot.cpp">
-      <Filter>enemy</Filter>
-    </ClCompile>
     <ClCompile Include="bullet_point.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -465,8 +414,53 @@
     <ClCompile Include="effect_startupeye.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_boss.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_escape.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_fly.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_papion.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_riot.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_roaming.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_tackle.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_turret.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemybase.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemymanager.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="player_ranking.cpp">
+      <Filter>ソース ファイル\mode\rankking</Filter>
+    </ClCompile>
+    <ClCompile Include="ranking.cpp">
+      <Filter>ソース ファイル\mode\rankking</Filter>
+    </ClCompile>
+    <ClCompile Include="rankingmanager.cpp">
+      <Filter>ソース ファイル\mode\rankking</Filter>
+    </ClCompile>
+    <ClCompile Include="rankingscore.cpp">
+      <Filter>ソース ファイル\mode\rankking</Filter>
+    </ClCompile>
     <ClCompile Include="enemy_explosion.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -767,53 +761,11 @@
     <ClInclude Include="statuswindow_base.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ranking.h">
-      <Filter>ランキング触るよ</Filter>
-    </ClInclude>
-    <ClInclude Include="rankingmanager.h">
-      <Filter>ランキング触るよ</Filter>
-    </ClInclude>
-    <ClInclude Include="rankingscore.h">
-      <Filter>ランキング触るよ</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy.h">
-      <Filter>enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_fly.h">
-      <Filter>enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_papion.h">
-      <Filter>enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemybase.h">
-      <Filter>enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemymanager.h">
-      <Filter>enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_roaming.h">
-      <Filter>enemy</Filter>
-    </ClInclude>
     <ClInclude Include="collisionobject.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="enemy_escape.h">
-      <Filter>enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="player_ranking.h">
-      <Filter>ランキング触るよ</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_tackle.h">
-      <Filter>enemy</Filter>
-    </ClInclude>
     <ClInclude Include="union_title.h">
       <Filter>ヘッダー ファイル\mode\title</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_boss.h">
-      <Filter>enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_turret.h">
-      <Filter>enemy</Filter>
     </ClInclude>
     <ClInclude Include="limitarea.h">
       <Filter>ヘッダー ファイル</Filter>
@@ -826,9 +778,6 @@
     </ClInclude>
     <ClInclude Include="beam.h">
       <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy_riot.h">
-      <Filter>enemy</Filter>
     </ClInclude>
     <ClInclude Include="decide_menu.h">
       <Filter>ヘッダー ファイル\mode\decideplayer</Filter>
@@ -845,8 +794,53 @@
     <ClInclude Include="effect_startupeye.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="enemy.h">
+      <Filter>ヘッダー ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_boss.h">
+      <Filter>ヘッダー ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_escape.h">
+      <Filter>ヘッダー ファイル\enemy</Filter>
+    </ClInclude>
     <ClInclude Include="enemy_explosion.h">
-      <Filter>enemy</Filter>
+      <Filter>ヘッダー ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_fly.h">
+      <Filter>ヘッダー ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_papion.h">
+      <Filter>ヘッダー ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_riot.h">
+      <Filter>ヘッダー ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_roaming.h">
+      <Filter>ヘッダー ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_tackle.h">
+      <Filter>ヘッダー ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_turret.h">
+      <Filter>ヘッダー ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemybase.h">
+      <Filter>ヘッダー ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemymanager.h">
+      <Filter>ヘッダー ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="player_ranking.h">
+      <Filter>ヘッダー ファイル\mode\ranking</Filter>
+    </ClInclude>
+    <ClInclude Include="ranking.h">
+      <Filter>ヘッダー ファイル\mode\ranking</Filter>
+    </ClInclude>
+    <ClInclude Include="rankingmanager.h">
+      <Filter>ヘッダー ファイル\mode\ranking</Filter>
+    </ClInclude>
+    <ClInclude Include="rankingscore.h">
+      <Filter>ヘッダー ファイル\mode\ranking</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

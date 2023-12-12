@@ -108,13 +108,6 @@ void CTitleLogo::Update(void)
 {	
 	//状態更新
 	UpdateState();
-
-	//デバッグ表示
-	D3DXVECTOR3 pos = GetPosition();
-	CManager::GetInstance()->GetDebugProc()->Print
-	(
-		"位置 : ( %f, %f, %f )\n", pos.x, pos.y, pos.z
-	);
 }
 
 //==========================================

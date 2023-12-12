@@ -25,7 +25,6 @@ public:
 	enum VTX
 	{
 		VTX_TEXT = 0,	// UI
-		VTX_WALL, // •Ç
 		VTX_MAX
 	};
 

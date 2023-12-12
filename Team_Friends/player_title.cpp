@@ -14,6 +14,7 @@
 #include "objectChara.h"
 #include "shadow.h"
 #include "calculation.h"
+#include "3D_effect.h"
 
 //==========================================
 //  定数定義 : 金崎朋弥
@@ -25,6 +26,8 @@ namespace
 	{
 		"data\\TEXT\\character\\player\\motion_player.txt"
 	};
+
+	const float MOVE_SPEED = 1.8f; // 移動量倍率
 }
 
 //==========================================
@@ -37,7 +40,8 @@ int CPlayerTitle::m_nIdx = 0;
 //==========================================================================
 CPlayerTitle::CPlayerTitle(int nPriority) : CPlayer(nPriority),
 m_nModelType(NONE),
-m_posTarget(0.0f)
+m_posTarget(0.0f),
+m_bMove(false)
 {
 	// 値のクリア
 	
@@ -134,6 +138,27 @@ void CPlayerTitle::Update(void)
 	// 過去の位置保存
 	SetOldPosition(GetPosition());
 
+	// 動き出す処理
+	if (m_bMove)
+	{
+		if (m_nModelType == PLAYER_ARM) // 腕は飛び上がる
+		{
+			Fly();
+		}
+		else // その他は走り出す
+		{
+			Forward();
+		}
+
+		// 位置を更新
+		D3DXVECTOR3 pos = GetPosition();
+		pos += GetMove();
+		SetPosition(pos);
+
+		// 炎を呼び出す
+		Fire();
+	}
+
 	// シーンを取得
 	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_DECIDE)
 	{
@@ -155,7 +180,6 @@ void CPlayerTitle::Update(void)
 
 		m_pShadow->SetPosition(D3DXVECTOR3(pos.x, m_pShadow->GetPosition().y, pos.z));
 	}
-
 }
 
 //==========================================================================
@@ -182,6 +206,7 @@ CPlayerTitle* CPlayerTitle::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MODEL type)
 	pPlayer->Init();
 
 	// 値を保存
+	pPlayer->SetTarget(pos.z);
 	pPlayer->SetPosition(pos);
 	pPlayer->SetRotation(rot);
 
@@ -263,4 +288,112 @@ void CPlayerTitle::Move(void)
 	// 値の適用
 	SetPosition(pos);
 	SetMove(move);
+}
+
+//==========================================
+//  飛び上がる
+//==========================================
+void CPlayerTitle::Fly(void)
+{
+	// 角度の取得
+	D3DXVECTOR3 rot = GetRotation();
+
+	// 移動量を取得
+	float fMove = GetVelocity();
+	D3DXVECTOR3 move = GetMove();
+
+	// 移動量を分解する
+	move.y = fMove * MOVE_SPEED;
+
+	// 移動量を適用する
+	SetMove(move);
+}
+
+//==========================================
+//  走り出す
+//==========================================
+void CPlayerTitle::Forward(void)
+{
+	// 移動モーションにする
+	m_pMotion->Set(CPlayer::MOTION_WALK);
+
+	// 角度の取得
+	D3DXVECTOR3 rot = GetRotation();
+
+	// 移動量を取得
+	float fMove = GetVelocity();
+	D3DXVECTOR3 move = GetMove();
+
+	// 移動量を分解する
+	move.x = -sinf(rot.y) * fMove * MOVE_SPEED;
+	move.z = -cosf(rot.y) * fMove * MOVE_SPEED;
+
+	// 移動量を適用する
+	SetMove(move);
+}
+
+//==========================================
+//  エフェクトを呼び出す
+//==========================================
+void CPlayerTitle::Fire(void)
+{
+	// 向きを取得
+	D3DXVECTOR3 rot = GetRotation();
+
+	// モーションの情報取得
+	CMotion::Info aInfo = m_pMotion->GetInfo(MOTION_WALK);
+
+	// 攻撃情報の総数取得
+	int nNumAttackInfo = aInfo.nNumAttackInfo;
+
+	CEffect3D* pEffect = NULL;
+	// 武器の位置
+	for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
+	{
+		D3DXVECTOR3 weponpos = m_pMotion->GetAttackPosition(GetModel(), *aInfo.AttackInfo[nCntAttack]);
+
+		D3DXVECTOR3 ModelRot = GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetRotation();
+		ModelRot.x = GetModel()[0]->GetRotation().z;
+
+		// 炎
+		float fMove = 5.5f + Random(-20, 20) * 0.1f;
+		float fRot = Random(-20, 20) * 0.01f;
+
+		pEffect = CEffect3D::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(ModelRot.x) * (sinf(D3DX_PI + rot.y + fRot) * fMove),
+				cosf(D3DX_PI + ModelRot.x) * fMove,
+				sinf(ModelRot.x) * (cosf(D3DX_PI + rot.y + fRot) * fMove)),
+			D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
+			40.0f + (float)Random(-10, 10),
+			15,
+			CEffect3D::MOVEEFFECT_ADD,
+			CEffect3D::TYPE_SMOKE);
+
+		if (pEffect != NULL)
+		{
+			// セットアップ位置設定
+			pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+		}
+
+		fRot = Random(-20, 20) * 0.01f;
+		// 炎
+		pEffect = CEffect3D::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(ModelRot.x) * (sinf(D3DX_PI + rot.y + fRot) * fMove),
+				cosf(D3DX_PI + ModelRot.x) * fMove,
+				sinf(ModelRot.x) * (cosf(D3DX_PI + rot.y + fRot) * fMove)),
+			D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
+			25.0f + (float)Random(-5, 5),
+			15,
+			CEffect3D::MOVEEFFECT_ADD,
+			CEffect3D::TYPE_SMOKE);
+		if (pEffect != NULL)
+		{
+			// セットアップ位置設定
+			pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+		}
+	}
 }

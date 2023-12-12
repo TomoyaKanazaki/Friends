@@ -1741,7 +1741,7 @@ void BeamCharge(void)
 			1.0f);
 
 		// 半径設定
-		m_fRadius = 300.0f * fBuff;
+		m_fRadius = 200.0f * fBuff;
 
 		// エフェクトの設定
 		CEffect3D *pEffect = CEffect3D::Create(

@@ -23,9 +23,6 @@
 namespace
 {
 	const D3DXVECTOR3 POS_UI = D3DXVECTOR3(0.0f, 1000.0f, 0.0f); // UIの位置
-	const D3DXVECTOR3 POS_WALL = D3DXVECTOR3(0.0f, 0.0f, 100.0f); // 壁の位置
-	const D3DXCOLOR COLOR_WALL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f); // 壁の色
-	const float SIZE_WALL = 1.0f; // 壁のサイズ倍率
 	const int ALPHATIME = 60; // 不透明度更新の時間
 	const D3DXVECTOR3 POS_SELECT = D3DXVECTOR3(0.0f, 30.0f, 0.0f); // 選択肢の基準位置
 	const float LENGTH_SELECT = 150.0f; // 選択肢の基準位置
@@ -37,7 +34,6 @@ namespace
 	const char* m_apTextureFile[CDecideMenu::VTX_MAX] =
 	{
 		"data\\TEXTURE\\decideplayer_text.png",
-		"data\\TEXTURE\\cyberwall_02.png"
 	};
 
 	// テクスチャのファイル
@@ -363,9 +359,6 @@ void CDecideMenu::CreateUI(void)
 		case VTX_TEXT:
 			m_pObj3D[nCntSelect] = CObject3D::Create(8);
 			break;
-		case VTX_WALL:
-			m_pObj3D[nCntSelect] = CObject3D::Create(7);
-			break;
 		}
 
 		// 種類の設定
@@ -388,12 +381,6 @@ void CDecideMenu::CreateUI(void)
 			m_pObj3D[nCntSelect]->SetSize(size * 0.4f);	// サイズ
 			m_pObj3D[nCntSelect]->SetPosition(POS_UI);	// 位置
 			m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
-			break;
-		case VTX_WALL:
-			size.z = 0.0f;
-			m_pObj3D[nCntSelect]->SetSize(size * SIZE_WALL);	// サイズ
-			m_pObj3D[nCntSelect]->SetPosition(POS_WALL);	// 位置
-			m_pObj3D[nCntSelect]->SetColor(COLOR_WALL);	// 色
 			break;
 		}
 	}
@@ -443,8 +430,15 @@ void CDecideMenu::CreateSelect(void)
 void CDecideMenu::CretePlayer(void)
 {
 	// プレイヤーの生成
-	m_apPlayer[VTXSELECT_SELECT1P] = CPlayerTitle::Create(m_pSelect3D[VTXSELECT_SELECT1P]->GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apPlayer[VTXSELECT_SELECT2P] = CPlayerTitle::Create(m_pSelect3D[VTXSELECT_SELECT2P]->GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apPlayer[VTXSELECT_SELECT3P] = CPlayerTitle::Create(m_pSelect3D[VTXSELECT_SELECT3P]->GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apPlayer[VTXSELECT_SELECT4P] = CPlayerTitle::Create(m_pSelect3D[VTXSELECT_SELECT4P]->GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	for (int nCnt = 0; nCnt < VTXSELECT_MAX; ++nCnt)
+	{
+		// UIの位置を取得する
+		D3DXVECTOR3 pos = m_pSelect3D[nCnt]->GetPosition();
+		
+		// 初期位置を補正
+		pos.z = PLAYER_TARGET;
+
+		// 生成
+		m_apPlayer[nCnt] = CPlayerTitle::Create(pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	}
 }

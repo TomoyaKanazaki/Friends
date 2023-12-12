@@ -414,9 +414,6 @@
     <ClCompile Include="effect_startupeye.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="enemy_explosion.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="enemy.cpp">
       <Filter>ソース ファイル\enemy</Filter>
     </ClCompile>
@@ -461,6 +458,9 @@
     </ClCompile>
     <ClCompile Include="rankingscore.cpp">
       <Filter>ソース ファイル\mode\rankking</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_explosion.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

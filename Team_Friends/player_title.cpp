@@ -155,7 +155,6 @@ void CPlayerTitle::Update(void)
 
 		m_pShadow->SetPosition(D3DXVECTOR3(pos.x, m_pShadow->GetPosition().y, pos.z));
 	}
-
 }
 
 //==========================================================================
@@ -182,6 +181,7 @@ CPlayerTitle* CPlayerTitle::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MODEL type)
 	pPlayer->Init();
 
 	// ’l‚ð•Û‘¶
+	pPlayer->SetTarget(pos.z);
 	pPlayer->SetPosition(pos);
 	pPlayer->SetRotation(rot);
 

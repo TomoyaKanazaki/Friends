@@ -46,8 +46,8 @@ public:
 		MOTION_DEF = 0,			// ニュートラルモーション
 		MOTION_CHARGE_BEAM,		// ビームチャージモーション
 		MOTION_BEAM,			// ビームモーション
-		MOTION_CHARGE_MORTAR,	// タックルチャージモーション
-		MOTION_MORTAR,			// タックルモーション
+		MOTION_CHARGE_MORTAR,	// 迫撃チャージモーション
+		MOTION_MORTAR,			// 迫撃モーション
 		MOTION_KNOCKBACK,		// やられモーション
 		MOTION_FADEOUT,			// 帰還モーション
 		MOTION_SPAWN,			// 出現モーション

@@ -58,15 +58,12 @@ private:
 	void Fly(void); // 飛び上がる
 	void Forward(void); // 走り出す
 	void Fire(void); // エフェクトを呼び出す
-	void Screws(void); // 回転
 
 	//メンバ変数
 	int m_nModelType;
 	float m_posTarget; // 目的地
 	bool m_bMove; // 移動フラグ
-	bool m_bScrew; // 回転フラグ
-	D3DXVECTOR3 m_posBase; // 基準位置
-	SIDE m_side; // どーっちどっちどーっちどっちどーっちどっち
+	float m_fLog; // x
 
 	// 静的メンバ変数
 	static int m_nIdx; // インデックス

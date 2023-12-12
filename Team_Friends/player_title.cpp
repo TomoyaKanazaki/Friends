@@ -29,7 +29,6 @@ namespace
 	};
 
 	const float MOVE_SPEED = 1.8f; // 移動量倍率
-	const float FLY_SPEED = 2.5f; // 上昇量倍率
 	const float MOVE_ROT = 0.02f; // 回転量
 }
 
@@ -46,9 +45,7 @@ CPlayerTitle::CPlayerTitle(int nPriority) : CPlayer(nPriority),
 m_nModelType(NONE),
 m_posTarget(0.0f),
 m_bMove(false),
-m_bScrew(false),
-m_posBase(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
-m_side(SIDE_NONE)
+m_fLog(0.0f)
 {
 	// 値のクリア
 	
@@ -242,7 +239,7 @@ void CPlayerTitle::Rotation(void)
 	// 角度の正規化
 	RotNormalize(rotTarget);
 
-	// 目的の方向と現在の方向の佐分を算出
+	// 目的の方向と現在の方向の差分を算出
 	D3DXVECTOR3 rot = GetRotation();
 	D3DXVECTOR3 rotdiff = rotTarget - rot;
 
@@ -308,9 +305,6 @@ void CPlayerTitle::Move(void)
 //==========================================
 void CPlayerTitle::Fly(void)
 {
-	// 回転
-	Screws();
-
 	// 角度を取得
 	D3DXVECTOR3 rot = GetRotation();
 
@@ -318,13 +312,22 @@ void CPlayerTitle::Fly(void)
 	float fMove = GetVelocity();
 	D3DXVECTOR3 move = GetMove();
 
-	// 移動量を分解する
-	move.y = fMove * FLY_SPEED;
-	move.x = -sinf(rot.y) * fMove * FLY_SPEED;
-	move.z = -cosf(rot.y) * fMove * FLY_SPEED;
+	// xの値を加算
+	m_fLog += CManager::GetInstance()->GetDeltaTime();
 
-	// 移動量を適用する
+	// 移動量を分解する
+	move.y = fMove * (m_fLog * m_fLog * m_fLog);
+
+	// 移動量を適用
 	SetMove(move);
+
+	// 前に進む
+	Forward();
+
+	CManager::GetInstance()->GetDebugProc()->Print
+	(
+		"ここ : %f\n", GetPosition().z
+	);
 }
 
 //==========================================
@@ -417,58 +420,4 @@ void CPlayerTitle::Fire(void)
 			pEffect->SetUp(aInfo.AttackInfo[nCntAttack]->Offset, GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
 		}
 	}
-}
-
-//==========================================
-//  回転していく～
-//==========================================
-void CPlayerTitle::Screws(void)
-{
-	// 初回のみ基準位置を設定する
-	if (!m_bScrew)
-	{
-		// 基準位置を設定
-		m_posBase = GetPosition();
-
-		// どーっちどっちどーっちどっち
-		if (m_posBase.x < 0.0f)
-		{
-			m_side = SIDE_LEFT;
-		}
-		else
-		{
-			m_side = SIDE_RIGHT;
-		}
-
-		// 基準位置を補正
-		m_posBase.x = 0.0f;
-
-		// フラグを立てる
-		m_bScrew = true;
-	}
-
-	// 位置取得
-	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 rot = GetRotation();
-
-	// 目標の角度を求める
-	float fRotDest = -atan2f((pos.x - m_posBase.x), (pos.z - m_posBase.z));
-
-	// 目標との差分
-	float fRotDiff = fRotDest - rot.y;
-
-	//角度の正規化
-	RotNormalize(fRotDiff);
-
-	//角度の補正をする
-	rot.y += fRotDiff * MOVE_ROT;
-
-	// 角度の正規化
-	RotNormalize(rot.y);
-
-	// 向き設定
-	SetRotation(rot);
-
-	// 目標の向き設定
-	SetRotDest(fRotDest);
 }

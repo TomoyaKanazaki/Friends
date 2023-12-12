@@ -23,6 +23,18 @@ class CTitleLogo : public CObject
 {
 public:
 
+	// ロゴの更新状態列挙
+	enum STATE
+	{
+		DEFAULT = 0, //アルファベットのみがある状態
+		WAKE, //カタカナが起き上がる
+		FLASH, //戦隊が点滅する
+		COMPLETE, //完成！！
+		STARTUP, // 起動
+		MAX, //総数
+		NONE //NULLLLLLLLL
+	};
+
 	//メンバ関数
 	CTitleLogo();
 	~CTitleLogo();
@@ -33,21 +45,12 @@ public:
 	void Draw(void) override;
 	bool GetComplete() { return m_bComplete; }
 
+	void SetState(STATE state);	// 状態設定
+
 	//静的メンバ関数
 	static CTitleLogo* Create();
 
 private:
-
-	//ロゴの更新状態列挙
-	enum STATE
-	{
-		DEFAULT = 0, //アルファベットのみがある状態
-		WAKE, //カタカナが起き上がる
-		FLASH, //戦隊が点滅する
-		COMPLETE, //完成！！
-		MAX, //総数
-		NONE //NULLLLLLLLL
-	};
 
 	//メンバ変数
 	CLogo_Mech* m_pMech;

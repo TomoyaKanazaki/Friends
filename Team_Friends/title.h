@@ -16,6 +16,7 @@
 //==========================================
 class CTitleLogo;
 class CUnionTitle;
+class CPlayerTitle;
 
 //==========================================================================
 // クラス定義
@@ -51,6 +52,7 @@ private:
 	CTitleLogo *m_pLogo;
 	CUnionTitle *m_pUnionTitle;	// タイトルの合体プレイヤーオブジェクト
 	static bool m_bPressEnter;			// エンター押下判定
+	CPlayerTitle* m_apPlayer[4]; // プレイヤーのポインタ配列
 
 };
 

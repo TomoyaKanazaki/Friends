@@ -10,6 +10,7 @@
 #include "debugproc.h"
 #include "calculation.h"
 #include "hp_gauge.h"
+#include "model.h"
 
 //==========================================
 //  定数定義
@@ -18,7 +19,7 @@ namespace
 {
 	const float SEARCH_LENGTH = 400.0f;
 	const float TURN_SPEED = 0.05f;
-	const float ESCAPE_SPEED = 2.00f;
+	const float ESCAPE_SPEED = 4.00f;
 	const float WALK_TIME = 1.0f;
 	const float FIND_TIME = 0.5f;
 	const float TURN_TIME = 0.5f;
@@ -35,7 +36,7 @@ CEnemyEscape::CEnemyEscape(int nPriority) :
 	m_fCntEscape(0.0f),
 	m_fRot(0.0f)
 {
-
+	m_rotParts = mylib_const::DEFAULT_VECTOR3;	// パーツ回転用
 }
 
 //==========================================
@@ -86,6 +87,32 @@ void CEnemyEscape::Update(void)
 	if (IsDeath() == true)
 	{// 死亡フラグが立っていたら
 		return;
+	}
+
+	// モーションの情報取得
+	CMotion::Info aInfo = m_pMotion->GetInfo(MOTION_DEF);
+
+	// 攻撃情報の総数取得
+	int nNumAttackInfo = aInfo.nNumAttackInfo;
+
+	// 回転
+	m_rotParts.y += D3DX_PI * 0.2f;
+	RotNormalize(m_rotParts.y);
+
+	for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
+	{
+		CModel *pModel = GetModel()[aInfo.AttackInfo[nCntAttack]->nCollisionNum];
+		if (pModel == NULL)
+		{
+			continue;
+		}
+
+		// モーションデータ取得
+		CMotion::Info info = m_pMotion->GetInfo(m_pMotion->GetType());
+
+		D3DXVECTOR3 rot = pModel->GetRotation();
+		rot.y = m_rotParts.y;
+		pModel->SetRotation(rot);
 	}
 }
 

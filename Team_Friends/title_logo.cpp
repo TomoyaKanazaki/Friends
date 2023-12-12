@@ -5,6 +5,7 @@
 //
 //==========================================
 #include "title_logo.h"
+#include "title.h"
 #include "logo_complete.h"
 #include "logo_mechanion.h"
 #include "logo_mekanion.h"
@@ -107,13 +108,6 @@ void CTitleLogo::Update(void)
 {	
 	//状態更新
 	UpdateState();
-
-	//デバッグ表示
-	D3DXVECTOR3 pos = GetPosition();
-	CManager::GetInstance()->GetDebugProc()->Print
-	(
-		"位置 : ( %f, %f, %f )\n", pos.x, pos.y, pos.z
-	);
 }
 
 //==========================================
@@ -203,7 +197,7 @@ void CTitleLogo::UpdateState()
 			//完成したロゴを表示
 			if (m_pComp == nullptr)
 			{
-				//m_pComp = CLogo_Comp::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				m_pComp = CLogo_Comp::Create(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			}
 
 			//状態を進める
@@ -227,7 +221,25 @@ void CTitleLogo::UpdateState()
 	}
 	break;
 
+	case STARTUP:
+		// 完成ロゴ削除
+		if (m_pComp != nullptr)
+		{
+			m_pComp->Uninit();
+			m_pComp = nullptr;
+			return;
+		}
+		break;
+
 	default:
 		break;
 	}
+}
+
+//==========================================
+// 状態設定
+//==========================================
+void CTitleLogo::SetState(STATE state)
+{
+	m_State = state;
 }

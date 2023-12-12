@@ -41,6 +41,7 @@
 #include "enemy_tackle.h"
 #include "enemy_turret.h"
 #include "enemy_riot.h"
+#include "enemy_explosion.h"
 
 //==========================================================================
 // –³–¼–¼‘O‹óŠÔ
@@ -139,6 +140,10 @@ CEnemy *CEnemy::Create(int nIdx, const char *pFileName, D3DXVECTOR3 pos, TYPE ty
 
 		case TYPE_FLY:
 			pEnemy = DEBUG_NEW CEnemyFly;
+			break;
+
+		case TYPE_EXPLOSION:
+			pEnemy = DEBUG_NEW CEnemyExplosion;
 			break;
 
 		default:

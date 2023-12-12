@@ -46,8 +46,8 @@ public:
 		MOTION_DEF = 0,			// ニュートラルモーション
 		MOTION_CHARGE_BEAM,		// ビームチャージモーション
 		MOTION_BEAM,			// ビームモーション
-		MOTION_CHARGE_MORTAR,	// タックルチャージモーション
-		MOTION_MORTAR,			// タックルモーション
+		MOTION_CHARGE_MORTAR,	// 迫撃チャージモーション
+		MOTION_MORTAR,			// 迫撃モーション
 		MOTION_KNOCKBACK,		// やられモーション
 		MOTION_FADEOUT,			// 帰還モーション
 		MOTION_SPAWN,			// 出現モーション
@@ -104,7 +104,7 @@ private:
 	void SetTargetPlayer(void);		// どのプレイヤーのターゲット
 
 	void SummonArea(void);		// エリア生成
-	void DeleteShadow(void);		// 影消し
+	void DeleteTarget(void);		// 影消し
 
 	//=============================
 	// メンバ変数
@@ -119,7 +119,6 @@ private:
 	bool m_bArea;				//エリア展開フラグ
 	CBulletPoint *m_pBulletPoint[mylib_const::MAX_PLAYER];			// 影の情報
 	CBullet *m_pBullet[mylib_const::MAX_PLAYER];			// 弾の情報
-	bool m_bMortar;		//迫撃フラグ
 };
 
 #endif

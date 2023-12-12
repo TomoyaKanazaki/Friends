@@ -129,6 +129,9 @@ HRESULT CBulletPoint::Init(void)
 	// í—Ş‚Ìİ’è
 	SetType(TYPE_SHADOW);
 
+	D3DXVECTOR3 pos = GetPosition();
+	SetPosition(D3DXVECTOR3(pos.x, pos.y + 1.0f, pos.z));
+
 	// ‰Šú‰»ˆ—
 	hr = CObject3D::Init();
 

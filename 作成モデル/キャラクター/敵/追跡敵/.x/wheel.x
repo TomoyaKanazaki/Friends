@@ -654,7 +654,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "init_UV_Blue.jpg";
+    "chase_UV.jpg";
    }
   }
  }

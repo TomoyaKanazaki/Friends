@@ -36,17 +36,41 @@ public:
 	void Uninit(void) override;
 	void Update(void) override;
 	void Draw(void) override;
+	void SetTarget(const float pos) { m_posTarget = pos; };
+	void IsMove(bool bMove) { m_bMove = bMove; } // 移動フラグ
 
 	// 静的メンバ関数
 	static CPlayerTitle* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MODEL type = PLAYER_UNION);
 
 private:
 
+	// 右左
+	enum SIDE
+	{
+		SIDE_LEFT = 0, // 左
+		SIDE_RIGHT, // 右
+		SIDE_NONE
+	};
+
+	// メンバ関数
+	void Rotation(void); // 回転
+	void Move(void); // 移動
+	void Fly(void); // 飛び上がる
+	void Forward(void); // 走り出す
+	void Fire(void); // エフェクトを呼び出す
+	void Screws(void); // 回転
+
 	//メンバ変数
 	int m_nModelType;
+	float m_posTarget; // 目的地
+	bool m_bMove; // 移動フラグ
+	bool m_bScrew; // 回転フラグ
+	D3DXVECTOR3 m_posBase; // 基準位置
+	SIDE m_side; // どーっちどっちどーっちどっちどーっちどっち
 
 	// 静的メンバ変数
 	static int m_nIdx; // インデックス
+	static bool m_bOut; // 画面外のフラグ
 
 };
 

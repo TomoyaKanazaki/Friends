@@ -296,22 +296,22 @@ void CMotion::ResetPose(int nType)
 		// 向き設定
 		m_ppModel[nCntModel]->SetRotation(m_aInfo[nType].aKey[0].aParts[nCntParts].rot);
 		aPartsOld[nCntParts].rot = m_aInfo[nType].aKey[0].aParts[nCntParts].rot;
+
+		// 元の位置取得
+		D3DXVECTOR3 posOrigin = m_pObjChara->GetOriginPosition();
+
+		// 位置設定
+		if (nCntParts == 0)
+		{
+			m_ppModel[nCntModel]->SetPosition(m_aInfo[nType].aKey[0].aParts[nCntParts].pos + posOrigin);
+		}
+		else
+		{
+			m_ppModel[nCntModel]->SetPosition(m_aInfo[nType].aKey[0].aParts[nCntParts].pos + m_ppModel[nCntModel]->GetOriginPosition());
+		}
 	}
 
-
-	//for (int nCntParts = 0; nCntParts < m_nNumModel; nCntParts++)
-	//{// 全パーツ分繰り返す
-
-	//	if (m_ppModel[nCntParts] == NULL)
-	//	{// NULLだったら
-	//		continue;
-	//	}
-
-	//	// 向き設定
-	//	m_ppModel[nCntParts]->SetRotation(m_aInfo[nType].aKey[0].aParts[nCntParts].rot);
-	//	aPartsOld[nCntParts].rot = m_aInfo[nType].aKey[0].aParts[nCntParts].rot;
-	//}
-	aPartsOld[0].pos = /*m_pObjChara->GetOriginPosition() + */m_aInfo[nType].aKey[0].aParts[0].pos;
+	aPartsOld[0].pos = m_aInfo[nType].aKey[0].aParts[0].pos;
 }
 
 //==========================================================================
@@ -738,11 +738,27 @@ int CMotion::IsGetMove(int nType)
 }
 
 //==========================================================================
+// モーション情報の設定
+//==========================================================================
+void CMotion::SetInfoData(int nType, Info info)
+{
+	m_aInfo[nType] = info;
+}
+
+//==========================================================================
 // モーション情報の取得
 //==========================================================================
 CMotion::Info CMotion::GetInfo(int nType)
 {
 	return m_aInfo[nType];
+}
+
+//==========================================================================
+// モーション情報の取得
+//==========================================================================
+CMotion::Info *CMotion::GetInfoPtr(int nType)
+{
+	return &m_aInfo[nType];
 }
 
 //==========================================================================

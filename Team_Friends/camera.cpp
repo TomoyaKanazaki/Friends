@@ -42,8 +42,8 @@
 //#define RESULT_LEN	(1000.0f)
 #define RANKINGROT_NONE		(D3DXVECTOR3(0.0f, 0.15f, 0.06f))
 #define DECIDECAMERAROT_NONE		(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
-#define DECIDECAMERAPOS_NONE		(D3DXVECTOR3(0.0f, 1000.0f, 0.0f))
-#define DECIDE_LEN	(1000.0f)
+#define DECIDECAMERAPOS_NONE		(D3DXVECTOR3(0.0f, 200.0f, 0.0f))
+#define DECIDE_LEN	(500.0f)
 
 //==========================================================================
 // コンストラクタ
@@ -1032,6 +1032,15 @@ void CCamera::Reset(CScene::MODE mode)
 	default:
 		break;
 	}
+	
+	// プロジェクションマトリックスの初期化
+	D3DXMatrixPerspectiveFovLH(&m_mtxProjection, D3DXToRadian(45.0f),
+								(float)m_viewport.Width / (float)m_viewport.Height,
+								10.0f,		// 奥行きの制限
+								30000.0f);	// 奥行きの制限
+
+	// ビューマトリックスの初期化
+	D3DXMatrixLookAtLH(&m_mtxView, &m_posV, &m_posR, &m_vecU);
 
 	// 視点の代入処理
 	SetCameraV();

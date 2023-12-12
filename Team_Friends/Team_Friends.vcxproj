@@ -194,6 +194,7 @@
     <ClCompile Include="enemymanager.cpp" />
     <ClCompile Include="enemy_boss.cpp" />
     <ClCompile Include="enemy_escape.cpp" />
+    <ClCompile Include="enemy_explosion.cpp" />
     <ClCompile Include="enemy_fly.cpp" />
     <ClCompile Include="enemy_papion.cpp" />
     <ClCompile Include="enemy_riot.cpp" />
@@ -325,6 +326,7 @@
     <ClInclude Include="enemymanager.h" />
     <ClInclude Include="enemy_boss.h" />
     <ClInclude Include="enemy_escape.h" />
+    <ClInclude Include="enemy_explosion.h" />
     <ClInclude Include="enemy_fly.h" />
     <ClInclude Include="enemy_papion.h" />
     <ClInclude Include="enemy_riot.h" />

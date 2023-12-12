@@ -25,7 +25,6 @@ public:
 	enum VTX
 	{
 		VTX_TEXT = 0,	// UI
-		VTX_WALL, // 壁
 		VTX_MAX
 	};
 
@@ -47,6 +46,8 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	void Go(int nIdx); // 前に進む処理
+	void Back(int nIdx); // 後ろに下がる処理
 
 	// 静的メンバ関数
 	static CDecideMenu* Create(void);

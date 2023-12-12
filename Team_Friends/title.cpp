@@ -52,6 +52,11 @@ m_fLength(START_LENGTH)
 	m_nCntEmission = 0;	// 発生物カウンター
 	m_pUnionTitle = nullptr;	// タイトルの合体プレイヤーオブジェクト
 	m_bPressEnter = false;		// エンター押下判定
+
+	for (int i = 0; i < 4; ++i)
+	{
+		m_apPlayer[i] = nullptr;
+	}
 }
 
 //==========================================================================
@@ -98,10 +103,10 @@ HRESULT CTitle::Init(void)
 
 	// プレイヤーを置いてみる
 	m_pUnionTitle = CUnionTitle::Create(CENTER);
-	CPlayerTitle::Create(IN_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
-	CPlayerTitle::Create(IN_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
-	CPlayerTitle::Create(OUT_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
-	CPlayerTitle::Create(OUT_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
+	m_apPlayer[0] = CPlayerTitle::Create(IN_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
+	m_apPlayer[1] = CPlayerTitle::Create(IN_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_ARM);
+	m_apPlayer[2] = CPlayerTitle::Create(OUT_RIGHT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_LEG);
+	m_apPlayer[3] = CPlayerTitle::Create(OUT_LEFT, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CPlayerTitle::PLAYER_BODY);
 
 	// 進化先設定後リセット
 	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
@@ -216,6 +221,13 @@ void CTitle::Update(void)
 		{
 			m_pUnionTitle->SetEnablePressEnter();
 		}
+
+		for (int i = 0; i < 4; ++i)
+		{
+			m_apPlayer[i]->IsMove(true);
+		}
+
+		m_pLogo->SetState(CTitleLogo::STARTUP);
 #else
 		// モード設定
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_DECIDE);

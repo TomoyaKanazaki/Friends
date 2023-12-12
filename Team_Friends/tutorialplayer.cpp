@@ -55,6 +55,22 @@ HRESULT CTutorialPlayer::Init(void)
 }
 
 //==========================================================================
+// モード別終了処理
+//==========================================================================
+void CTutorialPlayer::UninitByMode(void)
+{
+	CScene *pScene = CManager::GetInstance()->GetScene();
+
+	if (pScene != NULL)
+	{
+		CPlayer **ppPlayer = pScene->GetPlayer();
+
+		// プレイヤーをNULL
+		*ppPlayer = NULL;
+	}
+}
+
+//==========================================================================
 // 更新処理
 //==========================================================================
 void CTutorialPlayer::Update(void)
@@ -65,8 +81,10 @@ void CTutorialPlayer::Update(void)
 		return;
 	}
 
-	// 親の更新処理
-	CPlayer::Update();
+	// 親の更新処理(enemymanager等の関係で不使用)
+	//CPlayer::Update();
+
+	Controll();
 
 	// 死亡の判定
 	if (IsDeath() == true)
@@ -86,7 +104,6 @@ void CTutorialPlayer::UpdateByStep(void)
 	// ステップの設定
 	//CTutorial::GetStep()->SetStep(CTutorialStep::STEPFRAG_SPEEDUP);
 }
-
 
 //==========================================================================
 // 操作処理
@@ -122,6 +139,9 @@ void CTutorialPlayer::Controll(void)
 
 	// 移動量取得
 	float fMove = GetVelocity();
+
+	// ステップを進める
+	CTutorial::GetStep()->SetStep(CTutorialStep::STEP_SPEEDDOWN);
 
 	if (m_pMotion->IsGetMove(nType) == 1)
 	{// 移動可能モーションの時

@@ -66,6 +66,4 @@ private:
 	STEP m_step;			// 現在のステップ
 };
 
-
-
 #endif

@@ -39,6 +39,7 @@
 #include "item.h"
 #include "injectiontable.h"
 #include "enemy_boss.h"
+#include "beam.h"
 
 // 派生先
 #include "union_bodytoleg.h"
@@ -96,6 +97,15 @@ namespace
 bool CPlayerUnion::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
 bool CPlayerUnion::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// 射出台の着地判定
 
+
+//==========================================================================
+// 関数ポインタ
+//==========================================================================
+CPlayerUnion::ULT_FUNC CPlayerUnion::m_UltFuncList[] =
+{
+	&CPlayerUnion::UltBeam,	// ビーム
+};
+
 //==========================================================================
 // コンストラクタ
 //==========================================================================
@@ -132,8 +142,10 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_nControllMoveIdx = 0;		// 移動操作するやつのインデックス番号
 	m_fRotDest = 0.0f;
 	m_pShadow = NULL;			// 影の情報
-	m_pTargetP = NULL;	// 目標の地点
-	m_pHPGauge = NULL;	// HPゲージの情報
+	m_pTargetP = NULL;			// 目標の地点
+	m_pHPGauge = NULL;			// HPゲージの情報
+	m_UltType = ULT_BEAM;		// 必殺技の種類
+	m_UltBranch = ULTBRANCH_CHARGE_BEAM;	// 必殺技の分岐
 	memset(&m_apModel[0], NULL, sizeof(m_apModel));	// モデル(パーツ)のポインタ
 }
 
@@ -455,15 +467,6 @@ void CPlayerUnion::Update(void)
 		m_pHPGauge->SetLife(50);
 	}
 
-#if 0
-	// デバッグ表示
-	CManager::GetInstance()->GetDebugProc()->Print(
-		"------------------[プレイヤーの操作]------------------\n"
-		"位置：【X：%f, Y：%f, Z：%f】 【W / A / S / D】\n"
-		"向き：【X：%f, Y：%f, Z：%f】 【Z / C】\n"
-		"移動量：【X：%f, Y：%f, Z：%f】\n"
-		"体力：【%d】\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.y, move.x, move.y, move.z, 50);
-#endif
 }
 
 //==========================================================================
@@ -495,6 +498,15 @@ void CPlayerUnion::Controll(void)
 		// パーツのコントロール処理
 		ControllParts();
 	}
+
+#if _DEBUG
+
+	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true)
+	{
+		m_state = STATE_ULT;	// 状態
+		m_UltBranch = ULTBRANCH_CHARGE_BEAM;
+	}
+#endif
 
 	// 移動量取得
 	D3DXVECTOR3 move = GetMove();
@@ -894,6 +906,11 @@ void CPlayerUnion::MotionSet(int nIdx)
 		return;
 	}
 
+	if (m_state == STATE_ULT)
+	{
+		return;
+	}
+
 	if (m_pMotion[nIdx]->IsFinish() == true)
 	{// 終了していたら
 
@@ -1049,9 +1066,6 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 	switch (m_pMotion[nIdx]->GetType())
 	{
 	case MOTION_ATK:
-
-		// 歩行音再生
-		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_SWING);
 		break;
 	}
 }
@@ -1061,13 +1075,44 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 //==========================================================================
 void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 {
+	// 武器の位置
+	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
+
+	// 向き取得
+	D3DXVECTOR3 rot = GetRotation();
+
+	// 種類別
+	switch (m_pMotion[nIdx]->GetType())
+	{
+	case MOTION_CHARGE:
+		my_particle::Create(weponpos, my_particle::TYPE_ATTACK_BODY);
+		break;
+
+	case MOTION_ATK:
+	{
+		float fMove = 50.0f;
+		CBeam::Create(
+			weponpos,							// 位置
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y) * fMove,
+				cosf(D3DX_PI * 0.5f) * fMove,
+				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
+			mylib_const::PLAYERBEAM_COLOR,		// 色
+			50.0f,		// 半径
+			20.0f,		// 長さ
+			10,			// 寿命
+			4,			// 密度
+			1,	// ダメージ
+			CCollisionObject::TAG_PLAYER	// タグ
+		);
+	}
+		break;
+	}
+
 	if (ATKInfo.fRangeSize == 0.0f)
 	{
 		return;
 	}
-
-	// 武器の位置
-	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
 
 #if _DEBUG
 	CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
@@ -1510,6 +1555,10 @@ void CPlayerUnion::UpdateState(void)
 	case STATE_APPEARANCE:
 		Appearance();
 		break;
+
+	case STATE_ULT:
+		Ultimate();
+		break;
 	}
 }
 
@@ -1844,6 +1893,101 @@ void CPlayerUnion::Appearance(void)
 		}
 		// 登場モーション設定
 		m_pMotion[i]->Set(MOTION_APPEARANCE);
+	}
+}
+
+//==========================================================================
+// 必殺技
+//==========================================================================
+void CPlayerUnion::Ultimate(void)
+{
+	// 状態別処理
+	(this->*(m_UltFuncList[m_UltType]))();
+}
+
+//==========================================================================
+// 必殺：ビーム
+//==========================================================================
+void CPlayerUnion::UltBeam(void)
+{
+	switch (m_UltBranch)
+	{
+	case CPlayerUnion::ULTBRANCH_CHARGE_BEAM:
+		UltChargeBeam();
+		break;
+
+	case CPlayerUnion::ULTBRANCH_ATTACK_BEAM:
+		UltAttackBeam();
+		break;
+
+	default:
+		m_UltBranch = ULTBRANCH_CHARGE_BEAM;
+		break;
+	}
+}
+
+//==========================================================================
+// ビームチャージ
+//==========================================================================
+void CPlayerUnion::UltChargeBeam(void)
+{
+
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_CHARGE && m_pMotion[i]->IsFinish() == true)
+		{// チャージが終わってたら
+
+			// 待機行動
+			m_UltBranch = ULTBRANCH_ATTACK_BEAM;
+
+			// 必殺ビームモーション設定
+			m_pMotion[i]->Set(MOTION_ATK);
+			return;
+		}
+
+		if (nType != MOTION_CHARGE)
+		{
+			// チャージモーション設定
+			m_pMotion[i]->Set(MOTION_CHARGE);
+		}
+	}
+}
+
+//==========================================================================
+// ビーム攻撃
+//==========================================================================
+void CPlayerUnion::UltAttackBeam(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ATK && m_pMotion[i]->IsFinish() == true)
+		{// チャージが終わってたら
+
+			// なにもない状態
+			m_state = STATE_NONE;
+
+			// 必殺ビームモーション設定
+			m_pMotion[i]->Set(MOTION_DEF);
+			return;
+		}
+
+		if (nType != MOTION_ATK)
+		{
+			// ビームモーション設定
+			m_pMotion[i]->Set(MOTION_ATK);
+		}
 	}
 }
 

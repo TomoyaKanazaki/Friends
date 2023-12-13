@@ -39,6 +39,7 @@ public:
 		STATE_FADEOUT,		// フェードアウト
 		STATE_ATTACK,		// 攻撃処理
 		STATE_APPEARANCE,	// 出現
+		STATE_ULT,			// 必殺技状態
 		STATE_MAX
 	};
 
@@ -99,6 +100,7 @@ protected:
 	virtual void FadeOut(void);		// フェードアウト
 	virtual void Invincible(void);	// 無敵
 	virtual void Appearance(void);	// 出現
+	virtual void Ultimate(void);	// 必殺技
 
 	void BindByPlayerIdxTexture(int nIdx, int nPartsIdx);	// プレイヤーインデックス毎のテクスチャ設定
 	void ReadMultiCharacter(const char *pTextFile);			// 複数キャラクター読み込み
@@ -153,8 +155,8 @@ private:
 	{
 		MOTION_DEF = 0,			// ニュートラルモーション
 		MOTION_WALK,			// 移動モーション
-		MOTION_ATK,				// 攻撃
-		MOTION_CHARGE,			// チャージ
+		MOTION_CHARGE,			// 必殺技ビームチャージ
+		MOTION_ATK,				// 必殺技ビーム攻撃
 		MOTION_KNOCKBACK,		// やられモーション
 		MOTION_DEAD,			// 死亡モーション
 		MOTION_JUMP,			// ジャンプ
@@ -162,6 +164,32 @@ private:
 		MOTION_APPEARANCE,		// 出現
 		MOTION_MAX
 	};
+
+	enum eUltAttack
+	{
+		ULT_BEAM = 0,	// ビーム
+		ULT_MAX
+	};
+
+	enum eUltBranch
+	{
+		ULTBRANCH_CHARGE_BEAM = 0,	// ビームチャージ
+		ULTBRANCH_ATTACK_BEAM,		// ビーム攻撃
+		ULTBRANCH_MAX
+	};
+
+	//=============================
+	// 関数リスト
+	//=============================
+	typedef void(CPlayerUnion::*ULT_FUNC)(void);
+	static ULT_FUNC m_UltFuncList[];	// 必殺技の関数リスト
+
+	// 必殺技関数
+	void UltBeam(void);	// ビーム
+
+	// 必殺分岐関数
+	void UltChargeBeam(void);	// ビームチャージ
+	void UltAttackBeam(void);	// ビーム攻撃
 
 	// メンバ関数
 	void Controll(void);		// 操作
@@ -171,13 +199,15 @@ private:
 	void ControllLeftArm(int nIdx);		// 左腕操作
 
 
-
+	// メンバ変数
 	int m_nTexIdx;				// テクスチャのインデックス番号
 	int m_nIdxXFile;			// Xファイルのインデックス番号
 	float m_fRotDest;			// 目標の向き
 	CShadow *m_pShadow;			// 影の情報
 	CTargetPoint *m_pTargetP;	// 目標の地点
 	CHP_GaugePlayer *m_pHPGauge;	// HPゲージの情報
+	eUltAttack m_UltType;			// 必殺技の種類
+	eUltBranch m_UltBranch;			// 必殺技の分岐
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定
 

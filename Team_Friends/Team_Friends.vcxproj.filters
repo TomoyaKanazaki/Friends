@@ -468,6 +468,12 @@
     <ClCompile Include="statusup.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="tutorialtext.cpp">
+      <Filter>ソース ファイル\mode\tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_explosion.cpp">
+      <Filter>enemy</Filter>
+    </ClCompile>
     <ClCompile Include="enemy_explosion.cpp">
       <Filter>enemy</Filter>
     </ClCompile>
@@ -850,6 +856,9 @@
     </ClInclude>
     <ClInclude Include="enemy_explosion.h">
       <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorialtext.h">
+      <Filter>ヘッダー ファイル\mode\tutorial</Filter>
     </ClInclude>
     <ClInclude Include="statusup.h">
       <Filter>ヘッダー ファイル</Filter>

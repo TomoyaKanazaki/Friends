@@ -27,6 +27,7 @@ public:
 	void Update(void) override;
 
 	void UninitByMode(void);
+
 private:
 
 	// オーバーライドされた関数
@@ -34,9 +35,6 @@ private:
 
 	// メンバ関数
 	void UpdateByStep(void);	// ステップごとの更新処理
-	
 };
-
-
 
 #endif

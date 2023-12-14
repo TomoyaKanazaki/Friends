@@ -1177,7 +1177,7 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 			200.0f,		// 半径
 			14000.0f,		// 長さ
 			60,			// 寿命
-			120,			// 密度
+			180,			// 密度
 			1,	// ダメージ
 			CCollisionObject::TAG_PLAYER,	// タグ
 			CBeam::TYPE_RESIDUAL

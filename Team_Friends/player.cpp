@@ -632,7 +632,8 @@ void CPlayer::Controll(void)
 	}
 
 	if (m_state != STATE_COMPACTUNION &&
-		m_state != STATE_RELEASEUNION)
+		m_state != STATE_RELEASEUNION &&
+		CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx) != CGameManager::STATUS_SPEED)
 	{// ˆÚ“®’†
 		m_nCntWalk = (m_nCntWalk + 1) % 4;
 
@@ -846,7 +847,7 @@ void CPlayer::Controll(void)
 	if (pInputKeyboard->GetTrigger(DIK_RIGHT) == true)
 	{// ©ƒL[‚ª‰Ÿ‚³‚ê‚½,¶ˆÚ“®
 		s_statusType = (CGameManager::eStatus)(((int)s_statusType + 1) % (int)CGameManager::STATUS_MAX);
-		SetEvolusion(s_statusType);
+		SetEvolusion(s_statusType, true);
 	}
 
 	if (pInputKeyboard->GetPress(DIK_UP) == true)
@@ -1146,7 +1147,7 @@ void CPlayer::Atack(void)
 			}
 
 #if _DEBUG
-			CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+			//CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 #endif
 
 #if 1

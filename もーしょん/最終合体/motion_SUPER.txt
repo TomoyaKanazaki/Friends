@@ -47,7 +47,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 0
 		PARENT = -1
-		POS = 0.00 142.00 0.00
+		POS = 0.00 192.60 0.00
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -55,7 +55,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 1
 		PARENT = 0
-		POS = 0.00 13.00 0.00
+		POS = 0.00 16.90 0.00
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -63,7 +63,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 2
 		PARENT = 1
-		POS = 0.00 81.00 9.00
+		POS = 0.00 105.30 11.70
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -71,7 +71,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 3
 		PARENT = 1
-		POS = 33.00 63.00 12.00
+		POS = 42.90 81.90 15.60
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -79,7 +79,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 4
 		PARENT = 3
-		POS = 48.70 2.50 -3.50
+		POS = 63.31 3.25 -4.55
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -87,15 +87,15 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 5
 		PARENT = 4
-		POS = 40.50 -0.50 0.00
-		ROT = 0.00 0.00 0.03
+		POS = 52.65 -0.65 0.00
+		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 6
 		PARENT = 5
-		POS = 40.00 -3.00 0.50
+		POS = 52.00 -3.90 0.65
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -103,7 +103,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 7
 		PARENT = 1
-		POS = -33.00 63.00 12.00
+		POS = -42.90 81.90 15.60
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -111,7 +111,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 8
 		PARENT = 7
-		POS = -48.70 2.50 -3.50
+		POS = -63.31 3.25 -4.55
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -119,15 +119,15 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 9
 		PARENT = 8
-		POS = -40.50 -0.50 0.00
-		ROT = 0.00 0.00 -0.03
+		POS = -52.65 -0.65 0.00
+		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 10
 		PARENT = 9
-		POS = -40.00 -3.00 0.50
+		POS = -52.00 -3.90 0.65
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -135,7 +135,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 11
 		PARENT = 0
-		POS = 22.00 -4.50 3.50
+		POS = 28.60 -5.85 4.55
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -143,7 +143,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 12
 		PARENT = 11
-		POS = 0.00 -52.00 6.00
+		POS = 0.00 -67.60 7.80
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -151,7 +151,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 13
 		PARENT = 12
-		POS = 0.00 -75.00 -12.00
+		POS = 0.00 -97.50 -15.60
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -159,7 +159,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 14
 		PARENT = 0
-		POS = -22.00 -4.50 3.50
+		POS = -28.60 -5.85 4.55
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -167,7 +167,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 15
 		PARENT = 14
-		POS = 0.00 -52.00 6.00
+		POS = 0.00 -67.60 7.80
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -175,7 +175,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 16
 		PARENT = 15
-		POS = 0.00 -75.00 -12.00
+		POS = 0.00 -97.50 -15.60
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -436,7 +436,7 @@ MOTIONSET
 		FRAME = 17
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.09 0.00 0.00
-			POS = 0.00 -32.00 -103.00
+			POS = 0.00 -41.60 -103.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -525,7 +525,7 @@ MOTIONSET
 		FRAME = 25
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.00 0.00 0.00
-			POS = 0.00 -2.00 -103.00
+			POS = 0.00 -2.60 -103.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -703,7 +703,7 @@ MOTIONSET
 		FRAME = 17
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.09 0.00 0.00
-			POS = 0.00 -32.00 -259.00
+			POS = 0.00 -41.60 -259.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -792,7 +792,7 @@ MOTIONSET
 		FRAME = 25
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.00 0.00 0.00
-			POS = 0.00 -2.00 -286.00
+			POS = 0.00 -2.60 -286.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -925,7 +925,7 @@ MOTIONSET
 		FRAME = 40
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.22 0.00 0.00
-			POS = 0.00 -13.00 0.00
+			POS = 0.00 -16.90 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -1014,7 +1014,7 @@ MOTIONSET
 		FRAME = 8
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.22 0.00 0.00
-			POS = 0.00 -13.00 0.00
+			POS = 0.00 -16.90 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -1103,7 +1103,7 @@ MOTIONSET
 		FRAME = 90
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.00 0.16 0.00
-			POS = 0.00 -2.00 0.00
+			POS = 0.00 -2.60 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -1192,7 +1192,7 @@ MOTIONSET
 		FRAME = 40
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.00 0.16 0.00
-			POS = 0.00 -2.00 0.00
+			POS = 0.00 -2.60 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -1281,7 +1281,7 @@ MOTIONSET
 		FRAME = 50
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.00 0.16 0.00
-			POS = 0.00 -2.00 0.00
+			POS = 0.00 -2.60 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -1370,7 +1370,7 @@ MOTIONSET
 		FRAME = 30
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.06 0.25 0.00
-			POS = 0.00 -8.00 10.00
+			POS = 0.00 -10.40 10.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -1459,7 +1459,7 @@ MOTIONSET
 		FRAME = 30
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.04 0.26 0.00
-			POS = 0.00 -19.00 25.00
+			POS = 0.00 -24.70 25.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -1548,7 +1548,7 @@ MOTIONSET
 		FRAME = 19
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.04 0.26 0.00
-			POS = 0.00 -19.00 25.00
+			POS = 0.00 -24.70 25.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -1660,7 +1660,7 @@ MOTIONSET
 		FRAME = 10
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.19 0.35 -0.06
-			POS = 0.00 -26.00 0.00
+			POS = 0.00 -33.80 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -1749,7 +1749,7 @@ MOTIONSET
 		FRAME = 60
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.19 0.35 -0.06
-			POS = 0.00 -26.00 40.00
+			POS = 0.00 -33.80 40.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -1838,7 +1838,7 @@ MOTIONSET
 		FRAME = 60
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.19 0.35 -0.06
-			POS = 0.00 -26.00 50.00
+			POS = 0.00 -33.80 50.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -1927,7 +1927,7 @@ MOTIONSET
 		FRAME = 26
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.00 0.35 -0.00
-			POS = 0.00 -17.00 60.00
+			POS = 0.00 -22.10 60.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -2016,7 +2016,7 @@ MOTIONSET
 		FRAME = 20
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.13 0.35 0.00
-			POS = 0.00 -17.00 70.00
+			POS = 0.00 -22.10 70.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -2105,7 +2105,7 @@ MOTIONSET
 		FRAME = 3
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.13 0.35 0.00
-			POS = 0.00 -17.00 70.00
+			POS = 0.00 -22.10 70.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -3012,7 +3012,7 @@ MOTIONSET
 		FRAME = 10
 		PARTS	# ----- [ 0 ] -----
 			ROT = 1.57 0.00 0.00
-			POS = 0.00 -82.00 0.00
+			POS = 0.00 -106.60 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----
@@ -3101,7 +3101,7 @@ MOTIONSET
 		FRAME = 13
 		PARTS	# ----- [ 0 ] -----
 			ROT = 1.57 0.00 0.00
-			POS = 0.00 -82.00 0.00
+			POS = 0.00 -106.60 0.00
 		END_PARTS
 
 		PARTS	# ----- [ 1 ] -----

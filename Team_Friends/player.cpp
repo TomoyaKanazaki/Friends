@@ -632,7 +632,8 @@ void CPlayer::Controll(void)
 	}
 
 	if (m_state != STATE_COMPACTUNION &&
-		m_state != STATE_RELEASEUNION)
+		m_state != STATE_RELEASEUNION &&
+		CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx) != CGameManager::STATUS_SPEED)
 	{// ˆÚ“®’†
 		m_nCntWalk = (m_nCntWalk + 1) % 4;
 

@@ -20,7 +20,7 @@ MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_roaming.txt		# [2]徘徊
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_escape.txt			# [3]メタルスライム
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_tackle.txt			# [4]突撃猪
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_turret.txt			# [5]中ボス-砲台型
-MOTION_FILENAME = data/TEXT/character/enemy/motion_enemyfly_02.txt			# [6]中ボス-ギガントエッジ
+MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_riot.txt			# [6]中ボス-ギガントエッジ
 MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_explosion.txt		# [7]クリーパー
 
 #===================================================================================================

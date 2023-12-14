@@ -1134,7 +1134,8 @@ bool CCamera::OnScreen(const D3DXVECTOR3 pos)
 
 	// ”»’è
 	if (screenPos.x >= 0.0f && screenPos.x <= SCREEN_WIDTH &&
-		screenPos.y >= 0.0f && screenPos.y <= SCREEN_HEIGHT)
+		screenPos.y >= 0.0f && screenPos.y <= SCREEN_HEIGHT &&
+		screenPos.z < 1.0f)
 	{
 		bIn = true;
 	}

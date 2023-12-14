@@ -1181,7 +1181,7 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 		my_particle::Create(weponpos, my_particle::TYPE_UNIONWALK);
 
 		// U“®
-		CManager::GetInstance()->GetCamera()->SetShake(12, 20.0f, 0.0f);
+		CManager::GetInstance()->GetCamera()->SetShake(12, 10.0f, 0.0f);
 		break;
 	}
 }

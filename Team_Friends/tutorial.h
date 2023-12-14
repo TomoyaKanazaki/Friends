@@ -37,7 +37,7 @@ public:
 
 	static bool IsMovingPlayer(void);		// プレイヤーが動いてる判定取得
 	static void SetEnableMovingPlayer(void);		// プレイヤーが動いてる判定
-	static void SetDesableMovingPlayer(void);		// プレイヤーが動いてる判定OFF
+	static void SetDisableMovingPlayer(void);		// プレイヤーが動いてる判定OFF
 	static CTutorialStep *GetStep(void);	// ステップ取得
 	CPlayer **GetPlayer(void);				// プレイヤーの取得
 	CPlayer *GetPlayer(int nIdx);			// プレイヤーの取得

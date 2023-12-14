@@ -57,6 +57,7 @@ void EvolusionDecide(void);
 void BeamCharge(void);
 void MortarCharge(void);
 void UnionWalk(void);
+void UltBeamCharge(void);
 
 //==========================================================================
 // パーティクルの初期化処理
@@ -264,6 +265,10 @@ void my_particle::Create(D3DXVECTOR3 pos, TYPE nType)
 
 	case TYPE_UNIONWALK:			// 合体歩き
 		UnionWalk();
+		break;
+
+	case TYPE_ULT_BEAM_CHARGE:
+		UltBeamCharge();
 		break;
 	}
 }
@@ -1849,5 +1854,81 @@ void UnionWalk(void)
 			CEffect3D::MOVEEFFECT_ADD,
 			CEffect3D::TYPE_SMOKEBLACK,
 			0.0f);
+	}
+}
+
+//==========================================================================
+// 必殺ビームチャージ
+//==========================================================================
+void UltBeamCharge(void)
+{
+	D3DXVECTOR3 pos = mylib_const::DEFAULT_VECTOR3;
+
+	for (int nCntUse = 0; nCntUse < 2; nCntUse++)
+	{
+		float fBuff = (float)Random(80, 100) * 0.01f;
+		float fDistance = 250.0f * fBuff;
+		m_nLife = (int)(20.0f * fBuff);
+
+		// 出現位置
+		pos = GetRandomSpherePosition(m_pos, fDistance);
+
+		m_col = D3DXCOLOR(
+			mylib_const::PLAYERBEAM_COLOR.r + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.g + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.b + Random(-100, 100) * 0.001f,
+			1.0f);
+
+		// 半径設定
+		m_fRadius = 180.0f * fBuff;
+
+		// エフェクトの設定
+		CEffect3D *pEffect = CEffect3D::Create(
+			pos,
+			mylib_const::DEFAULT_VECTOR3,
+			m_col,
+			m_fRadius,
+			m_nLife,
+			CEffect3D::MOVEEFFECT_SUB,
+			CEffect3D::TYPE_POINT,
+			0.0f);
+
+		// 目標の位置設定
+		pEffect->SetPositionDest(m_pos);
+		pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+	}
+
+	for (int nCntUse = 0; nCntUse < 2; nCntUse++)
+	{
+		float fBuff = (float)Random(80, 100) * 0.01f;
+		float fDistance = 80.0f * fBuff;
+		m_nLife = (int)(15.0f * fBuff);
+
+		// 出現位置
+		pos = GetRandomSpherePosition(m_pos, fDistance);
+
+		m_col = D3DXCOLOR(
+			mylib_const::PLAYERBEAM_COLOR.r + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.g + Random(-100, 100) * 0.001f,
+			mylib_const::PLAYERBEAM_COLOR.b + Random(-100, 100) * 0.001f,
+			1.0f);
+
+		// 半径設定
+		m_fRadius = 80.0f * fBuff;
+
+		// エフェクトの設定
+		CEffect3D *pEffect = CEffect3D::Create(
+			pos,
+			mylib_const::DEFAULT_VECTOR3,
+			m_col,
+			m_fRadius,
+			m_nLife,
+			CEffect3D::MOVEEFFECT_GENSUI,
+			CEffect3D::TYPE_THUNDER,
+			m_fRadius * 0.01);
+
+		// 目標の位置設定
+		pEffect->SetPositionDest(m_pos);
+		pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
 	}
 }

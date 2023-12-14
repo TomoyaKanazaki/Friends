@@ -53,6 +53,7 @@ namespace my_particle
 		TYPE_BEAM_CHARGE,		// ビームチャージ中
 		TYPE_MORTAR_CHARGE,		// 迫撃チャージ中
 		TYPE_UNIONWALK,			// 合体歩き
+		TYPE_ULT_BEAM_CHARGE,		// 必殺ビームチャージ中
 		TYPE_MAX
 	}TYPE;
 

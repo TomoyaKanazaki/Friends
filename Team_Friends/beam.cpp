@@ -13,6 +13,14 @@
 #include "camera.h"
 #include "particle.h"
 #include "ballast.h"
+#include "texture.h"
+
+namespace
+{
+	const char* TEXTURE = "data\\TEXTURE\\effect\\effect000.jpg";
+}
+
+int CBeam::m_nTexIdx = 0;		// テクスチャのインデックス番号
 
 //==========================================================================
 // コンストラクタ
@@ -25,7 +33,10 @@ CBeam::CBeam(int nPriority) : CObject(nPriority)
 	m_nDamage = 0;		// ダメージ
 	m_color = mylib_const::DEFAULT_COLOR;	// 色
 	m_pEffect.clear();	// エフェクトのオブジェクト
+	m_pObjBillboard.clear();	// ビルボードのオブジェクト
 	m_Tag = CCollisionObject::TAG_NONE;	// タグ
+	m_nLife = 0;	// 寿命
+	m_nLifeOrigin = 0;	// 寿命
 }
 
 //==========================================================================
@@ -42,7 +53,7 @@ CBeam::~CBeam()
 CBeam *CBeam::Create(
 	const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXCOLOR col,
 	const float fRadius, const float fLength, const int nLife,
-	const int nDisity, const int nDamage, CCollisionObject::eMyTag TagType)
+	const int nDisity, const int nDamage, CCollisionObject::eMyTag TagType, eBeamType BeamType)
 {
 	// 生成用のオブジェクト
 	CBeam *pBallast = NULL;
@@ -65,6 +76,7 @@ CBeam *CBeam::Create(
 			pBallast->m_nDisity = nDisity;	// 密度
 			pBallast->m_nDamage = nDamage;	// ダメージ
 			pBallast->m_Tag = TagType;		// タグ
+			pBallast->m_BeamType = BeamType;	// ビームの種類
 
 			// 初期化処理
 			HRESULT hr = pBallast->Init();
@@ -109,6 +121,8 @@ HRESULT CBeam::Init(void)
 	D3DXVECTOR3 move = GetMove();
 	D3DXVECTOR3 vecmove = move - mylib_const::DEFAULT_VECTOR3;
 
+	m_nLifeOrigin = m_nLife;
+
 	// ベクトルを正規化
 	D3DXVec3Normalize(&vecmove, &vecmove);
 
@@ -116,19 +130,47 @@ HRESULT CBeam::Init(void)
 	float fLen = 0.0f;
 	for (int nCntBallast = 0; nCntBallast < m_nDisity; nCntBallast++)
 	{
-		// 生成処理
-		CEffect3D *pEffect = CEffect3D::Create(
-			pos + vecmove * fLen,
-			move,
-			m_color,
-			m_fRadius,
-			m_nLife,
-			CEffect3D::MOVEEFFECT_SUB,
-			CEffect3D::TYPE_NORMAL,
-			0.0f);
+		switch (m_BeamType)
+		{
+		case CBeam::TYPE_NORMAL:
+		{
+			// 生成処理
+			CEffect3D *pEffect = CEffect3D::Create(
+				pos + vecmove * fLen,
+				move,
+				m_color,
+				m_fRadius,
+				m_nLife,
+				CEffect3D::MOVEEFFECT_SUB,
+				CEffect3D::TYPE_NORMAL,
+				0.0f);
 
-		// エフェクト追加
-		m_pEffect.push_back(pEffect);
+			// エフェクト追加
+			m_pEffect.push_back(pEffect);
+		}
+			break;
+
+		case CBeam::TYPE_RESIDUAL:
+		{
+			// 生成処理
+			CObjectBillboard *pEffect = CObjectBillboard::Create(pos + vecmove * fLen, mylib_const::DEFAULT_VECTOR3);
+			pEffect->SetMove(move);
+			pEffect->SetColor(m_color);
+			pEffect->SetSize(D3DXVECTOR2(m_fRadius, m_fRadius));
+			pEffect->SetSizeOrigin(D3DXVECTOR2(m_fRadius, m_fRadius));
+			pEffect->SetType(CObject::TYPE_NONE);
+
+			if (m_nTexIdx == 0)
+			{
+				m_nTexIdx = CManager::GetInstance()->GetTexture()->Regist(TEXTURE);
+			}
+			pEffect->BindTexture(m_nTexIdx);
+
+			// ビルビード追加
+			m_pObjBillboard.push_back(pEffect);
+		}
+			break;
+		}
 
 		// 当たり判定オブジェクト生成
 		CCollisionObject::Create(pos + vecmove * fLen, move, m_fRadius, m_nLife, m_nDamage, m_Tag);
@@ -148,6 +190,16 @@ void CBeam::Uninit(void)
 	// 要素全削除
 	m_pEffect.clear();
 
+	for (int i = 0; i < static_cast<int>(m_pObjBillboard.size()); i++)
+	{
+		if (m_pObjBillboard[i] == nullptr)
+		{
+			continue;
+		}
+		m_pObjBillboard[i]->Uninit();
+		m_pObjBillboard[i] = nullptr;
+	}
+
 	// 情報削除
 	Release();
 }
@@ -166,6 +218,24 @@ void CBeam::Update(void)
 		return;
 	}
 
+	switch (m_BeamType)
+	{
+	case CBeam::TYPE_NORMAL:
+		UpdateEffect();
+		break;
+
+	case CBeam::TYPE_RESIDUAL:
+		UpdateBillboard();
+		break;
+	}
+	
+}
+
+//==========================================================================
+// エフェクトの更新
+//==========================================================================
+void CBeam::UpdateEffect(void)
+{
 	for (int i = 0; i < static_cast<int>(m_pEffect.size()); i++)
 	{
 		if (m_pEffect[i] == nullptr)
@@ -197,9 +267,116 @@ void CBeam::Update(void)
 }
 
 //==========================================================================
+// ビルビードの更新
+//==========================================================================
+void CBeam::UpdateBillboard(void)
+{
+	float fAlpha = (float)m_nLife / (float)m_nLifeOrigin;
+
+	// 要素分繰り返し
+	for (int i = static_cast<int>(m_pObjBillboard.size()) - 1; i >= 0; --i)
+	{
+		const auto& billboard = m_pObjBillboard[i];
+
+		if (billboard == nullptr)
+		{
+			continue;
+		}
+
+		// 色
+		D3DXCOLOR col = billboard->GetColor();
+		col.a = fAlpha;
+		billboard->SetColor(col);
+
+		// 位置取得
+		D3DXVECTOR3 pos = billboard->GetPosition();
+
+		// 移動量取得
+		D3DXVECTOR3 move = billboard->GetMove();
+
+		// サイズ取得
+		D3DXVECTOR2 sizeorigin = billboard->GetSizeOrigin();
+
+		// 位置更新
+		pos += move;
+		billboard->SetPosition(pos);
+
+		m_fRadius = sizeorigin.x * fAlpha;
+		billboard->SetSize(D3DXVECTOR2(m_fRadius, m_fRadius));
+
+
+		if (CGame::GetElevation()->IsHit(pos) == true)
+		{
+			// 振動
+			CManager::GetInstance()->GetCamera()->SetShake(6, 4.0f, 0.0f);
+
+			// 瓦礫
+			CBallast::Create(pos, D3DXVECTOR3(2.0f, 6.0f, 2.0f), 1, 1.0f, CBallast::TYPE_STONE);
+
+			// ビームヒットパーティクル
+			my_particle::Create(pos, my_particle::TYPE_BEAMHIT_FIELD);
+
+			billboard->Uninit();
+			//billboard = nullptr;
+
+			// 着地したものを削除
+			m_pObjBillboard.erase(m_pObjBillboard.begin() + i);
+			continue;
+		}
+
+		// 更新
+		billboard->Update();
+	}
+}
+
+//==========================================================================
 // 描画処理
 //==========================================================================
 void CBeam::Draw(void)
 {
-	
+	// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
+
+	// ライティングを無効にする
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
+	// アルファテストを有効にする
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+
+	// αブレンディングを加算合成に設定
+	pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+
+	// リストコピー
+	std::vector<CObjectBillboard*> pObjectSort = m_pObjBillboard;
+
+	// Zソート
+	std::sort(pObjectSort.begin(), pObjectSort.end(), ZSort);
+
+	for (int i = 0; i < (int)pObjectSort.size(); i++)
+	{
+		if (pObjectSort[i] == nullptr)
+		{
+			continue;
+		}
+		pObjectSort[i]->Draw();
+	}
+
+	// αブレンディングを元に戻す
+	pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+	// アルファテストを無効にする
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+
+	// ライティングを有効にする
+	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+
+
 }

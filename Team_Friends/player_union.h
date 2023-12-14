@@ -111,6 +111,7 @@ protected:
 	virtual void MotionSet(int nIdx);	// モーションの設定
 	virtual void Atack(int nIdx);		// 攻撃
 	bool ControllMove(int nIdx);	// 移動操作
+	void ControllRotation(int nIdx);	// 回転操作
 	virtual HRESULT CreateParts(void);	// パーツの設定
 	
 	bool m_bJump;				// ジャンプ中かどうか

@@ -29,7 +29,15 @@ class CBeam : public CObject
 {
 public:
 
-	CBeam(int nPriority = mylib_const::PRIORITY_DEFAULT);
+	// ビームの種類列挙
+	enum eBeamType
+	{
+		TYPE_NORMAL = 0,	// 通常
+		TYPE_RESIDUAL,		// 残留
+		TYPE_MAX
+	};
+
+	CBeam(int nPriority = mylib_const::PRIORITY_ZSORT);
 	~CBeam();
 
 	// オーバーライドされた関数
@@ -38,10 +46,14 @@ public:
 	void Update(void) override;
 	void Draw(void) override;
 
-	static CBeam *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXCOLOR col, const float fRadius, const float fLength, const int nLife, const int nDisity, const int nDamage, CCollisionObject::eMyTag TagType);
+	static CBeam *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXCOLOR col, const float fRadius, const float fLength, const int nLife, const int nDisity, const int nDamage, CCollisionObject::eMyTag TagType, eBeamType BeamType = TYPE_NORMAL);
 	void SetDisableAddAlpha(void);	// 加算合成取り消し
 
 private:
+
+	// メンバ関数
+	void UpdateEffect(void);
+	void UpdateBillboard(void);
 
 	// メンバ変数
 	float m_fRadius;	// 半径
@@ -50,8 +62,12 @@ private:
 	int m_nDamage;		// ダメージ
 	D3DXCOLOR m_color;	// 色
 	std::vector<CEffect3D*> m_pEffect;	// エフェクトのオブジェクト
+	std::vector<CObjectBillboard*> m_pObjBillboard;	// ビルボードのオブジェクト
 	CCollisionObject::eMyTag m_Tag;	// タグ
+	eBeamType m_BeamType;	// ビームの種類
 	int m_nLife;	// 寿命
+	int m_nLifeOrigin;	// 寿命
+	static int m_nTexIdx;	// テクスチャのインデックス番号
 };
 
 

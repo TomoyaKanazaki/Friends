@@ -92,8 +92,83 @@ void CTutorialPlayer::Update(void)
 		return;
 	}
 
+	if (IsDeath() == true)
+	{
+		return;
+	}
+
+	// キーボード情報取得
+	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	if (pInputKeyboard->GetTrigger(DIK_F5) == true)
+	{// F5でリセット
+		SetPosition(D3DXVECTOR3(0.0f, 0.0f, -1000.0f));
+		SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	}
+
+	//// コンボ演出中は抜ける
+	//if (CTutorial::GetEnemyManager()->GetState() == CEnemyManager::STATE_COMBOANIM)
+	//{
+	//	return;
+	//}
+
+	// 過去の位置保存
+	SetOldPosition(GetPosition());
+
+	// 操作
+	Controll();
+
+	// モーションの設定処理
+	//MotionSet();
+
+	//// モーション更新
+	//if (m_pMotion != NULL)
+	//{
+	//	m_pMotion->Update(m_sStatus.fSpeedBuff);
+	//}
+
+	//// 攻撃処理
+	//Atack();
+
+	//// 状態更新
+	//UpdateState();
+
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 posCenter = GetCenterPosition();
+
+	// 移動量取得
+	D3DXVECTOR3 move = GetMove();
+
+	// 向き取得
+	D3DXVECTOR3 rot = GetRotation();
+
+	//// 追従目標の情報設定
+	//if (m_nChaseTopIdx == m_nMyPlayerIdx)
+	//{
+	//	// カメラの情報取得
+	//	CCamera *pCamera = CManager::GetInstance()->GetCamera();
+	//	pCamera->SetTargetPosition(pos);
+	//	pCamera->SetTargetRotation(rot);
+	//}
+
+	//// 影の位置更新
+	//if (m_pShadow != NULL)
+	//{
+	//	m_pShadow->SetPosition(D3DXVECTOR3(pos.x, m_pShadow->GetPosition().y, pos.z));
+	//}
+
 	// ステップごとの更新
 	UpdateByStep();
+
+#if 1
+	// デバッグ表示
+	CManager::GetInstance()->GetDebugProc()->Print(
+		"------------------[プレイヤーの操作]------------------\n"
+		"位置：【X：%f, Y：%f, Z：%f】【X：%f, Y：%f, Z：%f】 【W / A / S / D】\n"
+		"向き：【X：%f, Y：%f, Z：%f】 【Z / C】\n"
+		"移動量：【X：%f, Y：%f, Z：%f】\n"
+		"体力：【%d】\n", pos.x, pos.y, pos.z, posCenter.x, posCenter.y, posCenter.z, rot.x, rot.y, rot.y, move.x, move.y, move.z, GetLife());
+#endif
 }
 
 //==========================================================================

@@ -121,7 +121,7 @@ HRESULT CGame::Init(void)
 		}
 	}
 
-	/*for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
 		bool bJoin = true;
 		if (CManager::GetInstance()->GetNumPlayer() <= nCntPlayer)
@@ -129,7 +129,7 @@ HRESULT CGame::Init(void)
 			bJoin = false;
 		}
 		m_pStatusWindow[nCntPlayer] = CStatusWindow::Create(D3DXVECTOR3(160.0f + nCntPlayer * 320.0f, 600.0f, 0.0f), bJoin);
-	}*/
+	}
 
 	//**********************************
 	// 弾マネージャ

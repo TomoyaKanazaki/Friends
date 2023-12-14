@@ -27,10 +27,11 @@ int CBeam::m_nTexIdx = 0;		// テクスチャのインデックス番号
 //==========================================================================
 CBeam::CBeam(int nPriority) : CObject(nPriority)
 {
-	m_fRadius = 0.0f;	// 半径
-	m_fLength = 0.0f;	// 長さ
-	m_nDisity = 0;		// 密度
-	m_nDamage = 0;		// ダメージ
+	m_fRadius = 0.0f;		// 半径
+	m_fLength = 0.0f;		// 長さ
+	m_fDestLength = 0.0f;	// 目標の長さ
+	m_nDisity = 0;			// 密度
+	m_nDamage = 0;			// ダメージ
 	m_color = mylib_const::DEFAULT_COLOR;	// 色
 	m_pEffect.clear();	// エフェクトのオブジェクト
 	m_pObjBillboard.clear();	// ビルボードのオブジェクト
@@ -69,6 +70,7 @@ CBeam *CBeam::Create(
 
 			pBallast->m_fRadius = fRadius;	// 半径
 			pBallast->m_fLength = fLength;	// 長さ
+			pBallast->m_fDestLength = fLength;	// 目標の長さ
 			pBallast->m_nLife = nLife;		// 寿命
 			pBallast->SetPosition(pos);		// 位置
 			pBallast->SetMove(move);		// 移動量
@@ -125,6 +127,11 @@ HRESULT CBeam::Init(void)
 
 	// ベクトルを正規化
 	D3DXVec3Normalize(&vecmove, &vecmove);
+
+	if (m_BeamType == TYPE_RESIDUAL)
+	{
+		m_fLength = 0.0f;
+	}
 
 	float fDistance = m_fLength / (float)m_nDisity;
 	float fLen = 0.0f;
@@ -271,9 +278,23 @@ void CBeam::UpdateEffect(void)
 //==========================================================================
 void CBeam::UpdateBillboard(void)
 {
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 move = GetMove();
+	pos += move;
+	SetPosition(pos);
+
 	float fAlpha = (float)m_nLife / (float)m_nLifeOrigin;
 
 	// 要素分繰り返し
+	int nCntBillboard = 0;
+
+	// 長さ補正
+	InertiaCorrection(m_fLength, m_fDestLength, 0.25f);
+
+	float fDistance = m_fLength / (float)m_nDisity;
+	float fLen = 0.0f;
+
 	for (int i = static_cast<int>(m_pObjBillboard.size()) - 1; i >= 0; --i)
 	{
 		const auto& billboard = m_pObjBillboard[i];
@@ -289,21 +310,21 @@ void CBeam::UpdateBillboard(void)
 		billboard->SetColor(col);
 
 		// 位置取得
-		D3DXVECTOR3 pos = billboard->GetPosition();
-
-		// 移動量取得
-		D3DXVECTOR3 move = billboard->GetMove();
+		D3DXVECTOR3 posbillboard = billboard->GetPosition();
 
 		// サイズ取得
 		D3DXVECTOR2 sizeorigin = billboard->GetSizeOrigin();
 
 		// 位置更新
-		pos += move;
-		billboard->SetPosition(pos);
+		posbillboard = pos + move * fLen;
+		billboard->SetPosition(posbillboard);
 
+		// サイズ設定
 		m_fRadius = sizeorigin.x * fAlpha;
 		billboard->SetSize(D3DXVECTOR2(m_fRadius, m_fRadius));
 
+		// 距離加算
+		fLen += fDistance;
 
 		if (CGame::GetElevation()->IsHit(pos) == true)
 		{

@@ -56,11 +56,12 @@ private:
 	void UpdateBillboard(void);
 
 	// メンバ変数
-	float m_fRadius;	// 半径
-	float m_fLength;	// 長さ
-	int m_nDisity;		// 密度
-	int m_nDamage;		// ダメージ
-	D3DXCOLOR m_color;	// 色
+	float m_fRadius;		// 半径
+	float m_fLength;		// 長さ
+	float m_fDestLength;	// 目標の長さ
+	int m_nDisity;			// 密度
+	int m_nDamage;			// ダメージ
+	D3DXCOLOR m_color;		// 色
 	std::vector<CEffect3D*> m_pEffect;	// エフェクトのオブジェクト
 	std::vector<CObjectBillboard*> m_pObjBillboard;	// ビルボードのオブジェクト
 	CCollisionObject::eMyTag m_Tag;	// タグ

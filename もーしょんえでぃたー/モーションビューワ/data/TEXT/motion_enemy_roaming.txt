@@ -14,8 +14,8 @@ NUM_MODEL = 12
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-MODEL_FILENAME = data/MODEL/ENEMY/roaming/body.x			# [0]体
-MODEL_FILENAME = data/MODEL/ENEMY/roaming/head.x			# [1]頭
+MODEL_FILENAME = data/MODEL/ENEMY/roaming/body.x		# [0]体
+MODEL_FILENAME = data/MODEL/ENEMY/roaming/head.x		# [1]頭
 MODEL_FILENAME = data/MODEL/ENEMY/roaming/leg.x			# [2]右前脚
 MODEL_FILENAME = data/MODEL/ENEMY/roaming/nail.x		# [3]右前爪
 MODEL_FILENAME = data/MODEL/ENEMY/roaming/leg.x			# [4]左前脚

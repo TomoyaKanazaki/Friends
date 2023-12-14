@@ -378,19 +378,6 @@ void CCamera::MoveCameraV(void)
 	}
 #endif
 
-#if 0
-	if (pInputKeyboard->GetPress(DIK_D) == true)
-	{// Zキーが押された
-
-		m_rot.y += ROT_MOVE * 1.8f;
-	}
-	if (pInputKeyboard->GetPress(DIK_A) == true)
-	{// Cキーが押された
-
-		m_rot.y -= ROT_MOVE * 1.8f;
-	}
-#endif
-
 
 	// 角度の正規化
 	RotNormalize(m_rot.y);

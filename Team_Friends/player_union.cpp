@@ -620,7 +620,10 @@ void CPlayerUnion::Controll(void)
 
 	// カメラの情報取得
 	CCamera *pCamera = CManager::GetInstance()->GetCamera();
-	pCamera->SetTargetPosition(pos);
+
+	D3DXVECTOR3 TargetPos = pos;
+	TargetPos.y += 300.0f;
+	pCamera->SetTargetPosition(TargetPos);
 	pCamera->SetTargetRotation(rot);
 
 	// 目標の向き設定
@@ -1162,7 +1165,7 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 				sinf(D3DX_PI + rot.y) * fMove,
 				cosf(D3DX_PI * 0.5f) * fMove,
 				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
-			mylib_const::PLAYERBEAM_COLOR,		// 色
+			mylib_const::UNIONBEAM_COLOR,		// 色
 			200.0f,		// 半径
 			14000.0f,		// 長さ
 			200,			// 寿命
@@ -1237,7 +1240,7 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 			CEffect3D::Create(
 				weponpos,
 				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				mylib_const::UNIONBEAM_COLOR,
 				20.0f, 20, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_NORMAL, repeat * 1.1f);
 		}
 		break;

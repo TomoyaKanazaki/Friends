@@ -56,6 +56,7 @@ void UnderBossSpawn(void);
 void EvolusionDecide(void);
 void BeamCharge(void);
 void MortarCharge(void);
+void UnionWalk(void);
 
 //==========================================================================
 // パーティクルの初期化処理
@@ -259,6 +260,10 @@ void my_particle::Create(D3DXVECTOR3 pos, TYPE nType)
 
 	case TYPE_MORTAR_CHARGE:			//迫撃チャージ中
 		MortarCharge();
+		break;
+
+	case TYPE_UNIONWALK:			// 合体歩き
+		UnionWalk();
 		break;
 	}
 }
@@ -1803,5 +1808,46 @@ void MortarCharge(void)
 		// 目標の位置設定
 		pEffect->SetPositionDest(m_pos);
 		pEffect->SetDisableAddAlpha();
+	}
+}
+
+//==========================================================================
+// 合体歩き
+//==========================================================================
+void UnionWalk(void)
+{
+	m_nLife = 30;
+	for (int nCntUse = 0; nCntUse < 10; nCntUse++)
+	{
+		float fMove = (float)Random(80, 100) * 0.1f;		// 移動量
+		float fMoveY = (float)Random(40, 60) * 0.1f;		// 移動量
+
+		float fRot = GetRandomCircleValue();
+		float fRandCol = Random(-100, 100) * 0.001f;
+
+		// 移動量の設定
+		m_move.x = sinf(fRot) * fMove;
+		m_move.y = fMoveY;
+		m_move.z = cosf(fRot) * fMove;
+
+		m_col = D3DXCOLOR(
+			0.8f + fRandCol,
+			0.8f + fRandCol,
+			0.8f + fRandCol,
+			1.0f);
+
+		// 半径設定
+		m_fRadius = 120.0f;
+
+		// エフェクトの設定
+		CEffect3D::Create(
+			m_pos,
+			m_move,
+			m_col,
+			m_fRadius,
+			m_nLife,
+			CEffect3D::MOVEEFFECT_ADD,
+			CEffect3D::TYPE_SMOKEBLACK,
+			0.0f);
 	}
 }

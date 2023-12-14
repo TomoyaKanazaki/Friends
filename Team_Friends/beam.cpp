@@ -18,6 +18,7 @@
 namespace
 {
 	const char* TEXTURE = "data\\TEXTURE\\effect\\effect000.jpg";
+	const float RATIO_SUBSIZE = 0.3f;	// サイズ縮小の割合
 }
 
 int CBeam::m_nTexIdx = 0;		// テクスチャのインデックス番号
@@ -285,6 +286,8 @@ void CBeam::UpdateBillboard(void)
 	SetPosition(pos);
 
 	float fAlpha = (float)m_nLife / (float)m_nLifeOrigin;
+	float fSubRatio = (float)(m_nLife + (m_nLifeOrigin * (1.0f - RATIO_SUBSIZE))) / (float)m_nLifeOrigin;
+	ValueNormalize(fSubRatio, 1.0f, 0.0f);
 
 	// 要素分繰り返し
 	int nCntBillboard = 0;
@@ -320,7 +323,7 @@ void CBeam::UpdateBillboard(void)
 		billboard->SetPosition(posbillboard);
 
 		// サイズ設定
-		m_fRadius = sizeorigin.x * fAlpha;
+		m_fRadius = sizeorigin.x * fSubRatio;
 		billboard->SetSize(D3DXVECTOR2(m_fRadius, m_fRadius));
 
 		// 距離加算

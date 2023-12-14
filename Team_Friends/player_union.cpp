@@ -415,7 +415,14 @@ void CPlayerUnion::Update(void)
 		{
 			continue;
 		}
+		D3DXVECTOR3 pos = m_pObjChara[i]->GetPosition();
+
+		// モーション更新
 		m_pMotion[i]->Update();
+
+		// 差分
+		D3DXVECTOR3 posDiff = m_pObjChara[i]->GetPosition() - pos;
+		SetPosition(GetPosition() + posDiff);
 
 		// 攻撃処理
 		Atack(i);
@@ -836,7 +843,7 @@ bool CPlayerUnion::ControllMove(int nIdx)
 	D3DXVECTOR3 Camerarot = pCamera->GetRotation();
 
 	// 移動量取得
-	float fMove = 2.5f;
+	float fMove = 0.5f;
 
 	bool bMove = true;
 
@@ -1147,26 +1154,8 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 	switch (m_pMotion[nIdx]->GetType())
 	{
 	case MOTION_ATK:
-
-#if 0
-		float fMove = 50.0f;
-		CBeam::Create(
-			weponpos,							// 位置
-			D3DXVECTOR3(
-				sinf(D3DX_PI + rot.y) * fMove,
-				cosf(D3DX_PI * 0.5f) * fMove,
-				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
-			mylib_const::PLAYERBEAM_COLOR,		// 色
-			200.0f,		// 半径
-			1000.0f,		// 長さ
-			60,			// 寿命
-			12,			// 密度
-			1,	// ダメージ
-			CCollisionObject::TAG_PLAYER,	// タグ
-			CBeam::TYPE_NORMAL
-		);
-#else
-		float fMove = 1.0f;
+	{
+		float fMove = 0.5f;
 		CBeam::Create(
 			weponpos,							// 位置
 			D3DXVECTOR3(
@@ -1176,13 +1165,23 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 			mylib_const::PLAYERBEAM_COLOR,		// 色
 			200.0f,		// 半径
 			14000.0f,		// 長さ
-			60,			// 寿命
+			200,			// 寿命
 			180,			// 密度
 			1,	// ダメージ
 			CCollisionObject::TAG_PLAYER,	// タグ
 			CBeam::TYPE_RESIDUAL
 		);
-#endif
+		// 振動
+		CManager::GetInstance()->GetCamera()->SetShake(36, 50.0f, 0.0f);
+	}
+		break;
+
+	case MOTION_WALK:
+		
+		my_particle::Create(weponpos, my_particle::TYPE_UNIONWALK);
+
+		// 振動
+		CManager::GetInstance()->GetCamera()->SetShake(12, 20.0f, 0.0f);
 		break;
 	}
 }

@@ -239,7 +239,7 @@ HRESULT CPlayerUnion::Init(void)
 	D3DXVECTOR3 pos = GetPosition();
 
 	// ëÃóÕÉQÅ[ÉW
-	m_pHPGauge = CHP_GaugePlayer::Create(D3DXVECTOR3(250.0f, 600.0f, 0.0f), 50);
+	//m_pHPGauge = CHP_GaugePlayer::Create(D3DXVECTOR3(250.0f, 600.0f, 0.0f), 50);
 
 	// âeÇÃê∂ê¨
 	m_pShadow = CShadow::Create(pos, 50.0f);

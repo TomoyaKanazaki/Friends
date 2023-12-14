@@ -265,19 +265,19 @@ void CObjectBillboard::SetVtx(void)
 	D3DXVECTOR3 rot = GetRotation();
 
 	// í∏ì_ç¿ïWÇÃê›íË
-	pVtx[0].pos.x = sinf(rot.z - D3DX_PI + m_fAngle) * m_fLength;
+	pVtx[0].pos.x = sinf(rot.z - m_fAngle) * m_fLength;
 	pVtx[0].pos.y = cosf(rot.z - m_fAngle) * m_fLength;
 	pVtx[0].pos.z = 0.0f;
 
-	pVtx[1].pos.x = sinf(rot.z + D3DX_PI - m_fAngle) * m_fLength;
+	pVtx[1].pos.x = sinf(rot.z + m_fAngle) * m_fLength;
 	pVtx[1].pos.y = cosf(rot.z + m_fAngle) * m_fLength;
 	pVtx[1].pos.z = 0.0f;
 
-	pVtx[2].pos.x = sinf(rot.z - m_fAngle) * m_fLength;
+	pVtx[2].pos.x = sinf(rot.z - D3DX_PI + m_fAngle) * m_fLength;
 	pVtx[2].pos.y = cosf(rot.z - D3DX_PI + m_fAngle) * m_fLength;
 	pVtx[2].pos.z = 0.0f;
 
-	pVtx[3].pos.x = sinf(rot.z + m_fAngle) * m_fLength;
+	pVtx[3].pos.x = sinf(rot.z + D3DX_PI - m_fAngle) * m_fLength;
 	pVtx[3].pos.y = cosf(rot.z + D3DX_PI - m_fAngle) * m_fLength;
 	pVtx[3].pos.z = 0.0f;
 

@@ -415,7 +415,14 @@ void CPlayerUnion::Update(void)
 		{
 			continue;
 		}
+		D3DXVECTOR3 pos = m_pObjChara[i]->GetPosition();
+
+		// モーション更新
 		m_pMotion[i]->Update();
+
+		// 差分
+		D3DXVECTOR3 posDiff = m_pObjChara[i]->GetPosition() - pos;
+		SetPosition(GetPosition() + posDiff);
 
 		// 攻撃処理
 		Atack(i);
@@ -836,7 +843,7 @@ bool CPlayerUnion::ControllMove(int nIdx)
 	D3DXVECTOR3 Camerarot = pCamera->GetRotation();
 
 	// 移動量取得
-	float fMove = 2.5f;
+	float fMove = 0.5f;
 
 	bool bMove = true;
 
@@ -1147,26 +1154,8 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 	switch (m_pMotion[nIdx]->GetType())
 	{
 	case MOTION_ATK:
-
-#if 0
-		float fMove = 50.0f;
-		CBeam::Create(
-			weponpos,							// 位置
-			D3DXVECTOR3(
-				sinf(D3DX_PI + rot.y) * fMove,
-				cosf(D3DX_PI * 0.5f) * fMove,
-				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
-			mylib_const::PLAYERBEAM_COLOR,		// 色
-			200.0f,		// 半径
-			1000.0f,		// 長さ
-			60,			// 寿命
-			12,			// 密度
-			1,	// ダメージ
-			CCollisionObject::TAG_PLAYER,	// タグ
-			CBeam::TYPE_NORMAL
-		);
-#else
-		float fMove = 1.0f;
+	{
+		float fMove = 0.5f;
 		CBeam::Create(
 			weponpos,							// 位置
 			D3DXVECTOR3(
@@ -1176,13 +1165,43 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 			mylib_const::PLAYERBEAM_COLOR,		// 色
 			200.0f,		// 半径
 			14000.0f,		// 長さ
-			60,			// 寿命
+			200,			// 寿命
 			180,			// 密度
 			1,	// ダメージ
 			CCollisionObject::TAG_PLAYER,	// タグ
 			CBeam::TYPE_RESIDUAL
 		);
-#endif
+
+		// 衝撃波生成
+		CImpactWave::Create
+		(
+			weponpos,	// 位置
+			D3DXVECTOR3(D3DX_PI * 0.5f, D3DX_PI + rot.y, 0.0f),				// 向き
+			mylib_const::PLAYERBEAM_COLOR,			// 色
+			30.0f,						// 幅
+			8.0f,						// 高さ
+			60.0f,						// 中心からの距離
+			20,							// 寿命
+			30.0f,						// 幅の移動量
+			CImpactWave::TYPE_PURPLE4,	// テクスチャタイプ
+			true						// 加算合成するか
+		);
+
+		// 振動
+		CManager::GetInstance()->GetCamera()->SetShake(36, 50.0f, 0.0f);
+	}
+		break;
+
+	case MOTION_WALK:
+		
+		// 煙
+		my_particle::Create(weponpos, my_particle::TYPE_UNIONWALK);
+
+		// 振動
+		CManager::GetInstance()->GetCamera()->SetShake(12, 10.0f, 0.0f);
+
+		// 瓦礫
+		CBallast::Create(weponpos, D3DXVECTOR3(3.0f, 8.0f, 3.0f), 10, 1.0f, CBallast::TYPE_STONE);
 		break;
 	}
 }
@@ -1200,12 +1219,27 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 
 	// モーションカウンター取得
 	float fAllCount = m_pMotion[nIdx]->GetAllCount();
+	int repeat = 10 - (int)((fAllCount - ATKInfo.nMinCnt) / 12.0f);
+	ValueNormalize(repeat, 9999, 1);
 
 	// 種類別
 	switch (m_pMotion[nIdx]->GetType())
 	{
 	case MOTION_CHARGE:
-		my_particle::Create(weponpos, my_particle::TYPE_ATTACK_BODY);
+		if ((int)fAllCount % repeat == 0)
+		{
+			my_particle::Create(weponpos, my_particle::TYPE_ULT_BEAM_CHARGE);
+		}
+
+		if (ATKInfo.nCollisionNum == 1 && (int)fAllCount % 8 == 0)
+		{
+			int repeat = (int)((fAllCount - ATKInfo.nMinCnt) / 8.0f);
+			CEffect3D::Create(
+				weponpos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				20.0f, 20, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_NORMAL, repeat * 1.1f);
+		}
 		break;
 
 	case MOTION_ATK:
@@ -1327,6 +1361,11 @@ bool CPlayerUnion::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 			move.y = 0.0f;
 			m_bLandOld = true;
 		}
+	}
+
+	if (pos.y < 0.0f)
+	{
+		pos.y = 0.0f;
 	}
 
 

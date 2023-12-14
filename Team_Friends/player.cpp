@@ -847,7 +847,7 @@ void CPlayer::Controll(void)
 	if (pInputKeyboard->GetTrigger(DIK_RIGHT) == true)
 	{// ©ƒL[‚ª‰Ÿ‚³‚ê‚½,¶ˆÚ“®
 		s_statusType = (CGameManager::eStatus)(((int)s_statusType + 1) % (int)CGameManager::STATUS_MAX);
-		SetEvolusion(s_statusType, true);
+		SetEvolusion(s_statusType, false);
 	}
 
 	if (pInputKeyboard->GetPress(DIK_UP) == true)

@@ -415,7 +415,7 @@ void CModel::SetWorldMtx(const D3DXMATRIX mtx)
 //==========================================================================
 // マトリックス取得
 //==========================================================================
-D3DXMATRIX CModel::GetWorldMtx(void) const
+D3DXMATRIX CModel::GetWorldMtx(void) 
 {
 	return m_mtxWorld;
 }

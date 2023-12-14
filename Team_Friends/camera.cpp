@@ -930,9 +930,28 @@ void CCamera::SetShake(int nTime, float fLength, float fLengthY)
 {
 	// U“®ó‘Ô‚ÉÝ’è
 	m_state = CAMERASTATE_SHAKE;
-	m_nCntState = nTime;		// ó‘Ô‘JˆÚƒJƒEƒ“ƒ^[
-	m_nShakeLength = fLength;	// —h‚ê‚Ì‘å‚«‚³
-	m_nShakeLengthY = fLengthY;	// Y‚Ì—h‚ê‚Ì‘å‚«‚³
+
+	if (m_nCntState > 0)
+	{
+		if (m_nShakeLength <= fLength)
+		{
+			m_nShakeLength = fLength;	// —h‚ê‚Ì‘å‚«‚³
+		}
+		if (m_nShakeLengthY <= fLengthY)
+		{
+			m_nShakeLengthY = fLengthY;	// —h‚ê‚Ì‘å‚«‚³
+		}
+		if (m_nCntState <= nTime)
+		{
+			m_nCntState = nTime;	// ó‘Ô‘JˆÚƒJƒEƒ“ƒ^[
+		}
+	}
+	else
+	{
+		m_nShakeLength = fLength;	// —h‚ê‚Ì‘å‚«‚³
+		m_nShakeLengthY = fLengthY;	// Y‚Ì—h‚ê‚Ì‘å‚«‚³
+		m_nCntState = nTime;		// ó‘Ô‘JˆÚƒJƒEƒ“ƒ^[
+	}
 }
 
 //==================================================================================
@@ -1003,6 +1022,8 @@ void CCamera::UpdateState(void)
 		{
 			m_nCntState = 0;
 			m_state = CAMERASTATE_NONE;
+			m_nShakeLength = 0.0f;	// —h‚ê‚Ì‘å‚«‚³
+			m_nShakeLengthY = 0.0f;	// Y‚Ì—h‚ê‚Ì‘å‚«‚³
 		}
 		break;
 	}

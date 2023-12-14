@@ -20,7 +20,7 @@ class CObjectBillboard : public CObject
 {
 public:
 
-	CObjectBillboard(int nPriority = 7);
+	CObjectBillboard(int nPriority = mylib_const::PRIORITY_ZSORT);
 	~CObjectBillboard();
 
 	// オーバーライドされた関数

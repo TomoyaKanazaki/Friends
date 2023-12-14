@@ -681,9 +681,15 @@ void CPlayerUnion::ControllLeg(int nIdx)
 	int nLeftArmIdx = CManager::GetInstance()->GetByPlayerPartsType(PARTS_L_ARM);
 	int nRightArmIdx = CManager::GetInstance()->GetByPlayerPartsType(PARTS_R_ARM);
 
-	if (m_state != STATE_DEAD &&
-		m_state != STATE_FADEOUT)
-	{// 移動可能モーションの時
+	if (m_state == STATE_DEAD ||
+		m_state == STATE_FADEOUT)
+	{
+		return;
+	}
+
+	if (CGame::GetGameManager()->IsControll() &&
+		m_pMotion[nIdx]->IsGetMove(m_pMotion[nIdx]->GetType()))
+	{// 行動できるとき
 
 		// 移動操作
 		if (ControllMove(nIdx))
@@ -714,6 +720,8 @@ void CPlayerUnion::ControllLeg(int nIdx)
 		// 移動量取得
 		D3DXVECTOR3 move = GetMove();
 
+		// ジャンプ
+#if 0
 		if (m_bJump == false &&
 			pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LB, nIdx))
 		{//SPACEが押された,ジャンプ
@@ -738,9 +746,20 @@ void CPlayerUnion::ControllLeg(int nIdx)
 			// サウンド再生
 			CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
 		}
+#endif
 
 		// 移動量設定
 		SetMove(move);
+	}
+	else
+	{
+		for (int i = 0; i < PARTS_MAX; i++)
+		{
+			m_sMotionFrag[i].bMove = false;
+		}
+
+		// 回転操作
+		ControllRotation(nIdx);
 	}
 
 }
@@ -894,6 +913,65 @@ bool CPlayerUnion::ControllMove(int nIdx)
 	SetMove(move);
 
 	return bMove;
+}
+
+//==========================================================================
+// 回転操作
+//==========================================================================
+void CPlayerUnion::ControllRotation(int nIdx)
+{
+	// キーボード情報取得
+	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+	// ゲームパッド情報取得
+	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+	// カメラの情報取得
+	CCamera *pCamera = CManager::GetInstance()->GetCamera();
+
+	// カメラの向き取得
+	D3DXVECTOR3 Camerarot = pCamera->GetRotation();
+
+	if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(nIdx).x < 0)
+	{//←キーが押された,左移動
+
+		if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(nIdx).y > 0)
+		{//A+W,左上移動
+			m_fRotDest = D3DX_PI * 0.75f + Camerarot.y;
+		}
+		else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(nIdx).y < 0)
+		{//A+S,左下移動
+			m_fRotDest = D3DX_PI * 0.25f + Camerarot.y;
+		}
+		else
+		{//A,左移動
+			m_fRotDest = D3DX_PI * 0.5f + Camerarot.y;
+		}
+	}
+	else if (pInputKeyboard->GetPress(DIK_D) == true || pInputGamepad->GetStickMoveL(nIdx).x > 0)
+	{//Dキーが押された,右移動
+
+		if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(nIdx).y > 0)
+		{//D+W,右上移動
+			m_fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
+		}
+		else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(nIdx).y < 0)
+		{//D+S,右下移動
+			m_fRotDest = -D3DX_PI * 0.25f + Camerarot.y;
+		}
+		else
+		{//D,右移動
+			m_fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
+		}
+	}
+	else if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(nIdx).y > 0)
+	{//Wが押された、上移動
+		m_fRotDest = D3DX_PI * 1.0f + Camerarot.y;
+	}
+	else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(nIdx).y < 0)
+	{//Sが押された、下移動
+		m_fRotDest = D3DX_PI * 0.0f + Camerarot.y;
+	}
 }
 
 //==========================================================================
@@ -1062,10 +1140,49 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 	// 武器の位置
 	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
 
+	// 向き取得
+	D3DXVECTOR3 rot = GetRotation();
+
 	// 種類別
 	switch (m_pMotion[nIdx]->GetType())
 	{
 	case MOTION_ATK:
+
+#if 0
+		float fMove = 50.0f;
+		CBeam::Create(
+			weponpos,							// 位置
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y) * fMove,
+				cosf(D3DX_PI * 0.5f) * fMove,
+				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
+			mylib_const::PLAYERBEAM_COLOR,		// 色
+			200.0f,		// 半径
+			1000.0f,		// 長さ
+			60,			// 寿命
+			12,			// 密度
+			1,	// ダメージ
+			CCollisionObject::TAG_PLAYER,	// タグ
+			CBeam::TYPE_NORMAL
+		);
+#else
+		float fMove = 1.0f;
+		CBeam::Create(
+			weponpos,							// 位置
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y) * fMove,
+				cosf(D3DX_PI * 0.5f) * fMove,
+				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
+			mylib_const::PLAYERBEAM_COLOR,		// 色
+			200.0f,		// 半径
+			14000.0f,		// 長さ
+			60,			// 寿命
+			120,			// 密度
+			1,	// ダメージ
+			CCollisionObject::TAG_PLAYER,	// タグ
+			CBeam::TYPE_RESIDUAL
+		);
+#endif
 		break;
 	}
 }
@@ -1081,6 +1198,9 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
 
+	// モーションカウンター取得
+	float fAllCount = m_pMotion[nIdx]->GetAllCount();
+
 	// 種類別
 	switch (m_pMotion[nIdx]->GetType())
 	{
@@ -1089,23 +1209,25 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 		break;
 
 	case MOTION_ATK:
-	{
-		float fMove = 50.0f;
-		CBeam::Create(
-			weponpos,							// 位置
-			D3DXVECTOR3(
-				sinf(D3DX_PI + rot.y) * fMove,
-				cosf(D3DX_PI * 0.5f) * fMove,
-				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
-			mylib_const::PLAYERBEAM_COLOR,		// 色
-			50.0f,		// 半径
-			20.0f,		// 長さ
-			10,			// 寿命
-			4,			// 密度
-			1,	// ダメージ
-			CCollisionObject::TAG_PLAYER	// タグ
-		);
-	}
+		if ((int)fAllCount % 1 == 0)
+		{
+			//float fMove = 50.0f;
+			//CBeam::Create(
+			//	weponpos,							// 位置
+			//	D3DXVECTOR3(
+			//		sinf(D3DX_PI + rot.y) * fMove,
+			//		cosf(D3DX_PI * 0.5f) * fMove,
+			//		cosf(D3DX_PI + rot.y) * fMove),	// 移動量
+			//	mylib_const::PLAYERBEAM_COLOR,		// 色
+			//	200.0f,		// 半径
+			//	1000.0f,		// 長さ
+			//	60,			// 寿命
+			//	12,			// 密度
+			//	1,	// ダメージ
+			//	CCollisionObject::TAG_PLAYER,	// タグ
+			//	CBeam::TYPE_RESIDUAL
+			//);
+		}
 		break;
 	}
 

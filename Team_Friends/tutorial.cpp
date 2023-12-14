@@ -19,7 +19,7 @@
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
-CTutorialStep *CTutorial::m_pStep = NULL;	// ステップ
+CTutorialStep *CTutorial::m_pStep = nullptr;	// ステップ
 bool CTutorial::m_bMovingPlayer = false;	// プレイヤーが動いてる判定
 
 //==========================================================================
@@ -71,7 +71,7 @@ HRESULT CTutorial::Init(void)
 	//**********************************
 	// プレイヤー
 	//**********************************
-	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		m_apPlayer[i] = (CTutorialPlayer*)CManager::GetInstance()->GetScene()->GetPlayer(i);
 
@@ -80,7 +80,7 @@ HRESULT CTutorial::Init(void)
 			m_apPlayer[i] = (CTutorialPlayer*)CTutorialPlayer::Create(i);
 		}
 
-		m_apPlayer[i]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, -1000.0f));
+		m_apPlayer[i]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 100.0f));
 		m_apPlayer[i]->SetRotation(D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
 	}
 
@@ -141,6 +141,18 @@ void CTutorial::Update(void)
 	// 敵マネージャの更新処理
 	//GetEnemyManager()->Update();
 
+	if (pInputKeyboard->GetTrigger(DIK_L))
+	{
+		if (m_pStep->IsEndAll())
+		{//チュートリアルを終了してよい状態か
+			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
+		}
+
+		m_pStep->SetStep(m_pStep->GetNowStep());
+		// モード設定
+		m_pStep->AddStep();
+	}
+
 	// ステップの更新処理
 	if (m_pStep != NULL)
 	{// NULLじゃなかったら
@@ -167,7 +179,7 @@ void CTutorial::SetEnableMovingPlayer(void)
 //==========================================================================
 // プレイヤーが動いてる判定OFF
 //==========================================================================
-void CTutorial::SetDesableMovingPlayer(void)
+void CTutorial::SetDisableMovingPlayer(void)
 {
 	m_bMovingPlayer = false;
 }

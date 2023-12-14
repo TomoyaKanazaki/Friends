@@ -23,19 +23,25 @@ public:
 	enum STEP
 	{
 		STEP_WAIT = 0,
-		STEP_SPEEDUP,
-		STEP_SPEEDDOWN,
-		STEP_IMPACTWAVE,
-		STEP_DIRECTWAVE,
+		STEP_MOVE,		//移動
+		STEP_ATTACK,		//攻撃
+		STEP_POWERUP,		//強化
+		STEP_UNDER_UNION,		//簡易合体-合体
+		STEP_UNDER_FREE,		//簡易合体-自由
+		STEP_UNION_ITEM,		//合体-アイテム取得
+		STEP_UNION_FREE,		//合体-自由
 		STEP_MAX
 	};
 
 	enum STEPFRAG
 	{
-		STEPFRAG_SPEEDUP = 0,	// 加速
-		STEPFRAG_SPEEDDOWN,		// 減速
-		STEPFRAG_IMPACTWAVE,	// 円形波
-		STEPFRAG_DIRECTWAVE,	// 直線波
+		STEPFRAG_MOVE,		//移動
+		STEPFRAG_ATTACK,		//攻撃
+		STEPFRAG_POWERUP,		//強化
+		STEPFRAG_UNDER_UNION,		//簡易合体-合体
+		STEPFRAG_UNDER_FREE,		//簡易合体-自由
+		STEPFRAG_UNION_ITEM,		//合体-アイテム取得
+		STEPFRAG_UNION_FREE,		//合体-自由
 		STEPFRAG_MAX
 	};
 
@@ -54,6 +60,8 @@ public:
 	STEP GetNowStep(void);	// 現在のステップ取得
 	bool IsEndStep(void);	// ステップ終了の判定取得
 	void SetDisableOKSign(void);	// OKサインのフラグOFFにする
+	bool IsEndAll(void);	// 全ステップ終了の判定取得
+
 private:
 
 	int m_nCntWait;			// 待機のカウンター

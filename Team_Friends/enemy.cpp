@@ -418,12 +418,16 @@ void CEnemy::Update(void)
 		return;
 	}
 
+	if (!CGame::GetGameManager()->IsControll())
+	{// 行動できるとき
+		return;
+	}
+
 	// 過去の位置設定
 	SetOldPosition(GetPosition());
 
 	// 当たり判定
 	Collision();
-	//CollisionPlayer();
 
 	// 死亡の判定
 	if (IsDeath() == true)
@@ -588,10 +592,6 @@ void CEnemy::CollisionPlayer(void)
 	// 自分の情報取得
 	D3DXVECTOR3 pos = GetPosition();
 	float fRadius = GetRadius();
-
-#if _DEBUG
-	CEffect3D::Create(pos, mylib_const::DEFAULT_VECTOR3, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), fRadius, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NULL);
-#endif
 
 	// プレイヤーの取得
 	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
@@ -1861,7 +1861,7 @@ void CEnemy::AttackInDicision(CMotion::AttackInfo ATKInfo)
 	}
 
 #if _DEBUG
-	CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+	//CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 #endif
 
 	// プレイヤー情報

@@ -103,32 +103,32 @@ HRESULT CLimitArea::Init(void)
 	float fWidthLen[mylib_const::SHAPE_LIMITEREA];
 
 	// ‰œ
-	WallPos[0] = D3DXVECTOR3(
+	WallPos[WALL_UP] = D3DXVECTOR3(
 		(m_sLimitEreaInfo.fMinX + m_sLimitEreaInfo.fMaxX) * 0.5f,
 		0.0f,
 		m_sLimitEreaInfo.fMaxZ);
-	fWidthLen[0] = GetPosLength(D3DXVECTOR3(m_sLimitEreaInfo.fMinX, 0.0f, 0.0f), D3DXVECTOR3(m_sLimitEreaInfo.fMaxX, 0.0f, 0.0f));
+	fWidthLen[WALL_UP] = GetPosLength(D3DXVECTOR3(m_sLimitEreaInfo.fMinX, 0.0f, 0.0f), D3DXVECTOR3(m_sLimitEreaInfo.fMaxX, 0.0f, 0.0f));
 
 	// ‰E
-	WallPos[1] = D3DXVECTOR3(
+	WallPos[WALL_RIGHT] = D3DXVECTOR3(
 		m_sLimitEreaInfo.fMinX,
 		0.0f,
 		(m_sLimitEreaInfo.fMinZ + m_sLimitEreaInfo.fMaxZ) * 0.5f);
-	fWidthLen[1] = GetPosLength(D3DXVECTOR3(m_sLimitEreaInfo.fMinZ, 0.0f, 0.0f), D3DXVECTOR3(m_sLimitEreaInfo.fMaxZ, 0.0f, 0.0f));
+	fWidthLen[WALL_RIGHT] = GetPosLength(D3DXVECTOR3(m_sLimitEreaInfo.fMinZ, 0.0f, 0.0f), D3DXVECTOR3(m_sLimitEreaInfo.fMaxZ, 0.0f, 0.0f));
 
 	// è‘O
-	WallPos[2] = D3DXVECTOR3(
+	WallPos[WALL_DOWN] = D3DXVECTOR3(
 		(m_sLimitEreaInfo.fMinX + m_sLimitEreaInfo.fMaxX) * 0.5f,
 		0.0f,
 		m_sLimitEreaInfo.fMinZ);
-	fWidthLen[2] = GetPosLength(D3DXVECTOR3(m_sLimitEreaInfo.fMinX, 0.0f, 0.0f), D3DXVECTOR3(m_sLimitEreaInfo.fMaxX, 0.0f, 0.0f));
+	fWidthLen[WALL_DOWN] = GetPosLength(D3DXVECTOR3(m_sLimitEreaInfo.fMinX, 0.0f, 0.0f), D3DXVECTOR3(m_sLimitEreaInfo.fMaxX, 0.0f, 0.0f));
 
 	// ¶
-	WallPos[3] = D3DXVECTOR3(
+	WallPos[WALL_LEFT] = D3DXVECTOR3(
 		m_sLimitEreaInfo.fMaxX,
 		0.0f,
 		(m_sLimitEreaInfo.fMinZ + m_sLimitEreaInfo.fMaxZ) * 0.5f);
-	fWidthLen[3] = GetPosLength(D3DXVECTOR3(m_sLimitEreaInfo.fMinZ, 0.0f, 0.0f), D3DXVECTOR3(m_sLimitEreaInfo.fMaxZ, 0.0f, 0.0f));
+	fWidthLen[WALL_LEFT] = GetPosLength(D3DXVECTOR3(m_sLimitEreaInfo.fMinZ, 0.0f, 0.0f), D3DXVECTOR3(m_sLimitEreaInfo.fMaxZ, 0.0f, 0.0f));
 
 	float fRot = (D3DX_PI * 2.0f) / (float)mylib_const::SHAPE_LIMITEREA;
 	int nBlock = 4;
@@ -209,8 +209,6 @@ void CLimitArea::Update(void)
 			continue;
 		}
 
-		// ˆê’U‚¢‚ç‚Ë
-		//UpdateColor(i);
 		m_pMeshWall[i]->Update();
 	}
 }
@@ -422,7 +420,7 @@ void CLimitArea::Draw(void)
 	// •`‰æˆ—
 	for (int i = 0; i < mylib_const::SHAPE_LIMITEREA; i++)
 	{
-		if (m_pMeshWall[i] == NULL)
+		if (m_pMeshWall[i] == NULL || i == WALL_DOWN)
 		{
 			continue;
 		}

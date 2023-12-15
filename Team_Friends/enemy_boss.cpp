@@ -157,6 +157,9 @@ void CEnemyBoss::UpdateAction(void)
 //==========================================================================
 void CEnemyBoss::DrawingAction(void)
 {
+	return;
+
+
 	// 0`1‚Ìƒ‰ƒ“ƒ_ƒ€’læ“¾
 	float fRandomValue = static_cast<float>(std::rand()) / RAND_MAX;
 

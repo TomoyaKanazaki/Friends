@@ -134,6 +134,10 @@ void CTutorialStep::Update(void)
 			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_GAME);
 		}
 		break;
+
+	default:
+
+		break;
 	}
 
 	if (m_step > CTutorialStep::STEP_WAIT &&
@@ -169,50 +173,82 @@ void CTutorialStep::SetStep(STEP step)
 		}
 		break;
 
-	case CTutorialStep::STEP_SPEEDUP:
+	case CTutorialStep::STEP_MOVE:
+		if (m_bEndStep == false)
+		{
+			CTutorialWindow::Create(m_step);
+			m_bEndStep = true;
+		}
+		break;
+
+	case CTutorialStep::STEP_ATTACK:
 		// スピードアップのカウンター
 		m_nCntSpeedUP++;
 
-		if (m_bEndStep == false && m_nCntSpeedUP >= SPEEDTIME)
+		if (m_bEndStep == false)
 		{
+			CTutorialWindow::Create(m_step);
 			m_bEndStep = true;
 		}
 		break;
 
-	case CTutorialStep::STEP_SPEEDDOWN:
+	case CTutorialStep::STEP_POWERUP:
 		// スピードダウンのカウンター
 		m_nCntSpeedDOWN++;
 
-		if (m_bEndStep == false && m_nCntSpeedDOWN >= SPEEDTIME)
+		if (m_bEndStep == false)
 		{
+			CTutorialWindow::Create(m_step);
 			m_bEndStep = true;
 		}
 		break;
 
-	case CTutorialStep::STEP_IMPACTWAVE:
+	case CTutorialStep::STEP_UNDER_UNION:
 		// 円形波の回数
 		m_nCntImpactWave++;
 
-		if (m_bEndStep == false && m_nCntImpactWave >= 2)
+		if (m_bEndStep == false)
 		{
+			CTutorialWindow::Create(m_step);
 			m_bEndStep = true;
 		}
 		break;
 
-	case CTutorialStep::STEP_DIRECTWAVE:
+	case CTutorialStep::STEP_UNDER_FREE:
 		// 直線波の回数
 		m_nCntDirectWave++;
 
-		if (m_bEndStep == false && m_nCntDirectWave >= 2)
+		if (m_bEndStep == false)
 		{
+			CTutorialWindow::Create(m_step);
 			m_bEndStep = true;
 		}
 		break;
 
-	case CTutorialStep::STEP_MAX:
+	case CTutorialStep::STEP_UNION_ITEM:
+		// 直線波の回数
+		m_nCntDirectWave++;
+
+		if (m_bEndStep == false)
+		{
+			CTutorialWindow::Create(m_step);
+			m_bEndStep = true;
+		}
+		break;
+
+	case CTutorialStep::STEP_UNION_FREE:
+		// 直線波の回数
+		m_nCntDirectWave++;
+
+		if (m_bEndStep == false)
+		{
+			CTutorialWindow::Create(m_step);
+			m_bEndStep = true;
+		}
 		break;
 
 	default:
+		step = STEP_UNDER_FREE;
 		break;
 	}
 }
@@ -235,6 +271,19 @@ void CTutorialStep::AddStep(void)
 void CTutorialStep::SetDisableOKSign(void)
 {
 	m_bSetOK = false;
+}
+
+//==========================================================================
+// 全ステップ終了の判定取得
+//==========================================================================
+bool CTutorialStep::IsEndAll(void)
+{
+	if (m_bEndStep && m_step == STEP_UNION_FREE)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 //==========================================================================

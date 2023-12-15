@@ -36,7 +36,7 @@ const char *CEffect3D::m_apTextureFile[] =					// ファイル読み込み
 	"data\\TEXTURE\\effect\\line_02.png",		// 線エフェクト
 	"data\\TEXTURE\\grassblades_01.png",		// 草エフェクト
 	"data\\TEXTURE\\effect\\sweat_01.png",		// 汗エフェクト
-	"data\\TEXTURE\\effect\\thunder_01.tga",	// 雷エフェクト
+	"data\\TEXTURE\\effect\\thunder_02.tga",	// 雷エフェクト
 	NULL,										// NULLエフェクト
 };
 int CEffect3D::m_nNumAll = 0;	// 総数
@@ -446,6 +446,7 @@ void CEffect3D::SetUp(D3DXVECTOR3 setup, D3DXMATRIX *pMtxParent, CObject *pObj, 
 		m_pParent = pObj;
 	}
 
+	// 親マトリックスのポインタ
 	m_pMtxParent = pMtxParent;
 
 	// 親のインデックス番号
@@ -458,7 +459,7 @@ void CEffect3D::SetUp(D3DXVECTOR3 setup, D3DXMATRIX *pMtxParent, CObject *pObj, 
 //==================================================================================
 // 位置更新
 //==================================================================================
-void CEffect3D::UpdatePosition(D3DXMATRIX mtx, D3DXVECTOR3 rot)
+void CEffect3D::UpdatePosition(D3DXVECTOR3 rot)
 {
 
 	D3DXMATRIX mtxRot, mtxTrans, mtxWorld;	// 計算用マトリックス宣言

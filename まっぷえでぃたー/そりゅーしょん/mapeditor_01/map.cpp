@@ -336,6 +336,9 @@ HRESULT map::SaveText(void)
 					nShadow = 1;
 				}
 
+				pos.x *= 1.5f;
+				pos.z *= 1.5f;
+
 				// èoóÕ
 				fprintf(pFile,
 					"MODELSET\n"

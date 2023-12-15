@@ -16,6 +16,7 @@
 #include "enemymanager.h"
 #include "title.h"
 #include "instantfade.h"
+#include "light.h"
 
 //==========================================================================
 // マクロ定義
@@ -159,7 +160,7 @@ void CCamera::Update(void)
 		MoveCameraV();
 		MoveCameraDistance();
 		MoveCameraDistance();
-		//UpdateByMode();
+		UpdateSpotLightVec();
 
 		if (m_state == CAMERASTATE_SHAKE)
 		{
@@ -374,19 +375,6 @@ void CCamera::MoveCameraV(void)
 	{// Cキーが押された
 
 		m_rot.y -= ROT_MOVE;
-	}
-#endif
-
-#if 0
-	if (pInputKeyboard->GetPress(DIK_D) == true)
-	{// Zキーが押された
-
-		m_rot.y += ROT_MOVE * 1.8f;
-	}
-	if (pInputKeyboard->GetPress(DIK_A) == true)
-	{// Cキーが押された
-
-		m_rot.y -= ROT_MOVE * 1.8f;
 	}
 #endif
 
@@ -892,6 +880,24 @@ void CCamera::SetCamera(void)
 }
 
 //==================================================================================
+// スポットライトのベクトル更新
+//==================================================================================
+void CCamera::UpdateSpotLightVec(void)
+{
+	// 方向ベクトル
+	D3DXVECTOR3 vec = mylib_const::DEFAULT_VECTOR3;
+
+	// 視点から注視点への向き
+	vec = m_posR - m_posV;
+
+	// 正規化
+	D3DXVec3Normalize(&vec, &vec);
+
+	// スポットライトの方向設定
+	CManager::GetInstance()->GetLight()->UpdateSpotLightDirection(vec);
+}
+
+//==================================================================================
 // 目標の長さ設定
 //==================================================================================
 void CCamera::SetLenDest(float fLength, int nCntTime, float DecrementValue, float fCorrection)
@@ -911,9 +917,28 @@ void CCamera::SetShake(int nTime, float fLength, float fLengthY)
 {
 	// 振動状態に設定
 	m_state = CAMERASTATE_SHAKE;
-	m_nCntState = nTime;		// 状態遷移カウンター
-	m_nShakeLength = fLength;	// 揺れの大きさ
-	m_nShakeLengthY = fLengthY;	// Yの揺れの大きさ
+
+	if (m_nCntState > 0)
+	{
+		if (m_nShakeLength <= fLength)
+		{
+			m_nShakeLength = fLength;	// 揺れの大きさ
+		}
+		if (m_nShakeLengthY <= fLengthY)
+		{
+			m_nShakeLengthY = fLengthY;	// 揺れの大きさ
+		}
+		if (m_nCntState <= nTime)
+		{
+			m_nCntState = nTime;	// 状態遷移カウンター
+		}
+	}
+	else
+	{
+		m_nShakeLength = fLength;	// 揺れの大きさ
+		m_nShakeLengthY = fLengthY;	// Yの揺れの大きさ
+		m_nCntState = nTime;		// 状態遷移カウンター
+	}
 }
 
 //==================================================================================
@@ -984,6 +1009,8 @@ void CCamera::UpdateState(void)
 		{
 			m_nCntState = 0;
 			m_state = CAMERASTATE_NONE;
+			m_nShakeLength = 0.0f;	// 揺れの大きさ
+			m_nShakeLengthY = 0.0f;	// Yの揺れの大きさ
 		}
 		break;
 	}
@@ -1115,7 +1142,8 @@ bool CCamera::OnScreen(const D3DXVECTOR3 pos)
 
 	// 判定
 	if (screenPos.x >= 0.0f && screenPos.x <= SCREEN_WIDTH &&
-		screenPos.y >= 0.0f && screenPos.y <= SCREEN_HEIGHT)
+		screenPos.y >= 0.0f && screenPos.y <= SCREEN_HEIGHT &&
+		screenPos.z < 1.0f)
 	{
 		bIn = true;
 	}

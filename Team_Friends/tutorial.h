@@ -16,6 +16,7 @@
 //==========================================================================
 class CTutorialStep;
 class CTutorialText;
+class CTutorialPlayer;
 
 //==========================================================================
 // クラス定義
@@ -34,10 +35,18 @@ public:
 	void Update(void) override;
 	void Draw(void) override;
 
+	static bool IsMovingPlayer(void);		// プレイヤーが動いてる判定取得
+	static void SetEnableMovingPlayer(void);		// プレイヤーが動いてる判定
+	static void SetDisableMovingPlayer(void);		// プレイヤーが動いてる判定OFF
+	static CTutorialStep *GetStep(void);	// ステップ取得
+	CPlayer **GetPlayer(void);				// プレイヤーの取得
+	CPlayer *GetPlayer(int nIdx);			// プレイヤーの取得
+
 private:
 
+	CTutorialPlayer *m_apPlayer[mylib_const::MAX_PLAYER];		// プレイヤーのオブジェクト
+	static bool m_bMovingPlayer;	// プレイヤーが動いてる判定
+	static CTutorialStep *m_pStep;	// ステップ
 };
-
-
 
 #endif

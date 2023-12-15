@@ -39,6 +39,7 @@
 #include "item.h"
 #include "injectiontable.h"
 #include "enemy_boss.h"
+#include "beam.h"
 
 // 派生先
 #include "union_bodytoleg.h"
@@ -96,6 +97,15 @@ namespace
 bool CPlayerUnion::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
 bool CPlayerUnion::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// 射出台の着地判定
 
+
+//==========================================================================
+// 関数ポインタ
+//==========================================================================
+CPlayerUnion::ULT_FUNC CPlayerUnion::m_UltFuncList[] =
+{
+	&CPlayerUnion::UltBeam,	// ビーム
+};
+
 //==========================================================================
 // コンストラクタ
 //==========================================================================
@@ -132,8 +142,10 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_nControllMoveIdx = 0;		// 移動操作するやつのインデックス番号
 	m_fRotDest = 0.0f;
 	m_pShadow = NULL;			// 影の情報
-	m_pTargetP = NULL;	// 目標の地点
-	m_pHPGauge = NULL;	// HPゲージの情報
+	m_pTargetP = NULL;			// 目標の地点
+	m_pHPGauge = NULL;			// HPゲージの情報
+	m_UltType = ULT_BEAM;		// 必殺技の種類
+	m_UltBranch = ULTBRANCH_CHARGE_BEAM;	// 必殺技の分岐
 	memset(&m_apModel[0], NULL, sizeof(m_apModel));	// モデル(パーツ)のポインタ
 }
 
@@ -227,7 +239,7 @@ HRESULT CPlayerUnion::Init(void)
 	D3DXVECTOR3 pos = GetPosition();
 
 	// 体力ゲージ
-	m_pHPGauge = CHP_GaugePlayer::Create(D3DXVECTOR3(250.0f, 600.0f, 0.0f), 50);
+	//m_pHPGauge = CHP_GaugePlayer::Create(D3DXVECTOR3(250.0f, 600.0f, 0.0f), 50);
 
 	// 影の生成
 	m_pShadow = CShadow::Create(pos, 50.0f);
@@ -403,7 +415,14 @@ void CPlayerUnion::Update(void)
 		{
 			continue;
 		}
+		D3DXVECTOR3 pos = m_pObjChara[i]->GetPosition();
+
+		// モーション更新
 		m_pMotion[i]->Update();
+
+		// 差分
+		D3DXVECTOR3 posDiff = m_pObjChara[i]->GetPosition() - pos;
+		SetPosition(GetPosition() + posDiff);
 
 		// 攻撃処理
 		Atack(i);
@@ -455,15 +474,6 @@ void CPlayerUnion::Update(void)
 		m_pHPGauge->SetLife(50);
 	}
 
-#if 0
-	// デバッグ表示
-	CManager::GetInstance()->GetDebugProc()->Print(
-		"------------------[プレイヤーの操作]------------------\n"
-		"位置：【X：%f, Y：%f, Z：%f】 【W / A / S / D】\n"
-		"向き：【X：%f, Y：%f, Z：%f】 【Z / C】\n"
-		"移動量：【X：%f, Y：%f, Z：%f】\n"
-		"体力：【%d】\n", pos.x, pos.y, pos.z, rot.x, rot.y, rot.y, move.x, move.y, move.z, 50);
-#endif
 }
 
 //==========================================================================
@@ -495,6 +505,15 @@ void CPlayerUnion::Controll(void)
 		// パーツのコントロール処理
 		ControllParts();
 	}
+
+#if _DEBUG
+
+	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true)
+	{
+		m_state = STATE_ULT;	// 状態
+		m_UltBranch = ULTBRANCH_CHARGE_BEAM;
+	}
+#endif
 
 	// 移動量取得
 	D3DXVECTOR3 move = GetMove();
@@ -601,7 +620,10 @@ void CPlayerUnion::Controll(void)
 
 	// カメラの情報取得
 	CCamera *pCamera = CManager::GetInstance()->GetCamera();
-	pCamera->SetTargetPosition(pos);
+
+	D3DXVECTOR3 TargetPos = pos;
+	TargetPos.y += 300.0f;
+	pCamera->SetTargetPosition(TargetPos);
 	pCamera->SetTargetRotation(rot);
 
 	// 目標の向き設定
@@ -669,9 +691,15 @@ void CPlayerUnion::ControllLeg(int nIdx)
 	int nLeftArmIdx = CManager::GetInstance()->GetByPlayerPartsType(PARTS_L_ARM);
 	int nRightArmIdx = CManager::GetInstance()->GetByPlayerPartsType(PARTS_R_ARM);
 
-	if (m_state != STATE_DEAD &&
-		m_state != STATE_FADEOUT)
-	{// 移動可能モーションの時
+	if (m_state == STATE_DEAD ||
+		m_state == STATE_FADEOUT)
+	{
+		return;
+	}
+
+	if (CGame::GetGameManager()->IsControll() &&
+		m_pMotion[nIdx]->IsGetMove(m_pMotion[nIdx]->GetType()))
+	{// 行動できるとき
 
 		// 移動操作
 		if (ControllMove(nIdx))
@@ -702,6 +730,8 @@ void CPlayerUnion::ControllLeg(int nIdx)
 		// 移動量取得
 		D3DXVECTOR3 move = GetMove();
 
+		// ジャンプ
+#if 0
 		if (m_bJump == false &&
 			pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LB, nIdx))
 		{//SPACEが押された,ジャンプ
@@ -726,9 +756,20 @@ void CPlayerUnion::ControllLeg(int nIdx)
 			// サウンド再生
 			CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
 		}
+#endif
 
 		// 移動量設定
 		SetMove(move);
+	}
+	else
+	{
+		for (int i = 0; i < PARTS_MAX; i++)
+		{
+			m_sMotionFrag[i].bMove = false;
+		}
+
+		// 回転操作
+		ControllRotation(nIdx);
 	}
 
 }
@@ -805,7 +846,7 @@ bool CPlayerUnion::ControllMove(int nIdx)
 	D3DXVECTOR3 Camerarot = pCamera->GetRotation();
 
 	// 移動量取得
-	float fMove = 2.5f;
+	float fMove = 0.5f;
 
 	bool bMove = true;
 
@@ -885,12 +926,76 @@ bool CPlayerUnion::ControllMove(int nIdx)
 }
 
 //==========================================================================
+// 回転操作
+//==========================================================================
+void CPlayerUnion::ControllRotation(int nIdx)
+{
+	// キーボード情報取得
+	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+	// ゲームパッド情報取得
+	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+	// カメラの情報取得
+	CCamera *pCamera = CManager::GetInstance()->GetCamera();
+
+	// カメラの向き取得
+	D3DXVECTOR3 Camerarot = pCamera->GetRotation();
+
+	if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(nIdx).x < 0)
+	{//←キーが押された,左移動
+
+		if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(nIdx).y > 0)
+		{//A+W,左上移動
+			m_fRotDest = D3DX_PI * 0.75f + Camerarot.y;
+		}
+		else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(nIdx).y < 0)
+		{//A+S,左下移動
+			m_fRotDest = D3DX_PI * 0.25f + Camerarot.y;
+		}
+		else
+		{//A,左移動
+			m_fRotDest = D3DX_PI * 0.5f + Camerarot.y;
+		}
+	}
+	else if (pInputKeyboard->GetPress(DIK_D) == true || pInputGamepad->GetStickMoveL(nIdx).x > 0)
+	{//Dキーが押された,右移動
+
+		if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(nIdx).y > 0)
+		{//D+W,右上移動
+			m_fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
+		}
+		else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(nIdx).y < 0)
+		{//D+S,右下移動
+			m_fRotDest = -D3DX_PI * 0.25f + Camerarot.y;
+		}
+		else
+		{//D,右移動
+			m_fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
+		}
+	}
+	else if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(nIdx).y > 0)
+	{//Wが押された、上移動
+		m_fRotDest = D3DX_PI * 1.0f + Camerarot.y;
+	}
+	else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(nIdx).y < 0)
+	{//Sが押された、下移動
+		m_fRotDest = D3DX_PI * 0.0f + Camerarot.y;
+	}
+}
+
+//==========================================================================
 // モーションの設定
 //==========================================================================
 void CPlayerUnion::MotionSet(int nIdx)
 {
 	if (m_pMotion[nIdx] == NULL)
 	{// モーションがNULLだったら
+		return;
+	}
+
+	if (m_state == STATE_ULT)
+	{
 		return;
 	}
 
@@ -1045,13 +1150,61 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 	// 武器の位置
 	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
 
+	// 向き取得
+	D3DXVECTOR3 rot = GetRotation();
+
 	// 種類別
 	switch (m_pMotion[nIdx]->GetType())
 	{
 	case MOTION_ATK:
+	{
+		float fMove = 0.5f;
+		CBeam::Create(
+			weponpos,							// 位置
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y) * fMove,
+				cosf(D3DX_PI * 0.5f) * fMove,
+				cosf(D3DX_PI + rot.y) * fMove),	// 移動量
+			mylib_const::UNIONBEAM_COLOR,		// 色
+			200.0f,		// 半径
+			14000.0f,		// 長さ
+			200,			// 寿命
+			180,			// 密度
+			1,	// ダメージ
+			CCollisionObject::TAG_PLAYER,	// タグ
+			CBeam::TYPE_RESIDUAL
+		);
 
-		// 歩行音再生
-		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_SWING);
+		// 衝撃波生成
+		CImpactWave::Create
+		(
+			weponpos,	// 位置
+			D3DXVECTOR3(D3DX_PI * 0.5f, D3DX_PI + rot.y, 0.0f),				// 向き
+			mylib_const::PLAYERBEAM_COLOR,			// 色
+			30.0f,						// 幅
+			8.0f,						// 高さ
+			60.0f,						// 中心からの距離
+			20,							// 寿命
+			30.0f,						// 幅の移動量
+			CImpactWave::TYPE_PURPLE4,	// テクスチャタイプ
+			true						// 加算合成するか
+		);
+
+		// 振動
+		CManager::GetInstance()->GetCamera()->SetShake(36, 50.0f, 0.0f);
+	}
+		break;
+
+	case MOTION_WALK:
+		
+		// 煙
+		my_particle::Create(weponpos, my_particle::TYPE_UNIONWALK);
+
+		// 振動
+		CManager::GetInstance()->GetCamera()->SetShake(12, 10.0f, 0.0f);
+
+		// 瓦礫
+		CBallast::Create(weponpos, D3DXVECTOR3(3.0f, 8.0f, 3.0f), 10, 1.0f, CBallast::TYPE_STONE);
 		break;
 	}
 }
@@ -1061,13 +1214,64 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 //==========================================================================
 void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 {
+	// 武器の位置
+	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
+
+	// 向き取得
+	D3DXVECTOR3 rot = GetRotation();
+
+	// モーションカウンター取得
+	float fAllCount = m_pMotion[nIdx]->GetAllCount();
+	int repeat = 10 - (int)((fAllCount - ATKInfo.nMinCnt) / 12.0f);
+	ValueNormalize(repeat, 9999, 1);
+
+	// 種類別
+	switch (m_pMotion[nIdx]->GetType())
+	{
+	case MOTION_CHARGE:
+		if ((int)fAllCount % repeat == 0)
+		{
+			my_particle::Create(weponpos, my_particle::TYPE_ULT_BEAM_CHARGE);
+		}
+
+		if (ATKInfo.nCollisionNum == 1 && (int)fAllCount % 8 == 0)
+		{
+			int repeat = (int)((fAllCount - ATKInfo.nMinCnt) / 8.0f);
+			CEffect3D::Create(
+				weponpos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				mylib_const::UNIONBEAM_COLOR,
+				20.0f, 20, CEffect3D::MOVEEFFECT_ADD, CEffect3D::TYPE_NORMAL, repeat * 1.1f);
+		}
+		break;
+
+	case MOTION_ATK:
+		if ((int)fAllCount % 1 == 0)
+		{
+			//float fMove = 50.0f;
+			//CBeam::Create(
+			//	weponpos,							// 位置
+			//	D3DXVECTOR3(
+			//		sinf(D3DX_PI + rot.y) * fMove,
+			//		cosf(D3DX_PI * 0.5f) * fMove,
+			//		cosf(D3DX_PI + rot.y) * fMove),	// 移動量
+			//	mylib_const::PLAYERBEAM_COLOR,		// 色
+			//	200.0f,		// 半径
+			//	1000.0f,		// 長さ
+			//	60,			// 寿命
+			//	12,			// 密度
+			//	1,	// ダメージ
+			//	CCollisionObject::TAG_PLAYER,	// タグ
+			//	CBeam::TYPE_RESIDUAL
+			//);
+		}
+		break;
+	}
+
 	if (ATKInfo.fRangeSize == 0.0f)
 	{
 		return;
 	}
-
-	// 武器の位置
-	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
 
 #if _DEBUG
 	CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
@@ -1160,6 +1364,11 @@ bool CPlayerUnion::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move)
 			move.y = 0.0f;
 			m_bLandOld = true;
 		}
+	}
+
+	if (pos.y < 0.0f)
+	{
+		pos.y = 0.0f;
 	}
 
 
@@ -1510,6 +1719,10 @@ void CPlayerUnion::UpdateState(void)
 	case STATE_APPEARANCE:
 		Appearance();
 		break;
+
+	case STATE_ULT:
+		Ultimate();
+		break;
 	}
 }
 
@@ -1844,6 +2057,101 @@ void CPlayerUnion::Appearance(void)
 		}
 		// 登場モーション設定
 		m_pMotion[i]->Set(MOTION_APPEARANCE);
+	}
+}
+
+//==========================================================================
+// 必殺技
+//==========================================================================
+void CPlayerUnion::Ultimate(void)
+{
+	// 状態別処理
+	(this->*(m_UltFuncList[m_UltType]))();
+}
+
+//==========================================================================
+// 必殺：ビーム
+//==========================================================================
+void CPlayerUnion::UltBeam(void)
+{
+	switch (m_UltBranch)
+	{
+	case CPlayerUnion::ULTBRANCH_CHARGE_BEAM:
+		UltChargeBeam();
+		break;
+
+	case CPlayerUnion::ULTBRANCH_ATTACK_BEAM:
+		UltAttackBeam();
+		break;
+
+	default:
+		m_UltBranch = ULTBRANCH_CHARGE_BEAM;
+		break;
+	}
+}
+
+//==========================================================================
+// ビームチャージ
+//==========================================================================
+void CPlayerUnion::UltChargeBeam(void)
+{
+
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_CHARGE && m_pMotion[i]->IsFinish() == true)
+		{// チャージが終わってたら
+
+			// 待機行動
+			m_UltBranch = ULTBRANCH_ATTACK_BEAM;
+
+			// 必殺ビームモーション設定
+			m_pMotion[i]->Set(MOTION_ATK);
+			return;
+		}
+
+		if (nType != MOTION_CHARGE)
+		{
+			// チャージモーション設定
+			m_pMotion[i]->Set(MOTION_CHARGE);
+		}
+	}
+}
+
+//==========================================================================
+// ビーム攻撃
+//==========================================================================
+void CPlayerUnion::UltAttackBeam(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ATK && m_pMotion[i]->IsFinish() == true)
+		{// チャージが終わってたら
+
+			// なにもない状態
+			m_state = STATE_NONE;
+
+			// 必殺ビームモーション設定
+			m_pMotion[i]->Set(MOTION_DEF);
+			return;
+		}
+
+		if (nType != MOTION_ATK)
+		{
+			// ビームモーション設定
+			m_pMotion[i]->Set(MOTION_ATK);
+		}
 	}
 }
 

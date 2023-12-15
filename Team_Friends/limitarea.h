@@ -56,6 +56,16 @@ protected:
 
 private:
 
+	// 壁位置の列挙
+	enum eWallTag
+	{
+		WALL_UP = 0,	// 奥
+		WALL_RIGHT,		// 右
+		WALL_DOWN,		// 手前
+		WALL_LEFT,		// 左
+		WALL_MAX
+	};
+
 	//=============================
 	// 関数リスト
 	//=============================

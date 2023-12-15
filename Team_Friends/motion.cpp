@@ -482,33 +482,23 @@ void CMotion::Update(float fBuff)
 				m_fCntFrame /
 				(float)nFrame);
 
-#if 0
-			posParts.x =
-				aPartsOld[nCntParts].pos.x +
-				posDiffX *
-				(
-				m_fCntFrame /
-				(float)nFrame);
-
-			posParts.z =
-				aPartsOld[nCntParts].pos.z +
-				posDiffZ *
-				(
-				m_fCntFrame /
-				(float)nFrame);
-#endif
-
 			// ˆÊ’uİ’è
 			m_ppModel[nCntModel]->SetPosition(posParts + posOrigin);
 
+			int nNextMoveKey = m_nPatternKey + 1;
+			if (nNextMoveKey >= m_aInfo[m_nType].nNumKey)
+			{
+				nNextMoveKey = m_nPatternKey;
+			}
+
 			// “®‚¢‚½’·‚³‚ğ‹‚ß‚é
 			float fMoveDiff =
-				sqrtf((m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.x - aPartsOld[nCntParts].pos.x) * (m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.x - aPartsOld[nCntParts].pos.x)
-					+ (m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.z - aPartsOld[nCntParts].pos.z) * (m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].pos.z - aPartsOld[nCntParts].pos.z));
+				sqrtf((m_aInfo[m_nType].aKey[nNextMoveKey].aParts[nCntParts].pos.x - aPartsOld[nCntParts].pos.x) * (m_aInfo[m_nType].aKey[nNextMoveKey].aParts[nCntParts].pos.x - aPartsOld[nCntParts].pos.x)
+					+ (m_aInfo[m_nType].aKey[nNextMoveKey].aParts[nCntParts].pos.z - aPartsOld[nCntParts].pos.z) * (m_aInfo[m_nType].aKey[nNextMoveKey].aParts[nCntParts].pos.z - aPartsOld[nCntParts].pos.z));
 			fMoveDiff /= (float)nFrame;
 
 			// “®‚«‚ÌŒü‚«‚ğˆê‘ã“ü
-			float fRot = m_aInfo[m_nType].aKey[nNextKey].fRotMove;
+			float fRot = m_aInfo[m_nType].aKey[nNextMoveKey].fRotMove;
 
 			// “®‚«‚ÌŒü‚«•ûŒü‚ÖˆÚ“®
 			pos.x += sinf(D3DX_PI + fRot + rot.y) * fMoveDiff;

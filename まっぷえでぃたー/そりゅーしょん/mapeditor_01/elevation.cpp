@@ -822,7 +822,7 @@ HRESULT CElevation::Load(const char *pText)
 	FILE *pFile = NULL;	// ファイルポインタを宣言
 
 	// ファイルを開く
-	pFile = fopen("data\\TEXT\\field_ranking.txt", "r");
+	pFile = fopen("data\\TEXT\\elevation_field.txt", "r");
 
 	if (pFile == NULL)
 	{// ファイルが開けなかった場合

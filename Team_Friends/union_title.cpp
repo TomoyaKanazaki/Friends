@@ -206,7 +206,7 @@ void CUnionTitle::Update(void)
 //==========================================================================
 // UŒ‚Žžˆ—
 //==========================================================================
-void CUnionTitle::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo)
+void CUnionTitle::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo, int nCntATK)
 {
 	// •Ší‚ÌˆÊ’u
 	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);

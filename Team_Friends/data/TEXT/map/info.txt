@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
 # テクスチャ数
 #------------------------------------------------------------------------------
-NUM_TEXTURE = 15
+NUM_TEXTURE = 21
 
 #------------------------------------------------------------------------------
 # テクスチャファイル名
@@ -21,6 +21,12 @@ TEXTURE_FILENAME = data/TEXTURE/sky_06.jpg		# [11]
 TEXTURE_FILENAME = data/TEXTURE/forest_02.jpg		# [12]
 TEXTURE_FILENAME = data/TEXTURE/line.png		# [13]
 TEXTURE_FILENAME = data/TEXTURE/glass.jpg		# [14]
+TEXTURE_FILENAME = data/TEXTURE/FIELD/soil.jpg		# [15]
+TEXTURE_FILENAME = data/TEXTURE/FIELD/douro_01.png		# [16]
+TEXTURE_FILENAME = data/TEXTURE/FIELD/kousaten_01.png		# [17]
+TEXTURE_FILENAME = data/TEXTURE/FIELD/stop.png		# [18]
+TEXTURE_FILENAME = data/TEXTURE/FIELD/forest.png		# [19]
+TEXTURE_FILENAME = data/TEXTURE/FIELD/forest_01.png		# [20]
 
 #------------------------------------------------------------------------------
 # モデル数

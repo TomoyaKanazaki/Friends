@@ -19,6 +19,7 @@
 class CShadow;
 class CTargetPoint;
 class CHP_GaugePlayer;
+class CUnionCore;
 
 //==========================================================================
 // クラス定義
@@ -105,7 +106,7 @@ protected:
 	void BindByPlayerIdxTexture(int nIdx, int nPartsIdx);	// プレイヤーインデックス毎のテクスチャ設定
 	void ReadMultiCharacter(const char *pTextFile);			// 複数キャラクター読み込み
 	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
-	virtual void AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo);	// 攻撃時処理
+	virtual void AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo, int nCntATK);	// 攻撃時処理
 	virtual void AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo);				// 攻撃判定中処理
 	virtual void ControllParts(void);	// パーツのコントロール処理
 	virtual void MotionSet(int nIdx);	// モーションの設定
@@ -162,8 +163,6 @@ private:
 		MOTION_ULT_BIGPUNCHATK,		// 必殺技デカパンチ攻撃
 		MOTION_KNOCKBACK,		// やられモーション
 		MOTION_DEAD,			// 死亡モーション
-		MOTION_JUMP,			// ジャンプ
-		MOTION_FALL,			// 落下中
 		MOTION_APPEARANCE,		// 出現
 		MOTION_MAX
 	};
@@ -221,8 +220,10 @@ private:
 	CShadow *m_pShadow;			// 影の情報
 	CTargetPoint *m_pTargetP;	// 目標の地点
 	CHP_GaugePlayer *m_pHPGauge;	// HPゲージの情報
+	CUnionCore *m_pUnionCore;		// 合体後コア
 	eUltAttack m_UltType;			// 必殺技の種類
 	eUltBranch m_UltBranch;			// 必殺技の分岐
+	bool m_bUltBigArm;				// ウルトで腕デカくしたか
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定
 

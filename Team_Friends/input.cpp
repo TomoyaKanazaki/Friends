@@ -731,7 +731,7 @@ HRESULT CInputMouse::Init(HINSTANCE hInstance, HWND hWnd)
 	m_pDevice->Acquire();
 
 	// マウスカーソルの消去
-	ShowCursor(false);
+	//ShowCursor(false);
 
 	return S_OK;
 }

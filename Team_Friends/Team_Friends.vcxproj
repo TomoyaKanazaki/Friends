@@ -285,6 +285,7 @@
     <ClCompile Include="tutorialstep.cpp" />
     <ClCompile Include="tutorialtext.cpp" />
     <ClCompile Include="tutorialwindow.cpp" />
+    <ClCompile Include="unioncore.cpp" />
     <ClCompile Include="union_armtoarm.cpp" />
     <ClCompile Include="union_bodytoarm.cpp" />
     <ClCompile Include="union_bodytoleg.cpp" />
@@ -415,6 +416,7 @@
     <ClInclude Include="tutorialstep.h" />
     <ClInclude Include="tutorialtext.h" />
     <ClInclude Include="tutorialwindow.h" />
+    <ClInclude Include="unioncore.h" />
     <ClInclude Include="union_armtoarm.h" />
     <ClInclude Include="union_bodytoarm.h" />
     <ClInclude Include="union_bodytoleg.h" />

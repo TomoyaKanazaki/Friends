@@ -856,12 +856,12 @@ void CPlayer::Controll(void)
 		// アイテムドロップ
 		CItem::Create(D3DXVECTOR3(pos.x, pos.y + 100.0f, pos.z), D3DXVECTOR3(0.0f, Random(-31, 31) * 0.1f, 0.0f));
 	}
-#endif
 
 	if (pInputKeyboard->GetTrigger(DIK_LEFT) == true)
 	{
 		CCollisionObject::Create(GetPosition(), mylib_const::DEFAULT_VECTOR3, 10000.0f, 3, 10000, CCollisionObject::TAG_PLAYER);
 	}
+#endif
 }
 
 //==========================================================================

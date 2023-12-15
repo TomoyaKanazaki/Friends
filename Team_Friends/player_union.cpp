@@ -103,7 +103,9 @@ bool CPlayerUnion::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// éÀèoë
 //==========================================================================
 CPlayerUnion::ULT_FUNC CPlayerUnion::m_UltFuncList[] =
 {
-	&CPlayerUnion::UltBeam,	// ÉrÅ[ÉÄ
+	&CPlayerUnion::UltBeam,		// ÉrÅ[ÉÄ
+	&CPlayerUnion::UltBigPunch,	// ÉfÉJÉpÉìÉ`
+	&CPlayerUnion::UltRiderKick,	// ÉâÉCÉ_Å[ÉLÉbÉN
 };
 
 //==========================================================================
@@ -511,7 +513,8 @@ void CPlayerUnion::Controll(void)
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true)
 	{
 		m_state = STATE_ULT;	// èÛë‘
-		m_UltBranch = ULTBRANCH_CHARGE_BEAM;
+		m_UltType = ULT_BIGPUNCH;
+		m_UltBranch = ULTBRANCH_CHARGE_BIGPUNCH;
 	}
 #endif
 
@@ -1050,7 +1053,7 @@ void CPlayerUnion::MotionSet(int nIdx)
 		{// É`ÉÉÅ[ÉWíÜÇæÇ¡ÇΩÇÁ
 
 			// É`ÉÉÅ[ÉWÉÇÅ[ÉVÉáÉì
-			m_pMotion[nIdx]->Set(MOTION_CHARGE);
+			m_pMotion[nIdx]->Set(MOTION_ULT_BEAMCHARGE);
 		}
 		else if (m_bKnockBack == true)
 		{// Ç‚ÇÁÇÍíÜÇæÇ¡ÇΩÇÁ
@@ -1068,7 +1071,7 @@ void CPlayerUnion::MotionSet(int nIdx)
 		{// çUåÇÇµÇƒÇ¢ÇΩÇÁ
 
 			m_sMotionFrag[nIdx].bATK = false;		// çUåÇîªíËOFF
-			m_pMotion[nIdx]->Set(MOTION_ATK, true);
+			m_pMotion[nIdx]->Set(MOTION_ULT_BEAMATK, true);
 		}
 		else
 		{
@@ -1156,7 +1159,7 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 	// éÌóﬁï 
 	switch (m_pMotion[nIdx]->GetType())
 	{
-	case MOTION_ATK:
+	case MOTION_ULT_BEAMATK:
 	{
 		float fMove = 0.5f;
 		CBeam::Create(
@@ -1228,7 +1231,7 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 	// éÌóﬁï 
 	switch (m_pMotion[nIdx]->GetType())
 	{
-	case MOTION_CHARGE:
+	case MOTION_ULT_BEAMCHARGE:
 		if ((int)fAllCount % repeat == 0)
 		{
 			my_particle::Create(weponpos, my_particle::TYPE_ULT_BEAM_CHARGE);
@@ -1245,7 +1248,7 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 		}
 		break;
 
-	case MOTION_ATK:
+	case MOTION_ULT_BEAMATK:
 		if ((int)fAllCount % 1 == 0)
 		{
 			//float fMove = 50.0f;
@@ -2104,21 +2107,21 @@ void CPlayerUnion::UltChargeBeam(void)
 		}
 
 		int nType = m_pMotion[i]->GetType();
-		if (nType == MOTION_CHARGE && m_pMotion[i]->IsFinish() == true)
+		if (nType == MOTION_ULT_BEAMCHARGE && m_pMotion[i]->IsFinish() == true)
 		{// É`ÉÉÅ[ÉWÇ™èIÇÌÇ¡ÇƒÇΩÇÁ
 
 			// ë“ã@çsìÆ
 			m_UltBranch = ULTBRANCH_ATTACK_BEAM;
 
 			// ïKéEÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
-			m_pMotion[i]->Set(MOTION_ATK);
+			m_pMotion[i]->Set(MOTION_ULT_BEAMATK);
 			return;
 		}
 
-		if (nType != MOTION_CHARGE)
+		if (nType != MOTION_ULT_BEAMCHARGE)
 		{
 			// É`ÉÉÅ[ÉWÉÇÅ[ÉVÉáÉìê›íË
-			m_pMotion[i]->Set(MOTION_CHARGE);
+			m_pMotion[i]->Set(MOTION_ULT_BEAMCHARGE);
 		}
 	}
 }
@@ -2136,7 +2139,7 @@ void CPlayerUnion::UltAttackBeam(void)
 		}
 
 		int nType = m_pMotion[i]->GetType();
-		if (nType == MOTION_ATK && m_pMotion[i]->IsFinish() == true)
+		if (nType == MOTION_ULT_BEAMATK && m_pMotion[i]->IsFinish() == true)
 		{// É`ÉÉÅ[ÉWÇ™èIÇÌÇ¡ÇƒÇΩÇÁ
 
 			// Ç»Ç…Ç‡Ç»Ç¢èÛë‘
@@ -2147,10 +2150,181 @@ void CPlayerUnion::UltAttackBeam(void)
 			return;
 		}
 
-		if (nType != MOTION_ATK)
+		if (nType != MOTION_ULT_BEAMATK)
 		{
 			// ÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
-			m_pMotion[i]->Set(MOTION_ATK);
+			m_pMotion[i]->Set(MOTION_ULT_BEAMATK);
+		}
+	}
+}
+
+
+//==========================================================================
+// ïKéEÅFÉfÉJÉpÉìÉ`
+//==========================================================================
+void CPlayerUnion::UltBigPunch(void)
+{
+	switch (m_UltBranch)
+	{
+	case CPlayerUnion::ULTBRANCH_CHARGE_BIGPUNCH:
+		UltChargeBigPunch();
+		break;
+
+	case CPlayerUnion::ULTBRANCH_ATTACK_BIGPUNCH:
+		UltAttackBigPunch();
+		break;
+
+	default:
+		m_UltBranch = ULTBRANCH_CHARGE_BIGPUNCH;
+		break;
+	}
+}
+
+//==========================================================================
+// ÉfÉJÉpÉìÉ`É`ÉÉÅ[ÉW
+//==========================================================================
+void CPlayerUnion::UltChargeBigPunch(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_BIGPUNCHCHARGE && m_pMotion[i]->IsFinish() == true)
+		{// É`ÉÉÅ[ÉWÇ™èIÇÌÇ¡ÇƒÇΩÇÁ
+
+			// ë“ã@çsìÆ
+			m_UltBranch = ULTBRANCH_ATTACK_BIGPUNCH;
+
+			// ïKéEÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHATK);
+			return;
+		}
+
+		if (nType != MOTION_ULT_BIGPUNCHCHARGE)
+		{
+			// É`ÉÉÅ[ÉWÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHCHARGE);
+		}
+	}
+}
+
+//==========================================================================
+// ÉfÉJÉpÉìÉ`çUåÇ
+//==========================================================================
+void CPlayerUnion::UltAttackBigPunch(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_BIGPUNCHATK && m_pMotion[i]->IsFinish() == true)
+		{// É`ÉÉÅ[ÉWÇ™èIÇÌÇ¡ÇƒÇΩÇÁ
+
+			// Ç»Ç…Ç‡Ç»Ç¢èÛë‘
+			m_state = STATE_NONE;
+
+			// ïKéEÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_DEF);
+			return;
+		}
+
+		if (nType != MOTION_ULT_BIGPUNCHATK)
+		{
+			// ÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHATK);
+		}
+	}
+}
+
+//==========================================================================
+// ÉâÉCÉ_Å[ÉLÉbÉN
+//==========================================================================
+void CPlayerUnion::UltRiderKick(void)
+{
+	switch (m_UltBranch)
+	{
+	case CPlayerUnion::ULTBRANCH_CHARGE_RIDERKICK:
+		UltChargeRiderKick();
+		break;
+
+	case CPlayerUnion::ULTBRANCH_ATTACK_RIDERKICK:
+		UltAttackRiderKick();
+		break;
+
+	default:
+		m_UltBranch = ULTBRANCH_CHARGE_RIDERKICK;
+		break;
+	}
+}
+
+//==========================================================================
+// ÉâÉCÉ_Å[ÉLÉbÉNÉ`ÉÉÅ[ÉW
+//==========================================================================
+void CPlayerUnion::UltChargeRiderKick(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_BIGPUNCHCHARGE && m_pMotion[i]->IsFinish() == true)
+		{// É`ÉÉÅ[ÉWÇ™èIÇÌÇ¡ÇƒÇΩÇÁ
+
+			// ë“ã@çsìÆ
+			m_UltBranch = ULTBRANCH_ATTACK_BIGPUNCH;
+
+			// ïKéEÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHATK);
+			return;
+		}
+
+		if (nType != MOTION_ULT_BIGPUNCHCHARGE)
+		{
+			// É`ÉÉÅ[ÉWÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHCHARGE);
+		}
+	}
+}
+
+//==========================================================================
+// ÉâÉCÉ_Å[ÉLÉbÉNçUåÇ
+//==========================================================================
+void CPlayerUnion::UltAttackRiderKick(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_BIGPUNCHATK && m_pMotion[i]->IsFinish() == true)
+		{// É`ÉÉÅ[ÉWÇ™èIÇÌÇ¡ÇƒÇΩÇÁ
+
+			// Ç»Ç…Ç‡Ç»Ç¢èÛë‘
+			m_state = STATE_NONE;
+
+			// ïKéEÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_DEF);
+			return;
+		}
+
+		if (nType != MOTION_ULT_BIGPUNCHATK)
+		{
+			// ÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHATK);
 		}
 	}
 }
@@ -2191,7 +2365,6 @@ void CPlayerUnion::Draw(void)
 		m_pHPGauge->Draw();
 	}
 }
-
 
 //==========================================================================
 // ÉvÉåÉCÉÑÅ[ÉCÉìÉfÉbÉNÉXñàÇÃÉeÉNÉXÉ`ÉÉê›íË

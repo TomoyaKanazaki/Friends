@@ -48,6 +48,7 @@ namespace mylib_const
 	const D3DXCOLOR PLAYERBEAM_COLOR = D3DXCOLOR(0.5f, 0.5f, 0.9f, 1.0f);	// プレイヤーのビーム色
 	const D3DXCOLOR UNIONBEAM_COLOR = D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f);	// プレイヤーのビーム色
 	const D3DXCOLOR ENEMYBEAM_COLOR = D3DXCOLOR(0.8f, 0.1f, 0.8f, 1.0f);	// 敵のビーム色
+	const D3DXVECTOR3 DEFAULT_SCALE = D3DXVECTOR3(1.0f, 1.0f, 1.0f);	// スケールのデフォルト値
 	const D3DXVECTOR3 DEFAULT_VECTOR3 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// Vector3のデフォルト値
 	const D3DXVECTOR2 DEFAULT_VECTOR2 = D3DXVECTOR2(0.0f, 0.0f);		// Vector2のデフォルト値
 }

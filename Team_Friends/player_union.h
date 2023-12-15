@@ -156,8 +156,10 @@ private:
 	{
 		MOTION_DEF = 0,			// ニュートラルモーション
 		MOTION_WALK,			// 移動モーション
-		MOTION_CHARGE,			// 必殺技ビームチャージ
-		MOTION_ATK,				// 必殺技ビーム攻撃
+		MOTION_ULT_BEAMCHARGE,	// 必殺技ビームチャージ
+		MOTION_ULT_BEAMATK,		// 必殺技ビーム攻撃
+		MOTION_ULT_BIGPUNCHCHARGE,	// 必殺技デカパンチチャージ
+		MOTION_ULT_BIGPUNCHATK,		// 必殺技デカパンチ攻撃
 		MOTION_KNOCKBACK,		// やられモーション
 		MOTION_DEAD,			// 死亡モーション
 		MOTION_JUMP,			// ジャンプ
@@ -169,6 +171,8 @@ private:
 	enum eUltAttack
 	{
 		ULT_BEAM = 0,	// ビーム
+		ULT_BIGPUNCH,	// ビッグパンチ
+		ULT_RIDERKICK,	// ライダーキック
 		ULT_MAX
 	};
 
@@ -176,6 +180,10 @@ private:
 	{
 		ULTBRANCH_CHARGE_BEAM = 0,	// ビームチャージ
 		ULTBRANCH_ATTACK_BEAM,		// ビーム攻撃
+		ULTBRANCH_CHARGE_BIGPUNCH,	// デカパンチチャージ
+		ULTBRANCH_ATTACK_BIGPUNCH,	// デカパンチ攻撃
+		ULTBRANCH_CHARGE_RIDERKICK,	// ライダーキックチャージ
+		ULTBRANCH_ATTACK_RIDERKICK,	// ライダーキック攻撃
 		ULTBRANCH_MAX
 	};
 
@@ -187,10 +195,16 @@ private:
 
 	// 必殺技関数
 	void UltBeam(void);	// ビーム
+	void UltBigPunch(void);	// デカパンチ
+	void UltRiderKick(void);	// ライダーキック
 
 	// 必殺分岐関数
-	void UltChargeBeam(void);	// ビームチャージ
-	void UltAttackBeam(void);	// ビーム攻撃
+	void UltChargeBeam(void);		// ビームチャージ
+	void UltAttackBeam(void);		// ビーム攻撃
+	void UltChargeBigPunch(void);	// デカパンチチャージ
+	void UltAttackBigPunch(void);	// デカパンチ攻撃
+	void UltChargeRiderKick(void);	// ライダーキックチャージ
+	void UltAttackRiderKick(void);	// ライダーキック攻撃
 
 	// メンバ関数
 	void Controll(void);		// 操作

@@ -49,6 +49,8 @@ public:
 	D3DXVECTOR3 GetRotation(void) const;		// 向き取得
 	void SetOriginRotation(const D3DXVECTOR3 rot);	// 元の向き設定
 	D3DXVECTOR3 GetOriginRotation(void) const;		// 元の向き取得
+	void SetScale(const D3DXVECTOR3 scale);		// スケール設定
+	D3DXVECTOR3 GetScale(void) const;			// スケール取得
 	D3DXVECTOR3 GetVtxMax(void) const;			// 頂点の最大値取得
 	D3DXVECTOR3 GetVtxMin(void) const;			// 頂点の最小値取得
 	void SetParent(CModel *pModel);				// 親のポインタ設定
@@ -70,6 +72,7 @@ private:
 	D3DXVECTOR3 m_posOrigin;	// 元の位置
 	D3DXVECTOR3 m_rot;		// 向き
 	D3DXVECTOR3 m_rotOrigin;// 向き
+	D3DXVECTOR3 m_scale;	// スケール
 	int m_nIdxXFile;		// Xファイルのインデックス番号
 	int *m_nIdxTexture;		// テクスチャのインデックス番号
 	CModel *m_pParent;		// 親モデルのポインタ

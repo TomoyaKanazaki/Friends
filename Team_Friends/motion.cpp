@@ -296,6 +296,7 @@ void CMotion::ResetPose(int nType)
 		// 向き設定
 		m_ppModel[nCntModel]->SetRotation(m_aInfo[nType].aKey[0].aParts[nCntParts].rot);
 		aPartsOld[nCntParts].rot = m_aInfo[nType].aKey[0].aParts[nCntParts].rot;
+		aPartsOld[nCntParts].scale = m_aInfo[nType].aKey[0].aParts[nCntParts].scale;
 
 		// 元の位置取得
 		D3DXVECTOR3 posOrigin = m_pObjChara->GetOriginPosition();
@@ -448,6 +449,50 @@ void CMotion::Update(float fBuff)
 		// 向き設定
 		m_ppModel[nCntModel]->SetRotation(rot);
 
+		{
+			// 次と今の向きの差分取得
+			float scaleDiffX = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].scale.x -
+				aPartsOld[nCntParts].scale.x;
+
+			float scaleDiffY = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].scale.y -
+				aPartsOld[nCntParts].scale.y;
+
+			float scaleDiffZ = m_aInfo[m_nType].aKey[nNextKey].aParts[nCntParts].scale.z -
+				aPartsOld[nCntParts].scale.z;
+
+			// パーツの向きを設定
+			D3DXVECTOR3 scale = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+			// パーツの向きを設定
+			scale.x =
+				aPartsOld[nCntParts].scale.x +
+				scaleDiffX *
+				(
+				m_fCntFrame /
+				(float)nFrame
+				);
+
+			// パーツの向きを設定
+			scale.y =
+				aPartsOld[nCntParts].scale.y +
+				scaleDiffY *
+				(
+				m_fCntFrame /
+				(float)nFrame
+				);
+
+			// パーツの向きを設定
+			scale.z =
+				aPartsOld[nCntParts].scale.z +
+				scaleDiffZ *
+				(
+				m_fCntFrame /
+				(float)nFrame
+				);
+
+			// 向き設定
+			m_ppModel[nCntModel]->SetScale(scale);
+		}
 
 		if (nCntParts == 0)
 		{
@@ -575,6 +620,7 @@ void CMotion::Update(float fBuff)
 		{// 全パーツ分繰り返す
 			aPartsOld[nCntParts].rot = m_aInfo[m_nType].aKey[m_nPatternKey].aParts[nCntParts].rot;
 			aPartsOld[nCntParts].pos = m_aInfo[m_nType].aKey[m_nPatternKey].aParts[nCntParts].pos;
+			aPartsOld[nCntParts].scale = m_aInfo[m_nType].aKey[m_nPatternKey].aParts[nCntParts].scale;
 		}
 
 		if (m_nPatternKey == 0)
@@ -661,6 +707,7 @@ void CMotion::Set(int nType, bool bBlend)
 		if (bBlend == true)
 		{
 			aPartsOld[nCntParts].rot = m_ppModel[nCntModel]->GetRotation();
+			aPartsOld[nCntParts].scale = m_ppModel[nCntModel]->GetScale();
 
 			if (nStartIdx == nCntParts)
 			{
@@ -675,6 +722,7 @@ void CMotion::Set(int nType, bool bBlend)
 		{
 			aPartsOld[nCntParts].rot = m_aInfo[m_nType].aKey[0].aParts[nCntParts].rot;
 			aPartsOld[nCntParts].pos = m_aInfo[m_nType].aKey[0].aParts[nCntParts].pos + m_pObjChara->GetOriginPosition();
+			aPartsOld[nCntParts].scale = m_aInfo[m_nType].aKey[0].aParts[nCntParts].scale;
 		}
 	}
 }
@@ -920,6 +968,14 @@ void CMotion::ReadText(const std::string pTextFile)
 	char aComment[MAX_COMMENT];	// コメント用
 	int nCntMotion = 0, nCntKey = 0, nCntParts = 0;
 	Info InitInfo = {};
+
+	for (int key = 0; key < MAX_KEY; key++)
+	{
+		for (int parts = 0; parts < MAX_PARTS; parts++)
+		{
+			InitInfo.aKey[key].aParts[parts].scale = mylib_const::DEFAULT_SCALE;
+		}
+	}
 	AttackInfo InitAttackInfo = {};
 
 	// 読み込み確認
@@ -1121,6 +1177,15 @@ void CMotion::ReadText(const std::string pTextFile)
 									fscanf(pFile, "%f", &m_aLoadData[m_nNumLoad][nCntMotion].aKey[nCntKey].aParts[nCntParts].rot.x);	// X角度
 									fscanf(pFile, "%f", &m_aLoadData[m_nNumLoad][nCntMotion].aKey[nCntKey].aParts[nCntParts].rot.y);	// Y角度
 									fscanf(pFile, "%f", &m_aLoadData[m_nNumLoad][nCntMotion].aKey[nCntKey].aParts[nCntParts].rot.z);	// Z角度
+								}
+
+								if (strcmp(aComment, "SCALE") == 0)
+								{// SCALEが来たらスケール読み込み
+
+									fscanf(pFile, "%s", &aComment[0]);		// =の分
+									fscanf(pFile, "%f", &m_aLoadData[m_nNumLoad][nCntMotion].aKey[nCntKey].aParts[nCntParts].scale.x);	// Xスケール
+									fscanf(pFile, "%f", &m_aLoadData[m_nNumLoad][nCntMotion].aKey[nCntKey].aParts[nCntParts].scale.y);	// Yスケール
+									fscanf(pFile, "%f", &m_aLoadData[m_nNumLoad][nCntMotion].aKey[nCntKey].aParts[nCntParts].scale.z);	// Zスケール
 								}
 							}// END_PARTSのかっこ
 

@@ -180,6 +180,7 @@
     <ClCompile Include="debugpointnumber.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="decide.cpp" />
+    <ClCompile Include="decide_door.cpp" />
     <ClCompile Include="decide_menu.cpp" />
     <ClCompile Include="edit.cpp" />
     <ClCompile Include="edit_enemybase.cpp" />
@@ -315,6 +316,7 @@
     <ClInclude Include="debugpointnumber.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="decide.h" />
+    <ClInclude Include="decide_door.h" />
     <ClInclude Include="decide_menu.h" />
     <ClInclude Include="edit.h" />
     <ClInclude Include="edit_enemybase.h" />

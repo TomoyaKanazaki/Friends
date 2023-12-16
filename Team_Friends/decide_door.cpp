@@ -8,7 +8,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
-#include "object2D.h"
+#include "objectX.h"
 #include "calculation.h"
 #include "input.h"
 #include "sound.h"
@@ -81,13 +81,13 @@ void CDecideDoor::Uninit(void)
 		}
 	}
 
-	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
+	for (int nCntSelect = 0; nCntSelect < MODELSELECT_MAX; nCntSelect++)
 	{
-		if (m_pSelect3D[nCntSelect] != NULL)
+		if (m_pSelectX[nCntSelect] != NULL)
 		{// NULLじゃなかったら
 
 		 // 終了処理
-			m_pSelect3D[nCntSelect] = NULL;
+			m_pSelectX[nCntSelect] = NULL;
 		}
 	}
 
@@ -100,29 +100,17 @@ void CDecideDoor::Uninit(void)
 //==========================================
 void CDecideDoor::Update(void)
 {
-	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
-	{
-		if (m_pObjX[nCntSelect] == NULL)
-		{// NULLだったら
-			continue;
-		}
+	
 
-		// 頂点情報設定
-		m_pObjX[nCntSelect]->SetVtx();
-	}
-
-	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
+	for (int nCntSelect = 0; nCntSelect < MODELSELECT_MAX; nCntSelect++)
 	{
-		if (m_pSelect3D[nCntSelect] == NULL)
+		if (m_pSelectX[nCntSelect] == NULL)
 		{// NULLだったら
 			continue;
 		}
 
 		// 選択肢の更新処理
 		UpdateSelect(nCntSelect);
-
-		// 頂点情報設定
-		m_pSelect3D[nCntSelect]->SetVtx();
 	}
 
 	if (CManager::GetInstance()->GetFade()->GetState() != CFade::STATE_NONE)
@@ -146,7 +134,7 @@ void CDecideDoor::Update(void)
 		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_X);
 
 		// パターンNo.を更新
-		m_nNowSelect = (m_nNowSelect + (VTXSELECT_MAX - 1)) % VTXSELECT_MAX;
+		m_nNowSelect = (m_nNowSelect + (MODELSELECT_MAX - 1)) % MODELSELECT_MAX;
 
 		// サウンド再生
 		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_CURSOR);
@@ -159,7 +147,7 @@ void CDecideDoor::Update(void)
 		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_X);
 
 		// パターンNo.を更新
-		m_nNowSelect = (m_nNowSelect + 1) % VTXSELECT_MAX;
+		m_nNowSelect = (m_nNowSelect + 1) % MODELSELECT_MAX;
 
 		// サウンド再生
 		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_CURSOR);
@@ -174,23 +162,6 @@ void CDecideDoor::Update(void)
 
 		return;
 	}
-
-	// デバッグ表示
-	CManager::GetInstance()->GetDebugProc()->Print
-	(
-		"選択人数 : %d\n\n", m_nNowSelect + 1
-	);
-
-#ifdef _DEBUG
-	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_LSHIFT))
-	{
-		Go(0);
-	}
-	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_RSHIFT))
-	{
-		Back(0);
-	}
-#endif
 }
 
 //==========================================
@@ -233,21 +204,8 @@ CDecideDoor* CDecideDoor::Create(void)
 //==========================================
 void CDecideDoor::UpdateSelect(int nCntSelect)
 {
-	// 色取得
-	D3DXCOLOR col = m_pSelect3D[nCntSelect]->GetColor();
 
-	// 不透明度更新
-	if (m_nNowSelect == nCntSelect)
-	{
-		CuadricCurveComp(col.a, ALPHATIME, 0.3f, 1.0f, m_nCntAlpha);
-	}
-	else
-	{
-		col.a = 1.0f;
-	}
-
-	// 色設定
-	m_pSelect3D[nCntSelect]->SetColor(col);
+	
 }
 
 //==========================================
@@ -258,32 +216,26 @@ void CDecideDoor::CreateSelect(void)
 	// テクスチャのオブジェクト取得
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();
 
-	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
+	for (int nCntSelect = 0; nCntSelect < MODELSELECT_MAX; nCntSelect++)
 	{
 		// 生成処理
-		m_pSelect3D[nCntSelect] = CObject3D::Create(8);
+		m_pSelectX[nCntSelect] = CObjectX::Create();
 
 		// 種類の設定
-		m_pSelect3D[nCntSelect]->SetType(TYPE_OBJECT3D);
-
-		// テクスチャの割り当て
-		m_nTexIdx_Select[nCntSelect] = pTexture->Regist(m_apTextureFile_Select[nCntSelect]);
-
-		// テクスチャの割り当て
-		m_pSelect3D[nCntSelect]->BindTexture(m_nTexIdx_Select[nCntSelect]);
+		m_pSelectX[nCntSelect]->SetType(TYPE_OBJECT3D);
 
 		// サイズ設定
 		D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx_Select[nCntSelect]) * SCALE_SELECT;
 		size.z = 0.0f;
-		m_pSelect3D[nCntSelect]->SetSize(size); // サイズ
+		m_pSelectX[nCntSelect]->SetSize(size); // サイズ
 
 												// 位置設定
 		D3DXVECTOR3 pos = POS_SELECT;
 		pos.x -= 1.5f * LENGTH_SELECT;
 		pos.x += LENGTH_SELECT * nCntSelect;
-		m_pSelect3D[nCntSelect]->SetPosition(pos);
+		m_pSelectX[nCntSelect]->SetPosition(pos);
 
 		// 色設定
-		m_pSelect3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
+		m_pSelectX[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
 	}
 }

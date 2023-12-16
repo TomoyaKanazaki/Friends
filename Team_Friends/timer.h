@@ -18,7 +18,7 @@ class CMultiNumber;
 //==========================================================================
 // クラス定義
 //==========================================================================
-// 背景クラス定義
+// タイマークラス定義
 class CTimer
 {
 public:
@@ -29,8 +29,6 @@ public:
 	static CTimer *Create(void);
 	static CTimer *Create(D3DXVECTOR3 pos);
 
-	// オーバーライドされた関数
-	HRESULT Init(void);
 	HRESULT Init(D3DXVECTOR3 pos);
 	void Uninit(void);
 	void Update(void);
@@ -39,19 +37,11 @@ public:
 	void Add(int nValue);
 
 private:
-	//==============================
-	// マクロ定義
-	//=============================
-#define NUM_TIMER	(4)			// 桁数
-#define MAX_TIME	(60 * 99)	// タイマーの最大数
-#define START_TIME	(60 * 30)	// タイマーの初期値
 
-	void SetValue(void);
-
-	int m_nNum;							// 値
-	int m_nCntTime;						// 時間のカウント
-	CMultiNumber *m_apNumber;			// 数字のオブジェクト
-	int m_nTexIdx;						// テクスチャのインデックス番号
+	float m_fTime;					// 時間
+	CMultiNumber *m_pMinutes;		// 分のオブジェクト
+	CMultiNumber *m_pSeconds;		// 秒のオブジェクト
+	CMultiNumber *m_pMilliSeconds;	// ミリ秒のオブジェクト
 };
 
 

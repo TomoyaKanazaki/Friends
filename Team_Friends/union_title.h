@@ -44,7 +44,7 @@ private:
 
 	// メンバ関数
 	void AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo, int nCntATK) override;	// 攻撃時処理
-	void AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo) override;				// 攻撃判定中処理
+	void AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int nCntATK) override;				// 攻撃判定中処理
 	HRESULT CreateParts(void) override;													// パーツの設定
 
 	// メンバ変数

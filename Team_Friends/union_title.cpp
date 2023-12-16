@@ -226,10 +226,10 @@ void CUnionTitle::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKI
 //==========================================================================
 // UŒ‚”»’è’†ˆ—
 //==========================================================================
-void CUnionTitle::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
+void CUnionTitle::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int nCntATK)
 {
 	// Šî’ê‚ÌUŒ‚”»’è’†ˆ—
-	CPlayerUnion::AttackInDicision(nIdx, ATKInfo);
+	CPlayerUnion::AttackInDicision(nIdx, ATKInfo, nCntATK);
 
 	// ƒ‚[ƒVƒ‡ƒ“î•ñŽæ“¾
 	int nMotionType = m_pMotion[nIdx]->GetType();

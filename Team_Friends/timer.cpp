@@ -11,17 +11,24 @@
 #include "object2D.h"
 #include "multinumber.h"
 #include "fade.h"
+#include "debugproc.h"
+#include "calculation.h"
 
 //==========================================================================
 // マクロ定義
 //==========================================================================
-#define TEXTURE			"data\\TEXTURE\\number_blackclover_01.png"	// テクスチャのファイル
-#define MAX_VALUE		(999999)						// 値の最大値
-#define TEX_U			(0.1f)							// Uの分割
-#define WIDTH			(40.0f)							// 横幅
-#define HEIGHT			(50.0f)							// 縦幅
-#define DIS_X			(50.0f)							// 間隔
-#define SCROLL_SPEED	(-0.005f)						// スクロール速度
+namespace
+{
+	const char* TEXTURE = "data\\TEXTURE\\number_blackclover_01.png";	// テクスチャのファイル
+	const float TEX_U = 0.1f;			// Uの分割
+	const float WIDTH = 50.0f;			// 横幅
+	const float HEIGHT = 50.0f;			// 縦幅
+	const float DIS_X = 50.0f;			// 間隔
+	const int MAX_VALUE = 999999;		// 値の最大値
+	const int NUM_TIMER = 2;			// 桁数
+	const int MAX_TIME = (60 * 99) * 1000;		// タイマーの最大数
+	const int START_TIME = 60 * 30;		// タイマーの初期値
+}
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -33,10 +40,10 @@
 CTimer::CTimer(int nPriority)
 {
 	// 値のクリア
-	m_apNumber = NULL;
-	m_nNum = 0;		// 値
-	m_nCntTime = 0;	// 時間のカウント
-	m_nTexIdx = 0;		// テクスチャのインデックス番号
+	m_pMinutes = nullptr;		// 分のオブジェクト
+	m_pSeconds = nullptr;		// 秒のオブジェクト
+	m_pMilliSeconds = nullptr;	// ミリ秒のオブジェクト
+	m_fTime = 0.0f;				// 時間
 }
 
 //==========================================================================
@@ -65,7 +72,7 @@ CTimer *CTimer::Create(void)
 		{// メモリの確保が出来ていたら
 
 			// 初期化処理
-			pScore->Init();
+			pScore->Init(mylib_const::DEFAULT_VECTOR3);
 		}
 
 		return pScore;
@@ -104,28 +111,24 @@ CTimer *CTimer::Create(D3DXVECTOR3 pos)
 //==========================================================================
 // 初期化処理
 //==========================================================================
-HRESULT CTimer::Init(void)
-{
-	m_nNum = START_TIME;	// 値
-
-	// 値の設定処理
-	SetValue();
-
-	return S_OK;
-}
-
-//==========================================================================
-// 初期化処理
-//==========================================================================
 HRESULT CTimer::Init(D3DXVECTOR3 pos)
 {
-	m_nNum = START_TIME;	// 値
+	m_fTime = START_TIME * 1000.0f;	// 時間
 
 	// 生成処理
-	m_apNumber = CMultiNumber::Create(pos, D3DXVECTOR2(WIDTH, HEIGHT), NUM_TIMER, CNumber::OBJECTTYPE_2D);
+	D3DXVECTOR3 spawnpos = pos;
+	m_pMinutes = CMultiNumber::Create(spawnpos, D3DXVECTOR2(WIDTH, HEIGHT), NUM_TIMER, CNumber::OBJECTTYPE_2D, TEXTURE, false);
+
+	spawnpos.x += (WIDTH * NUM_TIMER) * 1.3f;
+	m_pSeconds = CMultiNumber::Create(spawnpos, D3DXVECTOR2(WIDTH, HEIGHT), NUM_TIMER, CNumber::OBJECTTYPE_2D, TEXTURE, false);
+
+	spawnpos.x += (WIDTH * NUM_TIMER) * 1.3f;
+	m_pMilliSeconds = CMultiNumber::Create(spawnpos, D3DXVECTOR2(WIDTH, HEIGHT), NUM_TIMER, CNumber::OBJECTTYPE_2D, TEXTURE, false);
 
 	// 値の設定処理
-	m_apNumber->SetValue();
+	m_pMinutes->SetValue();
+	m_pSeconds->SetValue();
+	m_pMilliSeconds->SetValue();
 
 	return S_OK;
 }
@@ -136,11 +139,23 @@ HRESULT CTimer::Init(D3DXVECTOR3 pos)
 void CTimer::Uninit(void)
 {
 	// 数字のオブジェクトの終了処理
-	if (m_apNumber != NULL)
+	if (m_pMinutes != NULL)
 	{
-		m_apNumber->Uninit();
-		delete m_apNumber;
-		m_apNumber = NULL;
+		m_pMinutes->Uninit();
+		delete m_pMinutes;
+		m_pMinutes = NULL;
+	}
+	if (m_pSeconds != NULL)
+	{
+		m_pSeconds->Uninit();
+		delete m_pSeconds;
+		m_pSeconds = NULL;
+	}
+	if (m_pMilliSeconds != NULL)
+	{
+		m_pMilliSeconds->Uninit();
+		delete m_pMilliSeconds;
+		m_pMilliSeconds = NULL;
 	}
 }
 
@@ -149,41 +164,31 @@ void CTimer::Uninit(void)
 //==========================================================================
 void CTimer::Update(void)
 {
-	// 時間のカウント加算
-	m_nCntTime = (m_nCntTime + 1) % 60;
+	// 時間減算
+	m_fTime -= CManager::GetInstance()->GetDeltaTime() * 1000.0f;
+	ValueNormalize(m_fTime, static_cast<float>(MAX_TIME), 0.0f);
 
-	if (m_nCntTime == 0)
-	{// 1秒で更新
-
-		// 1秒経過
-		Add(-1);
-	}
+	// 分、秒、ミリ秒の計算
+	int minutes = static_cast<int>(m_fTime) / (60 * 1000);
+	int seconds = (static_cast<int>(m_fTime) % (60 * 1000)) / 1000;
+	int milliseconds = static_cast<int>(m_fTime) % 1000;
 
 	// 値の設定処理
-	m_apNumber->SetValue(m_nNum);
-}
-
-//==========================================================================
-// 値の設定処理
-//==========================================================================
-void CTimer::SetValue(void)
-{
-	int aTexU[NUM_TIMER];
-	int nMin;	// 分
-	int nSec;	// 秒
-
-	// 分を割り出し
-	nMin = m_nNum / 60;
-
-	// 秒を割り出し
-	nSec = m_nNum % 60;
-
-	// テクスチャ座標に代入する
-	aTexU[0] = nMin % 100 / 10;	// 10の位
-	aTexU[1] = nMin % 10;		// 1の位
-
-	aTexU[2] = nSec % 100 / 10;	// 10の位
-	aTexU[3] = nSec % 10;		// 1の位
+	if (m_pMinutes != NULL)
+	{
+		m_pMinutes->SetValue(minutes);
+	}
+	if (m_pSeconds != NULL)
+	{
+		m_pSeconds->SetValue(seconds);
+	}
+	if (m_pMilliSeconds != NULL)
+	{
+		m_pMilliSeconds->SetValue(milliseconds);
+	}
+	// デバッグ表示
+	CManager::GetInstance()->GetDebugProc()->Print(
+		"------------------[時間：%d分、%d秒、%d]------------------\n", minutes, seconds, milliseconds);
 }
 
 //==========================================================================
@@ -192,24 +197,4 @@ void CTimer::SetValue(void)
 void CTimer::Draw(void)
 {
 
-}
-
-//==========================================================================
-// 加算処理
-//==========================================================================
-void CTimer::Add(int nValue)
-{
-	// 値加算
-	m_nNum += nValue;
-
-	if (m_nNum < 0)
-	{// 0で固定
-		m_nNum = 0;
-
-		// モード設定
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RESULT);
-	}
-
-	// 値の設定処理
-	SetValue();
 }

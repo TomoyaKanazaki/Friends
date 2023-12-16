@@ -1115,7 +1115,7 @@ void CPlayerUnion::Atack(int nIdx)
 		{// çUåÇîªíËíÜ
 			
 			// çUåÇîªíËíÜèàóù
-			AttackInDicision(nIdx, atkInfo);
+			AttackInDicision(nIdx, atkInfo, nCntAttack);
 		}
 	}
 
@@ -1271,8 +1271,8 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 		D3DXVECTOR3 moveeffect = mylib_const::DEFAULT_VECTOR3;
 		for (int nCntUse = 0; nCntUse < 10; nCntUse++)
 		{
-			float fMove = (float)Random(180, 200) * 0.1f;		// à⁄ìÆó 
-			float fMoveY = (float)Random(60, 100) * 0.1f;		// à⁄ìÆó 
+			float fMove = (float)Random(200, 220) * 0.1f;		// à⁄ìÆó 
+			float fMoveY = (float)Random(80, 120) * 0.1f;		// à⁄ìÆó 
 
 			float fRot = GetRandomCircleValue();
 			float fRandCol = Random(-100, 100) * 0.001f;
@@ -1287,7 +1287,7 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 				GetPosition(),
 				moveeffect,
 				D3DXCOLOR(0.8f + fRandCol, 0.8f + fRandCol, 0.8f + fRandCol, 1.0f),
-				200.0f + Random(-30, 30),
+				300.0f + Random(-50, 50),
 				30,
 				CEffect3D::MOVEEFFECT_ADD,
 				CEffect3D::TYPE_SMOKEBLACK,
@@ -1306,7 +1306,7 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 //==========================================================================
 // çUåÇîªíËíÜèàóù
 //==========================================================================
-void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
+void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int nCntATK)
 {
 	// ïêäÌÇÃà íu
 	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
@@ -1343,19 +1343,9 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 		break;
 
 	case MOTION_ULT_BIGPUNCHCHARGE:
-	{
-		D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
-
-		int nMax = 1;
-		float fSize = 200.0f;
-		if (m_bUltBigArm)
+		if (nCntATK == 3)
 		{
-			nMax = 3;
-			fSize = 300.0f;
-		}
-
-		for (int i = 0; i < nMax; i++)
-		{
+			D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
 			RandPos.x = Random(-5, 5) * 10.0f;
 			RandPos.y = Random(-5, 5) * 10.0f;
 			RandPos.z = Random(-5, 5) * 10.0f;
@@ -1364,23 +1354,50 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 				weponpos + RandPos,
 				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
-				fSize, 6,
+				100.0f + (float)Random(-20, 20), 6,
 				CEffect3D::MOVEEFFECT_ADD,
 				CEffect3D::TYPE_THUNDER);
-
-			RandPos.x = Random(-5, 5) * 10.0f;
-			RandPos.y = Random(-5, 5) * 10.0f;
-			RandPos.z = Random(-5, 5) * 10.0f;
-			CEffect3D::Create(
-				weponpos + RandPos,
-				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
-				fSize, 6,
-				CEffect3D::MOVEEFFECT_ADD,
-				CEffect3D::TYPE_POINT);
 			pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
 		}
-	}
+		else if (nCntATK >= 4)
+		{
+			D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
+
+			int nMax = 1;
+			float fSize = 200.0f;
+			if (m_bUltBigArm)
+			{
+				nMax = 3;
+				fSize = 300.0f;
+			}
+
+			for (int i = 0; i < nMax; i++)
+			{
+				RandPos.x = Random(-5, 5) * 10.0f;
+				RandPos.y = Random(-5, 5) * 10.0f;
+				RandPos.z = Random(-5, 5) * 10.0f;
+
+				CEffect3D *pEffect = CEffect3D::Create(
+					weponpos + RandPos,
+					D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+					D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+					fSize, 6,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_THUNDER);
+
+				RandPos.x = Random(-5, 5) * 10.0f;
+				RandPos.y = Random(-5, 5) * 10.0f;
+				RandPos.z = Random(-5, 5) * 10.0f;
+				CEffect3D::Create(
+					weponpos + RandPos,
+					D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+					D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+					fSize, 6,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_POINT);
+				pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+			}
+		}
 		break;
 
 	case MOTION_ULT_BIGPUNCHATK:

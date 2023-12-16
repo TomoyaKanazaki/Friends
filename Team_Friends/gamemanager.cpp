@@ -26,7 +26,7 @@
 CGameManager::CGameManager()
 {
 	// 値のクリア
-	m_SceneType = SCENE_MAIN;	// シーンの種類
+	m_SceneType = SCENE_INTRO;	// シーンの種類
 	m_bEndRush = false;			// ラッシュが終了したか
 	m_bControll = false;		// 操作できるか
 	m_bEndNormalStage = false;	// 通常ステージが終了したか
@@ -84,6 +84,7 @@ HRESULT CGameManager::Init(void)
 	m_bEndNormalStage = false;	// 通常ステージが終了したか
 	m_nNowStage = 0;			// 現在のステージ
 	m_bSetEvolusion = false;	// 進化設定してるか
+	m_SceneType = SCENE_INTRO;	// シーンの種類
 
 	return S_OK;
 }
@@ -112,6 +113,10 @@ void CGameManager::Update(void)
 	// 操作状態
 	switch (m_SceneType)
 	{
+	case CGameManager::SCENE_INTRO:
+		m_bControll = false;
+		break;
+
 	case CGameManager::SCENE_MAIN:
 		m_bControll = true;
 		break;

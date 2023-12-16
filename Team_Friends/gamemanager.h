@@ -21,7 +21,8 @@ public:
 	// シーンの種類
 	enum SceneType
 	{
-		SCENE_MAIN = 0,			// メイン
+		SCENE_INTRO = 0,		// 導入
+		SCENE_MAIN,				// メイン
 		SCENE_MAINCLEAR,		// メインクリア
 		SCENE_EVOLUSION,		// 進化
 		SCENE_RUSH,				// ラッシュ

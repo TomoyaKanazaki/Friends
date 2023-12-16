@@ -73,11 +73,11 @@ void CDecideDoor::Uninit(void)
 {
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
-		if (m_pObj3D[nCntSelect] != NULL)
+		if (m_pObjX[nCntSelect] != NULL)
 		{// NULL‚¶‚á‚È‚©‚Á‚½‚ç
 
 		 // I—¹ˆ—
-			m_pObj3D[nCntSelect] = NULL;
+			m_pObjX[nCntSelect] = NULL;
 		}
 	}
 
@@ -102,13 +102,13 @@ void CDecideDoor::Update(void)
 {
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
 	{
-		if (m_pObj3D[nCntSelect] == NULL)
+		if (m_pObjX[nCntSelect] == NULL)
 		{// NULL‚¾‚Á‚½‚ç
 			continue;
 		}
 
 		// ’¸“_î•ñÝ’è
-		m_pObj3D[nCntSelect]->SetVtx();
+		m_pObjX[nCntSelect]->SetVtx();
 	}
 
 	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)

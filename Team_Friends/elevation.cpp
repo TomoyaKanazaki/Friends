@@ -69,6 +69,7 @@ CElevation::CElevation(int nPriority) : CObject3DMesh(nPriority)
 	m_aInfo.nHeightBlock = 0;					// 縦分割数
 	m_aInfo.pVtxPos = NULL;						// 頂点座標
 	m_pTargetP = NULL;							// 目標の地点
+	m_bChange = false;	// 変更のフラグ
 }
 
 //==========================================================================
@@ -163,6 +164,10 @@ HRESULT CElevation::Init(const char *pText)
 		return E_FAIL;
 	}
 
+	// 頂点情報設定
+	SetVtx();
+	m_bChange = true;	// 変更のフラグ
+
 	return S_OK;
 }
 
@@ -233,8 +238,13 @@ void CElevation::Update(void)
 		UpdateState();
 	}
 
-	// 頂点情報設定
-	SetVtx();
+	if (m_bChange)
+	{
+		// 頂点情報設定
+		SetVtx();
+		m_bChange = false;	// 変更のフラグ
+	}
+
 }
 
 //==========================================================================

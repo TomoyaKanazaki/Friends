@@ -14,6 +14,7 @@
 #include "gamemanager.h"
 #include "input.h"
 #include "fade.h"
+#include "timer.h"
 
 //==========================================================================
 // ’è”’è‹`
@@ -329,9 +330,11 @@ void CEmergency::UpdateEnd(void)
 			m_pWarningFrame[i] = nullptr;
 		}
 
+		// I—¹ˆ—
 		Uninit();
 
-		CGame::GetGameManager()->SetType(CGameManager::SCENE_MAIN);
+		CGame::GetTimer()->SetState(CTimer::STATE_APPEARANCE);
+		//CGame::GetGameManager()->SetType(CGameManager::SCENE_MAIN);
 	}
 }
 

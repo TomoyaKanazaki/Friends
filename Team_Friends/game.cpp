@@ -171,7 +171,7 @@ HRESULT CGame::Init(void)
 	}
 
 	// タイマー
-	m_pTimer = CTimer::Create(D3DXVECTOR3(600.0f, 300.0f, 0.0f));
+	m_pTimer = CTimer::Create(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
 
 	CEmergency::Create();
 

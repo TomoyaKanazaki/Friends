@@ -81,13 +81,6 @@ PATTERNSET
 	
 	FIXEDMOVE = 0		# 一定の動きの種類
 	
-	ENEMYSET
-		TYPE = 2		# キャラの種類
-		INDEX = 0
-		POS = 0.00 0.00 0.00
-		STARTFRAME = 0		# 初期フレーム
-	END_ENEMYSET
-	
 		ENEMYSET
 		TYPE = 2		# キャラの種類
 		INDEX = 0
@@ -110,13 +103,6 @@ END_PATTERNSET
 PATTERNSET
 	
 	FIXEDMOVE = 0		# 一定の動きの種類
-	
-	ENEMYSET
-		TYPE = 2		# キャラの種類
-		INDEX = 0
-		POS = 0.00 0.00 0.00
-		STARTFRAME = 0		# 初期フレーム
-	END_ENEMYSET
 	
 		ENEMYSET
 		TYPE = 2		# キャラの種類
@@ -174,13 +160,6 @@ PATTERNSET
 	ENEMYSET
 		TYPE = 4		# キャラの種類
 		INDEX = 0
-		POS = 0.00 0.00 0.00
-		STARTFRAME = 0		# 初期フレーム
-	END_ENEMYSET
-
-	ENEMYSET
-		TYPE = 4		# キャラの種類
-		INDEX = 0
 		POS = 300.00 0.00 0.00
 		STARTFRAME = 0		# 初期フレーム
 	END_ENEMYSET
@@ -204,28 +183,14 @@ PATTERNSET
 	ENEMYSET
 		TYPE = 7		# キャラの種類
 		INDEX = 0
-		POS = 200.00 0.00 200.00
+		POS = 300.00 0.00 0.00
 		STARTFRAME = 0		# 初期フレーム
 	END_ENEMYSET
 
 	ENEMYSET
 		TYPE = 7		# キャラの種類
 		INDEX = 0
-		POS = 200.00 0.00 -200.00
-		STARTFRAME = 0		# 初期フレーム
-	END_ENEMYSET
-
-	ENEMYSET
-		TYPE = 7		# キャラの種類
-		INDEX = 0
-		POS = -200.00 0.00 200.00
-		STARTFRAME = 0		# 初期フレーム
-	END_ENEMYSET
-
-	ENEMYSET
-		TYPE = 7		# キャラの種類
-		INDEX = 0
-		POS = -200.00 0.00 -200.00
+		POS = -300.00 0.00 0.00
 		STARTFRAME = 0		# 初期フレーム
 	END_ENEMYSET
 

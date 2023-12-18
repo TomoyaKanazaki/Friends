@@ -40,6 +40,7 @@
 #include "injectiontable.h"
 #include "enemy_boss.h"
 #include "beam.h"
+#include "unioncore.h"
 
 // 派生先
 #include "union_bodytoleg.h"
@@ -146,8 +147,10 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_pShadow = NULL;			// 影の情報
 	m_pTargetP = NULL;			// 目標の地点
 	m_pHPGauge = NULL;			// HPゲージの情報
+	m_pUnionCore = NULL;		// 合体後コア
 	m_UltType = ULT_BEAM;		// 必殺技の種類
 	m_UltBranch = ULTBRANCH_CHARGE_BEAM;	// 必殺技の分岐
+	m_bUltBigArm = false;		// ウルトで腕デカくしたか
 	memset(&m_apModel[0], NULL, sizeof(m_apModel));	// モデル(パーツ)のポインタ
 }
 
@@ -1025,30 +1028,6 @@ void CPlayerUnion::MotionSet(int nIdx)
 				m_pMotion[nIdx]->SetFrameCount(m_pMotion[PARTS_BODY]->GetFrameCount());
 			}
 		}
-		else if (m_sMotionFrag[nIdx].bJump == true &&
-			m_sMotionFrag[nIdx].bATK == false &&
-			m_sMotionFrag[nIdx].bCharge == false &&
-			m_bKnockBack == false &&
-			m_bDead == false)
-		{// ジャンプ中
-
-			// ジャンプのフラグOFF
-			m_sMotionFrag[nIdx].bJump = false;
-
-			// ジャンプモーション
-			m_pMotion[nIdx]->Set(MOTION_JUMP);
-		}
-		else if (m_bJump == true &&
-			m_sMotionFrag[nIdx].bJump == false &&
-			m_sMotionFrag[nIdx].bATK == false &&
-			m_sMotionFrag[nIdx].bCharge == false &&
-			m_bKnockBack == false &&
-			m_bDead == false)
-		{// ジャンプ中&&ジャンプモーションが終わってる時
-
-			// 落下モーション
-			m_pMotion[nIdx]->Set(MOTION_FALL);
-		}
 		else if (m_sMotionFrag[nIdx].bCharge == true)
 		{// チャージ中だったら
 
@@ -1128,7 +1107,7 @@ void CPlayerUnion::Atack(int nIdx)
 		{// 衝撃のカウントと同じとき
 
 			// 攻撃時処理
-			AttackAction(nIdx, atkInfo.nCollisionNum, atkInfo);
+			AttackAction(nIdx, atkInfo.nCollisionNum, atkInfo, nCntAttack);
 		}
 
 		// モーションカウンター取得
@@ -1136,7 +1115,7 @@ void CPlayerUnion::Atack(int nIdx)
 		{// 攻撃判定中
 			
 			// 攻撃判定中処理
-			AttackInDicision(nIdx, atkInfo);
+			AttackInDicision(nIdx, atkInfo, nCntAttack);
 		}
 	}
 
@@ -1147,7 +1126,7 @@ void CPlayerUnion::Atack(int nIdx)
 //==========================================================================
 // 攻撃時処理
 //==========================================================================
-void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo)
+void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo, int nCntATK)
 {
 
 	// 武器の位置
@@ -1209,13 +1188,125 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 		// 瓦礫
 		CBallast::Create(weponpos, D3DXVECTOR3(3.0f, 8.0f, 3.0f), 10, 1.0f, CBallast::TYPE_STONE);
 		break;
+
+	case MOTION_ULT_BIGPUNCHCHARGE:
+
+		if (nCntATK == 0)
+		{
+			// 合体後コア生成
+			m_pUnionCore = CUnionCore::Create(weponpos);
+			m_pUnionCore->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx());
+
+			// 振動
+			CManager::GetInstance()->GetCamera()->SetShake(18, 10.0f, 0.0f);
+		}
+		else if (nCntATK == 1 && m_pUnionCore != nullptr)
+		{
+			m_pUnionCore->Uninit();
+			m_pUnionCore = nullptr;
+
+			// 振動
+			CManager::GetInstance()->GetCamera()->SetShake(20, 15.0f, 0.0f);
+		}
+		else if (nCntATK == 2)
+		{
+			D3DXVECTOR3 rot = GetRotation();
+
+			// 衝撃波生成
+			CImpactWave *pWave = CImpactWave::Create
+			(
+				weponpos,	// 位置
+				D3DXVECTOR3(D3DX_PI * 0.25f, D3DX_PI * 0.5f + rot.y, 0.0f),				// 向き
+				D3DXCOLOR(0.9f, 0.5f, 0.1f, 0.8f),			// 色
+				150.0f,										// 幅
+				0.0f,										// 高さ
+				0.0f,										// 中心からの間隔
+				20,											// 寿命
+				30.0f,										// 幅の移動量
+				CImpactWave::TYPE_GIZAGRADATION,				// テクスチャタイプ
+				true										// 加算合成するか
+			);
+
+			// 衝撃波生成
+			CImpactWave::Create
+			(
+				weponpos,	// 位置
+				D3DXVECTOR3(D3DX_PI * 0.75f, D3DX_PI * 0.5f + rot.y, 0.0f),				// 向き
+				D3DXCOLOR(0.9f, 0.5f, 0.1f, 0.8f),			// 色
+				150.0f,										// 幅
+				0.0f,										// 高さ
+				0.0f,										// 中心からの間隔
+				20,											// 寿命
+				30.0f,										// 幅の移動量
+				CImpactWave::TYPE_GIZAGRADATION,				// テクスチャタイプ
+				true										// 加算合成するか
+			);
+
+			// 振動
+			CManager::GetInstance()->GetCamera()->SetShake(20, 15.0f, 0.0f);
+
+			// ウルトで腕デカくした判定
+			m_bUltBigArm = true;
+		}
+
+		break;	// MOTION_ULT_BIGPUNCHCHARGEの終端
+
+	case MOTION_ULT_BIGPUNCHATK:
+
+		// 衝撃波生成
+		CImpactWave::Create
+		(
+			weponpos,	// 位置
+			D3DXVECTOR3(D3DX_PI * 1.0f, 0.0f, 0.0f),	// 向き
+			D3DXCOLOR(0.9f, 0.5f, 0.1f, 0.8f),			// 色
+			10.0f,										// 幅
+			150.0f,										// 高さ
+			0.0f,										// 中心からの間隔
+			20,											// 寿命
+			60.0f,										// 幅の移動量
+			CImpactWave::TYPE_GIZAGRADATION,			// テクスチャタイプ
+			true										// 加算合成するか
+		);
+
+		D3DXVECTOR3 moveeffect = mylib_const::DEFAULT_VECTOR3;
+		for (int nCntUse = 0; nCntUse < 10; nCntUse++)
+		{
+			float fMove = (float)Random(200, 220) * 0.1f;		// 移動量
+			float fMoveY = (float)Random(80, 120) * 0.1f;		// 移動量
+
+			float fRot = GetRandomCircleValue();
+			float fRandCol = Random(-100, 100) * 0.001f;
+
+			// 移動量の設定
+			moveeffect.x = sinf(fRot) * fMove;
+			moveeffect.y = fMoveY;
+			moveeffect.z = cosf(fRot) * fMove;
+
+			// エフェクトの設定
+			CEffect3D::Create(
+				GetPosition(),
+				moveeffect,
+				D3DXCOLOR(0.8f + fRandCol, 0.8f + fRandCol, 0.8f + fRandCol, 1.0f),
+				300.0f + Random(-50, 50),
+				30,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_SMOKEBLACK,
+				0.0f);
+		}
+
+
+
+		// 振動
+		CManager::GetInstance()->GetCamera()->SetShake(20, 15.0f, 0.0f);
+
+		break;// MOTION_ULT_BIGPUNCHCHARGEの終端
 	}
 }
 
 //==========================================================================
 // 攻撃判定中処理
 //==========================================================================
-void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
+void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int nCntATK)
 {
 	// 武器の位置
 	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
@@ -1249,27 +1340,99 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 		break;
 
 	case MOTION_ULT_BEAMATK:
-		if ((int)fAllCount % 1 == 0)
+		break;
+
+	case MOTION_ULT_BIGPUNCHCHARGE:
+		if (nCntATK == 3)
 		{
-			//float fMove = 50.0f;
-			//CBeam::Create(
-			//	weponpos,							// 位置
-			//	D3DXVECTOR3(
-			//		sinf(D3DX_PI + rot.y) * fMove,
-			//		cosf(D3DX_PI * 0.5f) * fMove,
-			//		cosf(D3DX_PI + rot.y) * fMove),	// 移動量
-			//	mylib_const::PLAYERBEAM_COLOR,		// 色
-			//	200.0f,		// 半径
-			//	1000.0f,		// 長さ
-			//	60,			// 寿命
-			//	12,			// 密度
-			//	1,	// ダメージ
-			//	CCollisionObject::TAG_PLAYER,	// タグ
-			//	CBeam::TYPE_RESIDUAL
-			//);
+			D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
+			RandPos.x = Random(-5, 5) * 10.0f;
+			RandPos.y = Random(-5, 5) * 10.0f;
+			RandPos.z = Random(-5, 5) * 10.0f;
+
+			CEffect3D *pEffect = CEffect3D::Create(
+				weponpos + RandPos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				100.0f + (float)Random(-20, 20), 6,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_THUNDER);
+			pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+		}
+		else if (nCntATK >= 4)
+		{
+			D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
+
+			int nMax = 1;
+			float fSize = 200.0f;
+			if (m_bUltBigArm)
+			{
+				nMax = 3;
+				fSize = 300.0f;
+			}
+
+			for (int i = 0; i < nMax; i++)
+			{
+				RandPos.x = Random(-5, 5) * 10.0f;
+				RandPos.y = Random(-5, 5) * 10.0f;
+				RandPos.z = Random(-5, 5) * 10.0f;
+
+				CEffect3D *pEffect = CEffect3D::Create(
+					weponpos + RandPos,
+					D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+					D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+					fSize, 6,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_THUNDER);
+
+				RandPos.x = Random(-5, 5) * 10.0f;
+				RandPos.y = Random(-5, 5) * 10.0f;
+				RandPos.z = Random(-5, 5) * 10.0f;
+				CEffect3D::Create(
+					weponpos + RandPos,
+					D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+					D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+					fSize, 6,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_POINT);
+				pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+			}
 		}
 		break;
+
+	case MOTION_ULT_BIGPUNCHATK:
+	{
+		D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
+		for (int i = 0; i < 3; i++)
+		{
+			RandPos.x = Random(-5, 5) * 10.0f;
+			RandPos.y = Random(-5, 5) * 10.0f;
+			RandPos.z = Random(-5, 5) * 10.0f;
+
+			CEffect3D *pEffect = CEffect3D::Create(
+				weponpos + RandPos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				300.0f, 6,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_THUNDER);
+
+			RandPos.x = Random(-5, 5) * 10.0f;
+			RandPos.y = Random(-5, 5) * 10.0f;
+			RandPos.z = Random(-5, 5) * 10.0f;
+			CEffect3D::Create(
+				weponpos + RandPos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				300.0f, 6,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_POINT);
+			pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+		}
 	}
+		break;
+
+	}// 終端
 
 	if (ATKInfo.fRangeSize == 0.0f)
 	{
@@ -1277,7 +1440,7 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 	}
 
 #if _DEBUG
-	CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+	//CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 #endif
 
 	// 敵取得
@@ -2185,6 +2348,7 @@ void CPlayerUnion::UltBigPunch(void)
 //==========================================================================
 void CPlayerUnion::UltChargeBigPunch(void)
 {
+
 	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
 	{
 		if (m_pMotion[i] == NULL)
@@ -2208,6 +2372,9 @@ void CPlayerUnion::UltChargeBigPunch(void)
 		{
 			// チャージモーション設定
 			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHCHARGE);
+
+			// ウルトで腕デカくした判定
+			m_bUltBigArm = false;
 		}
 	}
 }

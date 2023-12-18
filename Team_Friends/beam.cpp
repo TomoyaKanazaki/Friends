@@ -14,11 +14,13 @@
 #include "particle.h"
 #include "ballast.h"
 #include "texture.h"
+#include "impactwave.h"
 
 namespace
 {
 	const char* TEXTURE = "data\\TEXTURE\\effect\\effect000.jpg";
 	const float RATIO_SUBSIZE = 0.3f;	// サイズ縮小の割合
+	const float TIME_LENGTH = 10;	// 長さ補正の時間
 }
 
 int CBeam::m_nTexIdx = 0;		// テクスチャのインデックス番号
@@ -31,6 +33,7 @@ CBeam::CBeam(int nPriority) : CObject(nPriority)
 	m_fRadius = 0.0f;		// 半径
 	m_fLength = 0.0f;		// 長さ
 	m_fDestLength = 0.0f;	// 目標の長さ
+	m_moveRatio = 0.0f;		// 移動の割合
 	m_nDisity = 0;			// 密度
 	m_nDamage = 0;			// ダメージ
 	m_color = mylib_const::DEFAULT_COLOR;	// 色
@@ -39,6 +42,7 @@ CBeam::CBeam(int nPriority) : CObject(nPriority)
 	m_Tag = CCollisionObject::TAG_NONE;	// タグ
 	m_nLife = 0;	// 寿命
 	m_nLifeOrigin = 0;	// 寿命
+	m_nCntEmission = 0;	// 発生物のカウンター
 }
 
 //==========================================================================
@@ -293,7 +297,39 @@ void CBeam::UpdateBillboard(void)
 	int nCntBillboard = 0;
 
 	// 長さ補正
-	InertiaCorrection(m_fLength, m_fDestLength, 0.25f);
+	//InertiaCorrection(m_fLength, m_fDestLength, 0.25f);
+
+	if (m_moveRatio < 1.0f)
+	{
+		m_moveRatio = (float)(m_nLifeOrigin - m_nLife) / TIME_LENGTH;
+		m_fLength = EasingEaseOut(0.0f, m_fDestLength, m_moveRatio);
+		ValueNormalize(m_moveRatio, 1.0f, 0.0f);
+
+		// 発生物カウンター加算
+		m_nCntEmission = (m_nCntEmission + 1) % 1;
+
+		if (m_nCntEmission == 0)
+		{
+			// 先端の位置
+			D3DXVECTOR3 spawnpos = pos + (move * m_fLength);
+			float moverot = atan2f(move.x, move.z);
+
+			// 衝撃波生成
+			CImpactWave::Create
+			(
+				spawnpos,	// 位置
+				D3DXVECTOR3(D3DX_PI * 0.5f, moverot, 0.0f),				// 向き
+				mylib_const::PLAYERBEAM_COLOR,			// 色
+				50.0f,						// 幅
+				20.0f,						// 高さ
+				60.0f,						// 中心からの距離
+				15,							// 寿命
+				40.0f,						// 幅の移動量
+				CImpactWave::TYPE_PURPLE4,	// テクスチャタイプ
+				true						// 加算合成するか
+			);
+		}
+	}
 
 	float fDistance = m_fLength / (float)m_nDisity;
 	float fLen = 0.0f;

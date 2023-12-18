@@ -101,6 +101,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>precompile.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -190,6 +191,7 @@
     <ClCompile Include="effect_startupeye.cpp" />
     <ClCompile Include="effect_thunderring.cpp" />
     <ClCompile Include="elevation.cpp" />
+    <ClCompile Include="emergency.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemybase.cpp" />
     <ClCompile Include="enemymanager.cpp" />
@@ -223,6 +225,7 @@
     <ClCompile Include="logo_complete.cpp" />
     <ClCompile Include="logo_mechanion.cpp" />
     <ClCompile Include="logo_mekanion.cpp" />
+    <ClCompile Include="logo_result.cpp" />
     <ClCompile Include="logo_squadron.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
@@ -267,6 +270,7 @@
     <ClCompile Include="result.cpp" />
     <ClCompile Include="resultmanager.cpp" />
     <ClCompile Include="resultscore.cpp" />
+    <ClCompile Include="result_message.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="shadow.cpp" />
@@ -286,6 +290,7 @@
     <ClCompile Include="tutorialstep.cpp" />
     <ClCompile Include="tutorialtext.cpp" />
     <ClCompile Include="tutorialwindow.cpp" />
+    <ClCompile Include="unioncore.cpp" />
     <ClCompile Include="union_armtoarm.cpp" />
     <ClCompile Include="union_bodytoarm.cpp" />
     <ClCompile Include="union_bodytoleg.cpp" />
@@ -325,6 +330,7 @@
     <ClInclude Include="effect_startupeye.h" />
     <ClInclude Include="effect_thunderring.h" />
     <ClInclude Include="elevation.h" />
+    <ClInclude Include="emergency.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="enemybase.h" />
     <ClInclude Include="enemymanager.h" />
@@ -358,6 +364,7 @@
     <ClInclude Include="logo_complete.h" />
     <ClInclude Include="logo_mechanion.h" />
     <ClInclude Include="logo_mekanion.h" />
+    <ClInclude Include="logo_result.h" />
     <ClInclude Include="logo_squadron.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
@@ -398,6 +405,7 @@
     <ClInclude Include="result.h" />
     <ClInclude Include="resultmanager.h" />
     <ClInclude Include="resultscore.h" />
+    <ClInclude Include="result_message.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="shadow.h" />
@@ -417,6 +425,7 @@
     <ClInclude Include="tutorialstep.h" />
     <ClInclude Include="tutorialtext.h" />
     <ClInclude Include="tutorialwindow.h" />
+    <ClInclude Include="unioncore.h" />
     <ClInclude Include="union_armtoarm.h" />
     <ClInclude Include="union_bodytoarm.h" />
     <ClInclude Include="union_bodytoleg.h" />

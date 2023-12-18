@@ -37,7 +37,7 @@ CMultiNumber::CMultiNumber(int nPriority)
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 位置
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 位置
 	m_col = mylib_const::DEFAULT_COLOR;		// 色
-	size = D3DXVECTOR2(0.0f, 0.0f);	// 数字のサイズ
+	m_size = D3DXVECTOR2(0.0f, 0.0f);	// 数字のサイズ
 	m_objType = CNumber::OBJECTTYPE_2D;	// オブジェクトの種類
 	m_bDigitDraw = false;				// 桁数描画
 }
@@ -67,11 +67,11 @@ CMultiNumber *CMultiNumber::Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, 
 		if (pNumber != NULL)
 		{// メモリの確保が出来ていたら
 
-		 // オブジェクトの種類
+			// オブジェクトの種類
 			pNumber->m_objType = objtype;
 
 			// サイズ
-			pNumber->size = size;
+			pNumber->m_size = size;
 
 			// 位置
 			pNumber->m_pos = pos;
@@ -122,7 +122,7 @@ CMultiNumber *CMultiNumber::Create(D3DXVECTOR3 pos, D3DXVECTOR2 size, int nNum, 
 			pNumber->m_objType = objtype;
 
 			// サイズ
-			pNumber->size = size;
+			pNumber->m_size = size;
 
 			// 位置
 			pNumber->m_pos = pos;
@@ -174,14 +174,14 @@ HRESULT CMultiNumber::Init(void)
 		m_ppMultiNumber[nCntNum] = CNumber::Create(m_objType, m_nPriority);
 
 		// 各種変数の初期化
-		m_ppMultiNumber[nCntNum]->SetSize(size);	// サイズ
-		m_ppMultiNumber[nCntNum]->SetPosition(D3DXVECTOR3(m_pos.x + size.y * nCntNum, m_pos.y, m_pos.z));	// 位置
+		m_ppMultiNumber[nCntNum]->SetSize(m_size);	// サイズ
+		m_ppMultiNumber[nCntNum]->SetPosition(D3DXVECTOR3(m_pos.x + m_size.y * nCntNum, m_pos.y, m_pos.z));	// 位置
 
 																											// 種類の設定
 		if (m_objType == CNumber::OBJECTTYPE_3D)
 		{
 			m_ppMultiNumber[nCntNum]->SetType(CObject::TYPE_OBJECT3D);
-			m_ppMultiNumber[nCntNum]->SetSize3D(D3DXVECTOR3(size.x, size.y, 0.0f));
+			m_ppMultiNumber[nCntNum]->SetSize3D(D3DXVECTOR3(m_size.x, m_size.y, 0.0f));
 			m_ppMultiNumber[nCntNum]->SetRotation(m_rot);
 		}
 
@@ -398,7 +398,10 @@ void CMultiNumber::SetPosition(const D3DXVECTOR3 pos)
 	{
 		if (m_ppMultiNumber[nCntNum] != NULL)
 		{
-			m_ppMultiNumber[nCntNum]->SetPosition(D3DXVECTOR3(m_pos.x + sinf(D3DX_PI / 2 + m_rot.y) * (size.y * nCntNum), m_pos.y, m_pos.z + cosf(D3DX_PI / 2 + m_rot.y) * (size.y * nCntNum)));	// 位置
+			m_ppMultiNumber[nCntNum]->SetPosition(D3DXVECTOR3(
+				m_pos.x + sinf(D3DX_PI / 2 + m_rot.y) * (m_size.y * nCntNum),
+				m_pos.y,
+				m_pos.z + cosf(D3DX_PI / 2 + m_rot.y) * (m_size.y * nCntNum)));	// 位置
 		}
 	}
 }
@@ -409,6 +412,22 @@ void CMultiNumber::SetPosition(const D3DXVECTOR3 pos)
 D3DXVECTOR3 CMultiNumber::GetPosition(void) const
 {
 	return m_pos;
+}
+
+//==========================================================================
+// 位置設定
+//==========================================================================
+void CMultiNumber::SetOriginPosition(const D3DXVECTOR3 pos)
+{
+	m_posOrigin = pos;
+}
+
+//==========================================================================
+// 位置取得
+//==========================================================================
+D3DXVECTOR3 CMultiNumber::GetOriginPosition(void) const
+{
+	return m_posOrigin;
 }
 
 //==========================================================================
@@ -456,4 +475,44 @@ void CMultiNumber::SetColor(const D3DXCOLOR col)
 D3DXCOLOR CMultiNumber::GetColor(void) const
 {
 	return m_col;
+}
+
+//==========================================================================
+// サイズ設定
+//==========================================================================
+void CMultiNumber::SetSize(const D3DXVECTOR2 size)
+{
+	m_size = size;
+
+	for (int nCntNum = 0; nCntNum < m_nNumNumber; nCntNum++)
+	{
+		if (m_ppMultiNumber[nCntNum] != NULL)
+		{
+			m_ppMultiNumber[nCntNum]->SetSize(m_size);
+		}
+	}
+}
+
+//==========================================================================
+// サイズ取得
+//==========================================================================
+D3DXVECTOR2 CMultiNumber::GetSize(void) const
+{
+	return m_size;
+}
+
+//==========================================================================
+// サイズ設定
+//==========================================================================
+void CMultiNumber::SetSizeOrigin(const D3DXVECTOR2 size)
+{
+	m_sizeOrigin = size;
+}
+
+//==========================================================================
+// サイズ取得
+//==========================================================================
+D3DXVECTOR2 CMultiNumber::GetSizeOrigin(void) const
+{
+	return m_sizeOrigin;
 }

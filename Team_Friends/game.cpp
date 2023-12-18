@@ -11,11 +11,13 @@
 #include "debugproc.h"
 #include "fade.h"
 #include "camera.h"
+#include "pause.h"
 
 #include "input.h"
 #include "player.h"
 #include "enemy.h"
 #include "score.h"
+#include "timer.h"
 #include "map.h"
 #include "elevation.h"
 #include "sound.h"
@@ -24,6 +26,7 @@
 #include "stage.h"
 #include "compactcore.h"
 #include "statuswindow.h"
+#include "emergency.h"
 
 #include "enemymanager.h"
 #include "player.h"
@@ -36,6 +39,7 @@
 // 静的メンバ変数宣言
 //==========================================================================
 CScore *CGame::m_pScore = NULL;					// スコアのオブジェクト
+CTimer *CGame::m_pTimer = NULL;						// タイマーのオブジェクト
 CBulletManager *CGame::m_pBulletManager = NULL;		// 弾マネージャのオブジェクト
 CLimitAreaManager *CGame::m_pLimitEreaManager = NULL;	// エリア制限マネージャのオブジェクト
 CLimitArea *CGame::m_pLimitArea = NULL;					// エリア制限のオブジェクト
@@ -47,6 +51,7 @@ CEnemyBase *CGame::m_pEnemyBase = NULL;	// 敵の拠点
 CEnemyManager *CGame::m_pEnemyManager = NULL;	// 敵マネージャのオブジェクト
 CStatusWindow *CGame::m_pStatusWindow[mylib_const::MAX_PLAYER] = {};	// ステータスウィンドウのオブジェクト
 bool CGame::m_bEdit = false;				// エディットの判定
+bool CGame::m_clear = false;				// クリア判定
 
 //==========================================================================
 // コンストラクタ
@@ -152,10 +157,10 @@ HRESULT CGame::Init(void)
 	CCompactCore::Create(D3DXVECTOR3(500.0f, 400.0f, 0.0f));
 
 	CLimitArea::sLimitEreaInfo info;
-	info.fMaxX = 8200.0f;
-	info.fMaxZ = 785.0f;
-	info.fMinX = -785.0f;
-	info.fMinZ = -785.0f;
+	info.fMaxX = 13000.0f;
+	info.fMaxZ = 1200.0f;
+	info.fMinX = -1200.0f;
+	info.fMinZ = -1200.0f;
 	m_pLimitArea = CLimitArea::Create(info);
 	m_pLimitArea->SetEnableDisp(false);
 	//CMeshWall::Create(D3DXVECTOR3(0.0f, 0.0f, 1500.0f), mylib_const::DEFAULT_VECTOR3, 200.0f, 200.0f, 8, 1);
@@ -165,6 +170,12 @@ HRESULT CGame::Init(void)
 	{
 		CManager::GetInstance()->SetByPlayerPartsType(i, -1);
 	}
+
+	// タイマー
+	m_pTimer = CTimer::Create(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
+
+	CEmergency::Create();
+
 	// 成功
 	return S_OK;
 }
@@ -185,6 +196,15 @@ void CGame::Uninit(void)
 		// メモリの開放
 		delete m_pScore;
 		m_pScore = NULL;
+	}
+
+	// タイマーの破棄
+	if (m_pTimer != NULL)
+	{
+		// 終了処理
+		m_pTimer->Uninit();
+		delete m_pTimer;
+		m_pTimer = NULL;
 	}
 
 	if (m_pBulletManager != NULL)
@@ -265,6 +285,32 @@ void CGame::Update(void)
 		"現在のモード：【ゲーム】\n"
 		"切り替え：【 F 】\n\n");
 
+#ifdef _DEBUG
+	// クリア判定切り替え
+	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_NUMPADENTER))
+	{
+		m_clear = !m_clear;
+	}
+	CManager::GetInstance()->GetDebugProc()->Print
+	(
+		"今終わると : "
+	);
+	if (m_clear)
+	{
+		CManager::GetInstance()->GetDebugProc()->Print
+		(
+			"成功\n\n"
+		);
+	}
+	else
+	{
+		CManager::GetInstance()->GetDebugProc()->Print
+		(
+			"失敗\n\n"
+		);
+	}
+#endif
+
 	// キーボード情報取得
 	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 
@@ -337,6 +383,14 @@ void CGame::Update(void)
 		m_pStage->Update();
 	}
 
+
+	// タイマー更新
+	if (m_pTimer != NULL &&
+		!CManager::GetInstance()->GetPause()->IsPause())
+	{
+		m_pTimer->Update();
+	}
+
 #if _DEBUG
 
 	if (pInputKeyboard->GetTrigger(DIK_F))
@@ -349,6 +403,7 @@ void CGame::Update(void)
 	{
 		CCompactCore::Create(D3DXVECTOR3(500.0f, 200.0f, 0.0f));
 	}
+
 #endif
 
 	// シーンの更新

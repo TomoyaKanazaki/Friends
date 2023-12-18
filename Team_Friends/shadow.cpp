@@ -168,6 +168,11 @@ void CShadow::Update(void)
 		return;
 	}
 
+	/*if (!CGame::GetElevation()->IsChange())
+	{
+		return;
+	}*/
+
 	// ˆÊ’uŽæ“¾
 	D3DXVECTOR3 pos = GetPosition();
 

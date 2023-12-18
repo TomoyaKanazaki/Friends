@@ -17,6 +17,7 @@
 //==========================================================================
 class CPlayer;
 class CScore;
+class CTimer;
 class CPowerGauge;
 class CBulletManager;
 class CEditEnemyBase;
@@ -58,12 +59,14 @@ public:
 	static void Reset(void);
 	static EEditType GetEditType(void) { return m_EditType; }
 	static CScore *GetScore(void);
+	static CTimer *GetTimer(void) { return m_pTimer; }	// タイマー取得
 	static CEditEnemyBase *GetEditEnemyBase(void);
 	static CBulletManager *GetBulletManager(void);
 	static CLimitAreaManager *GetLimitEreaManager(void);
 	static CStage *GetStage(void);
 	static CGameManager *GetGameManager(void);
 	static CStatusWindow *GetStatusWindow(int nIdx);
+	static bool IsClearFrag(void) { return m_clear; } // クリアフラグの取得
 
 	static CEnemyManager *GetEnemyManager(void);
 	static CEnemyBase *GetEnemyBase(void);		// 敵の拠点
@@ -75,18 +78,21 @@ private:
 	void EditReset(void);
 
 	// メンバ変数
-	static CScore *m_pScore;					// スコアのオブジェクト
+	static CScore *m_pScore;						// スコアのオブジェクト
+	static CTimer *m_pTimer;						// タイマーのオブジェクト
 	static CBulletManager *m_pBulletManager;		// 弾マネージャのオブジェクト
-	static CLimitAreaManager *m_pLimitEreaManager;		// エリア制限マネージャのオブジェクト
-	static CLimitArea *m_pLimitArea;					// エリア制限のオブジェクト
+	static CLimitAreaManager *m_pLimitEreaManager;	// エリア制限マネージャのオブジェクト
+	static CLimitArea *m_pLimitArea;				// エリア制限のオブジェクト
 	static CEditEnemyBase *m_pEditEnemyBase;		// 敵の拠点エディター
-	static CStage *m_pStage;	// ステージのオブジェクト
-	static CGameManager *m_pGameManager;	// ゲームマネージャのオブジェクト
-	static EEditType m_EditType;		// エディットの種類
-	static CEnemyManager *m_pEnemyManager;		// 敵マネージャのオブジェクト
-	static CEnemyBase *m_pEnemyBase;	// 敵の拠点
+	static CStage *m_pStage;						// ステージのオブジェクト
+	static CGameManager *m_pGameManager;			// ゲームマネージャのオブジェクト
+	static EEditType m_EditType;					// エディットの種類
+	static CEnemyManager *m_pEnemyManager;			// 敵マネージャのオブジェクト
+	static CEnemyBase *m_pEnemyBase;				// 敵の拠点
 	static CStatusWindow *m_pStatusWindow[mylib_const::MAX_PLAYER];	// ステータスウィンドウのオブジェクト
 	static bool m_bEdit;				// エディットの判定
+	static bool m_clear; // クリア判定
+
 };
 
 

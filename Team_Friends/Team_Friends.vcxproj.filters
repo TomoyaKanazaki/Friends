@@ -357,9 +357,6 @@
     <ClCompile Include="title.cpp">
       <Filter>ソース ファイル\mode\title</Filter>
     </ClCompile>
-    <ClCompile Include="logo.cpp">
-      <Filter>ソース ファイル\mode\title\logos</Filter>
-    </ClCompile>
     <ClCompile Include="logo_complete.cpp">
       <Filter>ソース ファイル\mode\title\logos</Filter>
     </ClCompile>
@@ -477,7 +474,22 @@
     <ClCompile Include="enemy_explosion.cpp">
       <Filter>enemy</Filter>
     </ClCompile>
+    <ClCompile Include="unioncore.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="decide_door.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="emergency.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="logo.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="logo_result.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="result_message.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -749,9 +761,6 @@
     <ClInclude Include="title.h">
       <Filter>ヘッダー ファイル\mode\title</Filter>
     </ClInclude>
-    <ClInclude Include="logo.h">
-      <Filter>ヘッダー ファイル\mode\title\logos</Filter>
-    </ClInclude>
     <ClInclude Include="logo_complete.h">
       <Filter>ヘッダー ファイル\mode\title\logos</Filter>
     </ClInclude>
@@ -866,8 +875,23 @@
     <ClInclude Include="statusup.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="unioncore.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="decide_door.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="emergency.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="logo.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="logo_result.h">
+      <Filter>ヘッダー ファイル\mode\result</Filter>
+    </ClInclude>
+    <ClInclude Include="result_message.h">
+      <Filter>ヘッダー ファイル\mode\result</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

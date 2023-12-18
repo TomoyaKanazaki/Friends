@@ -34,6 +34,7 @@ public:
 	virtual void SetVtx(void);
 	virtual void SetVtx(int nNumVertex);
 	void BindTexture(int nIdx);
+	int GetIdxTexture(void) { return m_nTexIdx; }
 
 	virtual void SetColor(const D3DXCOLOR col);			// Fİ’è
 	virtual D3DXCOLOR GetColor(void) const;				// Fæ“¾

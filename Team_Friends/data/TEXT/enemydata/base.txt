@@ -4,45 +4,64 @@
 #==============================================================================
 #--------------------------------[Stage0]-----------------------------
 STAGESET
+
 	BASESET
-		PATTERN = 2
-		POS = 2001.86 0.00 -180.66
+		PATTERN = 1
+		POS = 5000.00 0.00 0.00
 		RUSH = 0
 	END_BASESET
-	
+
 	BASESET
 		PATTERN = 2
-		POS = 2301.86 0.00 -180.66
+		POS = 10000.00 0.00 0.00
 		RUSH = 0
 	END_BASESET
-	
+
 	BASESET
-		PATTERN = 2
-		POS = 2601.86 0.00 -180.66
+		PATTERN = 4
+		POS = 1000.00 0.00 -500.00
 		RUSH = 0
 	END_BASESET
-	
+
 	BASESET
-		PATTERN = 2
-		POS = 2901.86 0.00 -180.66
+		PATTERN = 4
+		POS = 1000.00 0.00 500.00
 		RUSH = 0
 	END_BASESET
-	
+
 	BASESET
-		PATTERN = 2
-		POS = 3201.86 0.00 -180.66
+		PATTERN = 7
+		POS = 2000.00 0.00 0.00
 		RUSH = 0
 	END_BASESET
-	
+
 	BASESET
 		PATTERN = 5
-		POS = 4001.86 0.00 0.66
+		POS = 1800.00 0.00 0.00
 		RUSH = 0
 	END_BASESET
-	
+
 	BASESET
-		PATTERN = 6
-		POS = 7300.86 1000.00 0.66
+		PATTERN = 8
+		POS = 3000.00 0.00 -1000.00
+		RUSH = 0
+	END_BASESET
+
+	BASESET
+		PATTERN = 8
+		POS = 6000.00 0.00 -1000.00
+		RUSH = 0
+	END_BASESET
+
+	BASESET
+		PATTERN = 8
+		POS = 9000.00 0.00 -1000.00
+		RUSH = 0
+	END_BASESET
+
+	BASESET
+		PATTERN = 7
+		POS = 10000.00 0.00 0.00
 		RUSH = 0
 	END_BASESET
 

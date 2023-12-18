@@ -27,7 +27,7 @@ MOTION_FILENAME = data/TEXT/character/enemy/motion_enemy_explosion.txt		# [7]ƒNƒ
 # “G‚Ìî•ñ
 #===================================================================================================
 #------------------------------------------------------------------
-# [0]ƒ{ƒX
+# [0] ‚Â‚æ‚Â‚æƒ{ƒX
 #------------------------------------------------------------------
 PATTERNSET
 	
@@ -43,92 +43,7 @@ PATTERNSET
 END_PATTERNSET
 
 #------------------------------------------------------------------
-# [1]’±
-#------------------------------------------------------------------
-PATTERNSET
-	
-	FIXEDMOVE = 0		# ˆê’è‚Ì“®‚«‚ÌŽí—Þ
-	
-	ENEMYSET
-		TYPE = 1		# ƒLƒƒƒ‰‚ÌŽí—Þ
-		INDEX = 0
-		POS = 0.00 0.00 0.00
-		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
-	END_ENEMYSET
-	
-END_PATTERNSET
-
-#------------------------------------------------------------------
-# [2]‘S”z’u
-#------------------------------------------------------------------
-PATTERNSET
-	
-	FIXEDMOVE = 0		# ˆê’è‚Ì“®‚«‚ÌŽí—Þ
-	
-	ENEMYSET
-		TYPE = 2		# ƒLƒƒƒ‰‚ÌŽí—Þ
-		INDEX = 0
-		POS = 0.00 0.00 0.00
-		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
-	END_ENEMYSET
-	
-	ENEMYSET
-		TYPE = 3		# ƒLƒƒƒ‰‚ÌŽí—Þ
-		INDEX = 0
-		POS = 400.00 0.00 0.00
-		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
-	END_ENEMYSET
-	
-	ENEMYSET
-		TYPE = 4		# ƒLƒƒƒ‰‚ÌŽí—Þ
-		INDEX = 0
-		POS = 800.00 0.00 0.00
-		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
-	END_ENEMYSET
-
-	ENEMYSET
-		TYPE = 7		# ƒLƒƒƒ‰‚ÌŽí—Þ
-		INDEX = 0
-		POS = 800.00 0.00 0.00
-		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
-	END_ENEMYSET
-				
-END_PATTERNSET
-
-#------------------------------------------------------------------
-# [3]ƒƒ^ƒ‹ƒXƒ‰ƒCƒ€
-#------------------------------------------------------------------
-PATTERNSET
-	
-	FIXEDMOVE = 0		# ˆê’è‚Ì“®‚«‚ÌŽí—Þ
-	
-	ENEMYSET
-		TYPE = 3		# ƒLƒƒƒ‰‚ÌŽí—Þ
-		INDEX = 0
-		POS = 0.00 0.00 0.00
-		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
-	END_ENEMYSET
-	
-END_PATTERNSET
-
-#------------------------------------------------------------------
-# [4]“ËŒ‚’–
-#------------------------------------------------------------------
-PATTERNSET
-	
-	FIXEDMOVE = 0		# ˆê’è‚Ì“®‚«‚ÌŽí—Þ
-	
-	ENEMYSET
-		TYPE = 4		# ƒLƒƒƒ‰‚ÌŽí—Þ
-		INDEX = 0
-		POS = 0.00 0.00 0.00
-		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
-	END_ENEMYSET
-	
-END_PATTERNSET
-
-#------------------------------------------------------------------
-# [5]’†ƒ{ƒX-–C‘äŒ^
+# [1] ƒ^ƒŒƒbƒg ƒ{ƒX
 #------------------------------------------------------------------
 PATTERNSET
 	
@@ -144,7 +59,7 @@ PATTERNSET
 END_PATTERNSET
 
 #------------------------------------------------------------------
-# [6]’†ƒ{ƒX-ƒMƒKƒ“ƒgƒGƒbƒW
+# [2] ƒ‰ƒCƒIƒbƒg ƒ{ƒX
 #------------------------------------------------------------------
 PATTERNSET
 	
@@ -157,6 +72,179 @@ PATTERNSET
 		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
 	END_ENEMYSET
 	
+END_PATTERNSET
+
+#------------------------------------------------------------------
+# [3] cƒnƒCƒJƒCƒY
+#------------------------------------------------------------------
+PATTERNSET
+	
+	FIXEDMOVE = 0		# ˆê’è‚Ì“®‚«‚ÌŽí—Þ
+	
+	ENEMYSET
+		TYPE = 2		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = 0.00 0.00 0.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+	
+		ENEMYSET
+		TYPE = 2		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = 0.00 0.00 300.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+	
+		ENEMYSET
+		TYPE = 2		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = 0.00 0.00 -300.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+	
+END_PATTERNSET
+
+#------------------------------------------------------------------
+# [4] ‰¡ƒnƒCƒJƒCƒY
+#------------------------------------------------------------------
+PATTERNSET
+	
+	FIXEDMOVE = 0		# ˆê’è‚Ì“®‚«‚ÌŽí—Þ
+	
+	ENEMYSET
+		TYPE = 2		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = 0.00 0.00 0.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+	
+		ENEMYSET
+		TYPE = 2		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = 300.00 0.00 0.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+	
+		ENEMYSET
+		TYPE = 2		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = -300.00 0.00 0.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+	
+END_PATTERNSET
+
+#------------------------------------------------------------------
+# [5] cƒgƒbƒVƒ“ƒY
+#------------------------------------------------------------------
+PATTERNSET
+	
+	FIXEDMOVE = 0		# ˆê’è‚Ì“®‚«‚ÌŽí—Þ
+	
+	ENEMYSET
+		TYPE = 4		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = 0.00 0.00 0.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE = 4		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = 0.00 0.00 300.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE = 4		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = 0.00 0.00 -300.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+	
+END_PATTERNSET
+
+#------------------------------------------------------------------
+# [6] ‰¡ƒgƒbƒVƒ“ƒY
+#------------------------------------------------------------------
+PATTERNSET
+	
+	FIXEDMOVE = 0		# ˆê’è‚Ì“®‚«‚ÌŽí—Þ
+
+	ENEMYSET
+		TYPE = 4		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = 0.00 0.00 0.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+
+	ENEMYSET
+		TYPE = 4		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = 300.00 0.00 0.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+
+	ENEMYSET
+		TYPE = 4		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = -300.00 0.00 0.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+	
+END_PATTERNSET
+
+#------------------------------------------------------------------
+# [7] ƒ}ƒCƒ“ƒNƒ‰ƒtƒg
+#------------------------------------------------------------------
+PATTERNSET
+	
+	FIXEDMOVE = 0		# ˆê’è‚Ì“®‚«‚ÌŽí—Þ
+
+	ENEMYSET
+		TYPE = 7		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = 200.00 0.00 200.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+
+	ENEMYSET
+		TYPE = 7		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = 200.00 0.00 -200.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+
+	ENEMYSET
+		TYPE = 7		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = -200.00 0.00 200.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+
+	ENEMYSET
+		TYPE = 7		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = -200.00 0.00 -200.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+
+END_PATTERNSET
+
+#------------------------------------------------------------------
+# [8] ƒƒ^ƒ‹ƒGƒŠƒA
+#------------------------------------------------------------------
+PATTERNSET
+	
+	FIXEDMOVE = 0		# ˆê’è‚Ì“®‚«‚ÌŽí—Þ
+
+	ENEMYSET
+		TYPE = 3		# ƒLƒƒƒ‰‚ÌŽí—Þ
+		INDEX = 0
+		POS = 0.00 0.00 0.00
+		STARTFRAME = 0		# ‰ŠúƒtƒŒ[ƒ€
+	END_ENEMYSET
+
 END_PATTERNSET
 
 END_SCRIPT		# ‚±‚Ìs‚Íâ‘ÎÁ‚³‚È‚¢‚±‚ÆI

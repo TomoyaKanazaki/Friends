@@ -225,6 +225,7 @@
     <ClCompile Include="logo_complete.cpp" />
     <ClCompile Include="logo_mechanion.cpp" />
     <ClCompile Include="logo_mekanion.cpp" />
+    <ClCompile Include="logo_result.cpp" />
     <ClCompile Include="logo_squadron.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
@@ -269,6 +270,7 @@
     <ClCompile Include="result.cpp" />
     <ClCompile Include="resultmanager.cpp" />
     <ClCompile Include="resultscore.cpp" />
+    <ClCompile Include="result_message.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="shadow.cpp" />
@@ -362,6 +364,7 @@
     <ClInclude Include="logo_complete.h" />
     <ClInclude Include="logo_mechanion.h" />
     <ClInclude Include="logo_mekanion.h" />
+    <ClInclude Include="logo_result.h" />
     <ClInclude Include="logo_squadron.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
@@ -402,6 +405,7 @@
     <ClInclude Include="result.h" />
     <ClInclude Include="resultmanager.h" />
     <ClInclude Include="resultscore.h" />
+    <ClInclude Include="result_message.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="shadow.h" />

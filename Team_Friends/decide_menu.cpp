@@ -17,6 +17,11 @@
 #include "fog.h"
 #include "player_title.h"
 
+//==========================================================================
+// 静的メンバ変数宣言
+//==========================================================================
+CPlayerTitle *CDecideMenu::m_apPlayer[VTXSELECT_MAX] = {};					// マネージャのオブジェクト
+
 //==========================================
 //  定数定義
 //==========================================
@@ -25,7 +30,7 @@ namespace
 	const D3DXVECTOR3 POS_UI = D3DXVECTOR3(0.0f, 1000.0f, 0.0f); // UIの位置
 	const int ALPHATIME = 60; // 不透明度更新の時間
 	const D3DXVECTOR3 POS_SELECT = D3DXVECTOR3(0.0f, 30.0f, 0.0f); // 選択肢の基準位置
-	const float LENGTH_SELECT = 150.0f; // 選択肢の基準位置
+	const float LENGTH_SELECT = 177.5f; // 選択肢の基準位置
 	const float SCALE_SELECT = 0.15f; // 選択肢の倍率
 	const float PLAYER_SPEED = 5.0f; // プレイヤーの移動量
 	const float PLAYER_TARGET = 500.0f; // プレイヤーの座標
@@ -39,10 +44,10 @@ namespace
 	// テクスチャのファイル
 	const char* m_apTextureFile_Select[CDecideMenu::VTXSELECT_MAX] =
 	{
-		"data\\TEXTURE\\decideplayer_select01.png",
-		"data\\TEXTURE\\decideplayer_select02.png",
-		"data\\TEXTURE\\decideplayer_select03.png",
-		"data\\TEXTURE\\decideplayer_select04.png",
+		"data\\TEXTURE\\decide_player1.png",
+		"data\\TEXTURE\\decide_player2.png",
+		"data\\TEXTURE\\decide_player3.png",
+		"data\\TEXTURE\\decide_player4.png",
 	};
 }
 
@@ -420,7 +425,15 @@ void CDecideMenu::CreateSelect(void)
 		m_pSelect3D[nCntSelect]->SetPosition(pos);
 
 		// 色設定
-		m_pSelect3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
+		/*if (nCntSelect <= m_nNowSelect)
+		{*/
+			m_pSelect3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
+		/*}
+
+		else
+		{
+			m_pSelect3D[nCntSelect]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+		}*/
 	}
 }
 
@@ -441,4 +454,12 @@ void CDecideMenu::CretePlayer(void)
 		// 生成
 		m_apPlayer[nCnt] = CPlayerTitle::Create(pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	}
+}
+
+//==========================================
+//  プレイヤーの生成
+//==========================================
+CPlayerTitle *CDecideMenu::GetPlayerTitle(int Cnt)
+{
+	return m_apPlayer[Cnt];
 }

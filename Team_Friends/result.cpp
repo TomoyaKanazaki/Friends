@@ -14,6 +14,7 @@
 #include "sound.h"
 #include "resultscore.h"
 #include "fog.h"
+#include "game.h"
 
 //==========================================
 //  定数定義 金崎
@@ -38,7 +39,8 @@ bool CResult::m_bAllArrival = false;		// 全て到着した判定
 //==========================================================================
 CResult::CResult() :
 	m_fLength(END_LENGTH),
-	m_col(TARGET_COLOR)
+	m_col(TARGET_COLOR),
+	m_clear(false)
 {
 	// 値のクリア
 	m_bAllArrival = false;	// 全て到着した判定
@@ -59,6 +61,9 @@ HRESULT CResult::Init(void)
 {
 	//プレイヤー数をリセット
 	CManager::GetInstance()->SetNumPlayer(0);
+
+	// クリア判定の取得
+	m_clear = CGame::IsClearFrag();
 
 	// 初期化処理
 	if (FAILED(CScene::Init()))
@@ -100,9 +105,16 @@ void CResult::Uninit(void)
 //==========================================================================
 void CResult::Update(void)
 {
-	CManager::GetInstance()->GetDebugProc()->Print(
-		"現在のモード：【リザルト】\n"
-		"切り替え：【 F 】\n\n");
+	if (m_clear)
+	{
+		CManager::GetInstance()->GetDebugProc()->Print(
+			"現在のモード：【 リザルト : 成功 】\n\n");
+	}
+	else
+	{
+		CManager::GetInstance()->GetDebugProc()->Print(
+			"現在のモード：【 リザルト : 失敗 】\n\n");
+	}
 
 	// キーボード情報取得
 	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
@@ -110,20 +122,13 @@ void CResult::Update(void)
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
-	static int n = 0;
-	n = (n + 1) % 5;
-	if (n == 0)
-	{
-		// モード設定
-		//CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
-	}
-
+	// 画面遷移
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
 	{
 		if (m_bAllArrival == true)
 		{
 			// モード設定
-			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
+			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
 		}
 
 		if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)

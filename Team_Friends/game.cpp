@@ -51,6 +51,7 @@ CEnemyBase *CGame::m_pEnemyBase = NULL;	// 敵の拠点
 CEnemyManager *CGame::m_pEnemyManager = NULL;	// 敵マネージャのオブジェクト
 CStatusWindow *CGame::m_pStatusWindow[mylib_const::MAX_PLAYER] = {};	// ステータスウィンドウのオブジェクト
 bool CGame::m_bEdit = false;				// エディットの判定
+bool CGame::m_clear = false;				// クリア判定
 
 //==========================================================================
 // コンストラクタ
@@ -284,6 +285,32 @@ void CGame::Update(void)
 		"現在のモード：【ゲーム】\n"
 		"切り替え：【 F 】\n\n");
 
+#ifdef _DEBUG
+	// クリア判定切り替え
+	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_NUMPADENTER))
+	{
+		m_clear = !m_clear;
+	}
+	CManager::GetInstance()->GetDebugProc()->Print
+	(
+		"今終わると : "
+	);
+	if (m_clear)
+	{
+		CManager::GetInstance()->GetDebugProc()->Print
+		(
+			"成功\n\n"
+		);
+	}
+	else
+	{
+		CManager::GetInstance()->GetDebugProc()->Print
+		(
+			"失敗\n\n"
+		);
+	}
+#endif
+
 	// キーボード情報取得
 	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 
@@ -376,6 +403,7 @@ void CGame::Update(void)
 	{
 		CCompactCore::Create(D3DXVECTOR3(500.0f, 200.0f, 0.0f));
 	}
+
 #endif
 
 	// シーンの更新

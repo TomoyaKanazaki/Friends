@@ -557,6 +557,11 @@ HRESULT map::ReadText(const char *pTextFile)
 		FileName = "data\\TEXT\\map\\info_title.txt";
 		break;
 
+	case CScene::MODE_DECIDE:
+		//FileName = "data\\TEXT\\map\\info_title.txt";
+		return S_OK;
+		break;
+
 	case CScene::MODE_TUTORIAL:
 		FileName = "data\\TEXT\\map\\info_title.txt";
 		break;

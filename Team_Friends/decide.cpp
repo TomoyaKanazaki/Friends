@@ -11,6 +11,7 @@
 #include "debugproc.h"
 #include "sound.h"
 #include "decide_menu.h"
+#include "decide_door.h"
 
 //==========================================
 //  コンストラクタ
@@ -34,7 +35,7 @@ CDecide::~CDecide()
 HRESULT CDecide::Init(void)
 {
 	// BGM再生
-	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_TITLE);
+	//CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_TITLE);
 
 	// 初期化処理
 	if (FAILED(CScene::Init()))
@@ -44,6 +45,7 @@ HRESULT CDecide::Init(void)
 
 	// 選択メニューの生成
 	CDecideMenu::Create();
+	CDecideDoor::Create();
 
 	// 成功
 	return S_OK;

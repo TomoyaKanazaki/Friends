@@ -30,6 +30,8 @@ const char *CTutorialWindow::m_apTextureFile[CTutorialStep::STEP_MAX] = // ÉeÉNÉ
 	"data\\TEXTURE\\tutorialwindow\\window_03.png",
 	"data\\TEXTURE\\tutorialwindow\\window_04.png",
 	"data\\TEXTURE\\tutorialwindow\\window_05.png",
+	"data\\TEXTURE\\tutorialwindow\\window_05.png",
+	"data\\TEXTURE\\tutorialwindow\\window_05.png",
 };
 int CTutorialWindow::m_nTexIdx[CTutorialStep::STEP_MAX] = {};	// ÉeÉNÉXÉ`ÉÉÇÃÉCÉìÉfÉbÉNÉXî‘çÜ
 

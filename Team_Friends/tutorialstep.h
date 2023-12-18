@@ -71,6 +71,7 @@ private:
 	int m_nCntDirectWave;	// 直線波の回数
 	bool m_bEndStep;		// ステップの終了判定
 	bool m_bSetOK;			// OKの設定判定
+	bool m_bEndAll;			// 全終了判定
 	STEP m_step;			// 現在のステップ
 };
 

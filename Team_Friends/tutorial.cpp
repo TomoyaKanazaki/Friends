@@ -32,6 +32,8 @@ CTutorial::CTutorial()
 	{
 		m_apPlayer[i] = nullptr;	// プレイヤーのオブジェクト
 	}
+
+	m_pText = nullptr;
 }
 
 //==========================================================================
@@ -66,7 +68,7 @@ HRESULT CTutorial::Init(void)
 	//**********************************
 	// テキスト
 	//**********************************
-	CTutorialText *pText = CTutorialText::Create();
+	m_pText = CTutorialText::Create();
 
 	//**********************************
 	// プレイヤー
@@ -108,12 +110,18 @@ void CTutorial::Uninit(void)
 	}
 
 	// ステップの破棄
-	if (m_pStep != NULL)
+	if (m_pStep != nullptr)
 	{// メモリの確保が出来ていたら
 
 		m_pStep->Uninit();
 		delete m_pStep;
-		m_pStep = NULL;
+		m_pStep = nullptr;
+	}
+
+	// ステップの破棄
+	if (m_pText != nullptr)
+	{// メモリの確保が出来ていたら
+		m_pText = nullptr;
 	}
 
 	// 終了処理
@@ -138,24 +146,30 @@ void CTutorial::Update(void)
 		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_GAME);
 	}
 
+	// ステップの破棄
+	if (m_pText != nullptr)
+	{// メモリの確保が出来ていたら
+		m_pText->Update();
+	}
+
 	// 敵マネージャの更新処理
 	//GetEnemyManager()->Update();
 
+	if (m_pStep->IsEndAll())
+	{//チュートリアルを終了
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
+	}
+
 	if (pInputKeyboard->GetTrigger(DIK_L))
 	{
-		if (m_pStep->IsEndAll())
-		{//チュートリアルを終了してよい状態か
-			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);
-		}
-
 		m_pStep->SetStep(m_pStep->GetNowStep());
 		// モード設定
 		m_pStep->AddStep();
 	}
 
 	// ステップの更新処理
-	if (m_pStep != NULL)
-	{// NULLじゃなかったら
+	if (m_pStep != nullptr)
+	{// nullptrじゃなかったら
 		m_pStep->Update();
 	}
 }
@@ -165,7 +179,11 @@ void CTutorial::Update(void)
 //==========================================================================
 void CTutorial::Draw(void)
 {
-
+	// ステップの破棄
+	if (m_pText != nullptr)
+	{// メモリの確保が出来ていたら
+		m_pText->Draw();
+	}
 }
 
 //==========================================================================

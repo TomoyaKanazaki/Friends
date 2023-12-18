@@ -13,6 +13,19 @@
 #include "player.h"
 #include "sound.h"
 #include "resultscore.h"
+#include "fog.h"
+
+//==========================================
+//  定数定義 金崎
+//==========================================
+namespace
+{
+	const D3DXCOLOR TARGET_COLOR = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
+	const float START_LENGTH = 300.0f; // 初期距離
+	const float END_LENGTH = 2000.0f; // 目標距離
+	const float FUNCTION = 0.02f; //倍率
+	const float SWITCH_TIME = 140.0f;
+}
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -23,7 +36,9 @@ bool CResult::m_bAllArrival = false;		// 全て到着した判定
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CResult::CResult()
+CResult::CResult() :
+	m_fLength(END_LENGTH),
+	m_col(TARGET_COLOR)
 {
 	// 値のクリア
 	m_bAllArrival = false;	// 全て到着した判定
@@ -42,6 +57,8 @@ CResult::~CResult()
 //==========================================================================
 HRESULT CResult::Init(void)
 {
+	//プレイヤー数をリセット
+	CManager::GetInstance()->SetNumPlayer(0);
 
 	// 初期化処理
 	if (FAILED(CScene::Init()))
@@ -51,6 +68,14 @@ HRESULT CResult::Init(void)
 
 	// BGM再生
 	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_RESULT);
+
+	// 煙をかける
+	Fog::Set(true);
+
+	// フォグの値を設定する
+	Fog::SetStart(START_LENGTH);
+	Fog::SetEnd(m_fLength);
+	Fog::SetCol(m_col);
 
 	// リザルト画面
 	m_pResultScore = CResultScore::Create();

@@ -215,7 +215,6 @@ void CEnemyBase::Update(void)
 //==========================================================================
 HRESULT CEnemyBase::ReadText(const char *pFileName)
 {
-
 	char aComment[MAX_COMMENT] = {};	// コメント用
 
 	FILE *pFile = NULL;	// ファイルポインタを宣言

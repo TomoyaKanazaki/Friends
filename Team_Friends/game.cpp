@@ -156,10 +156,10 @@ HRESULT CGame::Init(void)
 	CCompactCore::Create(D3DXVECTOR3(500.0f, 400.0f, 0.0f));
 
 	CLimitArea::sLimitEreaInfo info;
-	info.fMaxX = 8200.0f;
-	info.fMaxZ = 785.0f;
-	info.fMinX = -785.0f;
-	info.fMinZ = -785.0f;
+	info.fMaxX = 13000.0f;
+	info.fMaxZ = 1200.0f;
+	info.fMinX = -1200.0f;
+	info.fMinZ = -1200.0f;
 	m_pLimitArea = CLimitArea::Create(info);
 	m_pLimitArea->SetEnableDisp(false);
 	//CMeshWall::Create(D3DXVECTOR3(0.0f, 0.0f, 1500.0f), mylib_const::DEFAULT_VECTOR3, 200.0f, 200.0f, 8, 1);

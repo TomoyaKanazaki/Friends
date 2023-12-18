@@ -37,6 +37,11 @@ public:
 	static void SetEnableArrival(void);
 
 private:
+
+	// ƒƒ“ƒo•Ï”
+	D3DXCOLOR m_col;
+	float m_fLength;
+
 	static bool m_bAllArrival;		// ‘S‚Ä“’…‚µ‚½”»’è
 	static CResultScore *m_pResultScore;
 };

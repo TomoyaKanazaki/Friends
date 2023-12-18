@@ -145,6 +145,7 @@ HRESULT CScene::Init(void)
 	}
 
 	// ƒLƒƒƒ‰¶¬
+	int n = CManager::GetInstance()->GetNumPlayer();
 	for (int nCntPlayer = 0; nCntPlayer < CManager::GetInstance()->GetNumPlayer(); nCntPlayer++)
 	{
 		m_pPlayer[nCntPlayer] = CPlayer::Create(nCntPlayer);

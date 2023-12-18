@@ -225,6 +225,7 @@
     <ClCompile Include="logo_complete.cpp" />
     <ClCompile Include="logo_mechanion.cpp" />
     <ClCompile Include="logo_mekanion.cpp" />
+    <ClCompile Include="logo_result.cpp" />
     <ClCompile Include="logo_squadron.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
@@ -362,6 +363,7 @@
     <ClInclude Include="logo_complete.h" />
     <ClInclude Include="logo_mechanion.h" />
     <ClInclude Include="logo_mekanion.h" />
+    <ClInclude Include="logo_result.h" />
     <ClInclude Include="logo_squadron.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />

@@ -18,7 +18,8 @@ const char* CLogo::m_apTextureFile[] =
 	"data\\TEXTURE\\title\\title_01.png",
 	"data\\TEXTURE\\title\\title_02.png",
 	"data\\TEXTURE\\title\\title_03.png",
-	"data\\TEXTURE\\title\\title_11.png"
+	"data\\TEXTURE\\title\\title_11.png",
+	"data\\TEXTURE\\resultlogo_01.png"
 };
 
 //==========================================

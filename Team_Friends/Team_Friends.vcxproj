@@ -270,6 +270,7 @@
     <ClCompile Include="result.cpp" />
     <ClCompile Include="resultmanager.cpp" />
     <ClCompile Include="resultscore.cpp" />
+    <ClCompile Include="result_message.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="shadow.cpp" />
@@ -404,6 +405,7 @@
     <ClInclude Include="result.h" />
     <ClInclude Include="resultmanager.h" />
     <ClInclude Include="resultscore.h" />
+    <ClInclude Include="result_message.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="shadow.h" />

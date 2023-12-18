@@ -16,6 +16,7 @@
 #include "fog.h"
 #include "game.h"
 #include "logo_result.h"
+#include "result_message.h"
 
 //==========================================
 //  定数定義 金崎
@@ -85,6 +86,9 @@ HRESULT CResult::Init(void)
 
 	// リザルトロゴドーン
 	CLogoResult::Create();
+	
+	// リザルトメッセージドーン
+	CResultMessage::Create(m_clear);
 
 	// リザルト画面
 	m_pResultScore = CResultScore::Create();

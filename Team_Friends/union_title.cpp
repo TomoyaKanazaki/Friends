@@ -206,7 +206,7 @@ void CUnionTitle::Update(void)
 //==========================================================================
 // UŒ‚Žžˆ—
 //==========================================================================
-void CUnionTitle::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo)
+void CUnionTitle::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo, int nCntATK)
 {
 	// •Ší‚ÌˆÊ’u
 	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
@@ -226,10 +226,10 @@ void CUnionTitle::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKI
 //==========================================================================
 // UŒ‚”»’è’†ˆ—
 //==========================================================================
-void CUnionTitle::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
+void CUnionTitle::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int nCntATK)
 {
 	// Šî’ê‚ÌUŒ‚”»’è’†ˆ—
-	CPlayerUnion::AttackInDicision(nIdx, ATKInfo);
+	CPlayerUnion::AttackInDicision(nIdx, ATKInfo, nCntATK);
 
 	// ƒ‚[ƒVƒ‡ƒ“î•ñŽæ“¾
 	int nMotionType = m_pMotion[nIdx]->GetType();

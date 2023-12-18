@@ -465,13 +465,14 @@ void CObjectX::Draw(void)
 	pMat = (D3DXMATERIAL*)pXData->pBuffMat->GetBufferPointer();
 
 	// 頂点数分繰り返し
+	CTexture *pTex = CManager::GetInstance()->GetTexture();
 	for (int nCntMat = 0; nCntMat < (int)pXData->dwNumMat; nCntMat++)
 	{
 		// マテリアルの設定
 		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 		// テクスチャの設定
-		pDevice->SetTexture(0, CManager::GetInstance()->GetTexture()->GetAdress(pXData->nIdxTexture[nCntMat]));
+		pDevice->SetTexture(0, pTex->GetAdress(pXData->nIdxTexture[nCntMat]));
 
 		if (m_scale != D3DXVECTOR3(1.0f, 1.0f, 1.0f))
 		{// 少しでも違う場合
@@ -547,13 +548,14 @@ void CObjectX::Draw(D3DXCOLOR col)
 	pMat = (D3DXMATERIAL*)pXData->pBuffMat->GetBufferPointer();
 
 	// 頂点数分繰り返し
+	CTexture *pTex = CManager::GetInstance()->GetTexture();
 	for (int nCntMat = 0; nCntMat < (int)pXData->dwNumMat; nCntMat++)
 	{
 		// マテリアルの設定
 		pDevice->SetMaterial(&matNow.MatD3D);
 
 		// テクスチャの設定
-		pDevice->SetTexture(0, CManager::GetInstance()->GetTexture()->GetAdress(pXData->nIdxTexture[nCntMat]));
+		pDevice->SetTexture(0, pTex->GetAdress(pXData->nIdxTexture[nCntMat]));
 
 		if (m_scale != D3DXVECTOR3(1.0f, 1.0f, 1.0f))
 		{// 少しでも違う場合

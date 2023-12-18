@@ -49,6 +49,7 @@ public:
 		D3DXVECTOR3 pos;		// 位置
 		D3DXVECTOR3 posDest;	// 目標の位置
 		D3DXVECTOR3 posOrigin;	// 位置の原点
+		D3DXVECTOR3 scale;		// スケール
 	}Parts;
 
 	typedef struct

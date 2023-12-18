@@ -180,6 +180,7 @@
     <ClCompile Include="debugpointnumber.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="decide.cpp" />
+    <ClCompile Include="decide_door.cpp" />
     <ClCompile Include="decide_menu.cpp" />
     <ClCompile Include="edit.cpp" />
     <ClCompile Include="edit_enemybase.cpp" />
@@ -189,6 +190,7 @@
     <ClCompile Include="effect_startupeye.cpp" />
     <ClCompile Include="effect_thunderring.cpp" />
     <ClCompile Include="elevation.cpp" />
+    <ClCompile Include="emergency.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemybase.cpp" />
     <ClCompile Include="enemymanager.cpp" />
@@ -285,6 +287,7 @@
     <ClCompile Include="tutorialstep.cpp" />
     <ClCompile Include="tutorialtext.cpp" />
     <ClCompile Include="tutorialwindow.cpp" />
+    <ClCompile Include="unioncore.cpp" />
     <ClCompile Include="union_armtoarm.cpp" />
     <ClCompile Include="union_bodytoarm.cpp" />
     <ClCompile Include="union_bodytoleg.cpp" />
@@ -314,6 +317,7 @@
     <ClInclude Include="debugpointnumber.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="decide.h" />
+    <ClInclude Include="decide_door.h" />
     <ClInclude Include="decide_menu.h" />
     <ClInclude Include="edit.h" />
     <ClInclude Include="edit_enemybase.h" />
@@ -323,6 +327,7 @@
     <ClInclude Include="effect_startupeye.h" />
     <ClInclude Include="effect_thunderring.h" />
     <ClInclude Include="elevation.h" />
+    <ClInclude Include="emergency.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="enemybase.h" />
     <ClInclude Include="enemymanager.h" />
@@ -415,6 +420,7 @@
     <ClInclude Include="tutorialstep.h" />
     <ClInclude Include="tutorialtext.h" />
     <ClInclude Include="tutorialwindow.h" />
+    <ClInclude Include="unioncore.h" />
     <ClInclude Include="union_armtoarm.h" />
     <ClInclude Include="union_bodytoarm.h" />
     <ClInclude Include="union_bodytoleg.h" />

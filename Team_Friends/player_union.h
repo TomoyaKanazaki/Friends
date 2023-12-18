@@ -19,6 +19,7 @@
 class CShadow;
 class CTargetPoint;
 class CHP_GaugePlayer;
+class CUnionCore;
 
 //==========================================================================
 // クラス定義
@@ -105,8 +106,8 @@ protected:
 	void BindByPlayerIdxTexture(int nIdx, int nPartsIdx);	// プレイヤーインデックス毎のテクスチャ設定
 	void ReadMultiCharacter(const char *pTextFile);			// 複数キャラクター読み込み
 	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
-	virtual void AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo);	// 攻撃時処理
-	virtual void AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo);				// 攻撃判定中処理
+	virtual void AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo, int nCntATK);	// 攻撃時処理
+	virtual void AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int nCntATK);				// 攻撃判定中処理
 	virtual void ControllParts(void);	// パーツのコントロール処理
 	virtual void MotionSet(int nIdx);	// モーションの設定
 	virtual void Atack(int nIdx);		// 攻撃
@@ -156,12 +157,12 @@ private:
 	{
 		MOTION_DEF = 0,			// ニュートラルモーション
 		MOTION_WALK,			// 移動モーション
-		MOTION_CHARGE,			// 必殺技ビームチャージ
-		MOTION_ATK,				// 必殺技ビーム攻撃
+		MOTION_ULT_BEAMCHARGE,	// 必殺技ビームチャージ
+		MOTION_ULT_BEAMATK,		// 必殺技ビーム攻撃
+		MOTION_ULT_BIGPUNCHCHARGE,	// 必殺技デカパンチチャージ
+		MOTION_ULT_BIGPUNCHATK,		// 必殺技デカパンチ攻撃
 		MOTION_KNOCKBACK,		// やられモーション
 		MOTION_DEAD,			// 死亡モーション
-		MOTION_JUMP,			// ジャンプ
-		MOTION_FALL,			// 落下中
 		MOTION_APPEARANCE,		// 出現
 		MOTION_MAX
 	};
@@ -169,6 +170,8 @@ private:
 	enum eUltAttack
 	{
 		ULT_BEAM = 0,	// ビーム
+		ULT_BIGPUNCH,	// ビッグパンチ
+		ULT_RIDERKICK,	// ライダーキック
 		ULT_MAX
 	};
 
@@ -176,6 +179,10 @@ private:
 	{
 		ULTBRANCH_CHARGE_BEAM = 0,	// ビームチャージ
 		ULTBRANCH_ATTACK_BEAM,		// ビーム攻撃
+		ULTBRANCH_CHARGE_BIGPUNCH,	// デカパンチチャージ
+		ULTBRANCH_ATTACK_BIGPUNCH,	// デカパンチ攻撃
+		ULTBRANCH_CHARGE_RIDERKICK,	// ライダーキックチャージ
+		ULTBRANCH_ATTACK_RIDERKICK,	// ライダーキック攻撃
 		ULTBRANCH_MAX
 	};
 
@@ -187,10 +194,16 @@ private:
 
 	// 必殺技関数
 	void UltBeam(void);	// ビーム
+	void UltBigPunch(void);	// デカパンチ
+	void UltRiderKick(void);	// ライダーキック
 
 	// 必殺分岐関数
-	void UltChargeBeam(void);	// ビームチャージ
-	void UltAttackBeam(void);	// ビーム攻撃
+	void UltChargeBeam(void);		// ビームチャージ
+	void UltAttackBeam(void);		// ビーム攻撃
+	void UltChargeBigPunch(void);	// デカパンチチャージ
+	void UltAttackBigPunch(void);	// デカパンチ攻撃
+	void UltChargeRiderKick(void);	// ライダーキックチャージ
+	void UltAttackRiderKick(void);	// ライダーキック攻撃
 
 	// メンバ関数
 	void Controll(void);		// 操作
@@ -207,8 +220,10 @@ private:
 	CShadow *m_pShadow;			// 影の情報
 	CTargetPoint *m_pTargetP;	// 目標の地点
 	CHP_GaugePlayer *m_pHPGauge;	// HPゲージの情報
+	CUnionCore *m_pUnionCore;		// 合体後コア
 	eUltAttack m_UltType;			// 必殺技の種類
 	eUltBranch m_UltBranch;			// 必殺技の分岐
+	bool m_bUltBigArm;				// ウルトで腕デカくしたか
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定
 

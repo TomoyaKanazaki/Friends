@@ -59,6 +59,7 @@ private:
 	float m_fRadius;		// 半径
 	float m_fLength;		// 長さ
 	float m_fDestLength;	// 目標の長さ
+	float m_moveRatio;		// 移動の割合
 	int m_nDisity;			// 密度
 	int m_nDamage;			// ダメージ
 	D3DXCOLOR m_color;		// 色
@@ -68,6 +69,7 @@ private:
 	eBeamType m_BeamType;	// ビームの種類
 	int m_nLife;	// 寿命
 	int m_nLifeOrigin;	// 寿命
+	int m_nCntEmission;		// 発生物のカウンター
 	static int m_nTexIdx;	// テクスチャのインデックス番号
 };
 

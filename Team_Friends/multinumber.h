@@ -50,19 +50,27 @@ public:
 	int GetValue(void);			// 値の取得処理
 	void SetPosition(const D3DXVECTOR3 pos);	// 位置設定
 	D3DXVECTOR3 GetPosition(void) const;		// 位置取得
+	void SetOriginPosition(const D3DXVECTOR3 pos);	// 位置設定
+	D3DXVECTOR3 GetOriginPosition(void) const;		// 位置取得
 	void SetRotation(const D3DXVECTOR3 pos);	// 位置設定
 	D3DXVECTOR3 GetRotation(void) const;		// 位置取得
 	void SetColor(const D3DXCOLOR col);			// 色設定
 	D3DXCOLOR GetColor(void) const;				// 色取得
 	void Release(void);	// 開放処理
+	void SetSize(const D3DXVECTOR2 size);		// サイズ設定
+	D3DXVECTOR2 GetSize(void) const;			// サイズ取得
+	void SetSizeOrigin(const D3DXVECTOR2 size);		// サイズ設定
+	D3DXVECTOR2 GetSizeOrigin(void) const;			// サイズ取得
 
 private:
 
 	// メンバ変数
 	D3DXVECTOR3 m_pos;				// 位置
+	D3DXVECTOR3 m_posOrigin;				// 位置
 	D3DXVECTOR3 m_rot;				// 向き
 	D3DXCOLOR m_col;				// 色
-	D3DXVECTOR2 size;				// 数字のサイズ
+	D3DXVECTOR2 m_size;				// 数字のサイズ
+	D3DXVECTOR2 m_sizeOrigin;				// 数字のサイズ
 	int m_nNum;						// 数字
 	int m_nNumNumber;				// 数字の数
 	int m_nTexIdx;					// テクスチャのインデックス番号

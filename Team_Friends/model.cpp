@@ -27,11 +27,12 @@ int CModel::m_nNumAll = 0;	// 総数
 CModel::CModel(int nPriority)
 {
 	D3DXMatrixIdentity(&m_mtxWorld);				// ワールドマトリックス
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 位置
-	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 前回の位置
+	m_pos = mylib_const::DEFAULT_VECTOR3;			// 位置
+	m_posOld = mylib_const::DEFAULT_VECTOR3;		// 前回の位置
 	m_posOrigin = mylib_const::DEFAULT_VECTOR3;		// 元の位置
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 向き
-	m_rotOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 向き
+	m_rot = mylib_const::DEFAULT_VECTOR3;			// 向き
+	m_rotOrigin = mylib_const::DEFAULT_VECTOR3;		// 向き
+	m_scale = mylib_const::DEFAULT_SCALE;			// スケール
 	m_nIdxXFile = 0;								// Xファイルのインデックス番号
 	m_nIdxTexture = NULL;							// テクスチャのインデックス番号
 	m_pParent = NULL;								// 親モデルのポインタ
@@ -193,16 +194,17 @@ void CModel::Update(void)
 }
 
 //==========================================================================
-// ワールドマトリックスの計算処理
+// ワールドマトリックス計算
 //==========================================================================
 void CModel::CalWorldMtx(void)
 {
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
-	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス宣言
-	D3DXMATRIX mtxRotOrigin;		// 計算用マトリックス宣言
-	D3DXMATRIX mtxnParent;			// 親の計算用マトリックス
+	D3DXMATRIX mtxRot, mtxTrans, mtxScale, mtxRotOrigin;	// 計算用マトリックス宣言
+	D3DXMATRIX mtxnParent;			// 親のマトリックス
+
+	bool bScale = false;
 
 	// 親マトリックスの初期化
 	D3DXMatrixIdentity(&mtxRotOrigin);
@@ -210,6 +212,10 @@ void CModel::CalWorldMtx(void)
 
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
+
+	// スケールを反映する
+	D3DXMatrixScaling(&mtxScale, m_scale.x, m_scale.y, m_scale.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
 
 	// 元の向きを反映する
 	D3DXMatrixRotationYawPitchRoll(&mtxRotOrigin, m_rotOrigin.y, m_rotOrigin.x, m_rotOrigin.z);
@@ -235,6 +241,17 @@ void CModel::CalWorldMtx(void)
 
 		// 親のマトリックスを渡す
 		mtxnParent = m_pParent->GetWorldMtx();
+
+		D3DXVECTOR3 scaleVector;
+
+		// マトリックスからスケール情報を抽出
+		scaleVector.x = D3DXVec3Length(&D3DXVECTOR3(mtxnParent._11, mtxnParent._12, mtxnParent._13));
+		scaleVector.y = D3DXVec3Length(&D3DXVECTOR3(mtxnParent._21, mtxnParent._22, mtxnParent._23));
+		scaleVector.z = D3DXVec3Length(&D3DXVECTOR3(mtxnParent._31, mtxnParent._32, mtxnParent._33));
+		if (scaleVector != D3DXVECTOR3(1.0f, 1.0f, 1.0f))
+		{
+			bScale = true;
+		}
 	}
 
 	// 自分に親のワールドマトリックスを掛ける
@@ -242,6 +259,19 @@ void CModel::CalWorldMtx(void)
 
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+
+	if (m_scale != D3DXVECTOR3(1.0f, 1.0f, 1.0f))
+	{// 少しでも違う場合
+
+		bScale = true;
+	}
+
+	if (bScale)
+	{
+		// 自動正規化をONにする
+		pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+	}
+
 }
 
 //==========================================================================
@@ -506,6 +536,22 @@ void CModel::SetOriginRotation(const D3DXVECTOR3 rot)
 D3DXVECTOR3 CModel::GetOriginRotation(void) const
 {
 	return m_rotOrigin;
+}
+
+//==========================================================================
+// スケール設定
+//==========================================================================
+void CModel::SetScale(const D3DXVECTOR3 scale)
+{
+	m_scale = scale;
+}
+
+//==========================================================================
+// スケール取得
+//==========================================================================
+D3DXVECTOR3 CModel::GetScale(void) const
+{
+	return m_scale;
 }
 
 //==========================================================================

@@ -51,6 +51,7 @@ public:
 	bool IsEdit(void);	// エディットの判定
 	void Save(void);	// セーブ
 	HRESULT Load(const char *pText);	// ロード
+	bool IsChange(void) { return m_bChange; }
 
 	static CElevation *Create(const char *pText);
 	CElevation *GetElevation(void);
@@ -70,6 +71,7 @@ private:
 	CTargetPoint *m_pTargetP;						// 目標の地点
 	D3DXVECTOR3 m_VtxPos[mylib_const::MAX_VTX];		// 頂点座標
 	int m_nTexIdx;									// テクスチャのインデックス番号
+	bool m_bChange;	// 変更のフラグ
 	static bool m_bLoadInfo;						// 情報読み込み判定
 };
 

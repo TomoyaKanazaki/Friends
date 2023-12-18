@@ -40,6 +40,7 @@
 #include "injectiontable.h"
 #include "enemy_boss.h"
 #include "beam.h"
+#include "unioncore.h"
 
 // îhê∂êÊ
 #include "union_bodytoleg.h"
@@ -103,7 +104,9 @@ bool CPlayerUnion::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// éÀèoë
 //==========================================================================
 CPlayerUnion::ULT_FUNC CPlayerUnion::m_UltFuncList[] =
 {
-	&CPlayerUnion::UltBeam,	// ÉrÅ[ÉÄ
+	&CPlayerUnion::UltBeam,		// ÉrÅ[ÉÄ
+	&CPlayerUnion::UltBigPunch,	// ÉfÉJÉpÉìÉ`
+	&CPlayerUnion::UltRiderKick,	// ÉâÉCÉ_Å[ÉLÉbÉN
 };
 
 //==========================================================================
@@ -144,8 +147,10 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_pShadow = NULL;			// âeÇÃèÓïÒ
 	m_pTargetP = NULL;			// ñ⁄ïWÇÃínì_
 	m_pHPGauge = NULL;			// HPÉQÅ[ÉWÇÃèÓïÒ
+	m_pUnionCore = NULL;		// çáëÃå„ÉRÉA
 	m_UltType = ULT_BEAM;		// ïKéEãZÇÃéÌóﬁ
 	m_UltBranch = ULTBRANCH_CHARGE_BEAM;	// ïKéEãZÇÃï™äÚ
+	m_bUltBigArm = false;		// ÉEÉãÉgÇ≈òrÉfÉJÇ≠ÇµÇΩÇ©
 	memset(&m_apModel[0], NULL, sizeof(m_apModel));	// ÉÇÉfÉã(ÉpÅ[Éc)ÇÃÉ|ÉCÉìÉ^
 }
 
@@ -511,7 +516,8 @@ void CPlayerUnion::Controll(void)
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true)
 	{
 		m_state = STATE_ULT;	// èÛë‘
-		m_UltBranch = ULTBRANCH_CHARGE_BEAM;
+		m_UltType = ULT_BIGPUNCH;
+		m_UltBranch = ULTBRANCH_CHARGE_BIGPUNCH;
 	}
 #endif
 
@@ -1022,35 +1028,11 @@ void CPlayerUnion::MotionSet(int nIdx)
 				m_pMotion[nIdx]->SetFrameCount(m_pMotion[PARTS_BODY]->GetFrameCount());
 			}
 		}
-		else if (m_sMotionFrag[nIdx].bJump == true &&
-			m_sMotionFrag[nIdx].bATK == false &&
-			m_sMotionFrag[nIdx].bCharge == false &&
-			m_bKnockBack == false &&
-			m_bDead == false)
-		{// ÉWÉÉÉìÉvíÜ
-
-			// ÉWÉÉÉìÉvÇÃÉtÉâÉOOFF
-			m_sMotionFrag[nIdx].bJump = false;
-
-			// ÉWÉÉÉìÉvÉÇÅ[ÉVÉáÉì
-			m_pMotion[nIdx]->Set(MOTION_JUMP);
-		}
-		else if (m_bJump == true &&
-			m_sMotionFrag[nIdx].bJump == false &&
-			m_sMotionFrag[nIdx].bATK == false &&
-			m_sMotionFrag[nIdx].bCharge == false &&
-			m_bKnockBack == false &&
-			m_bDead == false)
-		{// ÉWÉÉÉìÉvíÜ&&ÉWÉÉÉìÉvÉÇÅ[ÉVÉáÉìÇ™èIÇÌÇ¡ÇƒÇÈéû
-
-			// óéâ∫ÉÇÅ[ÉVÉáÉì
-			m_pMotion[nIdx]->Set(MOTION_FALL);
-		}
 		else if (m_sMotionFrag[nIdx].bCharge == true)
 		{// É`ÉÉÅ[ÉWíÜÇæÇ¡ÇΩÇÁ
 
 			// É`ÉÉÅ[ÉWÉÇÅ[ÉVÉáÉì
-			m_pMotion[nIdx]->Set(MOTION_CHARGE);
+			m_pMotion[nIdx]->Set(MOTION_ULT_BEAMCHARGE);
 		}
 		else if (m_bKnockBack == true)
 		{// Ç‚ÇÁÇÍíÜÇæÇ¡ÇΩÇÁ
@@ -1068,7 +1050,7 @@ void CPlayerUnion::MotionSet(int nIdx)
 		{// çUåÇÇµÇƒÇ¢ÇΩÇÁ
 
 			m_sMotionFrag[nIdx].bATK = false;		// çUåÇîªíËOFF
-			m_pMotion[nIdx]->Set(MOTION_ATK, true);
+			m_pMotion[nIdx]->Set(MOTION_ULT_BEAMATK, true);
 		}
 		else
 		{
@@ -1125,7 +1107,7 @@ void CPlayerUnion::Atack(int nIdx)
 		{// è’åÇÇÃÉJÉEÉìÉgÇ∆ìØÇ∂Ç∆Ç´
 
 			// çUåÇéûèàóù
-			AttackAction(nIdx, atkInfo.nCollisionNum, atkInfo);
+			AttackAction(nIdx, atkInfo.nCollisionNum, atkInfo, nCntAttack);
 		}
 
 		// ÉÇÅ[ÉVÉáÉìÉJÉEÉìÉ^Å[éÊìæ
@@ -1133,7 +1115,7 @@ void CPlayerUnion::Atack(int nIdx)
 		{// çUåÇîªíËíÜ
 			
 			// çUåÇîªíËíÜèàóù
-			AttackInDicision(nIdx, atkInfo);
+			AttackInDicision(nIdx, atkInfo, nCntAttack);
 		}
 	}
 
@@ -1144,7 +1126,7 @@ void CPlayerUnion::Atack(int nIdx)
 //==========================================================================
 // çUåÇéûèàóù
 //==========================================================================
-void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo)
+void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATKInfo, int nCntATK)
 {
 
 	// ïêäÌÇÃà íu
@@ -1156,7 +1138,7 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 	// éÌóﬁï 
 	switch (m_pMotion[nIdx]->GetType())
 	{
-	case MOTION_ATK:
+	case MOTION_ULT_BEAMATK:
 	{
 		float fMove = 0.5f;
 		CBeam::Create(
@@ -1206,13 +1188,125 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 		// ä¢‚I
 		CBallast::Create(weponpos, D3DXVECTOR3(3.0f, 8.0f, 3.0f), 10, 1.0f, CBallast::TYPE_STONE);
 		break;
+
+	case MOTION_ULT_BIGPUNCHCHARGE:
+
+		if (nCntATK == 0)
+		{
+			// çáëÃå„ÉRÉAê∂ê¨
+			m_pUnionCore = CUnionCore::Create(weponpos);
+			m_pUnionCore->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx());
+
+			// êUìÆ
+			CManager::GetInstance()->GetCamera()->SetShake(18, 10.0f, 0.0f);
+		}
+		else if (nCntATK == 1 && m_pUnionCore != nullptr)
+		{
+			m_pUnionCore->Uninit();
+			m_pUnionCore = nullptr;
+
+			// êUìÆ
+			CManager::GetInstance()->GetCamera()->SetShake(20, 15.0f, 0.0f);
+		}
+		else if (nCntATK == 2)
+		{
+			D3DXVECTOR3 rot = GetRotation();
+
+			// è’åÇîgê∂ê¨
+			CImpactWave *pWave = CImpactWave::Create
+			(
+				weponpos,	// à íu
+				D3DXVECTOR3(D3DX_PI * 0.25f, D3DX_PI * 0.5f + rot.y, 0.0f),				// å¸Ç´
+				D3DXCOLOR(0.9f, 0.5f, 0.1f, 0.8f),			// êF
+				150.0f,										// ïù
+				0.0f,										// çÇÇ≥
+				0.0f,										// íÜêSÇ©ÇÁÇÃä‘äu
+				20,											// éıñΩ
+				30.0f,										// ïùÇÃà⁄ìÆó 
+				CImpactWave::TYPE_GIZAGRADATION,				// ÉeÉNÉXÉ`ÉÉÉ^ÉCÉv
+				true										// â¡éZçáê¨Ç∑ÇÈÇ©
+			);
+
+			// è’åÇîgê∂ê¨
+			CImpactWave::Create
+			(
+				weponpos,	// à íu
+				D3DXVECTOR3(D3DX_PI * 0.75f, D3DX_PI * 0.5f + rot.y, 0.0f),				// å¸Ç´
+				D3DXCOLOR(0.9f, 0.5f, 0.1f, 0.8f),			// êF
+				150.0f,										// ïù
+				0.0f,										// çÇÇ≥
+				0.0f,										// íÜêSÇ©ÇÁÇÃä‘äu
+				20,											// éıñΩ
+				30.0f,										// ïùÇÃà⁄ìÆó 
+				CImpactWave::TYPE_GIZAGRADATION,				// ÉeÉNÉXÉ`ÉÉÉ^ÉCÉv
+				true										// â¡éZçáê¨Ç∑ÇÈÇ©
+			);
+
+			// êUìÆ
+			CManager::GetInstance()->GetCamera()->SetShake(20, 15.0f, 0.0f);
+
+			// ÉEÉãÉgÇ≈òrÉfÉJÇ≠ÇµÇΩîªíË
+			m_bUltBigArm = true;
+		}
+
+		break;	// MOTION_ULT_BIGPUNCHCHARGEÇÃèIí[
+
+	case MOTION_ULT_BIGPUNCHATK:
+
+		// è’åÇîgê∂ê¨
+		CImpactWave::Create
+		(
+			weponpos,	// à íu
+			D3DXVECTOR3(D3DX_PI * 1.0f, 0.0f, 0.0f),	// å¸Ç´
+			D3DXCOLOR(0.9f, 0.5f, 0.1f, 0.8f),			// êF
+			10.0f,										// ïù
+			150.0f,										// çÇÇ≥
+			0.0f,										// íÜêSÇ©ÇÁÇÃä‘äu
+			20,											// éıñΩ
+			60.0f,										// ïùÇÃà⁄ìÆó 
+			CImpactWave::TYPE_GIZAGRADATION,			// ÉeÉNÉXÉ`ÉÉÉ^ÉCÉv
+			true										// â¡éZçáê¨Ç∑ÇÈÇ©
+		);
+
+		D3DXVECTOR3 moveeffect = mylib_const::DEFAULT_VECTOR3;
+		for (int nCntUse = 0; nCntUse < 10; nCntUse++)
+		{
+			float fMove = (float)Random(200, 220) * 0.1f;		// à⁄ìÆó 
+			float fMoveY = (float)Random(80, 120) * 0.1f;		// à⁄ìÆó 
+
+			float fRot = GetRandomCircleValue();
+			float fRandCol = Random(-100, 100) * 0.001f;
+
+			// à⁄ìÆó ÇÃê›íË
+			moveeffect.x = sinf(fRot) * fMove;
+			moveeffect.y = fMoveY;
+			moveeffect.z = cosf(fRot) * fMove;
+
+			// ÉGÉtÉFÉNÉgÇÃê›íË
+			CEffect3D::Create(
+				GetPosition(),
+				moveeffect,
+				D3DXCOLOR(0.8f + fRandCol, 0.8f + fRandCol, 0.8f + fRandCol, 1.0f),
+				300.0f + Random(-50, 50),
+				30,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_SMOKEBLACK,
+				0.0f);
+		}
+
+
+
+		// êUìÆ
+		CManager::GetInstance()->GetCamera()->SetShake(20, 15.0f, 0.0f);
+
+		break;// MOTION_ULT_BIGPUNCHCHARGEÇÃèIí[
 	}
 }
 
 //==========================================================================
 // çUåÇîªíËíÜèàóù
 //==========================================================================
-void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
+void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int nCntATK)
 {
 	// ïêäÌÇÃà íu
 	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
@@ -1228,7 +1322,7 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 	// éÌóﬁï 
 	switch (m_pMotion[nIdx]->GetType())
 	{
-	case MOTION_CHARGE:
+	case MOTION_ULT_BEAMCHARGE:
 		if ((int)fAllCount % repeat == 0)
 		{
 			my_particle::Create(weponpos, my_particle::TYPE_ULT_BEAM_CHARGE);
@@ -1245,28 +1339,100 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 		}
 		break;
 
-	case MOTION_ATK:
-		if ((int)fAllCount % 1 == 0)
+	case MOTION_ULT_BEAMATK:
+		break;
+
+	case MOTION_ULT_BIGPUNCHCHARGE:
+		if (nCntATK == 3)
 		{
-			//float fMove = 50.0f;
-			//CBeam::Create(
-			//	weponpos,							// à íu
-			//	D3DXVECTOR3(
-			//		sinf(D3DX_PI + rot.y) * fMove,
-			//		cosf(D3DX_PI * 0.5f) * fMove,
-			//		cosf(D3DX_PI + rot.y) * fMove),	// à⁄ìÆó 
-			//	mylib_const::PLAYERBEAM_COLOR,		// êF
-			//	200.0f,		// îºåa
-			//	1000.0f,		// í∑Ç≥
-			//	60,			// éıñΩ
-			//	12,			// ñßìx
-			//	1,	// É_ÉÅÅ[ÉW
-			//	CCollisionObject::TAG_PLAYER,	// É^ÉO
-			//	CBeam::TYPE_RESIDUAL
-			//);
+			D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
+			RandPos.x = Random(-5, 5) * 10.0f;
+			RandPos.y = Random(-5, 5) * 10.0f;
+			RandPos.z = Random(-5, 5) * 10.0f;
+
+			CEffect3D *pEffect = CEffect3D::Create(
+				weponpos + RandPos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				100.0f + (float)Random(-20, 20), 6,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_THUNDER);
+			pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+		}
+		else if (nCntATK >= 4)
+		{
+			D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
+
+			int nMax = 1;
+			float fSize = 200.0f;
+			if (m_bUltBigArm)
+			{
+				nMax = 3;
+				fSize = 300.0f;
+			}
+
+			for (int i = 0; i < nMax; i++)
+			{
+				RandPos.x = Random(-5, 5) * 10.0f;
+				RandPos.y = Random(-5, 5) * 10.0f;
+				RandPos.z = Random(-5, 5) * 10.0f;
+
+				CEffect3D *pEffect = CEffect3D::Create(
+					weponpos + RandPos,
+					D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+					D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+					fSize, 6,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_THUNDER);
+
+				RandPos.x = Random(-5, 5) * 10.0f;
+				RandPos.y = Random(-5, 5) * 10.0f;
+				RandPos.z = Random(-5, 5) * 10.0f;
+				CEffect3D::Create(
+					weponpos + RandPos,
+					D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+					D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+					fSize, 6,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_POINT);
+				pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+			}
 		}
 		break;
+
+	case MOTION_ULT_BIGPUNCHATK:
+	{
+		D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
+		for (int i = 0; i < 3; i++)
+		{
+			RandPos.x = Random(-5, 5) * 10.0f;
+			RandPos.y = Random(-5, 5) * 10.0f;
+			RandPos.z = Random(-5, 5) * 10.0f;
+
+			CEffect3D *pEffect = CEffect3D::Create(
+				weponpos + RandPos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				300.0f, 6,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_THUNDER);
+
+			RandPos.x = Random(-5, 5) * 10.0f;
+			RandPos.y = Random(-5, 5) * 10.0f;
+			RandPos.z = Random(-5, 5) * 10.0f;
+			CEffect3D::Create(
+				weponpos + RandPos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				300.0f, 6,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_POINT);
+			pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+		}
 	}
+		break;
+
+	}// èIí[
 
 	if (ATKInfo.fRangeSize == 0.0f)
 	{
@@ -1274,7 +1440,7 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo)
 	}
 
 #if _DEBUG
-	CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+	//CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 #endif
 
 	// ìGéÊìæ
@@ -2104,21 +2270,21 @@ void CPlayerUnion::UltChargeBeam(void)
 		}
 
 		int nType = m_pMotion[i]->GetType();
-		if (nType == MOTION_CHARGE && m_pMotion[i]->IsFinish() == true)
+		if (nType == MOTION_ULT_BEAMCHARGE && m_pMotion[i]->IsFinish() == true)
 		{// É`ÉÉÅ[ÉWÇ™èIÇÌÇ¡ÇƒÇΩÇÁ
 
 			// ë“ã@çsìÆ
 			m_UltBranch = ULTBRANCH_ATTACK_BEAM;
 
 			// ïKéEÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
-			m_pMotion[i]->Set(MOTION_ATK);
+			m_pMotion[i]->Set(MOTION_ULT_BEAMATK);
 			return;
 		}
 
-		if (nType != MOTION_CHARGE)
+		if (nType != MOTION_ULT_BEAMCHARGE)
 		{
 			// É`ÉÉÅ[ÉWÉÇÅ[ÉVÉáÉìê›íË
-			m_pMotion[i]->Set(MOTION_CHARGE);
+			m_pMotion[i]->Set(MOTION_ULT_BEAMCHARGE);
 		}
 	}
 }
@@ -2136,7 +2302,7 @@ void CPlayerUnion::UltAttackBeam(void)
 		}
 
 		int nType = m_pMotion[i]->GetType();
-		if (nType == MOTION_ATK && m_pMotion[i]->IsFinish() == true)
+		if (nType == MOTION_ULT_BEAMATK && m_pMotion[i]->IsFinish() == true)
 		{// É`ÉÉÅ[ÉWÇ™èIÇÌÇ¡ÇƒÇΩÇÁ
 
 			// Ç»Ç…Ç‡Ç»Ç¢èÛë‘
@@ -2147,10 +2313,185 @@ void CPlayerUnion::UltAttackBeam(void)
 			return;
 		}
 
-		if (nType != MOTION_ATK)
+		if (nType != MOTION_ULT_BEAMATK)
 		{
 			// ÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
-			m_pMotion[i]->Set(MOTION_ATK);
+			m_pMotion[i]->Set(MOTION_ULT_BEAMATK);
+		}
+	}
+}
+
+
+//==========================================================================
+// ïKéEÅFÉfÉJÉpÉìÉ`
+//==========================================================================
+void CPlayerUnion::UltBigPunch(void)
+{
+	switch (m_UltBranch)
+	{
+	case CPlayerUnion::ULTBRANCH_CHARGE_BIGPUNCH:
+		UltChargeBigPunch();
+		break;
+
+	case CPlayerUnion::ULTBRANCH_ATTACK_BIGPUNCH:
+		UltAttackBigPunch();
+		break;
+
+	default:
+		m_UltBranch = ULTBRANCH_CHARGE_BIGPUNCH;
+		break;
+	}
+}
+
+//==========================================================================
+// ÉfÉJÉpÉìÉ`É`ÉÉÅ[ÉW
+//==========================================================================
+void CPlayerUnion::UltChargeBigPunch(void)
+{
+
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_BIGPUNCHCHARGE && m_pMotion[i]->IsFinish() == true)
+		{// É`ÉÉÅ[ÉWÇ™èIÇÌÇ¡ÇƒÇΩÇÁ
+
+			// ë“ã@çsìÆ
+			m_UltBranch = ULTBRANCH_ATTACK_BIGPUNCH;
+
+			// ïKéEÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHATK);
+			return;
+		}
+
+		if (nType != MOTION_ULT_BIGPUNCHCHARGE)
+		{
+			// É`ÉÉÅ[ÉWÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHCHARGE);
+
+			// ÉEÉãÉgÇ≈òrÉfÉJÇ≠ÇµÇΩîªíË
+			m_bUltBigArm = false;
+		}
+	}
+}
+
+//==========================================================================
+// ÉfÉJÉpÉìÉ`çUåÇ
+//==========================================================================
+void CPlayerUnion::UltAttackBigPunch(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_BIGPUNCHATK && m_pMotion[i]->IsFinish() == true)
+		{// É`ÉÉÅ[ÉWÇ™èIÇÌÇ¡ÇƒÇΩÇÁ
+
+			// Ç»Ç…Ç‡Ç»Ç¢èÛë‘
+			m_state = STATE_NONE;
+
+			// ïKéEÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_DEF);
+			return;
+		}
+
+		if (nType != MOTION_ULT_BIGPUNCHATK)
+		{
+			// ÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHATK);
+		}
+	}
+}
+
+//==========================================================================
+// ÉâÉCÉ_Å[ÉLÉbÉN
+//==========================================================================
+void CPlayerUnion::UltRiderKick(void)
+{
+	switch (m_UltBranch)
+	{
+	case CPlayerUnion::ULTBRANCH_CHARGE_RIDERKICK:
+		UltChargeRiderKick();
+		break;
+
+	case CPlayerUnion::ULTBRANCH_ATTACK_RIDERKICK:
+		UltAttackRiderKick();
+		break;
+
+	default:
+		m_UltBranch = ULTBRANCH_CHARGE_RIDERKICK;
+		break;
+	}
+}
+
+//==========================================================================
+// ÉâÉCÉ_Å[ÉLÉbÉNÉ`ÉÉÅ[ÉW
+//==========================================================================
+void CPlayerUnion::UltChargeRiderKick(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_BIGPUNCHCHARGE && m_pMotion[i]->IsFinish() == true)
+		{// É`ÉÉÅ[ÉWÇ™èIÇÌÇ¡ÇƒÇΩÇÁ
+
+			// ë“ã@çsìÆ
+			m_UltBranch = ULTBRANCH_ATTACK_BIGPUNCH;
+
+			// ïKéEÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHATK);
+			return;
+		}
+
+		if (nType != MOTION_ULT_BIGPUNCHCHARGE)
+		{
+			// É`ÉÉÅ[ÉWÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHCHARGE);
+		}
+	}
+}
+
+//==========================================================================
+// ÉâÉCÉ_Å[ÉLÉbÉNçUåÇ
+//==========================================================================
+void CPlayerUnion::UltAttackRiderKick(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_BIGPUNCHATK && m_pMotion[i]->IsFinish() == true)
+		{// É`ÉÉÅ[ÉWÇ™èIÇÌÇ¡ÇƒÇΩÇÁ
+
+			// Ç»Ç…Ç‡Ç»Ç¢èÛë‘
+			m_state = STATE_NONE;
+
+			// ïKéEÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_DEF);
+			return;
+		}
+
+		if (nType != MOTION_ULT_BIGPUNCHATK)
+		{
+			// ÉrÅ[ÉÄÉÇÅ[ÉVÉáÉìê›íË
+			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHATK);
 		}
 	}
 }
@@ -2191,7 +2532,6 @@ void CPlayerUnion::Draw(void)
 		m_pHPGauge->Draw();
 	}
 }
-
 
 //==========================================================================
 // ÉvÉåÉCÉÑÅ[ÉCÉìÉfÉbÉNÉXñàÇÃÉeÉNÉXÉ`ÉÉê›íË

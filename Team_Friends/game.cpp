@@ -11,11 +11,13 @@
 #include "debugproc.h"
 #include "fade.h"
 #include "camera.h"
+#include "pause.h"
 
 #include "input.h"
 #include "player.h"
 #include "enemy.h"
 #include "score.h"
+#include "timer.h"
 #include "map.h"
 #include "elevation.h"
 #include "sound.h"
@@ -24,6 +26,7 @@
 #include "stage.h"
 #include "compactcore.h"
 #include "statuswindow.h"
+#include "emergency.h"
 
 #include "enemymanager.h"
 #include "player.h"
@@ -36,6 +39,7 @@
 // 静的メンバ変数宣言
 //==========================================================================
 CScore *CGame::m_pScore = NULL;					// スコアのオブジェクト
+CTimer *CGame::m_pTimer = NULL;						// タイマーのオブジェクト
 CBulletManager *CGame::m_pBulletManager = NULL;		// 弾マネージャのオブジェクト
 CLimitAreaManager *CGame::m_pLimitEreaManager = NULL;	// エリア制限マネージャのオブジェクト
 CLimitArea *CGame::m_pLimitArea = NULL;					// エリア制限のオブジェクト
@@ -165,6 +169,12 @@ HRESULT CGame::Init(void)
 	{
 		CManager::GetInstance()->SetByPlayerPartsType(i, -1);
 	}
+
+	// タイマー
+	m_pTimer = CTimer::Create(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
+
+	CEmergency::Create();
+
 	// 成功
 	return S_OK;
 }
@@ -185,6 +195,15 @@ void CGame::Uninit(void)
 		// メモリの開放
 		delete m_pScore;
 		m_pScore = NULL;
+	}
+
+	// タイマーの破棄
+	if (m_pTimer != NULL)
+	{
+		// 終了処理
+		m_pTimer->Uninit();
+		delete m_pTimer;
+		m_pTimer = NULL;
 	}
 
 	if (m_pBulletManager != NULL)
@@ -335,6 +354,14 @@ void CGame::Update(void)
 	if (m_pStage != NULL)
 	{
 		m_pStage->Update();
+	}
+
+
+	// タイマー更新
+	if (m_pTimer != NULL &&
+		!CManager::GetInstance()->GetPause()->IsPause())
+	{
+		m_pTimer->Update();
 	}
 
 #if _DEBUG

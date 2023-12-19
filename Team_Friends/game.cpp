@@ -23,6 +23,7 @@
 #include "sound.h"
 #include "edit_enemybase.h"
 #include "bulletmanager.h"
+#include "itemmanager.h"
 #include "stage.h"
 #include "compactcore.h"
 #include "statuswindow.h"
@@ -41,6 +42,7 @@
 CScore *CGame::m_pScore = NULL;					// スコアのオブジェクト
 CTimer *CGame::m_pTimer = NULL;						// タイマーのオブジェクト
 CBulletManager *CGame::m_pBulletManager = NULL;		// 弾マネージャのオブジェクト
+CItemManager *CGame::m_pItemManager = nullptr;			// アイテムマネージャのオブジェクト
 CLimitAreaManager *CGame::m_pLimitEreaManager = NULL;	// エリア制限マネージャのオブジェクト
 CLimitArea *CGame::m_pLimitArea = NULL;					// エリア制限のオブジェクト
 CEditEnemyBase *CGame::m_pEditEnemyBase = NULL;		// 敵の拠点エディター
@@ -107,7 +109,6 @@ HRESULT CGame::Init(void)
 	// 敵マネージャ
 	//**********************************
 	m_pEnemyManager = CEnemyManager::Create("data\\TEXT\\enemydata\\manager.txt");
-
 	if (m_pEnemyManager == NULL)
 	{// NULLだったら
 		return E_FAIL;
@@ -140,6 +141,12 @@ HRESULT CGame::Init(void)
 	// 弾マネージャ
 	//**********************************
 	m_pBulletManager = CBulletManager::Create();
+
+
+	//**********************************
+	// アイテムマネージャ
+	//**********************************
+	m_pItemManager = CItemManager::Create();
 
 
 	// ステージ
@@ -213,6 +220,14 @@ void CGame::Uninit(void)
 		m_pBulletManager->Uninit();
 		delete m_pBulletManager;
 		m_pBulletManager = NULL;
+	}
+
+	if (m_pItemManager != NULL)
+	{
+		// 終了させる
+		m_pItemManager->Uninit();
+		delete m_pItemManager;
+		m_pItemManager = NULL;
 	}
 
 	if (m_pLimitEreaManager != NULL)
@@ -459,13 +474,20 @@ CGameManager *CGame::GetGameManager(void)
 	return m_pGameManager;
 }
 
-
 //==========================================================================
 // 敵マネージャの取得
 //==========================================================================
 CEnemyManager *CGame::GetEnemyManager(void)
 {
 	return m_pEnemyManager;
+}
+
+//==========================================================================
+// アイテムマネージャの取得
+//==========================================================================
+CItemManager *CGame::GetItemManager(void)
+{
+	return m_pItemManager;
 }
 
 //==========================================================================
@@ -511,6 +533,12 @@ void CGame::Reset(void)
 	if (m_pEnemyManager != NULL)
 	{
 		m_pEnemyManager->Kill();
+	}
+
+	// アイテムマネージャ
+	if (m_pItemManager != NULL)
+	{
+		m_pItemManager->KillAll();
 	}
 
 	// エリア制限

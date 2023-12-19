@@ -57,7 +57,6 @@ private:
 	CGameManager::eStatus m_type;				// 種類
 	STATE m_state;				// 状態
 	int m_nCntState;			// 状態遷移カウンター
-	int m_nIdxBulletManager;			// 弾マネージャのインデックス番号
 	int m_nLife;							// 寿命
 	int m_nLifeMax;					// 寿命の最大値
 	static int m_nNumAll;					// 弾の総数

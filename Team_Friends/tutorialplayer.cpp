@@ -20,6 +20,7 @@
 #include "model.h"
 #include "3D_effect.h"
 #include "shadow.h"
+#include "player_union.h"
 
 //==========================================================================
 // マクロ定義
@@ -87,8 +88,6 @@ void CTutorialPlayer::Update(void)
 	// 親の更新処理(enemymanager等の関係で不使用)
 	//CPlayer::Update();
 
-	Controll();
-
 	// 死亡の判定
 	if (IsDeath() == true)
 	{// 死亡フラグが立っていたら
@@ -117,8 +116,11 @@ void CTutorialPlayer::Update(void)
 	// 過去の位置保存
 	SetOldPosition(GetPosition());
 
+	// 操作
+	Controll();
+
 	// モーションの設定処理
-	//MotionSet();
+	MotionSet();
 
 	// モーション更新
 	if (m_pMotion != nullptr)
@@ -126,11 +128,18 @@ void CTutorialPlayer::Update(void)
 		m_pMotion->Update(GetStatus().fSpeedBuff);
 	}
 
-	//// 攻撃処理
-	//Atack();
+	// 攻撃処理
+	Atack();
 
-	//// 状態更新
-	//UpdateState();
+	// 状態更新
+	UpdateState();
+
+	//// ゲージの割合更新
+	//CStatusWindow *pStatusWindow = CGame::GetStatusWindow(m_nMyPlayerIdx);
+	//if (pStatusWindow != NULL)
+	//{
+	//	pStatusWindow->GetGauge(CGameManager::STATUS_LIFE)->SetRateDest((float)GetLife() / (float)GetLifeOrigin());
+	//}
 
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
@@ -142,14 +151,14 @@ void CTutorialPlayer::Update(void)
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
 
-	//// 追従目標の情報設定
-	//if (m_nChaseTopIdx == m_nMyPlayerIdx)
-	//{
-	//	// カメラの情報取得
-	//	CCamera *pCamera = CManager::GetInstance()->GetCamera();
-	//	pCamera->SetTargetPosition(pos);
-	//	pCamera->SetTargetRotation(rot);
-	//}
+	// 追従目標の情報設定
+	if (GetChaseTopIdx() == m_nMyPlayerIdx)
+	{
+		// カメラの情報取得
+		CCamera *pCamera = CManager::GetInstance()->GetCamera();
+		pCamera->SetTargetPosition(pos);
+		pCamera->SetTargetRotation(rot);
+	}
 
 	// 影の位置更新
 	if (m_pShadow != nullptr)
@@ -205,7 +214,24 @@ void CTutorialPlayer::Update(void)
 void CTutorialPlayer::UpdateByStep(void)
 {
 	// ステップの設定
-	CTutorial::GetStep()->SetStep(CTutorialStep::STEP_WAIT);
+	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+	CTutorialStep *pStep = CTutorial::GetStep();
+
+	if (pInputKeyboard->GetTrigger(DIK_RSHIFT) == true)
+	{// RSHIFTで最終合体ステップ
+		if (pStep->GetNowStep() == CTutorialStep::STEP_UNDER_FREE)
+		{
+			pStep->SetStep(CTutorialStep::STEP_UNDER_FREE);
+			pStep->AddStep();
+		}
+	}
+
+	if (pStep->GetNowStep() == CTutorialStep::STEP_WAIT)
+	{
+		pStep->SetStep(CTutorialStep::STEP_WAIT);
+		pStep->AddStep();
+	}
 }
 
 //==========================================================================
@@ -247,9 +273,6 @@ void CTutorialPlayer::Controll(void)
 
 	// 経過時間取得
 	float fCurrentTime = CManager::GetInstance()->GetDeltaTime();
-
-	// ステップを進める
-	//CTutorial::GetStep()->SetStep(CTutorialStep::STEP_WAIT);
 
 	if (true)
 	{// 行動できるとき
@@ -462,6 +485,12 @@ void CTutorialPlayer::Controll(void)
 		}
 	}
 
+	if (m_sMotionFrag.bMove == true)
+	{
+		// ステップを進める
+		CTutorial::GetStep()->SetStep(CTutorialStep::STEP_MOVE);
+	}
+
 	// 移動量加算
 	newPosition.x += move.x;
 	newPosition.z += move.z;
@@ -589,19 +618,24 @@ void CTutorialPlayer::Controll(void)
 			m_sMotionFrag.bJump = false;
 			m_sMotionFrag.bATK = true;
 
-			//if (m_nCntInputAtk >= 0)
-			//{// まだ猶予があったら
+			if (m_nCntInputAtk >= 0)
+			{// まだ猶予があったら
 
-			//	// 攻撃の段階加算
-			//	m_nAtkLevel++;
-			//	ValueNormalize(m_nAtkLevel, MAX_ATKCOMBO, 0);
-			//}
+				// 攻撃の段階加算
+				m_nAtkLevel++;
+				//ValueNormalize(m_nAtkLevel, 2, 0);
+			}
 
-			// 攻撃の入力カウンターリセット
-			/*m_nCntInputAtk = INTERVAL_ATK;*/
+			 // 攻撃の入力カウンターリセット
+			m_nCntInputAtk = 10;
 		}
 	}
 
+	if (m_sMotionFrag.bATK == true)
+	{
+		// ステップを進める
+		CTutorial::GetStep()->SetStep(CTutorialStep::STEP_ATTACK);
+	}
 
 //#if _DEBUG
 //	static CGameManager::eStatus s_statusType;

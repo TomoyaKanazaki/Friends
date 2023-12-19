@@ -336,7 +336,7 @@ void CObjectX::Kill(void)
 //==========================================================================
 void CObjectX::Update(void)
 {
-#if 1
+#if 0
 	// Xファイルのデータ取得
 	CXLoad *pXLoad = CScene::GetXLoad();
 

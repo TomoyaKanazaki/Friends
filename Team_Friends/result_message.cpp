@@ -8,13 +8,15 @@
 #include "manager.h"
 #include "texture.h"
 #include "camera.h"
+#include "message_lose.h"
 
 //==========================================
 //  定数定義
 //==========================================
 namespace
 {
-	const D3DXVECTOR3 DIFF_POS = D3DXVECTOR3(0.0f, 0.0f, 50.0f);
+	const D3DXVECTOR3 DIFF_POS = D3DXVECTOR3(0.0f, 0.0f, 40.0f); // 位置
+	const D3DXVECTOR3 MESSAGE_SIZE = D3DXVECTOR3(6.0f, 6.0f, 0.0f); // サイズ
 }
 
 //==========================================
@@ -46,6 +48,9 @@ HRESULT CResultMessage::Init(void)
 
 	//ロゴの位置を設定
 	SetPosition(CManager::GetInstance()->GetCamera()->GetPositionV() + DIFF_POS);
+
+	// ロゴのサイズを設定
+	SetSize(MESSAGE_SIZE);
 
 	return hr;
 }
@@ -79,21 +84,15 @@ void CResultMessage::Draw(void)
 //==========================================
 CResultMessage* CResultMessage::Create(bool bClear)
 {
+	// 変数宣言
+	CResultMessage* pMessage = nullptr;
+
 	// インスタンス生成
-	CResultMessage* pMessage = DEBUG_NEW CResultMessage;
+	if (bClear) { pMessage = nullptr; }
+	else { pMessage = DEBUG_NEW CMessageLose; }
 
 	// NULLチェック
 	if (pMessage == nullptr) { return nullptr; }
-
-	// テクスチャの割り当て
-	if (bClear)
-	{
-		pMessage->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[7]));
-	}
-	else
-	{
-		pMessage->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[6]));
-	}
 
 	// 初期化処理
 	pMessage->Init();

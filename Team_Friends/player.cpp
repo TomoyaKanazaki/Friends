@@ -859,7 +859,7 @@ void CPlayer::Controll(void)
 
 	if (pInputKeyboard->GetTrigger(DIK_LEFT) == true)
 	{
-		CCollisionObject::Create(GetPosition(), mylib_const::DEFAULT_VECTOR3, 10000.0f, 3, 10000, CCollisionObject::TAG_PLAYER);
+		CCollisionObject::Create(GetPosition(), mylib_const::DEFAULT_VECTOR3, 100000.0f, 3, 10000, CCollisionObject::TAG_PLAYER);
 	}
 #endif
 }
@@ -1151,6 +1151,14 @@ void CPlayer::Atack(void)
 #endif
 
 #if 1
+			if (CManager::GetInstance()->GetScene()->GetMode() != CScene::MODE_GAME)
+			{// ゲーム以外は通るな
+				CManager::GetInstance()->GetDebugProc()->Print(
+					"モーションカウンター：%d\n", m_pMotion->GetAllCount());
+
+				continue;
+			}
+
 			// 敵取得
 			CEnemy **ppEnemy = CGame::GetEnemyManager()->GetEnemy();
 

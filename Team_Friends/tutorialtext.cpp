@@ -64,15 +64,15 @@ CTutorialText::~CTutorialText()
 CTutorialText *CTutorialText::Create(void)
 {
 	// 生成用のオブジェクト
-	CTutorialText *pTitleScreen = NULL;
+	CTutorialText *pTitleScreen = nullptr;
 
-	if (pTitleScreen == NULL)
+	if (pTitleScreen == nullptr)
 	{// NULLだったら
 
 		// メモリの確保
 		pTitleScreen = DEBUG_NEW CTutorialText;
 
-		if (pTitleScreen != NULL)
+		if (pTitleScreen != nullptr)
 		{// メモリの確保が出来ていたら
 
 			// 初期化処理
@@ -82,7 +82,7 @@ CTutorialText *CTutorialText::Create(void)
 		return pTitleScreen;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 //==========================================================================
@@ -91,7 +91,7 @@ CTutorialText *CTutorialText::Create(void)
 HRESULT CTutorialText::Init(void)
 {
 	// 種類の設定
-	//SetType();
+	SetType(TYPE_OBJECT2D);
 
 	for (int nCntTex = 0; nCntTex < TEX_MAX; nCntTex++)
 	{
@@ -103,6 +103,7 @@ HRESULT CTutorialText::Init(void)
 	{
 		// 生成処理
 		m_pObj2D[nCntVtx] = m_pObj2D[nCntVtx]->Create(7);
+		m_pObj2D[nCntVtx]->SetType(TYPE_OBJECT2D);
 
 		// テクスチャの割り当て
 		D3DXVECTOR2 size;
@@ -145,17 +146,16 @@ HRESULT CTutorialText::Init(void)
 //==========================================================================
 void CTutorialText::Uninit(void)
 {
-	//for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
-	//{
-	//	if (m_pObj2D[nCntSelect] != NULL)
-	//	{// NULLじゃなかったら
+	for (int i = 0; i < VTX_MAX; i++)
+	{
+		if (m_pObj2D[i] != nullptr)
+		{// NULLじゃなかったら
 
-	//		// 終了処理
-	//		m_pObj2D[nCntSelect]->Uninit();
-	//		//delete m_pObj2D[nCntSelect];
-	//		m_pObj2D[nCntSelect] = NULL;
-	//	}
-	//}
+			//m_pObj2D[i]->Uninit();
+			//delete m_pObj2D[i];
+			m_pObj2D[i] = nullptr;
+		}
+	}
 
 	// 情報削除
 	Release();
@@ -185,11 +185,9 @@ void CTutorialText::Update(void)
 	// 値の正規化
 	ValueNormalize(m_nCntMoving, 20, 0);
 
-
-
 	for (int nCntVtx = 0; nCntVtx < VTX_MAX; nCntVtx++)
 	{
-		if (m_pObj2D[nCntVtx] == NULL)
+		if (m_pObj2D[nCntVtx] == nullptr)
 		{// NULLだったら
 			continue;
 		}
@@ -232,10 +230,15 @@ void CTutorialText::Draw(void)
 	//pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 	//pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 
-	//for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
+	//for (int i = 0; i < VTX_MAX; i++)
 	//{
+	//	if (m_pObj2D[i] == nullptr)
+	//	{// NULLだったら
+	//		continue;
+	//	}
+
 	//	// 描画処理
-	//	//m_pObj2D[nCntSelect]->Draw();
+	//	m_pObj2D[i]->Draw();
 	//}
 
 	//// アルファテストを無効にする

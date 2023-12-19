@@ -19,10 +19,10 @@ public:
 	CResultMessage();
 	~CResultMessage();
 
-	HRESULT Init(void) override;
-	void Uninit(void) override;
-	void Update(void) override;
-	void Draw(void) override;
+	virtual HRESULT Init(void) override;
+	virtual void Uninit(void) override;
+	virtual void Update(void) override;
+	virtual void Draw(void) override;
 
 	//Ã“Iƒƒ“ƒoŠÖ”
 	static CResultMessage* Create(bool bClear);

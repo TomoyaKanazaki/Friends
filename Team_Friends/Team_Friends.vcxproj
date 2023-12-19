@@ -216,6 +216,7 @@
     <ClCompile Include="input.cpp" />
     <ClCompile Include="instantfade.cpp" />
     <ClCompile Include="item.cpp" />
+    <ClCompile Include="itemmanager.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="limitarea.cpp" />
     <ClCompile Include="limitereamanager.cpp" />
@@ -225,7 +226,6 @@
     <ClCompile Include="logo_complete.cpp" />
     <ClCompile Include="logo_mechanion.cpp" />
     <ClCompile Include="logo_mekanion.cpp" />
-    <ClCompile Include="logo_result.cpp" />
     <ClCompile Include="logo_squadron.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
@@ -235,6 +235,8 @@
     <ClCompile Include="meshfield.cpp" />
     <ClCompile Include="meshsphere.cpp" />
     <ClCompile Include="meshwall.cpp" />
+    <ClCompile Include="message_lose.cpp" />
+    <ClCompile Include="message_win.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="motion.cpp" />
     <ClCompile Include="multinumber.cpp" />
@@ -355,6 +357,7 @@
     <ClInclude Include="input.h" />
     <ClInclude Include="instantfade.h" />
     <ClInclude Include="item.h" />
+    <ClInclude Include="itemmanager.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="limitarea.h" />
     <ClInclude Include="limitereamanager.h" />
@@ -364,7 +367,6 @@
     <ClInclude Include="logo_complete.h" />
     <ClInclude Include="logo_mechanion.h" />
     <ClInclude Include="logo_mekanion.h" />
-    <ClInclude Include="logo_result.h" />
     <ClInclude Include="logo_squadron.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
@@ -374,6 +376,8 @@
     <ClInclude Include="meshfield.h" />
     <ClInclude Include="meshsphere.h" />
     <ClInclude Include="meshwall.h" />
+    <ClInclude Include="message_lose.h" />
+    <ClInclude Include="message_win.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="motion.h" />
     <ClInclude Include="multinumber.h" />

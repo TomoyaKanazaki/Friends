@@ -107,6 +107,13 @@ protected:
 	bool Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// 当たり判定
 	void BindByPlayerIdxTexture(void);	// プレイヤーインデックス毎のテクスチャ設定
 
+	void UpdateState(void);	// 状態更新処理
+	void MotionSet(void);	// モーションの設定
+	void Atack(void);		// 攻撃
+	int GetEvolusion(void) { return m_nEvolveType; }	// 進化先取得
+	int GetNextEvolusion(void) { return m_nNextEvolveType; }	// 次の進化先取得
+	int GetChaseTopIdx() { return m_nChaseTopIdx; }		//カメラの追従先取得
+
 	bool m_bJump;				// ジャンプ中かどうか
 	bool m_bLandOld;			// 過去の着地情報
 	bool m_bHitStage;			// ステージの当たり判定
@@ -123,7 +130,6 @@ protected:
 private:
 
 	// メンバ関数
-	void UpdateState(void);	// 状態更新処理
 	void KnockBack(void);	// ノックバック
 	void Damage(void);		// ダメージ
 	void Dead(void);		// 死亡
@@ -133,8 +139,6 @@ private:
 	void StateReleaseUnion(void);		// 合体解除
 	void StateEvolusion(void);		// 進化
 	virtual void Controll(void);	// 操作
-	void MotionSet(void);	// モーションの設定
-	void Atack(void);		// 攻撃
 
 	void AttackNormal(CMotion::AttackInfo attackInfo);	// 通常攻撃
 	void AttackArm(CMotion::AttackInfo attackInfo);		// 腕攻撃

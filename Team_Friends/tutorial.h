@@ -17,6 +17,8 @@
 class CTutorialStep;
 class CTutorialText;
 class CTutorialPlayer;
+class CEnemyManager;
+class CEnemyBase;
 
 //==========================================================================
 // クラス定義
@@ -41,12 +43,16 @@ public:
 	static CTutorialStep *GetStep(void);	// ステップ取得
 	CPlayer **GetPlayer(void);				// プレイヤーの取得
 	CPlayer *GetPlayer(int nIdx);			// プレイヤーの取得
+	void StepInitContent();					// 各ステップ開始時の追加要素
 
 private:
 
 	CTutorialPlayer *m_apPlayer[mylib_const::MAX_PLAYER];		// プレイヤーのオブジェクト
 	static bool m_bMovingPlayer;	// プレイヤーが動いてる判定
 	static CTutorialStep *m_pStep;	// ステップ
+	CTutorialText *m_pText;			//テキスト
+	CEnemyManager *m_pEnemyManager;	//敵マネージャー
+	CEnemyBase *m_pEnemyBase;	//敵拠点
 };
 
 #endif

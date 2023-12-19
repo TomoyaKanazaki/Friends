@@ -811,6 +811,11 @@ void CManager::Draw(void)
 		pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);	// 埋めるモード
 	}
 
+	//if (m_pScene != nullptr)
+	//{// メモリの確保が出来ていたら
+	//	m_pScene->Update();
+	//}
+
 	// レンダラーの描画処理
 	m_pRenderer->Draw();
 

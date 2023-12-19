@@ -199,6 +199,11 @@ HRESULT CTexture::LoadTex(const char *pFileName)
 //==========================================================================
 LPDIRECT3DTEXTURE9 CTexture::GetAdress(int nIdx)
 {
+	if (m_pTexInfo[nIdx].pTexture == nullptr)
+	{
+		return nullptr;
+	}
+
 	return m_pTexInfo[nIdx].pTexture;
 }
 

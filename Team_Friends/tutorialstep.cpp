@@ -10,6 +10,7 @@
 #include "input.h"
 #include "fade.h"
 #include "sound.h"
+#include "debugproc.h"
 
 //==========================================================================
 // マクロ定義
@@ -33,6 +34,7 @@ CTutorialStep::CTutorialStep()
 	m_nCntDirectWave = 0;	// 直線波の回数
 	m_bEndStep = false;		// ステップの終了判定
 	m_bSetOK = false;		// OKの設定判定
+	m_bEndAll = false;		// 全終了判定
 	m_step = STEP_WAIT;		// 現在のステップ
 }
 
@@ -87,6 +89,7 @@ HRESULT CTutorialStep::Init(void)
 	m_nCntDirectWave = 0;	// 直線波の回数
 	m_bEndStep = false;		// ステップの終了判定
 	m_bSetOK = false;		// OKの設定判定
+	m_bEndAll = false;		// 全終了判定
 
 	// 成功
 	return S_OK;
@@ -151,6 +154,7 @@ void CTutorialStep::Update(void)
 		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_STEPCLEAR);
 	}
 
+	CManager::GetInstance()->GetDebugProc()->Print("現在のステップ：%d\n",(int)m_step);
 }
 
 //==========================================================================
@@ -182,7 +186,7 @@ void CTutorialStep::SetStep(STEP step)
 		break;
 
 	case CTutorialStep::STEP_ATTACK:
-		// スピードアップのカウンター
+		// ステップのカウント
 		m_nCntSpeedUP++;
 
 		if (m_bEndStep == false)
@@ -193,8 +197,6 @@ void CTutorialStep::SetStep(STEP step)
 		break;
 
 	case CTutorialStep::STEP_POWERUP:
-		// スピードダウンのカウンター
-		m_nCntSpeedDOWN++;
 
 		if (m_bEndStep == false)
 		{
@@ -242,13 +244,18 @@ void CTutorialStep::SetStep(STEP step)
 
 		if (m_bEndStep == false)
 		{
-			CTutorialWindow::Create(m_step);
+			//CTutorialWindow::Create(m_step);
 			m_bEndStep = true;
+			m_bEndAll = true;		// 全終了判定
 		}
 		break;
 
-	default:
+	case CTutorialStep::STEP_MAX:
 		step = STEP_UNDER_FREE;
+		break;
+
+	default:
+		step = STEP_WAIT;
 		break;
 	}
 }
@@ -278,12 +285,7 @@ void CTutorialStep::SetDisableOKSign(void)
 //==========================================================================
 bool CTutorialStep::IsEndAll(void)
 {
-	if (m_bEndStep && m_step == STEP_UNION_FREE)
-	{
-		return true;
-	}
-
-	return false;
+	return 	m_bEndAll;
 }
 
 //==========================================================================

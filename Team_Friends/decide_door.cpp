@@ -5,30 +5,33 @@
 // 
 //==========================================
 #include "decide_door.h"
+#include "decide_menu.h"
 #include "manager.h"
 #include "renderer.h"
-#include "texture.h"
-#include "objectX.h"
 #include "calculation.h"
 #include "input.h"
-#include "sound.h"
 #include "fade.h"
+#include "sound.h"
 #include "debugproc.h"
-#include "fog.h"
+#include "objectX.h"
 #include "player_title.h"
+
+//==========================================
+//  前方宣言
+//==========================================
+class CPlayerTitle;
 
 //==========================================
 //  定数定義
 //==========================================
 namespace
 {
-	const D3DXVECTOR3 POS_UI = D3DXVECTOR3(0.0f, 1000.0f, 0.0f); // UIの位置
-	const int ALPHATIME = 60; // 不透明度更新の時間
-	const D3DXVECTOR3 POS_SELECT = D3DXVECTOR3(0.0f, 30.0f, 0.0f); // 選択肢の基準位置
-	const float LENGTH_SELECT = 150.0f; // 選択肢の基準位置
-	const float SCALE_SELECT = 0.15f; // 選択肢の倍率
-	const float PLAYER_SPEED = 5.0f; // プレイヤーの移動量
-	const float PLAYER_TARGET = 500.0f; // プレイヤーの座標
+	const int GATE_TARGET = 300;	// 不透明度更新の時間
+	const int GATE_GRACE = 1;		// プレイヤーの座標
+	const int GATE_FIXED = 30;		// 選択肢の倍率
+	const float FRAME_POS_Z = 300.0f;		// 選択肢の基準位置
+	const float LENGTH_SELECT = 197.5f;		// 選択肢の基準位置
+	const float PLAYER_SPEED = 5.0f;		// プレイヤーの移動量
 	const char *m_apModelFile_fream = "data\\MODEL\\gate\\gate_frame.x";
 	const char *m_apModelFile_door = "data\\MODEL\\gate\\gate_door.x";
 }
@@ -37,11 +40,12 @@ namespace
 //  コンストラクタ
 //==========================================
 CDecideDoor::CDecideDoor(int nPriority) : CObject(nPriority),
-m_nNowSelect(0)
+m_nNowSelect(0),
+m_nOldSelect(0)
 {
-	memset(&m_pObjX[0], NULL, sizeof(m_pObjX)); // オブジェクト2Dのオブジェクト
 	memset(&m_pSelectX[0], NULL, sizeof(m_pSelectX)); // 選択肢のオブジェクト
-	memset(&m_nTexIdx_Select[0], 0, sizeof(m_nTexIdx_Select)); // テクスチャのインデックス番号
+	memset(&m_n[0], 0, sizeof(m_n)); // ゲートの開閉猶予カウント
+	memset(&m_nGate[0], 0, sizeof(m_nGate)); // ゲートの開閉カウント
 }
 
 //==========================================
@@ -61,7 +65,31 @@ HRESULT CDecideDoor::Init(void)
 	SetType(TYPE_OBJECT3D);
 
 	// 選択対象の生成
-	CreateSelect();
+	//CreateSelect();
+
+	m_pObjX[VTX_FREAM] = CObjectX::Create(m_apModelFile_fream, D3DXVECTOR3(0.0f, 0.0f, FRAME_POS_Z));
+	m_pObjX[VTX_FREAM]->SetType(CObject::TYPE_OBJECTX);
+
+	for (int nCnt = 0; nCnt < MODELSELECT_MAX; nCnt++)
+	{
+		// 位置設定
+		float posX = 0.0f;
+		posX -= 1.5f * LENGTH_SELECT;
+		posX += LENGTH_SELECT * nCnt;
+
+		m_pSelectX[nCnt] = CObjectX::Create(m_apModelFile_door, D3DXVECTOR3(posX, 0.0f, FRAME_POS_Z));
+		m_pSelectX[nCnt]->SetType(CObject::TYPE_OBJECTX);
+
+		if (nCnt <= m_nNowSelect)
+		{
+			m_nGate[nCnt] = 0;
+		}
+
+		else
+		{
+			m_nGate[nCnt] = 60;
+		}
+	}
 
 	return S_OK;
 }
@@ -100,24 +128,13 @@ void CDecideDoor::Uninit(void)
 //==========================================
 void CDecideDoor::Update(void)
 {
-	
-
-	for (int nCntSelect = 0; nCntSelect < MODELSELECT_MAX; nCntSelect++)
-	{
-		if (m_pSelectX[nCntSelect] == NULL)
-		{// NULLだったら
-			continue;
-		}
-
-		// 選択肢の更新処理
-		UpdateSelect(nCntSelect);
-	}
-
 	if (CManager::GetInstance()->GetFade()->GetState() != CFade::STATE_NONE)
 	{// フェード中は抜ける
 		return;
 	}
 
+	// ゲートの開閉する個数の変数
+	int nOpAndClo = 0;
 
 	// キーボード情報取得
 	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
@@ -133,11 +150,37 @@ void CDecideDoor::Update(void)
 	 // 左スティックの判定を渡す
 		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_X);
 
+		// 現在の選択肢を保存
+		m_nOldSelect = m_nNowSelect;
+
 		// パターンNo.を更新
 		m_nNowSelect = (m_nNowSelect + (MODELSELECT_MAX - 1)) % MODELSELECT_MAX;
 
-		// サウンド再生
-		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_CURSOR);
+
+		// ひとつ前の選択肢が現在の選択肢より少ない
+		if (m_nOldSelect <= m_nNowSelect)
+		{
+			// ゲートの開閉する個数を代入
+			nOpAndClo = m_nNowSelect - m_nOldSelect;
+
+			for (int nCnt = nOpAndClo; nCnt > 0; --nCnt)
+			{
+				// ゲートの開閉カウントを正規化
+				m_nGate[nCnt] = GATE_FIXED - m_nGate[nCnt];
+			}
+		}
+
+		else
+		{
+			// ゲートの開閉する個数を代入
+			nOpAndClo = m_nOldSelect - m_nNowSelect;
+
+			for (int nCnt = 0; nCnt < nOpAndClo; ++nCnt)
+			{
+				// ゲートの開閉カウントを正規化
+				m_nGate[m_nOldSelect + nCnt] = GATE_FIXED - m_nGate[m_nOldSelect + nCnt];
+			}
+		}
 	}
 	else if (pInputGamepad->GetStickSelect(CInputGamepad::STICK_X) == false && pInputGamepad->GetStickMoveL(0).x > 0 ||
 		(pInputKeyboard->GetTrigger(DIK_D) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_RIGHT, 0)))
@@ -146,21 +189,95 @@ void CDecideDoor::Update(void)
 	 // 左スティックの判定を渡す
 		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_X);
 
+		// 現在の選択肢を保存
+		m_nOldSelect = m_nNowSelect;
+
 		// パターンNo.を更新
 		m_nNowSelect = (m_nNowSelect + 1) % MODELSELECT_MAX;
 
-		// サウンド再生
-		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_CURSOR);
+
+		// ひとつ前の選択肢が現在の選択肢より多い
+		if (m_nOldSelect >= m_nNowSelect)
+		{
+			// ゲートの開閉する個数を代入
+			nOpAndClo = m_nOldSelect - m_nNowSelect;
+
+			for (int nCnt = nOpAndClo; nCnt > 0; --nCnt)
+			{
+				// ゲートの開閉カウントを正規化
+				m_nGate[nCnt] = GATE_FIXED - m_nGate[nCnt];
+			}
+		}
+
+		else
+		{
+			// ゲートの開閉する個数を代入
+			nOpAndClo = m_nNowSelect - m_nOldSelect;
+
+			for (int nCnt = 0; nCnt < nOpAndClo; ++nCnt)
+			{
+				// ゲートの開閉カウントを正規化
+				m_nGate[m_nNowSelect + nCnt] = GATE_FIXED - m_nGate[m_nNowSelect + nCnt];
+			}
+		}
 	}
 
-	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0))
-	{// 決定が押された
-		CManager::GetInstance()->SetNumPlayer(m_nNowSelect + 1);
 
-		// ゲームに遷移する
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_GAME);
+	// 移動
+	for (int nCnt = 0; nCnt < MODELSELECT_MAX; ++nCnt)
+	{
+		if (nCnt <= m_nNowSelect)
+		{
+			m_nGate[nCnt]++;
 
-		return;
+			// 等速で開ける
+			float posY = EasingLinear(0.0f, GATE_TARGET, m_nGate[nCnt] / GATE_FIXED);
+
+			// 位置を設定
+			m_pSelectX[nCnt]->SetPosition(D3DXVECTOR3(m_pSelectX[nCnt]->GetPosition().x,
+				posY,
+				m_pSelectX[nCnt]->GetPosition().z));
+
+			m_n[nCnt] = 0;
+		}
+
+		else
+		{
+			// 選択画面のプレイヤーを取得
+			CPlayerTitle *p = CDecideMenu::GetPlayerTitle(nCnt);
+
+			// プレイヤーの位置が一定位置以上だったら即閉める
+			if (p->GetPosition().z >= FRAME_POS_Z)
+			{
+				m_n[nCnt] = 60 * GATE_GRACE;
+			}
+
+			// 閉めるまで猶予を持たす
+			m_n[nCnt]++;
+
+			if (m_n[nCnt] >= 60 * GATE_GRACE)
+			{
+				m_nGate[nCnt]++;
+
+				// 等速で閉める
+				float posY = EasingLinear(GATE_TARGET, 0.0f, m_nGate[nCnt] / GATE_FIXED);
+
+				// 位置を設定
+				m_pSelectX[nCnt]->SetPosition(D3DXVECTOR3(m_pSelectX[nCnt]->GetPosition().x,
+					posY,
+					m_pSelectX[nCnt]->GetPosition().z));
+
+				// 猶予カウントを固定
+				m_n[nCnt] = 60 * GATE_GRACE;
+			}
+		}
+
+		// 開閉カウントが一定以上
+		if (m_nGate[nCnt] >= GATE_FIXED)
+		{
+			// 開閉カウントを固定
+			m_nGate[nCnt] = GATE_FIXED;
+		}
 	}
 }
 
@@ -197,45 +314,4 @@ CDecideDoor* CDecideDoor::Create(void)
 	}
 
 	return NULL;
-}
-
-//==========================================
-//  選択肢の更新処理
-//==========================================
-void CDecideDoor::UpdateSelect(int nCntSelect)
-{
-
-	
-}
-
-//==========================================
-//  選択対象の生成
-//==========================================
-void CDecideDoor::CreateSelect(void)
-{
-	// テクスチャのオブジェクト取得
-	CTexture* pTexture = CManager::GetInstance()->GetTexture();
-
-	for (int nCntSelect = 0; nCntSelect < MODELSELECT_MAX; nCntSelect++)
-	{
-		// 生成処理
-		m_pSelectX[nCntSelect] = CObjectX::Create();
-
-		// 種類の設定
-		m_pSelectX[nCntSelect]->SetType(TYPE_OBJECT3D);
-
-		// サイズ設定
-		D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx_Select[nCntSelect]) * SCALE_SELECT;
-		size.z = 0.0f;
-		m_pSelectX[nCntSelect]->SetSize(size); // サイズ
-
-												// 位置設定
-		D3DXVECTOR3 pos = POS_SELECT;
-		pos.x -= 1.5f * LENGTH_SELECT;
-		pos.x += LENGTH_SELECT * nCntSelect;
-		m_pSelectX[nCntSelect]->SetPosition(pos);
-
-		// 色設定
-		m_pSelectX[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
-	}
 }

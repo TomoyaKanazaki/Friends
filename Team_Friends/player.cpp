@@ -1151,6 +1151,14 @@ void CPlayer::Atack(void)
 #endif
 
 #if 1
+			if (CManager::GetInstance()->GetScene()->GetMode() != CScene::MODE_GAME)
+			{// ゲーム以外は通るな
+				CManager::GetInstance()->GetDebugProc()->Print(
+					"モーションカウンター：%d\n", m_pMotion->GetAllCount());
+
+				continue;
+			}
+
 			// 敵取得
 			CEnemy **ppEnemy = CGame::GetEnemyManager()->GetEnemy();
 

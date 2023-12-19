@@ -66,6 +66,7 @@ public:
 	static CStage *GetStage(void);
 	static CGameManager *GetGameManager(void);
 	static CStatusWindow *GetStatusWindow(int nIdx);
+	static bool IsClearFrag(void) { return m_clear; } // クリアフラグの取得
 
 	static CEnemyManager *GetEnemyManager(void);
 	static CEnemyBase *GetEnemyBase(void);		// 敵の拠点
@@ -90,6 +91,8 @@ private:
 	static CEnemyBase *m_pEnemyBase;				// 敵の拠点
 	static CStatusWindow *m_pStatusWindow[mylib_const::MAX_PLAYER];	// ステータスウィンドウのオブジェクト
 	static bool m_bEdit;				// エディットの判定
+	static bool m_clear; // クリア判定
+
 };
 
 

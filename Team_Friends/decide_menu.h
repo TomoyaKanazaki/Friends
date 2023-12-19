@@ -51,6 +51,7 @@ public:
 
 	// 静的メンバ関数
 	static CDecideMenu* Create(void);
+	static CPlayerTitle *GetPlayerTitle(int Cnt); // プレイヤーのポインタ配列
 
 private:
 
@@ -67,7 +68,7 @@ private:
 	int m_nTexIdx_Select[VTXSELECT_MAX];						// テクスチャのインデックス番号
 	CObject3D*m_pObj3D[VTX_MAX];					// オブジェクト2Dのオブジェクト
 	CObject3D*m_pSelect3D[VTXSELECT_MAX];				// 選択肢のオブジェクト
-	CPlayerTitle *m_apPlayer[VTXSELECT_MAX]; // プレイヤーのポインタ配列
+	static CPlayerTitle *m_apPlayer[VTXSELECT_MAX]; // プレイヤーのポインタ配列
 };
 
 #endif

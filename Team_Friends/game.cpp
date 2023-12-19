@@ -551,6 +551,18 @@ void CGame::Reset(void)
 	// ステージ
 	m_pStage = CStage::Create("data\\TEXT\\stage\\boss_info.txt");
 
+	// ステータスウィンドウ
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pStatusWindow[i] == nullptr)
+		{
+			continue;
+		}
+
+		m_pStatusWindow[i]->Uninit();
+		m_pStatusWindow[i] = nullptr;;
+	}
+
 	//**********************************
 	// 敵の拠点
 	//**********************************

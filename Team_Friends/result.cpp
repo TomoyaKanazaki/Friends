@@ -15,7 +15,6 @@
 #include "resultscore.h"
 #include "fog.h"
 #include "game.h"
-#include "logo_result.h"
 #include "result_message.h"
 #include "union_title.h"
 
@@ -85,9 +84,6 @@ HRESULT CResult::Init(void)
 	Fog::SetStart(START_LENGTH);
 	Fog::SetEnd(m_fLength);
 	Fog::SetCol(m_col);
-
-	// リザルトロゴドーン
-	CLogoResult::Create();
 	
 	// リザルトメッセージドーン
 	CResultMessage::Create(m_clear);

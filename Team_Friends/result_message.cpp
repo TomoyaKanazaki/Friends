@@ -8,6 +8,7 @@
 #include "manager.h"
 #include "texture.h"
 #include "camera.h"
+#include "message_lose.h"
 
 //==========================================
 //  定数定義
@@ -83,21 +84,15 @@ void CResultMessage::Draw(void)
 //==========================================
 CResultMessage* CResultMessage::Create(bool bClear)
 {
+	// 変数宣言
+	CResultMessage* pMessage = nullptr;
+
 	// インスタンス生成
-	CResultMessage* pMessage = DEBUG_NEW CResultMessage;
+	if (bClear) { pMessage = nullptr; }
+	else { pMessage = DEBUG_NEW CMessageLose; }
 
 	// NULLチェック
 	if (pMessage == nullptr) { return nullptr; }
-
-	// テクスチャの割り当て
-	if (bClear)
-	{
-		pMessage->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[7]));
-	}
-	else
-	{
-		pMessage->BindTexture(CManager::GetInstance()->GetTexture()->Regist(m_apTextureFile[6]));
-	}
 
 	// 初期化処理
 	pMessage->Init();

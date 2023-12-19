@@ -17,6 +17,7 @@
 #include "game.h"
 #include "logo_result.h"
 #include "result_message.h"
+#include "union_title.h"
 
 //==========================================
 //  定数定義 金崎
@@ -26,8 +27,9 @@ namespace
 	const D3DXCOLOR TARGET_COLOR = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
 	const float START_LENGTH = 300.0f; // 初期距離
 	const float END_LENGTH = 2000.0f; // 目標距離
-	const float FUNCTION = 0.02f; //倍率
-	const float SWITCH_TIME = 140.0f;
+
+	//モデルの配置位置
+	const D3DXVECTOR3 CENTER = D3DXVECTOR3(0.0f, 0.0f, -2000.0f);
 }
 
 //==========================================================================

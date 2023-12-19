@@ -636,6 +636,25 @@ void CMotion::Update(float fBuff)
 				// 終了判定ON
 				m_bFinish = true;
 			}
+			else
+			{
+				for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
+				{
+					if (m_aInfo[m_nType].AttackInfo[nCntAttack] == NULL)
+					{// NULLだったら
+						continue;
+					}
+
+					if (m_aInfo[m_nType].AttackInfo[nCntAttack]->nInpactCnt < 0)
+					{
+						continue;
+					}
+
+					// まだ衝撃カウントの行動をしてない状態にする
+					m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactAct = false;
+					m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactActSet = false;
+				}
+			}
 		}
 	}
 }

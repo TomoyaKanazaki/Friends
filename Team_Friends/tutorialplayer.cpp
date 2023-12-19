@@ -214,7 +214,24 @@ void CTutorialPlayer::Update(void)
 void CTutorialPlayer::UpdateByStep(void)
 {
 	// ステップの設定
-	CTutorial::GetStep()->SetStep(CTutorialStep::STEP_WAIT);
+	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+	CTutorialStep *pStep = CTutorial::GetStep();
+
+	if (pInputKeyboard->GetTrigger(DIK_RSHIFT) == true)
+	{// RSHIFTで最終合体ステップ
+		if (pStep->GetNowStep() == CTutorialStep::STEP_UNDER_FREE)
+		{
+			pStep->SetStep(CTutorialStep::STEP_UNDER_FREE);
+			pStep->AddStep();
+		}
+	}
+
+	if (pStep->GetNowStep() == CTutorialStep::STEP_WAIT)
+	{
+		pStep->SetStep(CTutorialStep::STEP_WAIT);
+		pStep->AddStep();
+	}
 }
 
 //==========================================================================

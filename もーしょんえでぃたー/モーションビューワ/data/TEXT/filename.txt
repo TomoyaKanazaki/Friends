@@ -9,6 +9,6 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------------------
 # モーションファイル名
 #------------------------------------------------------------------------------
-MOTION_FILENAME = data\\TEXT\\motion_playerSUPER_punch.txt
+MOTION_FILENAME = data\\TEXT\\motion_playerSUPER.txt
 
 END_SCRIPT		# この行は絶対消さないこと！

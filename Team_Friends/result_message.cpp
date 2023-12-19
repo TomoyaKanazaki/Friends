@@ -14,7 +14,8 @@
 //==========================================
 namespace
 {
-	const D3DXVECTOR3 DIFF_POS = D3DXVECTOR3(0.0f, 0.0f, 50.0f);
+	const D3DXVECTOR3 DIFF_POS = D3DXVECTOR3(0.0f, 0.0f, 40.0f); // 位置
+	const D3DXVECTOR3 MESSAGE_SIZE = D3DXVECTOR3(6.0f, 6.0f, 0.0f); // サイズ
 }
 
 //==========================================
@@ -46,6 +47,9 @@ HRESULT CResultMessage::Init(void)
 
 	//ロゴの位置を設定
 	SetPosition(CManager::GetInstance()->GetCamera()->GetPositionV() + DIFF_POS);
+
+	// ロゴのサイズを設定
+	SetSize(MESSAGE_SIZE);
 
 	return hr;
 }

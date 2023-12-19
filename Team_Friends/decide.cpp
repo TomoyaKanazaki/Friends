@@ -11,7 +11,6 @@
 #include "debugproc.h"
 #include "sound.h"
 #include "decide_menu.h"
-#include "decide_door.h"
 
 //==========================================
 //  コンストラクタ
@@ -45,7 +44,6 @@ HRESULT CDecide::Init(void)
 
 	// 選択メニューの生成
 	CDecideMenu::Create();
-	CDecideDoor::Create();
 
 	// 成功
 	return S_OK;

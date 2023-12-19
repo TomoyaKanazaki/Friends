@@ -1,7 +1,7 @@
 //==========================================
 // 
 //  人数選択メニュー(decide_menu.h)
-//  Author : Tomoya Kanazaki
+//  Author : 橋本 賢太
 // 
 //==========================================
 #ifndef _DECIDE_DOOR_H_
@@ -47,7 +47,9 @@ public:
 	void Update(void);
 	void Draw(void);
 
-						 // 静的メンバ関数
+	void SetSelect(int nSelect);	// 選択肢設定
+
+	// 静的メンバ関数
 	static CDecideDoor* Create(void);
 
 private:

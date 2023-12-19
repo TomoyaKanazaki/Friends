@@ -1,10 +1,11 @@
-//==========================================
+//==========================================================================
 // 
 //  人数選択メニュー(decide_menu.cpp)
-//  Author : Tomoya Kanazaki
+//  Author : 橋本 賢太
 // 
-//==========================================
+//==========================================================================
 #include "decide_menu.h"
+#include "decide_door.h"
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
@@ -17,15 +18,16 @@
 #include "debugproc.h"
 #include "fog.h"
 #include "player_title.h"
+#include "3D_effect.h"
 
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
 CPlayerTitle *CDecideMenu::m_apPlayer[VTXSELECT_MAX] = {};					// マネージャのオブジェクト
 
-//==========================================
+//==========================================================================
 //  定数定義
-//==========================================
+//==========================================================================
 namespace
 {
 	const D3DXVECTOR3 POS_UI = D3DXVECTOR3(0.0f, 1000.0f, 0.0f); // UIの位置
@@ -42,9 +44,9 @@ namespace
 	const char* m_apModelFile_Select = "data\\MODEL\\gate\\gate_lamp.x";
 }
 
-//==========================================
+//==========================================================================
 //  コンストラクタ
-//==========================================
+//==========================================================================
 CDecideMenu::CDecideMenu(int nPriority) : CObject(nPriority),
 	m_nCntAlpha(0),
 	m_nNowSelect(0)
@@ -54,6 +56,7 @@ CDecideMenu::CDecideMenu(int nPriority) : CObject(nPriority),
 	memset(&m_nTexIdx[0], 0, sizeof(m_nTexIdx)); // テクスチャのインデックス番号
 	memset(&m_nTexIdx_Select[0], 0, sizeof(m_nTexIdx_Select)); // テクスチャのインデックス番号
 	memset(&KeepSize[0], 0, sizeof(KeepSize)); // テクスチャのインデックス番号
+	m_pDecideDoor = nullptr;	// ドアのオブジェクト
 
 	// プレイヤーポインタの初期化
 	for (int nCnt = 0; nCnt < VTXSELECT_MAX; ++nCnt)
@@ -62,24 +65,21 @@ CDecideMenu::CDecideMenu(int nPriority) : CObject(nPriority),
 	}
 }
 
-//==========================================
+//==========================================================================
 //  デストラクタ
-//==========================================
+//==========================================================================
 CDecideMenu::~CDecideMenu()
 {
 
 }
 
-//==========================================
+//==========================================================================
 //  初期化処理
-//==========================================
+//==========================================================================
 HRESULT CDecideMenu::Init(void)
 {
 	// 種類の設定
 	SetType(TYPE_OBJECT3D);
-
-	// UIの生成
-	//CreateUI();
 
 	// 選択対象の生成
 	CreateSelect();
@@ -87,12 +87,15 @@ HRESULT CDecideMenu::Init(void)
 	// プレイヤーの生成
 	CretePlayer();
 
+	// ドア生成
+	m_pDecideDoor = CDecideDoor::Create();
+
 	return S_OK;
 }
 
-//==========================================
+//==========================================================================
 //  終了処理
-//==========================================
+//==========================================================================
 void CDecideMenu::Uninit(void)
 {
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
@@ -127,9 +130,9 @@ void CDecideMenu::Uninit(void)
 	Release();
 }
 
-//==========================================
+//==========================================================================
 //  更新処理
-//==========================================
+//==========================================================================
 void CDecideMenu::Update(void)
 {
 	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
@@ -185,6 +188,13 @@ void CDecideMenu::Update(void)
 
 		// カウンターリセット
 		m_nCntAlpha = 0;
+
+		// 選択肢設定
+		if (m_pDecideDoor != nullptr)
+		{
+			m_pDecideDoor->SetSelect(m_nNowSelect);
+		}
+
 	}
 	else if (pInputGamepad->GetStickSelect(CInputGamepad::STICK_X) == false && pInputGamepad->GetStickMoveL(0).x > 0 ||
 		(pInputKeyboard->GetTrigger(DIK_D) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_RIGHT, 0)))
@@ -201,6 +211,12 @@ void CDecideMenu::Update(void)
 
 		// カウンターリセット
 		m_nCntAlpha = 0;
+
+		// 選択肢設定
+		if (m_pDecideDoor != nullptr)
+		{
+			m_pDecideDoor->SetSelect(m_nNowSelect);
+		}
 	}
 
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0))
@@ -250,17 +266,17 @@ void CDecideMenu::Update(void)
 #endif
 }
 
-//==========================================
+//==========================================================================
 //  描画処理
-//==========================================
+//==========================================================================
 void CDecideMenu::Draw(void)
 {
 
 }
 
-//==========================================
+//==========================================================================
 //  前に進む処理
-//==========================================
+//==========================================================================
 void CDecideMenu::Go(int nIdx)
 {
 	// 値を取得
@@ -273,9 +289,9 @@ void CDecideMenu::Go(int nIdx)
 	m_apPlayer[nIdx]->SetMove(move);
 }
 
-//==========================================
+//==========================================================================
 //  後ろに下がる処理
-//==========================================
+//==========================================================================
 void CDecideMenu::Back(int nIdx)
 {
 	// 値を取得
@@ -291,9 +307,9 @@ void CDecideMenu::Back(int nIdx)
 	m_apPlayer[nIdx]->SetTarget(PLAYER_TARGET);
 }
 
-//==========================================
+//==========================================================================
 //  生成処理
-//==========================================
+//==========================================================================
 CDecideMenu* CDecideMenu::Create(void)
 {
 	// 生成用のオブジェクト
@@ -318,87 +334,37 @@ CDecideMenu* CDecideMenu::Create(void)
 	return NULL;
 }
 
-//==========================================
+//==========================================================================
 //  選択肢の更新処理
-//==========================================
+//==========================================================================
 void CDecideMenu::UpdateSelect(int nCntSelect)
 {
-	// 色取得
-	//D3DXCOLOR col = m_pSelect3D[nCntSelect]->GetColor();
-
-	//// 不透明度更新
-	//if (m_nNowSelect == nCntSelect)
-	//{
-	//	CuadricCurveComp(col.a, ALPHATIME, 0.3f, 1.0f, m_nCntAlpha);
-	//}
-	//else
-	//{
-	//	col.a = 1.0f;
-	//}
-
-	//// 色設定
-	//m_pSelect3D[nCntSelect]->SetColor(col);
-
-	m_pSelectX[nCntSelect]->SetSize(KeepSize[nCntSelect]);
-
-	D3DXVECTOR3 size = m_pSelectX[nCntSelect]->GetSize();
+	// 色
+	D3DXCOLOR col = mylib_const::DEFAULT_COLOR;
 
 	if (m_nNowSelect >= nCntSelect)
 	{
-		m_pSelectX[nCntSelect]->SetSize(size * 1.2f);
+		col = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);
 	}
 	else
 	{
+		col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+	}
 
+	D3DXVECTOR3 pos = m_pSelectX[nCntSelect]->GetPosition();
+	pos.z -= 20.0f;
+
+	for (int i = 0; i < 4; i++)
+	{
+		CEffect3D::Create(
+			pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+			col, 200.0f, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_POINT);
 	}
 }
 
-//==========================================
-//  UIの生成
-//==========================================
-//void CDecideMenu::CreateUI(void)
-//{
-//	// テクスチャのオブジェクト取得
-//	CTexture* pTexture = CManager::GetInstance()->GetTexture();
-//
-//	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
-//	{
-//		// 生成処理
-//		switch (nCntSelect)
-//		{
-//		case VTX_TEXT:
-//			m_pObj3D[nCntSelect] = CObject3D::Create(8);
-//			break;
-//		}
-//
-//		// 種類の設定
-//		m_pObj3D[nCntSelect]->SetType(TYPE_OBJECT3D);
-//
-//		// テクスチャの割り当て
-//		m_nTexIdx[nCntSelect] = pTexture->Regist(m_apModelFile[nCntSelect]);
-//
-//		// テクスチャの割り当て
-//		m_pObj3D[nCntSelect]->BindTexture(m_nTexIdx[nCntSelect]);
-//
-//		// サイズ取得
-//		D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx[nCntSelect]);
-//
-//		// 各種変数の初期化
-//		switch (nCntSelect)
-//		{
-//		case VTX_TEXT:
-//			size.z = 0.0f;
-//			m_pObj3D[nCntSelect]->SetSize(size * 0.4f);	// サイズ
-//			m_pObj3D[nCntSelect]->SetPosition(POS_UI);	// 位置
-//			m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
-//			break;
-//		}
-//	}
-//}
-
-//==========================================
+//==========================================================================
 //  選択対象の生成
-//==========================================
+//==========================================================================
 void CDecideMenu::CreateSelect(void)
 {
 	// テクスチャのオブジェクト取得
@@ -433,9 +399,9 @@ void CDecideMenu::CreateSelect(void)
 	}
 }
 
-//==========================================
+//==========================================================================
 //  プレイヤーの生成
-//==========================================
+//==========================================================================
 void CDecideMenu::CretePlayer(void)
 {
 	// プレイヤーの生成
@@ -454,9 +420,9 @@ void CDecideMenu::CretePlayer(void)
 	}
 }
 
-//==========================================
+//==========================================================================
 //  プレイヤーの生成
-//==========================================
+//==========================================================================
 CPlayerTitle *CDecideMenu::GetPlayerTitle(int Cnt)
 {
 	return m_apPlayer[Cnt];

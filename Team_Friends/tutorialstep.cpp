@@ -90,6 +90,7 @@ HRESULT CTutorialStep::Init(void)
 	m_bEndStep = false;		// ステップの終了判定
 	m_bSetOK = false;		// OKの設定判定
 	m_bEndAll = false;		// 全終了判定
+	m_bUpdStep = false;		// ステップ更新判定
 
 	// 成功
 	return S_OK;
@@ -113,6 +114,8 @@ void CTutorialStep::Update(void)
 
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+	m_bUpdStep = false;
 
 	switch (m_step)
 	{
@@ -166,6 +169,8 @@ void CTutorialStep::SetStep(STEP step)
 	{
 		return;
 	}
+
+	STEP stepOld = step;
 
 	switch (step)
 	{
@@ -227,17 +232,6 @@ void CTutorialStep::SetStep(STEP step)
 		}
 		break;
 
-	case CTutorialStep::STEP_UNION_ITEM:
-		// 直線波の回数
-		m_nCntDirectWave++;
-
-		if (m_bEndStep == false)
-		{
-			CTutorialWindow::Create(m_step);
-			m_bEndStep = true;
-		}
-		break;
-
 	case CTutorialStep::STEP_UNION_FREE:
 		// 直線波の回数
 		m_nCntDirectWave++;
@@ -258,6 +252,11 @@ void CTutorialStep::SetStep(STEP step)
 		step = STEP_WAIT;
 		break;
 	}
+
+	if (stepOld != step)
+	{// ステップ更新判定
+		m_bUpdStep = true;
+	}
 }
 
 //==========================================================================
@@ -265,7 +264,7 @@ void CTutorialStep::SetStep(STEP step)
 //==========================================================================
 void CTutorialStep::AddStep(void)
 {
-	if (m_step < CTutorialStep::STEP_MAX && m_bEndStep == true)
+	if (m_step + 1 < CTutorialStep::STEP_MAX && m_bEndStep == true)
 	{// 進められる状態だったら
 		m_step = (STEP)(m_step + 1);
 		m_bEndStep = false;

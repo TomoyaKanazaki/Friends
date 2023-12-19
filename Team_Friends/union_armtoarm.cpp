@@ -121,11 +121,15 @@ void CUnion_ArntoArm::Update(void)
 		// ˆÊ’uæ“¾
 		D3DXVECTOR3 pos = GetPosition();
 
-		// ‡‘Ì‰ğœ
-		ppPlayer[m_nPartsIdx[0]]->SetState(CPlayer::STATE_RELEASEUNION);
-		ppPlayer[m_nPartsIdx[0]]->SetPosition(pos);
-		ppPlayer[m_nPartsIdx[1]]->SetState(CPlayer::STATE_RELEASEUNION);
-		ppPlayer[m_nPartsIdx[1]]->SetPosition(pos);
+		if (ppPlayer[m_nPartsIdx[0]] != nullptr ||
+			ppPlayer[m_nPartsIdx[1]] != nullptr)
+		{
+			// ‡‘Ì‰ğœ
+			ppPlayer[m_nPartsIdx[0]]->SetState(CPlayer::STATE_RELEASEUNION);
+			ppPlayer[m_nPartsIdx[0]]->SetPosition(pos);
+			ppPlayer[m_nPartsIdx[1]]->SetState(CPlayer::STATE_RELEASEUNION);
+			ppPlayer[m_nPartsIdx[1]]->SetPosition(pos);
+		}
 
 		// I—¹ˆ—
 		Kill();

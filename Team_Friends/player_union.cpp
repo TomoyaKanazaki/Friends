@@ -649,19 +649,19 @@ void CPlayerUnion::ControllParts(void)
 		switch (nPartsIdx)
 		{
 		case PARTS_BODY:
-			ControllBody(nPartsIdx);
+			ControllBody(nPartsIdx, i);
 			break;
 
 		case PARTS_LEG:
-			ControllLeg(nPartsIdx);
+			ControllLeg(nPartsIdx, i);
 			break;
 
 		case PARTS_L_ARM:
-			ControllLeftArm(nPartsIdx);
+			ControllLeftArm(nPartsIdx, i);
 			break;
 
 		case PARTS_R_ARM:
-			ControllRightArm(nPartsIdx);
+			ControllRightArm(nPartsIdx, i);
 			break;
 		}
 	}
@@ -670,7 +670,7 @@ void CPlayerUnion::ControllParts(void)
 //==========================================================================
 // 胴操作
 //==========================================================================
-void CPlayerUnion::ControllBody(int nIdx)
+void CPlayerUnion::ControllBody(int nIdx, int nLoop)
 {
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
@@ -680,7 +680,7 @@ void CPlayerUnion::ControllBody(int nIdx)
 //==========================================================================
 // 脚操作
 //==========================================================================
-void CPlayerUnion::ControllLeg(int nIdx)
+void CPlayerUnion::ControllLeg(int nIdx, int nLoop)
 {
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
@@ -708,7 +708,7 @@ void CPlayerUnion::ControllLeg(int nIdx)
 	{// 行動できるとき
 
 		// 移動操作
-		if (ControllMove(nIdx))
+		if (ControllMove(nLoop))
 		{
 			// 移動中にする
 			for (int i = 0; i < PARTS_MAX; i++)
@@ -767,28 +767,28 @@ void CPlayerUnion::ControllLeg(int nIdx)
 		// 移動量設定
 		SetMove(move);
 	}
-	else
-	{
-		for (int i = 0; i < PARTS_MAX; i++)
-		{
-			m_sMotionFrag[i].bMove = false;
-		}
+	//else
+	//{
+	//	for (int i = 0; i < PARTS_MAX; i++)
+	//	{
+	//		m_sMotionFrag[i].bMove = false;
+	//	}
 
-		// 回転操作
-		ControllRotation(nIdx);
-	}
+	//	// 回転操作
+	//	ControllRotation(nIdx);
+	//}
 
 }
 
 //==========================================================================
 // 右腕操作
 //==========================================================================
-void CPlayerUnion::ControllRightArm(int nIdx)
+void CPlayerUnion::ControllRightArm(int nIdx, int nLoop)
 {
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 	
-	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nIdx)))
+	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)))
 	{// 攻撃
 
 		// チャージ判定
@@ -796,24 +796,26 @@ void CPlayerUnion::ControllRightArm(int nIdx)
 	}
 
 	if (m_sMotionFrag[nIdx].bCharge == true &&
-		pInputGamepad->GetRelease(CInputGamepad::BUTTON_A, nIdx))
+		pInputGamepad->GetRelease(CInputGamepad::BUTTON_A, nLoop))
 	{// チャージ中に攻撃ボタンを離したら
 
 		// 攻撃中
 		m_sMotionFrag[nIdx].bCharge = false;
 		m_sMotionFrag[nIdx].bATK = true;
+
+		m_pMotion[nIdx]->Set(MOTION_NORMAL_ATK);
 	}
 }
 
 //==========================================================================
 // 左腕操作
 //==========================================================================
-void CPlayerUnion::ControllLeftArm(int nIdx)
+void CPlayerUnion::ControllLeftArm(int nIdx, int nLoop)
 {
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 	
-	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nIdx)))
+	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)))
 	{// 攻撃
 
 		// チャージ判定
@@ -821,7 +823,7 @@ void CPlayerUnion::ControllLeftArm(int nIdx)
 	}
 
 	if (m_sMotionFrag[nIdx].bCharge == true &&
-		pInputGamepad->GetRelease(CInputGamepad::BUTTON_A, nIdx))
+		pInputGamepad->GetRelease(CInputGamepad::BUTTON_A, nLoop))
 	{// チャージ中に攻撃ボタンを離したら
 
 		// 攻撃中
@@ -1032,7 +1034,7 @@ void CPlayerUnion::MotionSet(int nIdx)
 		{// チャージ中だったら
 
 			// チャージモーション
-			m_pMotion[nIdx]->Set(MOTION_ULT_BEAMCHARGE);
+			m_pMotion[nIdx]->Set(MOTION_NORMAL_CHARGE);
 		}
 		else if (m_bKnockBack == true)
 		{// やられ中だったら
@@ -1050,7 +1052,7 @@ void CPlayerUnion::MotionSet(int nIdx)
 		{// 攻撃していたら
 
 			m_sMotionFrag[nIdx].bATK = false;		// 攻撃判定OFF
-			m_pMotion[nIdx]->Set(MOTION_ULT_BEAMATK, true);
+			m_pMotion[nIdx]->Set(MOTION_NORMAL_ATK);
 		}
 		else
 		{
@@ -1310,6 +1312,15 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int n
 {
 	// 武器の位置
 	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
+	
+	if (ATKInfo.fRangeSize == 0.0f)
+	{
+		return;
+	}
+
+#if _DEBUG
+	CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+#endif
 
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
@@ -1434,14 +1445,6 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int n
 
 	}// 終端
 
-	if (ATKInfo.fRangeSize == 0.0f)
-	{
-		return;
-	}
-
-#if _DEBUG
-	//CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
-#endif
 
 	// 敵取得
 	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
@@ -2539,15 +2542,15 @@ void CPlayerUnion::Draw(void)
 void CPlayerUnion::BindByPlayerIdxTexture(int nIdx, int nPartsIdx)
 {
 	// ファイルインデックス番号取得
-	int nIdxXFile = m_pObjChara[nIdx]->GetIdxFile();
-	CObjectChara::Load LoadData = m_pObjChara[nIdx]->GetLoadData(nIdxXFile);
+	int nIdxXFile = m_pObjChara[nPartsIdx]->GetIdxFile();
+	CObjectChara::Load LoadData = m_pObjChara[nPartsIdx]->GetLoadData(nIdxXFile);
 
 	// モデル取得
-	CModel **ppModel = m_pObjChara[nIdx]->GetModel();
+	CModel **ppModel = m_pObjChara[nPartsIdx]->GetModel();
 
 	// 初期テクスチャ
-	int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[nIdx][nPartsIdx]);
-	for (int i = 0; i < m_pObjChara[nIdx]->GetNumModel(); i++)
+	int nIdxTex = CManager::GetInstance()->GetTexture()->Regist(TEXTURE_INITPLAYER[nPartsIdx][nIdx]);
+	for (int i = 0; i < m_pObjChara[nPartsIdx]->GetNumModel(); i++)
 	{
 		if (ppModel[i] == NULL)
 		{

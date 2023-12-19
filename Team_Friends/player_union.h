@@ -24,7 +24,7 @@ class CUnionCore;
 //==========================================================================
 // クラス定義
 //==========================================================================
-// プレイヤークラス定義
+// 合体プレイヤークラス定義
 class CPlayerUnion : public CObject
 {
 public:
@@ -155,15 +155,17 @@ private:
 	// 列挙型定義
 	enum MOTION
 	{
-		MOTION_DEF = 0,			// ニュートラルモーション
-		MOTION_WALK,			// 移動モーション
-		MOTION_ULT_BEAMCHARGE,	// 必殺技ビームチャージ
-		MOTION_ULT_BEAMATK,		// 必殺技ビーム攻撃
+		MOTION_DEF = 0,				// ニュートラルモーション
+		MOTION_WALK,				// 移動モーション
+		MOTION_NORMAL_CHARGE,		// 通常チャージ
+		MOTION_NORMAL_ATK,			// 通常攻撃
+		MOTION_ULT_BEAMCHARGE,		// 必殺技ビームチャージ
+		MOTION_ULT_BEAMATK,			// 必殺技ビーム攻撃
 		MOTION_ULT_BIGPUNCHCHARGE,	// 必殺技デカパンチチャージ
 		MOTION_ULT_BIGPUNCHATK,		// 必殺技デカパンチ攻撃
-		MOTION_KNOCKBACK,		// やられモーション
-		MOTION_DEAD,			// 死亡モーション
-		MOTION_APPEARANCE,		// 出現
+		MOTION_KNOCKBACK,			// やられモーション
+		MOTION_DEAD,				// 死亡モーション
+		MOTION_APPEARANCE,			// 出現
 		MOTION_MAX
 	};
 
@@ -207,10 +209,10 @@ private:
 
 	// メンバ関数
 	void Controll(void);		// 操作
-	void ControllBody(int nIdx);		// 胴操作
-	void ControllLeg(int nIdx);			// 脚操作
-	void ControllRightArm(int nIdx);	// 右腕操作
-	void ControllLeftArm(int nIdx);		// 左腕操作
+	void ControllBody(int nIdx, int nLoop);		// 胴操作
+	void ControllLeg(int nIdx, int nLoop);			// 脚操作
+	void ControllRightArm(int nIdx, int nLoop);	// 右腕操作
+	void ControllLeftArm(int nIdx, int nLoop);		// 左腕操作
 
 
 	// メンバ変数

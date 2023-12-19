@@ -1,7 +1,7 @@
 //==========================================
 // 
 //  人数選択メニュー(decide_menu.cpp)
-//  Author : Tomoya Kanazaki
+//  Author : 橋本 賢太
 // 
 //==========================================
 #include "decide_door.h"
@@ -64,9 +64,6 @@ HRESULT CDecideDoor::Init(void)
 	// 種類の設定
 	SetType(TYPE_OBJECT3D);
 
-	// 選択対象の生成
-	//CreateSelect();
-
 	m_pObjX[VTX_FREAM] = CObjectX::Create(m_apModelFile_fream, D3DXVECTOR3(0.0f, 0.0f, FRAME_POS_Z));
 	m_pObjX[VTX_FREAM]->SetType(CObject::TYPE_OBJECTX);
 
@@ -128,101 +125,7 @@ void CDecideDoor::Uninit(void)
 //==========================================
 void CDecideDoor::Update(void)
 {
-	if (CManager::GetInstance()->GetFade()->GetState() != CFade::STATE_NONE)
-	{// フェード中は抜ける
-		return;
-	}
-
-	// ゲートの開閉する個数の変数
-	int nOpAndClo = 0;
-
-	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-
-	// ゲームパッド情報取得
-	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
-
-	// 現在の選択肢更新
-	if ((pInputGamepad->GetStickSelect(CInputGamepad::STICK_X) == false && pInputGamepad->GetStickMoveL(0).x < 0) ||
-		(pInputKeyboard->GetTrigger(DIK_A) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LEFT, 0)))
-	{// 左
-
-	 // 左スティックの判定を渡す
-		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_X);
-
-		// 現在の選択肢を保存
-		m_nOldSelect = m_nNowSelect;
-
-		// パターンNo.を更新
-		m_nNowSelect = (m_nNowSelect + (MODELSELECT_MAX - 1)) % MODELSELECT_MAX;
-
-
-		// ひとつ前の選択肢が現在の選択肢より少ない
-		if (m_nOldSelect <= m_nNowSelect)
-		{
-			// ゲートの開閉する個数を代入
-			nOpAndClo = m_nNowSelect - m_nOldSelect;
-
-			for (int nCnt = nOpAndClo; nCnt > 0; --nCnt)
-			{
-				// ゲートの開閉カウントを正規化
-				m_nGate[nCnt] = GATE_FIXED - m_nGate[nCnt];
-			}
-		}
-
-		else
-		{
-			// ゲートの開閉する個数を代入
-			nOpAndClo = m_nOldSelect - m_nNowSelect;
-
-			for (int nCnt = 0; nCnt < nOpAndClo; ++nCnt)
-			{
-				// ゲートの開閉カウントを正規化
-				m_nGate[m_nOldSelect + nCnt] = GATE_FIXED - m_nGate[m_nOldSelect + nCnt];
-			}
-		}
-	}
-	else if (pInputGamepad->GetStickSelect(CInputGamepad::STICK_X) == false && pInputGamepad->GetStickMoveL(0).x > 0 ||
-		(pInputKeyboard->GetTrigger(DIK_D) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_RIGHT, 0)))
-	{// 右
-
-	 // 左スティックの判定を渡す
-		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_X);
-
-		// 現在の選択肢を保存
-		m_nOldSelect = m_nNowSelect;
-
-		// パターンNo.を更新
-		m_nNowSelect = (m_nNowSelect + 1) % MODELSELECT_MAX;
-
-
-		// ひとつ前の選択肢が現在の選択肢より多い
-		if (m_nOldSelect >= m_nNowSelect)
-		{
-			// ゲートの開閉する個数を代入
-			nOpAndClo = m_nOldSelect - m_nNowSelect;
-
-			for (int nCnt = nOpAndClo; nCnt > 0; --nCnt)
-			{
-				// ゲートの開閉カウントを正規化
-				m_nGate[nCnt] = GATE_FIXED - m_nGate[nCnt];
-			}
-		}
-
-		else
-		{
-			// ゲートの開閉する個数を代入
-			nOpAndClo = m_nNowSelect - m_nOldSelect;
-
-			for (int nCnt = 0; nCnt < nOpAndClo; ++nCnt)
-			{
-				// ゲートの開閉カウントを正規化
-				m_nGate[m_nNowSelect + nCnt] = GATE_FIXED - m_nGate[m_nNowSelect + nCnt];
-			}
-		}
-	}
-
-
+	
 	// 移動
 	for (int nCnt = 0; nCnt < MODELSELECT_MAX; ++nCnt)
 	{
@@ -240,7 +143,6 @@ void CDecideDoor::Update(void)
 
 			m_n[nCnt] = 0;
 		}
-
 		else
 		{
 			// 選択画面のプレイヤーを取得
@@ -277,6 +179,75 @@ void CDecideDoor::Update(void)
 		{
 			// 開閉カウントを固定
 			m_nGate[nCnt] = GATE_FIXED;
+		}
+	}
+}
+
+//==========================================================================
+// 選択肢設定
+//==========================================================================
+void CDecideDoor::SetSelect(int nSelect)
+{
+
+	// 現在の選択肢を保存
+	m_nOldSelect = m_nNowSelect;
+
+	// パターンNo.を更新
+	m_nNowSelect = nSelect;
+
+	int nOpAndClo;
+	if ((m_nNowSelect + 1) % MODELSELECT_MAX == m_nOldSelect)
+	{
+		// ひとつ前の選択肢が現在の選択肢より少ない
+		if (m_nOldSelect <= m_nNowSelect)
+		{
+			// ゲートの開閉する個数を代入
+			nOpAndClo = m_nNowSelect - m_nOldSelect;
+
+			for (int nCnt = nOpAndClo; nCnt > 0; --nCnt)
+			{
+				// ゲートの開閉カウントを正規化
+				m_nGate[nCnt] = GATE_FIXED - m_nGate[nCnt];
+			}
+		}
+
+		else
+		{
+			// ゲートの開閉する個数を代入
+			nOpAndClo = m_nOldSelect - m_nNowSelect;
+
+			for (int nCnt = 0; nCnt < nOpAndClo; ++nCnt)
+			{
+				// ゲートの開閉カウントを正規化
+				m_nGate[m_nOldSelect + nCnt] = GATE_FIXED - m_nGate[m_nOldSelect + nCnt];
+			}
+		}
+	}
+	else
+	{
+		// ひとつ前の選択肢が現在の選択肢より多い
+		if (m_nOldSelect >= m_nNowSelect)
+		{
+			// ゲートの開閉する個数を代入
+			nOpAndClo = m_nOldSelect - m_nNowSelect;
+
+			for (int nCnt = nOpAndClo; nCnt > 0; --nCnt)
+			{
+				// ゲートの開閉カウントを正規化
+				m_nGate[nCnt] = GATE_FIXED - m_nGate[nCnt];
+			}
+		}
+
+		else
+		{
+			// ゲートの開閉する個数を代入
+			nOpAndClo = m_nNowSelect - m_nOldSelect;
+
+			for (int nCnt = 0; nCnt < nOpAndClo; ++nCnt)
+			{
+				// ゲートの開閉カウントを正規化
+				m_nGate[m_nNowSelect + nCnt] = GATE_FIXED - m_nGate[m_nNowSelect + nCnt];
+			}
 		}
 	}
 }

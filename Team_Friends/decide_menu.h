@@ -66,8 +66,9 @@ private:
 	int m_nNowSelect;		// 現在の選択肢
 	int m_nTexIdx[VTX_MAX];						// テクスチャのインデックス番号
 	int m_nTexIdx_Select[VTXSELECT_MAX];						// テクスチャのインデックス番号
+	D3DXVECTOR3 KeepSize[VTXSELECT_MAX];
 	CObject3D*m_pObj3D[VTX_MAX];					// オブジェクト2Dのオブジェクト
-	CObject3D*m_pSelect3D[VTXSELECT_MAX];				// 選択肢のオブジェクト
+	CObjectX*m_pSelectX[VTXSELECT_MAX];				// 選択肢のオブジェクト
 	static CPlayerTitle *m_apPlayer[VTXSELECT_MAX]; // プレイヤーのポインタ配列
 };
 

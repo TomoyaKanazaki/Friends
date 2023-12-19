@@ -29,7 +29,7 @@ namespace
 	const int GATE_TARGET = 300;	// 不透明度更新の時間
 	const int GATE_GRACE = 1;		// プレイヤーの座標
 	const int GATE_FIXED = 30;		// 選択肢の倍率
-	const float FRAME_POS_Z = 300.0f;		// 選択肢の基準位置
+	const float FRAME_POS_Z = 250.0f;		// 選択肢の基準位置
 	const float LENGTH_SELECT = 197.5f;		// 選択肢の基準位置
 	const float PLAYER_SPEED = 5.0f;		// プレイヤーの移動量
 	const char *m_apModelFile_fream = "data\\MODEL\\gate\\gate_frame.x";

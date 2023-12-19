@@ -9,6 +9,7 @@
 #include "renderer.h"
 #include "texture.h"
 #include "object2D.h"
+#include "objectX.h"
 #include "calculation.h"
 #include "input.h"
 #include "sound.h"
@@ -29,26 +30,16 @@ namespace
 {
 	const D3DXVECTOR3 POS_UI = D3DXVECTOR3(0.0f, 1000.0f, 0.0f); // UIの位置
 	const int ALPHATIME = 60; // 不透明度更新の時間
-	const D3DXVECTOR3 POS_SELECT = D3DXVECTOR3(0.0f, 30.0f, 0.0f); // 選択肢の基準位置
-	const float LENGTH_SELECT = 177.5f; // 選択肢の基準位置
+	const D3DXVECTOR3 POS_SELECT = D3DXVECTOR3(0.0f, 0.0f, 0.0f); // 選択肢の基準位置
+	const float UI_POS_Y = 280.0f; // 選択肢の基準位置
+	const float UI_POS_Z = 200.0f; // 選択肢の基準位置
+	const float LENGTH_SELECT = 192.0f; // 選択肢の基準位置
 	const float SCALE_SELECT = 0.15f; // 選択肢の倍率
 	const float PLAYER_SPEED = 5.0f; // プレイヤーの移動量
 	const float PLAYER_TARGET = 500.0f; // プレイヤーの座標
 
 	// テクスチャのファイル
-	const char* m_apTextureFile[CDecideMenu::VTX_MAX] =
-	{
-		"data\\TEXTURE\\decideplayer_text.png",
-	};
-
-	// テクスチャのファイル
-	const char* m_apTextureFile_Select[CDecideMenu::VTXSELECT_MAX] =
-	{
-		"data\\TEXTURE\\decide_player1.png",
-		"data\\TEXTURE\\decide_player2.png",
-		"data\\TEXTURE\\decide_player3.png",
-		"data\\TEXTURE\\decide_player4.png",
-	};
+	const char* m_apModelFile_Select = "data\\MODEL\\gate\\gate_lamp.x";
 }
 
 //==========================================
@@ -59,9 +50,10 @@ CDecideMenu::CDecideMenu(int nPriority) : CObject(nPriority),
 	m_nNowSelect(0)
 {
 	memset(&m_pObj3D[0], NULL, sizeof(m_pObj3D)); // オブジェクト2Dのオブジェクト
-	memset(&m_pSelect3D[0], NULL, sizeof(m_pSelect3D)); // 選択肢のオブジェクト
+	memset(&m_pSelectX[0], NULL, sizeof(m_pSelectX)); // 選択肢のオブジェクト
 	memset(&m_nTexIdx[0], 0, sizeof(m_nTexIdx)); // テクスチャのインデックス番号
 	memset(&m_nTexIdx_Select[0], 0, sizeof(m_nTexIdx_Select)); // テクスチャのインデックス番号
+	memset(&KeepSize[0], 0, sizeof(KeepSize)); // テクスチャのインデックス番号
 
 	// プレイヤーポインタの初期化
 	for (int nCnt = 0; nCnt < VTXSELECT_MAX; ++nCnt)
@@ -115,11 +107,11 @@ void CDecideMenu::Uninit(void)
 
 	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
 	{
-		if (m_pSelect3D[nCntSelect] != NULL)
+		if (m_pSelectX[nCntSelect] != NULL)
 		{// NULLじゃなかったら
 
 			// 終了処理
-			m_pSelect3D[nCntSelect] = NULL;
+			m_pSelectX[nCntSelect] = NULL;
 		}
 	}
 
@@ -153,7 +145,7 @@ void CDecideMenu::Update(void)
 
 	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
 	{
-		if (m_pSelect3D[nCntSelect] == NULL)
+		if (m_pSelectX[nCntSelect] == NULL)
 		{// NULLだったら
 			continue;
 		}
@@ -162,7 +154,7 @@ void CDecideMenu::Update(void)
 		UpdateSelect(nCntSelect);
 
 		// 頂点情報設定
-		m_pSelect3D[nCntSelect]->SetVtx();
+		m_pSelectX[nCntSelect]->SetVtx();
 	}
 
 	if (CManager::GetInstance()->GetFade()->GetState() != CFade::STATE_NONE)
@@ -332,64 +324,77 @@ CDecideMenu* CDecideMenu::Create(void)
 void CDecideMenu::UpdateSelect(int nCntSelect)
 {
 	// 色取得
-	D3DXCOLOR col = m_pSelect3D[nCntSelect]->GetColor();
+	//D3DXCOLOR col = m_pSelect3D[nCntSelect]->GetColor();
 
-	// 不透明度更新
-	if (m_nNowSelect == nCntSelect)
+	//// 不透明度更新
+	//if (m_nNowSelect == nCntSelect)
+	//{
+	//	CuadricCurveComp(col.a, ALPHATIME, 0.3f, 1.0f, m_nCntAlpha);
+	//}
+	//else
+	//{
+	//	col.a = 1.0f;
+	//}
+
+	//// 色設定
+	//m_pSelect3D[nCntSelect]->SetColor(col);
+
+	m_pSelectX[nCntSelect]->SetSize(KeepSize[nCntSelect]);
+
+	D3DXVECTOR3 size = m_pSelectX[nCntSelect]->GetSize();
+
+	if (m_nNowSelect >= nCntSelect)
 	{
-		CuadricCurveComp(col.a, ALPHATIME, 0.3f, 1.0f, m_nCntAlpha);
+		m_pSelectX[nCntSelect]->SetSize(size * 1.2f);
 	}
 	else
 	{
-		col.a = 1.0f;
-	}
 
-	// 色設定
-	m_pSelect3D[nCntSelect]->SetColor(col);
+	}
 }
 
 //==========================================
 //  UIの生成
 //==========================================
-void CDecideMenu::CreateUI(void)
-{
-	// テクスチャのオブジェクト取得
-	CTexture* pTexture = CManager::GetInstance()->GetTexture();
-
-	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
-	{
-		// 生成処理
-		switch (nCntSelect)
-		{
-		case VTX_TEXT:
-			m_pObj3D[nCntSelect] = CObject3D::Create(8);
-			break;
-		}
-
-		// 種類の設定
-		m_pObj3D[nCntSelect]->SetType(TYPE_OBJECT3D);
-
-		// テクスチャの割り当て
-		m_nTexIdx[nCntSelect] = pTexture->Regist(m_apTextureFile[nCntSelect]);
-
-		// テクスチャの割り当て
-		m_pObj3D[nCntSelect]->BindTexture(m_nTexIdx[nCntSelect]);
-
-		// サイズ取得
-		D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx[nCntSelect]);
-
-		// 各種変数の初期化
-		switch (nCntSelect)
-		{
-		case VTX_TEXT:
-			size.z = 0.0f;
-			m_pObj3D[nCntSelect]->SetSize(size * 0.4f);	// サイズ
-			m_pObj3D[nCntSelect]->SetPosition(POS_UI);	// 位置
-			m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
-			break;
-		}
-	}
-}
+//void CDecideMenu::CreateUI(void)
+//{
+//	// テクスチャのオブジェクト取得
+//	CTexture* pTexture = CManager::GetInstance()->GetTexture();
+//
+//	for (int nCntSelect = 0; nCntSelect < VTX_MAX; nCntSelect++)
+//	{
+//		// 生成処理
+//		switch (nCntSelect)
+//		{
+//		case VTX_TEXT:
+//			m_pObj3D[nCntSelect] = CObject3D::Create(8);
+//			break;
+//		}
+//
+//		// 種類の設定
+//		m_pObj3D[nCntSelect]->SetType(TYPE_OBJECT3D);
+//
+//		// テクスチャの割り当て
+//		m_nTexIdx[nCntSelect] = pTexture->Regist(m_apModelFile[nCntSelect]);
+//
+//		// テクスチャの割り当て
+//		m_pObj3D[nCntSelect]->BindTexture(m_nTexIdx[nCntSelect]);
+//
+//		// サイズ取得
+//		D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx[nCntSelect]);
+//
+//		// 各種変数の初期化
+//		switch (nCntSelect)
+//		{
+//		case VTX_TEXT:
+//			size.z = 0.0f;
+//			m_pObj3D[nCntSelect]->SetSize(size * 0.4f);	// サイズ
+//			m_pObj3D[nCntSelect]->SetPosition(POS_UI);	// 位置
+//			m_pObj3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);	// 色
+//			break;
+//		}
+//	}
+//}
 
 //==========================================
 //  選択対象の生成
@@ -402,32 +407,23 @@ void CDecideMenu::CreateSelect(void)
 	for (int nCntSelect = 0; nCntSelect < VTXSELECT_MAX; nCntSelect++)
 	{
 		// 生成処理
-		m_pSelect3D[nCntSelect] = CObject3D::Create(8);
+		m_pSelectX[nCntSelect] = CObjectX::Create(m_apModelFile_Select);
 
 		// 種類の設定
-		m_pSelect3D[nCntSelect]->SetType(TYPE_OBJECT3D);
-
-		// テクスチャの割り当て
-		m_nTexIdx_Select[nCntSelect] = pTexture->Regist(m_apTextureFile_Select[nCntSelect]);
-
-		// テクスチャの割り当て
-		m_pSelect3D[nCntSelect]->BindTexture(m_nTexIdx_Select[nCntSelect]);
-
-		// サイズ設定
-		D3DXVECTOR3 size = pTexture->GetImageSize(m_nTexIdx_Select[nCntSelect]) * SCALE_SELECT;
-		size.z = 0.0f;
-		m_pSelect3D[nCntSelect]->SetSize(size); // サイズ
+		m_pSelectX[nCntSelect]->SetType(TYPE_OBJECTX);
 
 		// 位置設定
 		D3DXVECTOR3 pos = POS_SELECT;
 		pos.x -= 1.5f * LENGTH_SELECT;
 		pos.x += LENGTH_SELECT * nCntSelect;
-		m_pSelect3D[nCntSelect]->SetPosition(pos);
+		pos.y += UI_POS_Y;
+		pos.z += UI_POS_Z;
+		m_pSelectX[nCntSelect]->SetPosition(pos);
 
 		// 色設定
 		/*if (nCntSelect <= m_nNowSelect)
 		{*/
-			m_pSelect3D[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
+		m_pSelectX[nCntSelect]->SetColor(mylib_const::DEFAULT_COLOR);
 		/*}
 
 		else
@@ -446,7 +442,9 @@ void CDecideMenu::CretePlayer(void)
 	for (int nCnt = 0; nCnt < VTXSELECT_MAX; ++nCnt)
 	{
 		// UIの位置を取得する
-		D3DXVECTOR3 pos = m_pSelect3D[nCnt]->GetPosition();
+		D3DXVECTOR3 pos = m_pSelectX[nCnt]->GetPosition();
+
+		pos.y -= UI_POS_Y;
 		
 		// 初期位置を補正
 		pos.z = PLAYER_TARGET;

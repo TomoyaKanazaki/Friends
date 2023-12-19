@@ -47,6 +47,7 @@ private:
 	CTutorialPlayer *m_apPlayer[mylib_const::MAX_PLAYER];		// プレイヤーのオブジェクト
 	static bool m_bMovingPlayer;	// プレイヤーが動いてる判定
 	static CTutorialStep *m_pStep;	// ステップ
+	CTutorialText *m_pText;			//テキスト
 };
 
 #endif

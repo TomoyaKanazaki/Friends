@@ -52,15 +52,13 @@ public:
 
 private:
 
-	// メンバ関数
-	void UpdateSelect(int nCntSelect);	// 選択肢の更新処理
-	void CreateSelect(void); // 選択対象の生成
-
-							// メンバ変数
-	int m_nNowSelect;		// 現在の選択肢
-	int m_nTexIdx_Select[MODELSELECT_MAX];						// テクスチャのインデックス番号
-	CObjectX *m_pObjX[VTX_MAX];							// オブジェクト2Dのオブジェクト
-	CObjectX *m_pSelectX[MODELSELECT_MAX];				// 選択肢のオブジェクト
+	// メンバ変数
+	int m_nNowSelect;				// 現在の選択肢
+	int m_nOldSelect;				// ひとつ前の選択肢
+	int m_n[MODELSELECT_MAX];		// ゲートの開閉猶予カウント
+	float m_nGate[MODELSELECT_MAX];					// ゲートの開閉カウント
+	CObjectX *m_pObjX[VTX_MAX];						// オブジェクト2Dのオブジェクト
+	CObjectX *m_pSelectX[MODELSELECT_MAX];			// 選択肢のオブジェクト
 };
 
 #endif

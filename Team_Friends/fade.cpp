@@ -89,7 +89,7 @@ HRESULT CFade::Init(void)
 #if _DEBUG
 	m_ModeNext = CScene::MODE_TUTORIAL;	// 次のモード
 	m_ModeNext = CScene::MODE_TITLE;	// 次のモード
-	//m_ModeNext = CScene::MODE_DECIDE;	// 次のモード
+	m_ModeNext = CScene::MODE_DECIDE;	// 次のモード
 #else
 	m_ModeNext = CScene::MODE_TITLE;	// 次のモード
 #endif

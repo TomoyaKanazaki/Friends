@@ -540,7 +540,7 @@ void CMotion::Update(float fBuff)
 			float fMoveDiff =
 				sqrtf((m_aInfo[m_nType].aKey[nNextMoveKey].aParts[nCntParts].pos.x - aPartsOld[nCntParts].pos.x) * (m_aInfo[m_nType].aKey[nNextMoveKey].aParts[nCntParts].pos.x - aPartsOld[nCntParts].pos.x)
 					+ (m_aInfo[m_nType].aKey[nNextMoveKey].aParts[nCntParts].pos.z - aPartsOld[nCntParts].pos.z) * (m_aInfo[m_nType].aKey[nNextMoveKey].aParts[nCntParts].pos.z - aPartsOld[nCntParts].pos.z));
-			fMoveDiff /= (float)nFrame;
+			fMoveDiff /= (static_cast<float>(nFrame) / static_cast<float>(fBuff));
 
 			// “®‚«‚ÌŒü‚«‚ðˆêŽž‘ã“ü
 			float fRot = m_aInfo[m_nType].aKey[nNextMoveKey].fRotMove;

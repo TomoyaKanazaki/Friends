@@ -492,6 +492,9 @@
     <ClCompile Include="result_message.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="itemmanager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -892,6 +895,9 @@
     </ClInclude>
     <ClInclude Include="result_message.h">
       <Filter>ヘッダー ファイル\mode\result</Filter>
+    </ClInclude>
+    <ClInclude Include="itemmanager.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1103,7 +1103,7 @@ void CPlayerUnion::Atack(int nIdx)
 			return;
 		}
 
-		if (m_pMotion[nIdx]->GetAllCount() == aInfo.AttackInfo[nCntAttack]->nInpactCnt)
+		if (m_pMotion[nIdx]->IsImpactFrame(atkInfo))
 		{// 衝撃のカウントと同じとき
 
 			// 攻撃時処理
@@ -1299,7 +1299,7 @@ void CPlayerUnion::AttackAction(int nIdx, int nModelNum, CMotion::AttackInfo ATK
 		// 振動
 		CManager::GetInstance()->GetCamera()->SetShake(20, 15.0f, 0.0f);
 
-		break;// MOTION_ULT_BIGPUNCHCHARGEの終端
+		break;	// MOTION_ULT_BIGPUNCHCHARGEの終端
 	}
 }
 

@@ -1592,7 +1592,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "riot_UV.jpg";
+    "data\\TEXTURE\\enemy\\riot\\riot_UV.jpg";
    }
   }
  }

@@ -73,6 +73,7 @@ void CItemManager::Regist(CItem *pItem)
 {
 	// アイテムのリストに追加
 	m_ItemList.push_back(pItem);
+	m_List.Regist(pItem);
 
 	// 総数加算
 	m_nNumAll++;
@@ -86,6 +87,7 @@ void CItemManager::Delete(CItem *pItem)
 	// 自分自身をリストから探す
 	std::list<CItem*>::iterator itr = std::find(m_ItemList.begin(), m_ItemList.end(), pItem);
 	m_ItemList.erase(itr);
+	m_List.Delete(pItem);
 
 	// 総数減算
 	m_nNumAll--;

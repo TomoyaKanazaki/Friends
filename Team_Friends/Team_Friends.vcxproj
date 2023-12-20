@@ -209,6 +209,7 @@
     <ClCompile Include="fog.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gamemanager.cpp" />
+    <ClCompile Include="glass.cpp" />
     <ClCompile Include="hp_gauge.cpp" />
     <ClCompile Include="hp_gauge_player.cpp" />
     <ClCompile Include="impactwave.cpp" />
@@ -236,7 +237,6 @@
     <ClCompile Include="meshsphere.cpp" />
     <ClCompile Include="meshwall.cpp" />
     <ClCompile Include="message_lose.cpp" />
-    <ClCompile Include="message_win.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="motion.cpp" />
     <ClCompile Include="multinumber.cpp" />
@@ -272,7 +272,6 @@
     <ClCompile Include="result.cpp" />
     <ClCompile Include="resultmanager.cpp" />
     <ClCompile Include="resultscore.cpp" />
-    <ClCompile Include="result_message.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="shadow.cpp" />
@@ -288,6 +287,7 @@
     <ClCompile Include="title.cpp" />
     <ClCompile Include="title_logo.cpp" />
     <ClCompile Include="tutorial.cpp" />
+    <ClCompile Include="tutorialmanager.cpp" />
     <ClCompile Include="tutorialplayer.cpp" />
     <ClCompile Include="tutorialstep.cpp" />
     <ClCompile Include="tutorialtext.cpp" />
@@ -350,6 +350,7 @@
     <ClInclude Include="fog.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="gamemanager.h" />
+    <ClInclude Include="glass.h" />
     <ClInclude Include="hp_gauge.h" />
     <ClInclude Include="hp_gauge_player.h" />
     <ClInclude Include="impactwave.h" />
@@ -377,7 +378,6 @@
     <ClInclude Include="meshsphere.h" />
     <ClInclude Include="meshwall.h" />
     <ClInclude Include="message_lose.h" />
-    <ClInclude Include="message_win.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="motion.h" />
     <ClInclude Include="multinumber.h" />
@@ -409,7 +409,6 @@
     <ClInclude Include="result.h" />
     <ClInclude Include="resultmanager.h" />
     <ClInclude Include="resultscore.h" />
-    <ClInclude Include="result_message.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="shadow.h" />
@@ -425,6 +424,7 @@
     <ClInclude Include="title.h" />
     <ClInclude Include="title_logo.h" />
     <ClInclude Include="tutorial.h" />
+    <ClInclude Include="tutorialmanager.h" />
     <ClInclude Include="tutorialplayer.h" />
     <ClInclude Include="tutorialstep.h" />
     <ClInclude Include="tutorialtext.h" />

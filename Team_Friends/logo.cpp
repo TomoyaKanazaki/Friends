@@ -14,13 +14,13 @@
 //==========================================
 const char* CLogo::m_apTextureFile[] =
 {
-	"data\\TEXTURE\\title\\title_00.png",
-	"data\\TEXTURE\\title\\title_01.png",
-	"data\\TEXTURE\\title\\title_02.png",
-	"data\\TEXTURE\\title\\title_03.png",
-	"data\\TEXTURE\\title\\title_11.png",
-	"data\\TEXTURE\\result\\lose.png",
-	"data\\TEXTURE\\result\\win.png"
+	"data\\TEXTURE\\title\\title_00.png", // 0
+	"data\\TEXTURE\\title\\title_01.png", // 1
+	"data\\TEXTURE\\title\\title_02.png", // 2
+	"data\\TEXTURE\\title\\title_03.png", // 3
+	"data\\TEXTURE\\title\\title_11.png", // 4
+	"data\\TEXTURE\\result\\lose.png", // 5
+	"data\\TEXTURE\\result\\win.png" // 6
 };
 
 //==========================================

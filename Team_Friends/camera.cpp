@@ -1011,6 +1011,12 @@ void CCamera::UpdateState(void)
 			m_state = CAMERASTATE_NONE;
 			m_nShakeLength = 0.0f;	// —h‚ê‚Ì‘å‚«‚³
 			m_nShakeLengthY = 0.0f;	// Y‚Ì—h‚ê‚Ì‘å‚«‚³
+			switch (CManager::GetInstance()->GetMode())
+			{
+			case CScene::MODE_RESULT:
+				ResetResult();
+				break;
+			}
 		}
 		break;
 	}

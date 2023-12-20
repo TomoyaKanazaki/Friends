@@ -1,50 +1,59 @@
 //==========================================
 //
-//  敗北メッセージ(message_lose.cpp)
+//  勝利メッセージ(message_win.cpp)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
-#include "message_lose.h"
+#include "message_win.h"
 #include "manager.h"
 #include "texture.h"
 #include "camera.h"
 #include "calculation.h"
-#include "glass.h"
 
 //==========================================
 //  定数定義
 //==========================================
 namespace
 {
-	const char* TEXPASS = "data\\TEXTURE\\result\\lose.png"; // テクスチャファイルパス
-	const D3DXVECTOR3 DEF_POS = D3DXVECTOR3(0.0f, 0.0f, 2000.0f); // カメラからの相対初期位置
-	const D3DXVECTOR3 DIFF_POS = D3DXVECTOR3(0.0f, 0.0f, 100.0f); // カメラからの相対目的地
-	const D3DXVECTOR3 LOGO_SIZE = D3DXVECTOR3(64.0f, 32.0f, 0.0f); //ポリゴンサイズ
-	const float MOVE_SPEED = 5.0f; // a * x ^ における定数a
+	const char* TEXPASS[2] = // テクスチャファイルパス
+	{
+		"data\\TEXTURE\\result\\perfect.png",
+		"data\\TEXTURE\\result\\win.png"
+	};
+	const D3DXVECTOR3 DEF_POS = D3DXVECTOR3(1000.0f, 0.0f, 100.0f); // カメラからの相対初期位置
+	const D3DXVECTOR3 DIFF_POS = D3DXVECTOR3(51.2f, 0.0f, 150.0f); // カメラからの相対目的地
+	const D3DXVECTOR3 LOGO_SIZE = D3DXVECTOR3(51.2f, 27.2f, 0.0f); //ポリゴンサイズ
+	const float MOVE_SPEED = 5.0f; // (a * x) ^ nにおける定数a
 }
+
+//==========================================
+//  静的メンバ変数宣言
+//==========================================
+int CMessageWin::nIdx = 0;
 
 //==========================================
 //  コンストラクタ
 //==========================================
-CMessageLose::CMessageLose() :
+CMessageWin::CMessageWin() :
 	m_fSec(0.0f),
-	m_bMove(false)
+	m_bMove(false),
+	m_nIdx(nIdx)
 {
-
+	++nIdx;
 }
 
 //==========================================
 //  デストラクタ
 //==========================================
-CMessageLose::~CMessageLose()
+CMessageWin::~CMessageWin()
 {
-
+	--nIdx;
 }
 
 //==========================================
 //  初期化処理
 //==========================================
-HRESULT CMessageLose::Init(void)
+HRESULT CMessageWin::Init(void)
 {
 	// 初期化
 	HRESULT hr = CObject3D::Init();
@@ -53,13 +62,20 @@ HRESULT CMessageLose::Init(void)
 	CObject::SetType(CObject::TYPE_OBJECT3D);
 
 	// テクスチャの割り当て
-	BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEXPASS));
+	BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEXPASS[m_nIdx]));
 
-	// ロゴの位置を設定
-	SetPosition(CManager::GetInstance()->GetCamera()->GetPositionV() + DEF_POS);
-	D3DXVECTOR3 pos = GetPosition();
+	// 位置を設定
+	D3DXVECTOR3 pos_Diff = DEF_POS;
+	pos_target = DIFF_POS;
+	if (m_nIdx == 0)
+	{
+		pos_Diff.x *= -1.0f;
+		pos_target.x *= -1.0f;
+	}
+	pos_target += CManager::GetInstance()->GetCamera()->GetPositionV();
+	SetPosition(CManager::GetInstance()->GetCamera()->GetPositionV() + pos_Diff);
 
-	// ロゴのサイズを設定
+	// サイズを設定
 	SetSize(LOGO_SIZE);
 
 	//値を返す
@@ -69,7 +85,7 @@ HRESULT CMessageLose::Init(void)
 //==========================================
 //  終了処理
 //==========================================
-void CMessageLose::Uninit(void)
+void CMessageWin::Uninit(void)
 {
 	// 終了
 	CObject3D::Uninit();
@@ -78,7 +94,7 @@ void CMessageLose::Uninit(void)
 //==========================================
 //  更新処理
 //==========================================
-void CMessageLose::Update(void)
+void CMessageWin::Update(void)
 {
 	/// 移動
 	if (!m_bMove)
@@ -93,7 +109,7 @@ void CMessageLose::Update(void)
 //==========================================
 //  描画処理
 //==========================================
-void CMessageLose::Draw(void)
+void CMessageWin::Draw(void)
 {
 	// 描画
 	CObject3D::Draw();
@@ -102,10 +118,10 @@ void CMessageLose::Draw(void)
 //==========================================
 //  生成処理
 //==========================================
-CMessageLose* CMessageLose::Create()
+CMessageWin* CMessageWin::Create()
 {
 	// インスタンス生成
-	CMessageLose* pLose = DEBUG_NEW CMessageLose;
+	CMessageWin* pLose = DEBUG_NEW CMessageWin;
 
 	// NULLチェック
 	if (pLose == nullptr) { return nullptr; }
@@ -120,7 +136,7 @@ CMessageLose* CMessageLose::Create()
 //==========================================
 //  移動
 //==========================================
-void CMessageLose::Move()
+void CMessageWin::Move()
 {
 	// 経過時間を加算
 	m_fSec += CManager::GetInstance()->GetDeltaTime() * MOVE_SPEED;
@@ -129,23 +145,36 @@ void CMessageLose::Move()
 	D3DXVECTOR3 pos = GetPosition();
 
 	// 位置を更新
-	pos.z -= m_fSec * m_fSec;
-
-	// 位置を補正
-	if ((CManager::GetInstance()->GetCamera()->GetPositionV() + DIFF_POS).z > pos.z)
+	if (m_nIdx == 0)
 	{
-		pos = CManager::GetInstance()->GetCamera()->GetPositionV() + DIFF_POS;
+		pos.x += m_fSec * m_fSec;
 
-		// 移動完了フラグをオン
-		m_bMove = true;
+		// 位置を補正
+		if (pos_target.x < pos.x)
+		{
+			pos = pos_target;
 
-		// ひび割れを生成
-		CGlass::Create();
+			// 移動完了フラグをオン
+			m_bMove = true;
+		}
+	}
+	else
+	{
+		pos.x -= m_fSec * m_fSec;
+
+		// 位置を補正
+		if (pos_target.x > pos.x)
+		{
+			pos = pos_target;
+
+			// 移動完了フラグをオン
+			m_bMove = true;
+		}
 	}
 
 	if (m_bMove)
 	{
-		CManager::GetInstance()->GetCamera()->SetShake(20, 10.0f, 0.0f);
+		CManager::GetInstance()->GetCamera()->SetShake(10, 10.0f, 0.0f);
 	}
 
 	// 位置を適用

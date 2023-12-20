@@ -498,6 +498,9 @@
     <ClCompile Include="tutorialmanager.cpp">
       <Filter>ソース ファイル\mode\tutorial</Filter>
     </ClCompile>
+    <ClCompile Include="message_win.cpp">
+      <Filter>ソース ファイル\mode\result</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -904,6 +907,9 @@
     </ClInclude>
     <ClInclude Include="tutorialmanager.h">
       <Filter>ヘッダー ファイル\mode\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="message_win.h">
+      <Filter>ヘッダー ファイル\mode\result</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

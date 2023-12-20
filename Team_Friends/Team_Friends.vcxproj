@@ -237,6 +237,7 @@
     <ClCompile Include="meshsphere.cpp" />
     <ClCompile Include="meshwall.cpp" />
     <ClCompile Include="message_lose.cpp" />
+    <ClCompile Include="message_win.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="motion.cpp" />
     <ClCompile Include="multinumber.cpp" />
@@ -378,6 +379,7 @@
     <ClInclude Include="meshsphere.h" />
     <ClInclude Include="meshwall.h" />
     <ClInclude Include="message_lose.h" />
+    <ClInclude Include="message_win.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="motion.h" />
     <ClInclude Include="multinumber.h" />

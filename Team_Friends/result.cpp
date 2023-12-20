@@ -17,13 +17,14 @@
 #include "game.h"
 #include "union_title.h"
 #include "message_lose.h"
+#include "message_win.h"
 
 //==========================================
 //  定数定義 金崎
 //==========================================
 namespace
 {
-	const D3DXCOLOR WIN_COLOR = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
+	const D3DXCOLOR WIN_COLOR = D3DXCOLOR(1.0f, 0.7f, 0.0f, 1.0f);
 	const D3DXCOLOR LOSE_COLOR = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
 	const float START_LENGTH = 300.0f; // 初期距離
 	const float END_LENGTH = 2000.0f; // 目標距離
@@ -81,7 +82,9 @@ HRESULT CResult::Init(void)
 	// メッセージを生成
 	if (CGame::IsClearFrag())
 	{
-
+		CMessageWin::Create();
+		CMessageWin::Create();
+		m_col = WIN_COLOR;
 	}
 	else
 	{

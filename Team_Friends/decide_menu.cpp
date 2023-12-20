@@ -127,6 +127,8 @@ void CDecideMenu::Uninit(void)
 		{// NULL‚¶‚á‚È‚©‚Á‚½‚ç
 
 		 // I—¹ˆ—
+			m_pNumber3D[nCntSelect]->Uninit();
+			delete m_pNumber3D[nCntSelect];
 			m_pNumber3D[nCntSelect] = NULL;
 		}
 	}

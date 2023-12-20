@@ -1,12 +1,12 @@
 //=============================================================================
 // 
-//  ステータスウィンドウヘッダー [statuswindow.h]
+//  必殺ウィンドウヘッダー [ultwindow.h]
 //  Author : 相馬靜雅
 // 
 //=============================================================================
 
-#ifndef _STATUSWINDOW_H_
-#define _STATUSWINDOW_H_	// 二重インクルード防止
+#ifndef _ULTWINDOW_H_
+#define _ULTWINDOW_H_	// 二重インクルード防止
 
 #include "object.h"
 #include "gamemanager.h"
@@ -20,13 +20,13 @@ class CMultiNumber;
 //==========================================================================
 // クラス定義
 //==========================================================================
-// ステータスウィンドウクラス定義
-class CStatusWindow : public CObject
+// 必殺ウィンドウクラス定義
+class CUltWindow : public CObject
 {
 public:
 
-	CStatusWindow(int nPriority = 7);
-	~CStatusWindow();
+	CUltWindow(int nPriority = 7);
+	~CUltWindow();
 
 	// オーバーライドされた関数
 	HRESULT Init(void);
@@ -34,17 +34,17 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	CObjectCircleGauge2D *GetGauge(CGameManager::eStatus status);	// ゲージ取得
-	static CStatusWindow *Create(D3DXVECTOR3 pos, bool bJoin);
+	CObjectCircleGauge2D *GetGauge();	// ゲージ取得
+	static CUltWindow *Create(D3DXVECTOR3 pos, bool bJoin);
 private:
 	
 	bool m_bJoin;	// 参加してるか
-	CObject2D *m_apOnOffSign[2];							// オンオフサイン
-	CObject2D *m_apStatusText[CGameManager::STATUS_MAX];	// ステータステキスト
-	CObject2D *m_apWindowShape[CGameManager::STATUS_MAX];	// ウィンドウの型
-	CObject2D *m_apWindowShapeLid[CGameManager::STATUS_MAX];	// ウィンドウの型の蓋
-	CObjectCircleGauge2D *m_pCircleGauge2D[CGameManager::STATUS_MAX];	// 円ゲージのポインタ
-	CMultiNumber *m_pStatusNumber[CGameManager::STATUS_MAX];			// ステータスの数字
+	CObject2D *m_pOnOffSign[2];			// オンオフサイン
+	CObject2D *m_pUltText;					// 必殺テキスト
+	CObject2D *m_pWindowShape;				// ウィンドウの型
+	CObject2D *m_pWindowShapeLid;			// ウィンドウの型の蓋
+	CObjectCircleGauge2D *m_pCircleGauge2D;	// 円ゲージのポインタ
+	CMultiNumber *m_pUltNumber;				// 必殺の数字
 };
 
 

@@ -292,6 +292,81 @@ void CStatusWindow::Uninit(void)
 }
 
 //==========================================================================
+// 削除処理
+//==========================================================================
+void CStatusWindow::Kill(void)
+{
+	// ウィンドウの型の終了処理
+	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
+	{
+		if (m_apWindowShape[i] == NULL)
+		{
+			continue;
+		}
+		m_apWindowShape[i]->Uninit();
+		m_apWindowShape[i] = NULL;
+	}
+
+	// ウィンドウの型の終了処理
+	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
+	{
+		if (m_apWindowShapeLid[i] == NULL)
+		{
+			continue;
+		}
+		m_apWindowShapeLid[i]->Uninit();
+		m_apWindowShapeLid[i] = NULL;
+	}
+
+	// ステータステキストの終了処理
+	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
+	{
+		if (m_apStatusText[i] == NULL)
+		{
+			continue;
+		}
+		m_apStatusText[i]->Uninit();
+		m_apStatusText[i] = NULL;
+	}
+
+	// 円ゲージのポインタの終了処理
+	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
+	{
+		if (m_pCircleGauge2D[i] == NULL)
+		{
+			continue;
+		}
+		m_pCircleGauge2D[i]->Uninit();
+		m_pCircleGauge2D[i] = NULL;
+	}
+
+	// 数字のオブジェクトの終了処理
+	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
+	{
+		if (m_pStatusNumber[i] == NULL)
+		{
+			continue;
+		}
+		m_pStatusNumber[i]->Release();
+		delete m_pStatusNumber[i];
+		m_pStatusNumber[i] = NULL;
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		if (m_apOnOffSign[i] == NULL)
+		{
+			continue;
+		}
+		m_apOnOffSign[i]->Uninit();
+		m_apOnOffSign[i] = NULL;
+	}
+
+	// 情報削除
+	Release();
+}
+
+//==========================================================================
 // 更新処理
 //==========================================================================
 void CStatusWindow::Update(void)

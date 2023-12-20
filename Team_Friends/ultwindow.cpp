@@ -22,15 +22,13 @@ namespace
 	const float RATIO = 1.2f;
 	const char* TEXTURE_SHAPE = "data\\TEXTURE\\statuswindow\\statuswindow_shape02.png";		// 型のテクスチャ
 	const char* TEXTURE_SHAPELID = "data\\TEXTURE\\statuswindow\\statuswindow_shapeLid2.png";	// 型のフタテクスチャ
-	const char* TEXTURE_ONLINE = "data\\TEXTURE\\statuswindow\\ONLINE.png";		// オンライン
-	const char* TEXTURE_OFFLINE = "data\\TEXTURE\\statuswindow\\OFFLINE.png";	// オフライン
-	const char* TEXTURE_NUMBER = "data\\TEXTURE\\number_status.png";	// 数字
+	const char* TEXTURE_ONLINE = "data\\TEXTURE\\statuswindow\\ONLINE.png";			// オンライン
+	const char* TEXTURE_OFFLINE = "data\\TEXTURE\\statuswindow\\OFFLINE.png";		// オフライン
+	const char* TEXTURE_NUMBER = "data\\TEXTURE\\number_status.png";				// 数字
 	const char* TEXTURE_STATUSTEXT = "data\\TEXTURE\\statuswindow\\status_ult.png"; // 必殺テキスト
+	const D3DXCOLOR DEFAULT_GAUGECOLOR = D3DXCOLOR(0.2f, 1.0f, 0.2f, 0.9f);			// デフォルトのゲージ色
+	const float CYCLE_GAUGEFLASH = 1.2f;	// ゲージ点滅の周期	
 }
-
-//==========================================================================
-// 静的メンバ変数宣言
-//==========================================================================
 
 //==========================================================================
 // コンストラクタ
@@ -44,6 +42,8 @@ CUltWindow::CUltWindow(int nPriority) : CObject(nPriority)
 	m_pWindowShapeLid = nullptr;		// ウィンドウの型の蓋
 	m_pCircleGauge2D = nullptr;			// 円ゲージのポインタ
 	m_pUltNumber = nullptr;				// 必殺の数字
+	m_bEndCharge = false;				// チャージ完了
+	m_fColorFlashValue = 0.0f;			// 点滅の色
 }
 
 //==========================================================================
@@ -118,7 +118,7 @@ HRESULT CUltWindow::Init(void)
 	D3DXVECTOR2 WindowSize = m_pWindowShape->GetSize();
 	D3DXCOLOR UltColor = mylib_const::DEFAULT_COLOR;
 	WindowPos = D3DXVECTOR3(pos.x, pos.y + WindowSize.y * 0.5f, pos.z);
-	UltColor = D3DXCOLOR(0.2f, 1.0f, 0.2f, 0.9f);
+	UltColor = DEFAULT_GAUGECOLOR;
 
 	// 位置設定
 	m_pWindowShape->SetPosition(WindowPos);
@@ -211,11 +211,57 @@ void CUltWindow::Uninit(void)
 //==========================================================================
 void CUltWindow::Update(void)
 {
+
+	float fRate = m_pCircleGauge2D->GetRateDest();
+	if (fRate >= 1.0f)
+	{
+		m_bEndCharge = true;
+	}
+	else
+	{
+		m_bEndCharge = false;
+		D3DXCOLOR col = m_pCircleGauge2D->GetColor();
+
+		col += (col - DEFAULT_GAUGECOLOR) * 0.15f;
+
+		m_pCircleGauge2D->SetColor(col);
+	}
+
+	if (m_bEndCharge)
+	{
+		GaugeFlash();
+	}
+
 	// 数字のオブジェクトの更新処理
 	if (m_pUltNumber != NULL)
 	{
 		m_pUltNumber->Update();
 	}
+}
+
+//==========================================================================
+// ゲージの点滅処理
+//==========================================================================
+void CUltWindow::GaugeFlash(void)
+{
+	// 色取得
+	D3DXCOLOR col = m_pCircleGauge2D->GetColor();
+
+	// 点滅の色
+	m_fColorFlashValue += CManager::GetInstance()->GetDeltaTime();
+
+	float fValue = sinf(D3DX_PI * (m_fColorFlashValue / CYCLE_GAUGEFLASH)) * 0.5f;
+	col.r = DEFAULT_GAUGECOLOR.r + fValue;
+	col.g = DEFAULT_GAUGECOLOR.g + fValue;
+	col.b = DEFAULT_GAUGECOLOR.b + fValue;
+
+	if (m_fColorFlashValue >= CYCLE_GAUGEFLASH * 1.0f)
+	{
+		m_fColorFlashValue = 0.0f;
+	}
+
+	// 色設定
+	m_pCircleGauge2D->SetColor(col);
 }
 
 //==========================================================================

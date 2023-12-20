@@ -246,12 +246,12 @@ void CDecideMenu::Update(void)
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
 	// 現在の選択肢更新
-	if ((pInputGamepad->GetStickSelect(CInputGamepad::STICK_X) == false && pInputGamepad->GetStickMoveL(0).y < 0) ||
+	if ((pInputGamepad->GetStickSelect(CInputGamepad::STICK_Y) == false && pInputGamepad->GetStickMoveL(0).y < 0) ||
 		(pInputKeyboard->GetTrigger(DIK_S) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LEFT, 0)))
 	{// 左
 
 		// 左スティックの判定を渡す
-		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_X);
+		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_Y);
 
 		// パターンNo.を更新
 		m_nNowSelect = (m_nNowSelect + (VTXSELECT_MAX - 1)) % VTXSELECT_MAX;
@@ -269,12 +269,12 @@ void CDecideMenu::Update(void)
 		}
 
 	}
-	else if (pInputGamepad->GetStickSelect(CInputGamepad::STICK_X) == false && pInputGamepad->GetStickMoveL(0).y > 0 ||
+	else if (pInputGamepad->GetStickSelect(CInputGamepad::STICK_Y) == false && pInputGamepad->GetStickMoveL(0).y > 0 ||
 		(pInputKeyboard->GetTrigger(DIK_W) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_RIGHT, 0)))
 	{// 右
 
 		// 左スティックの判定を渡す
-		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_X);
+		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_Y);
 
 		// パターンNo.を更新
 		m_nNowSelect = (m_nNowSelect + 1) % VTXSELECT_MAX;

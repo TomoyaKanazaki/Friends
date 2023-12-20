@@ -304,7 +304,7 @@ void CGame::Update(void)
 
 #ifdef _DEBUG
 	// ƒNƒŠƒA”»’èØ‚è‘Ö‚¦
-	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_NUMPADENTER))
+	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_V))
 	{
 		m_clear = !m_clear;
 	}

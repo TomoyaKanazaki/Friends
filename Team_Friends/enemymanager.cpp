@@ -25,6 +25,8 @@
 #include "instantfade.h"
 #include "stagecleartext.h"
 
+#include "listmanager.h"
+
 //==========================================================================
 // マクロ定義
 //==========================================================================
@@ -132,6 +134,7 @@ HRESULT CEnemyManager::Init(void)
 		// 敵の配置
 		SetEnemy(sEnemyBaseInfo.pos, sEnemyBaseInfo.rot, sEnemyBaseInfo.nPattern);
 	}
+
 
 	// 変更中じゃなくする
 	//SetEnableChangeStage(false);

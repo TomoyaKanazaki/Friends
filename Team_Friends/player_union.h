@@ -114,7 +114,8 @@ protected:
 	bool ControllMove(int nIdx);	// 移動操作
 	void ControllRotation(int nIdx);	// 回転操作
 	virtual HRESULT CreateParts(void);	// パーツの設定
-	
+	int GetModelIdxtFromPartsIdx(int nModelIdx);	// モデルインデックスからパーツのインデックス取得
+
 	bool m_bJump;				// ジャンプ中かどうか
 	bool m_bLandOld;			// 過去の着地情報
 	bool m_bHitStage;			// ステージの当たり判定
@@ -214,7 +215,6 @@ private:
 	void ControllRightArm(int nIdx, int nLoop);	// 右腕操作
 	void ControllLeftArm(int nIdx, int nLoop);		// 左腕操作
 
-
 	// メンバ変数
 	int m_nTexIdx;				// テクスチャのインデックス番号
 	int m_nIdxXFile;			// Xファイルのインデックス番号
@@ -226,6 +226,7 @@ private:
 	eUltAttack m_UltType;			// 必殺技の種類
 	eUltBranch m_UltBranch;			// 必殺技の分岐
 	bool m_bUltBigArm;				// ウルトで腕デカくしたか
+	std::vector<int> m_nModelIdx[mylib_const::MAX_PLAYER];	// 各パーツごとのモデルインデックス番号
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定
 

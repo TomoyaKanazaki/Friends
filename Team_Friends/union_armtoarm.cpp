@@ -380,54 +380,6 @@ void CUnion_ArntoArm::Appearance(void)
 	m_state = STATE_APPEARANCE;	// èÛë‘
 
 	int nCntAllFrame = m_pMotion[0]->GetAllCount();
-
-#if 0
-	if (nCntAllFrame == 70)
-	{
-		D3DXVECTOR3 pos = GetPosition();
-		D3DXVECTOR3 rot = GetRotation();
-
-		int nMax = 40;
-		float fRotDivision = (D3DX_PI * 2.0f) / (float)nMax;
-		for (int i = 0; i < nMax; i++)
-		{
-			D3DXVECTOR3 spawnpos = pos;
-			spawnpos.x = pos.x + sinf(rot.y + fRotDivision * i) * 150.0f;
-			spawnpos.z = pos.z + cosf(rot.y + fRotDivision * i) * 150.0f;
-
-			float fMove = (float)Random(150, 250) * 0.1f;		// à⁄ìÆó 
-			D3DXVECTOR3 spawnmove = D3DXVECTOR3(
-				sinf(rot.y + fRotDivision * i) * 20.0f,
-				(float)Random(250, 450) * 0.1f,
-				cosf(rot.y + fRotDivision * i) * 20.0f);
-
-			D3DXCOLOR col = D3DXCOLOR(
-				0.9f + Random(-100, 100) * 0.001f,
-				0.6f + Random(-100, 100) * 0.001f,
-				0.2f + Random(-100, 100) * 0.001f,
-				1.0f);
-			/*D3DXCOLOR col = D3DXCOLOR(
-				Random(0, 10) * 0.1f,
-				Random(0, 10) * 0.1f,
-				Random(0, 10) * 0.1f,
-				1.0f);*/
-
-			CEffect3D *pEffect = CEffect3D::Create(
-				spawnpos,
-				spawnmove,
-				col,
-				100.0f + (float)Random(-10, 10),
-				80,
-				CEffect3D::MOVEEFFECT_ADD,
-				CEffect3D::TYPE_JUJI2,
-				0.0f);
-			pEffect->SetEnableGravity();
-			pEffect->SetGravityValue(1.5f);
-		}
-
-		//my_particle::Create(GetPosition(), my_particle::TYPE_APPEARANCE_UNION);
-	}
-#else
 	
 	int nFinish = 75;
 	if (nCntAllFrame == nFinish)
@@ -575,7 +527,6 @@ void CUnion_ArntoArm::Appearance(void)
 			}
 		}
 	}
-#endif
 
 	// ìoèÍÉÇÅ[ÉVÉáÉìê›íË
 	for (int i = 0; i < PARTS_MAX; i++)

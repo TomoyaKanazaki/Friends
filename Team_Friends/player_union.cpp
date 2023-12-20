@@ -151,6 +151,12 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_UltType = ULT_BEAM;		// 必殺技の種類
 	m_UltBranch = ULTBRANCH_CHARGE_BEAM;	// 必殺技の分岐
 	m_bUltBigArm = false;		// ウルトで腕デカくしたか
+
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		m_nModelIdx[i].clear();	// 各パーツごとのモデルインデックス番号
+	}
+
 	memset(&m_apModel[0], NULL, sizeof(m_apModel));	// モデル(パーツ)のポインタ
 }
 
@@ -767,17 +773,33 @@ void CPlayerUnion::ControllLeg(int nIdx, int nLoop)
 		// 移動量設定
 		SetMove(move);
 	}
-	//else
-	//{
-	//	for (int i = 0; i < PARTS_MAX; i++)
-	//	{
-	//		m_sMotionFrag[i].bMove = false;
-	//	}
+	
+	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)))
+	{// 攻撃
 
-	//	// 回転操作
-	//	ControllRotation(nIdx);
-	//}
+		// チャージ判定
+		m_sMotionFrag[nIdx].bCharge = true;
 
+		for (int i = 0; i < PARTS_MAX; i++)
+		{
+			m_sMotionFrag[i].bMove = false;
+		}
+	}
+
+	if (m_sMotionFrag[nIdx].bCharge == true &&
+		pInputGamepad->GetRelease(CInputGamepad::BUTTON_A, nLoop))
+	{// チャージ中に攻撃ボタンを離したら
+
+		// 攻撃中
+		m_sMotionFrag[nIdx].bCharge = false;
+		m_sMotionFrag[nIdx].bATK = true;
+
+		for (int i = 0; i < PARTS_MAX; i++)
+		{
+			m_sMotionFrag[i].bMove = false;
+		}
+		m_pMotion[nIdx]->Set(MOTION_NORMAL_ATK);
+	}
 }
 
 //==========================================================================
@@ -802,7 +824,6 @@ void CPlayerUnion::ControllRightArm(int nIdx, int nLoop)
 		// 攻撃中
 		m_sMotionFrag[nIdx].bCharge = false;
 		m_sMotionFrag[nIdx].bATK = true;
-
 		m_pMotion[nIdx]->Set(MOTION_NORMAL_ATK);
 	}
 }
@@ -829,6 +850,7 @@ void CPlayerUnion::ControllLeftArm(int nIdx, int nLoop)
 		// 攻撃中
 		m_sMotionFrag[nIdx].bCharge = false;
 		m_sMotionFrag[nIdx].bATK = true;
+		m_pMotion[nIdx]->Set(MOTION_NORMAL_ATK);
 	}
 }
 
@@ -1105,6 +1127,12 @@ void CPlayerUnion::Atack(int nIdx)
 			return;
 		}
 
+		if (nIdx != GetModelIdxtFromPartsIdx(atkInfo.nCollisionNum))
+		{// 判定を取るインデックスが現在のパーツに無かったら
+			continue;
+		}
+
+
 		if (m_pMotion[nIdx]->IsImpactFrame(atkInfo))
 		{// 衝撃のカウントと同じとき
 
@@ -1113,7 +1141,7 @@ void CPlayerUnion::Atack(int nIdx)
 		}
 
 		// モーションカウンター取得
-		if (m_pMotion[nIdx]->GetAllCount() > atkInfo.nMinCnt && m_pMotion[nIdx]->GetAllCount() < atkInfo.nMaxCnt)
+		if (m_pMotion[nIdx]->GetAllCount() >= atkInfo.nMinCnt && m_pMotion[nIdx]->GetAllCount() < atkInfo.nMaxCnt)
 		{// 攻撃判定中
 			
 			// 攻撃判定中処理
@@ -1122,7 +1150,7 @@ void CPlayerUnion::Atack(int nIdx)
 	}
 
 	CManager::GetInstance()->GetDebugProc()->Print(
-		"モーションカウンター：%d\n", m_pMotion[PARTS_BODY]->GetAllCount());
+			"モーションカウンター[%d]：%d\n", nIdx, m_pMotion[nIdx]->GetAllCount());
 }
 
 //==========================================================================
@@ -1312,11 +1340,6 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int n
 {
 	// 武器の位置
 	D3DXVECTOR3 weponpos = m_pMotion[nIdx]->GetAttackPosition(m_apModel[ATKInfo.nCollisionNum], ATKInfo);
-	
-	if (ATKInfo.fRangeSize == 0.0f)
-	{
-		return;
-	}
 
 #if _DEBUG
 	CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
@@ -1445,6 +1468,11 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int n
 
 	}// 終端
 
+
+	if (ATKInfo.fRangeSize == 0.0f)
+	{
+		return;
+	}
 
 	// 敵取得
 	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
@@ -2583,6 +2611,12 @@ void CPlayerUnion::ReadMultiCharacter(const char *pTextFile)
 		return;
 	}
 
+	// 各パーツごとのモデルインデックスリセット
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		m_nModelIdx[i].clear();
+	}
+
 	char aComment[MAX_COMMENT];	// コメント
 
 	std::string CharacterFile[mylib_const::MAX_PLAYER];
@@ -2659,6 +2693,9 @@ void CPlayerUnion::ReadMultiCharacter(const char *pTextFile)
 					CModel **ppModel = pObjChar->GetModel();
 					for (int i = 0; i < pObjChar->GetNumModel(); i++)
 					{
+						// 各パーツごとのモデルインデックス保存
+						m_nModelIdx[nCntFileName].push_back(nCntModel);
+
 						m_apModel[nCntModel] = ppModel[i];
 						nCntModel++;
 					}
@@ -2738,6 +2775,26 @@ void CPlayerUnion::SetPlayerByPartsIdx(int nPartsIdx, int nPlayerIdx)
 void CPlayerUnion::SetControllMoveIdx(int nIdx)
 {
 	m_nControllMoveIdx = nIdx;
+}
+
+//==========================================================================
+// モデルインデックスからパーツのインデックス取得
+//==========================================================================
+int CPlayerUnion::GetModelIdxtFromPartsIdx(int nModelIdx)
+{
+	for (int nParts = 0; nParts < mylib_const::MAX_PLAYER; nParts++)
+	{
+		for (int i = 0; i < static_cast<int>(m_nModelIdx[nParts].size()); i++)
+		{
+			if (m_nModelIdx[nParts][i] != nModelIdx)
+			{
+				continue;
+			}
+
+			return nParts;
+		}
+	}
+	return 0;
 }
 
 //==========================================================================

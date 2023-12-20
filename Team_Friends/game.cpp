@@ -558,9 +558,8 @@ void CGame::Reset(void)
 		{
 			continue;
 		}
-
 		m_pStatusWindow[i]->Uninit();
-		m_pStatusWindow[i] = nullptr;;
+		m_pStatusWindow[i] = nullptr;
 	}
 
 	//**********************************

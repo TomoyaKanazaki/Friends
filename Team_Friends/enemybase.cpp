@@ -9,6 +9,8 @@
 #include "calculation.h"
 #include "game.h"
 #include "gamemanager.h"
+#include "tutorial.h"
+#include "tutorialmanager.h"
 #include "3D_effect.h"
 #include "debugpointnumber.h"
 #include "objectX.h"
@@ -206,7 +208,14 @@ void CEnemyBase::Update(void)
 #endif
 
 	// ステージの総数設定
-	CGame::GetGameManager()->SetNumStage(m_nNumStage);
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+	{
+		CTutorial::GetTutorialManager()->SetNumStage(m_nNumStage);
+	}
+	else
+	{
+		CGame::GetGameManager()->SetNumStage(m_nNumStage);
+	}
 
 }
 
@@ -319,8 +328,11 @@ HRESULT CEnemyBase::ReadText(const char *pFileName)
 		}
 	}
 
-	// ステージの総数設定
-	CGame::GetGameManager()->SetNumStage(m_nNumStage);
+	if (CManager::GetInstance()->GetScene()->GetMode() != CScene::MODE_TUTORIAL)
+	{
+		// ステージの総数設定
+		CGame::GetGameManager()->SetNumStage(m_nNumStage);
+	}
 
 	return S_OK;
 }

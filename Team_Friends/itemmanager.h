@@ -9,6 +9,7 @@
 #define _ITEMMANAGER_H_	// 二重インクルード防止
 
 #include "item.h"
+#include "listmanager.h"
 
 // 前方宣言
 class CItem;
@@ -38,6 +39,7 @@ private:
 
 	int m_nNumAll;		// アイテムの総数
 	std::list<CItem*> m_ItemList;	// アイテムのリスト
+	CListManager<CItem> m_List;
 
 };
 

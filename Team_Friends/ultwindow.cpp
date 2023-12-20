@@ -104,10 +104,7 @@ HRESULT CStatusWindow::Init(void)
 	SetType(CObject::TYPE_OBJECT2D);
 
 	D3DXVECTOR3 pos = GetPosition();
-
-	// ‰º’n¶¬
 	CStatusWindow_Base *pBase = CStatusWindow_Base::Create(pos);
-
 	D3DXVECTOR3 posBase = pBase->GetPosition();
 	D3DXVECTOR2 sizeBase = pBase->GetSize();
 	posBase.y = SCREEN_HEIGHT - sizeBase.y;

@@ -10,6 +10,7 @@
 
 #include "main.h"
 #include "constans.h"
+#include "listmanager.h"
 
 //==========================================================================
 // 前方宣言
@@ -88,6 +89,7 @@ private:
 	int m_nNumChara;		// 敵の種類の総数
 	int m_nNumAll;			// 敵の総数
 	bool m_bChangeStage;	// ステージ変更中か
+
 };
 
 

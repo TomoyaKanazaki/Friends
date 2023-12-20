@@ -1150,7 +1150,6 @@ void CPlayer::Atack(void)
 			//CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), aInfo.AttackInfo[nCntAttack]->fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 #endif
 
-#if 1
 			if (CManager::GetInstance()->GetScene()->GetMode() != CScene::MODE_GAME)
 			{// ゲーム以外は通るな
 				CManager::GetInstance()->GetDebugProc()->Print(
@@ -1199,53 +1198,6 @@ void CPlayer::Atack(void)
 				// 敵の数加算
 				nCntEnemy++;
 			}
-#else
-
-			// 敵のリスト取得
-			CListManager *pEnemyList = CEnemy::GetEnemyList();
-
-			pEnemyList->GetTop();
-
-			// 先頭を保存
-			CList *pList = pEnemyList->GetTop();
-
-			while (pList != NULL)
-			{// NULLが来るまで無限ループ
-
-				// 次のオブジェクトを一時保存
-				CList *pListNext = pList->GetNext();
-
-				// 死亡の判定
-				if (pList->IsDeath() == true)
-				{// 死亡フラグが立っていたら
-
-					// 次のオブジェクトを代入
-					pList = pListNext;
-					continue;
-				}
-
-				// 敵の位置取得
-				D3DXMATRIX mtxOrigin = pList->GetObjectChara()->GetModel()[0]->GetWorldMtx();
-				D3DXVECTOR3 TargetPos = D3DXVECTOR3(mtxOrigin._41, mtxOrigin._42, mtxOrigin._43);
-
-				// 判定サイズ取得
-				float fRadius = pList->GetObjectChara()->GetRadius();
-
-				if (SphereRange(weponpos, TargetPos, aInfo.AttackInfo[nCntAttack]->fRangeSize, fRadius))
-				{// 球の判定
-
-					if (pList->Hit(aInfo.AttackInfo[nCntAttack]->nDamage) == true)
-					{// 死んでたら
-
-						my_particle::Create(TargetPos, my_particle::TYPE_OFFSETTING);
-					}
-				}
-
-				// 次のオブジェクトを代入
-				pList = pListNext;
-			}
-
-#endif
 		}
 	}
 

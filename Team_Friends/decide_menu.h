@@ -14,6 +14,7 @@
 class CObject3D;
 class CPlayerTitle;
 class CDecideDoor;
+class CNumber;
 
 //==========================================================================
 //  クラス定義
@@ -27,6 +28,13 @@ public:
 	{
 		VTX_TEXT = 0,	// UI
 		VTX_MAX
+	};
+
+	// 列挙型定義
+	enum VTX_UI
+	{
+		VTX_UI_ELECBORAD = 0,	// UI
+		VTX_UI_MAX
 	};
 
 	// 列挙型定義
@@ -60,13 +68,19 @@ private:
 	void UpdateSelect(int nCntSelect);	// 選択肢の更新処理
 	void CreateSelect(void); // 選択対象の生成
 	void CretePlayer(void); // プレイヤーの生成
+	void CreateNumber(void); // UIの生成
+	void CreateElecboard(void); // UIの生成
+
+	void SetValue(int nNowPlayer);
 
 	// メンバ変数
 	int m_nCntAlpha;		// 不透明度のカウンター
 	int m_nNowSelect;		// 現在の選択肢
-	int m_nTexIdx[VTX_MAX];						// テクスチャのインデックス番号
-	int m_nTexIdx_Select[VTXSELECT_MAX];						// テクスチャのインデックス番号
-	D3DXVECTOR3 KeepSize[VTXSELECT_MAX];
+	int m_nTexIdx_Number;						// テクスチャのインデックス番号
+	int m_nTexIdx_Elecborad[VTX_UI_MAX];		// テクスチャのインデックス番号
+	int m_nTexIdx_Select;						// テクスチャのインデックス番号
+	CNumber*m_pNumber3D[VTX_MAX];					// 数字のUIのオブジェクト
+	CObject3D*m_pElecboard3D[VTX_MAX];					// 電光掲示板のUIのオブジェクト
 	CObject3D*m_pObj3D[VTX_MAX];					// オブジェクト2Dのオブジェクト
 	CObjectX*m_pSelectX[VTXSELECT_MAX];				// 選択肢のオブジェクト
 	CDecideDoor *m_pDecideDoor;	// ドアのオブジェクト

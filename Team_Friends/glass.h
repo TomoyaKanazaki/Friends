@@ -1,28 +1,31 @@
 //==========================================
 //
-//  勝利メッセージ(message_win.h)
+//  ひび割れポリゴン(glass.h)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
-#ifndef _MESSAGE_WIN_H_
-#define _MESSAGE_WIN_H_
-#include "result_message.h"
+#ifndef _GLASS_H_
+#define _GLASS_H_
+#include "object2D.h"
 
 //==========================================
 //  クラス定義
 //==========================================
-class CMessageWin : public CResultMessage
+class CGlass : public CObject2D
 {
 public:
 
-	//メンバ関数
-	CMessageWin();
-	~CMessageWin();
+	// メンバ関数
+	CGlass();
+	~CGlass();
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;
 	void Update(void) override;
 	void Draw(void) override;
+
+	// 静的メンバ関数
+	static CGlass* Create();
 
 };
 

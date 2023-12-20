@@ -486,13 +486,10 @@
     <ClCompile Include="logo.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="result_message.cpp">
-      <Filter>ソース ファイル\mode\result</Filter>
-    </ClCompile>
     <ClCompile Include="message_lose.cpp">
       <Filter>ソース ファイル\mode\result</Filter>
     </ClCompile>
-    <ClCompile Include="message_win.cpp">
+    <ClCompile Include="glass.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -890,13 +887,10 @@
     <ClInclude Include="logo.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="result_message.h">
-      <Filter>ヘッダー ファイル\mode\result</Filter>
-    </ClInclude>
     <ClInclude Include="message_lose.h">
       <Filter>ヘッダー ファイル\mode\result</Filter>
     </ClInclude>
-    <ClInclude Include="message_win.h">
+    <ClInclude Include="glass.h">
       <Filter>ヘッダー ファイル\mode\result</Filter>
     </ClInclude>
   </ItemGroup>

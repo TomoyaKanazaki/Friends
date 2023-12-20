@@ -55,7 +55,6 @@ namespace
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
-CListManager *CEnemy::m_pListManager = NULL;	// リストマネージャ
 
 //==========================================================================
 // コンストラクタ
@@ -206,21 +205,6 @@ HRESULT CEnemy::Init(void)
 
 	// ポーズのリセット
 	m_pMotion->ResetPose(0);
-
-	//if (m_pListManager == NULL)
-	//{
-	//	// リストマネージャの生成処理
-	//	m_pListManager = CListManager::Create();
-	//}
-
-	//// リストの生成
-	//m_pList = CList::Create();
-
-	//// リストに追加
-	//if (m_pListManager != NULL)
-	//{
-	//	m_pListManager->Push(m_pList);
-	//}
 
 	return S_OK;
 }

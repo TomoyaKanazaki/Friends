@@ -216,6 +216,7 @@
     <ClCompile Include="input.cpp" />
     <ClCompile Include="instantfade.cpp" />
     <ClCompile Include="item.cpp" />
+    <ClCompile Include="itemmanager.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="limitarea.cpp" />
     <ClCompile Include="limitereamanager.cpp" />
@@ -357,6 +358,7 @@
     <ClInclude Include="input.h" />
     <ClInclude Include="instantfade.h" />
     <ClInclude Include="item.h" />
+    <ClInclude Include="itemmanager.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="limitarea.h" />
     <ClInclude Include="limitereamanager.h" />

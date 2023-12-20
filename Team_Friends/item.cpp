@@ -17,6 +17,7 @@
 #include "player.h"
 #include "impactwave.h"
 #include "scene.h"
+#include "itemmanager.h"
 
 //==========================================================================
 // マクロ定義
@@ -54,7 +55,6 @@ CItem::CItem(int nPriority) : CObjectX(nPriority)
 	m_state = STATE_NONE;			// 状態
 	m_nCntState = 0;			// 状態遷移カウンター
 	m_nLife = 0;
-	m_nIdxBulletManager = 0;			// アイテムマネージャのインデックス番号
 	m_nCntEmission = 0;	// 発生物のカウンター
 
 	// テクスチャデータの配列分繰り返す
@@ -131,6 +131,9 @@ HRESULT CItem::Init(void)
 	// ランダム移動量
 	SetMove(D3DXVECTOR3(Random(-50, 50) * 0.1f, 10.0f, Random(-50, 50) * 0.1f));
 
+	// 弾マネージャに割り当て
+	CGame::GetItemManager()->Regist(this);
+
 	return S_OK;
 }
 
@@ -139,11 +142,11 @@ HRESULT CItem::Init(void)
 //==========================================================================
 void CItem::Uninit(void)
 {
-	//// 削除
-	//if (CManager::GetInstance()->GetMode() == CScene::MODE_GAME && CGame::GetBulletManager() != NULL)
-	//{// アイテムマネージャの削除
-	//	CGame::GetBulletManager()->Delete(m_nIdxBulletManager);
-	//}
+	// 削除
+	if (CManager::GetInstance()->GetMode() == CScene::MODE_GAME && CGame::GetItemManager() != NULL)
+	{// 弾マネージャの削除
+		CGame::GetItemManager()->Delete(this);
+	}
 
 	// 終了処理
 	CObjectX::Uninit();
@@ -286,6 +289,10 @@ void CItem::StateFadeOut(void)
 //==========================================================================
 void CItem::CollisionPlayer(void)
 {
+	// 情報取得
+	D3DXVECTOR3 pos = GetPosition();
+	float fRadius = GetVtxMax().x;
+
 	// プレイヤー情報取得
 	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
@@ -301,10 +308,6 @@ void CItem::CollisionPlayer(void)
 		D3DXVECTOR3 PlayerRotation = pPlayer->GetRotation();
 		float fPlayerRadius = pPlayer->GetRadius();
 
-		// 情報取得
-		D3DXVECTOR3 pos = GetPosition();
-		float fRadius = GetVtxMax().x;
-
 		if (SphereRange(pos, PlayerPosition, fRadius, fPlayerRadius))
 		{// 当たっていたら
 
@@ -317,6 +320,7 @@ void CItem::CollisionPlayer(void)
 
 				// 終了処理
 				Uninit();
+				return;
 			}
 			continue;
 		}

@@ -14,10 +14,10 @@ NUM_MODEL = 4
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-MODEL_FILENAME = data\MODEL\union_SUPER\Rshoulder.x	# [7]右肩
-MODEL_FILENAME = data\MODEL\union_SUPER\Rarm.x		# [8]右腕
-MODEL_FILENAME = data\MODEL\union_SUPER\Rwrist.x	# [9]右手首
-MODEL_FILENAME = data\MODEL\union_SUPER\Rhand.x		# [10]右手
+MODEL_FILENAME = data\MODEL\union_SUPER\Rshoulder.x	# [9]右肩
+MODEL_FILENAME = data\MODEL\union_SUPER\Rarm.x		# [10]右腕
+MODEL_FILENAME = data\MODEL\union_SUPER\Rwrist.x	# [11]右手首
+MODEL_FILENAME = data\MODEL\union_SUPER\Rhand.x		# [12]右手
 
 #------------------------------------------------------------------------------
 # キャラクター情報

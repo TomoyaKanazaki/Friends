@@ -1,61 +1,64 @@
-//==========================================================================
-//
-// リストマネージャヘッダー[listmanager.h]
-// Author：相馬靜雅
-//
-//==========================================================================
-#ifndef _LISTMANAGER_H_
-#define _LISTMANAGER_H_	// 二重インクルード防止
-
-//==========================================================================
-// リストマネージャクラスの定義
-//==========================================================================
-template<class T> class CListManager
-{
-public:
-
-	CListManager();			// コンストラクタ
-	~CListManager();		// デストラクタ
-
-	HRESULT Init(void);
-	void Uninit(void);
-
-	void Regist(T *pItem);			// 割り当て
-	void Delete(T *pItem);			// 削除
-	void KillAll(void);				// 全て削除
-	int GetNumAll(void);			// アイテムの総数取得
-	std::list<T*> GetList(void);	// アイテムのリスト取得
-
-private:
-
-	int m_nNumAll;				// 総数
-	std::list<T*> m_ListObj;	// リスト
-};
-
-
+//=============================================================================
+// 
+//  アイテムのマネージャ処理 [itemmanager.cpp]
+//  Author : 相馬靜雅
+// 
+//=============================================================================
+#include "itemmanager.h"
 
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-template<class T> CListManager<T>::CListManager()
+CItemManager::CItemManager()
 {
 	// 値のクリア
 	m_nNumAll = 0;	// 総数リセット
-	m_ListObj.clear();	// アイテムのリスト
+	m_ItemList.clear();	// アイテムのリスト
 }
 
 //==========================================================================
 // デストラクタ
 //==========================================================================
-template<class T> CListManager<T>::~CListManager()
+CItemManager::~CItemManager()
 {
 
 }
 
 //==========================================================================
+// 生成処理
+//==========================================================================
+CItemManager *CItemManager::Create(void)
+{
+	// 生成用のオブジェクト
+	CItemManager *pModel = NULL;
+
+	if (pModel == NULL)
+	{// NULLだったら
+
+		// メモリの確保
+		pModel = DEBUG_NEW CItemManager;
+
+		if (pModel != NULL)
+		{// メモリの確保が出来ていたら
+
+			// 初期化処理
+			HRESULT hr = pModel->Init();
+			if (FAILED(hr))
+			{// 失敗していたら
+				return NULL;
+			}
+		}
+
+		return pModel;
+	}
+
+	return NULL;
+}
+
+//==========================================================================
 // 初期化処理
 //==========================================================================
-template<class T> HRESULT CListManager<T>::Init(void)
+HRESULT CItemManager::Init(void)
 {
 	// 総数リセット
 	m_nNumAll = 0;
@@ -66,10 +69,11 @@ template<class T> HRESULT CListManager<T>::Init(void)
 //==========================================================================
 // 割り当て
 //==========================================================================
-template<class T> void CListManager<T>::Regist(T *pItem)
+void CItemManager::Regist(CItem *pItem)
 {
 	// アイテムのリストに追加
-	m_ListObj.push_back(pItem);
+	m_ItemList.push_back(pItem);
+	m_List.Regist(pItem);
 
 	// 総数加算
 	m_nNumAll++;
@@ -78,11 +82,12 @@ template<class T> void CListManager<T>::Regist(T *pItem)
 //==========================================================================
 // 削除
 //==========================================================================
-template<class T> void CListManager<T>::Delete(T *pItem)
+void CItemManager::Delete(CItem *pItem)
 {
 	// 自分自身をリストから探す
-	std::list<T*>::iterator itr = std::find(m_ListObj.begin(), m_ListObj.end(), pItem);
-	m_ListObj.erase(itr);
+	std::list<CItem*>::iterator itr = std::find(m_ItemList.begin(), m_ItemList.end(), pItem);
+	m_ItemList.erase(itr);
+	m_List.Delete(pItem);
 
 	// 総数減算
 	m_nNumAll--;
@@ -91,10 +96,10 @@ template<class T> void CListManager<T>::Delete(T *pItem)
 //==========================================================================
 // 終了処理
 //==========================================================================
-template<class T> void CListManager<T>::Uninit(void)
+void CItemManager::Uninit(void)
 {
 	// クリア
-	m_ListObj.clear();
+	m_ItemList.clear();
 
 	// 総数
 	m_nNumAll = 0;
@@ -103,23 +108,23 @@ template<class T> void CListManager<T>::Uninit(void)
 //==========================================================================
 // 全て削除
 //==========================================================================
-template<class T> void CListManager<T>::KillAll(void)
+void CItemManager::KillAll(void)
 {
-	std::list<T*>::iterator it = m_ListObj.begin();
+	std::list<CItem*>::iterator it = m_ItemList.begin();
 
 	// 要素分繰り返し
-	while (it != m_ListObj.end())
+	while (it != m_ItemList.end())
 	{
 		// 終了処理
 		(*it)->Uninit();
 
 		// 先頭の要素を渡す
-		it = m_ListObj.begin();
+		it = m_ItemList.begin();
 		m_nNumAll--;
 	}
 
 	// クリア
-	m_ListObj.clear();
+	m_ItemList.clear();
 
 	// 総数
 	m_nNumAll = 0;
@@ -127,20 +132,17 @@ template<class T> void CListManager<T>::KillAll(void)
 }
 
 //==========================================================================
-// 総数取得
+// アイテムの総数取得
 //==========================================================================
-template<class T> int CListManager<T>::GetNumAll(void)
+int CItemManager::GetNumAll(void)
 {
 	return m_nNumAll;
 }
 
 //==========================================================================
-// リスト取得
+// アイテムのリスト取得
 //==========================================================================
-template<class T> std::list<T*> CListManager<T>::GetList(void)
+std::list<CItem*> CItemManager::GetList(void)
 {
-	return m_ListObj;
+	return m_ItemList;
 }
-
-
-#endif

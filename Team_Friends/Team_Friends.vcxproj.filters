@@ -495,6 +495,9 @@
     <ClCompile Include="message_win.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="itemmanager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="tutorialmanager.cpp">
       <Filter>ソース ファイル\mode\tutorial</Filter>
     </ClCompile>
@@ -901,6 +904,9 @@
     </ClInclude>
     <ClInclude Include="message_win.h">
       <Filter>ヘッダー ファイル\mode\result</Filter>
+    </ClInclude>
+    <ClInclude Include="itemmanager.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="tutorialmanager.h">
       <Filter>ヘッダー ファイル\mode\tutorial</Filter>

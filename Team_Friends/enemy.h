@@ -19,7 +19,6 @@ class CHP_Gauge;
 class CShadow;
 class CEffect3D;
 class CEnemyFixedMoveManager;
-class CListManager;
 class CList;
 
 //==========================================================================
@@ -93,7 +92,6 @@ public:
 	void SetOriginRotation(D3DXVECTOR3 rot);	// 元の向き
 	CEnemy *GetEnemy(void);
 
-	static CListManager *GetEnemyList(void) { return m_pListManager; }
 protected:
 
 	enum COLORTYPE
@@ -210,7 +208,6 @@ private:
 	CEnemy *m_pChild[mylib_const::MAX_ENEMY];	// 子のポインタ
 	CShadow *m_pShadow;			// 影の情報
 	CList *m_pList;				// リストのオブジェクト
-	static CListManager *m_pListManager;	// リストマネージャ
 };
 
 

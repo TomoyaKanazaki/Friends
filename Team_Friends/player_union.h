@@ -24,7 +24,7 @@ class CUnionCore;
 //==========================================================================
 // クラス定義
 //==========================================================================
-// プレイヤークラス定義
+// 合体プレイヤークラス定義
 class CPlayerUnion : public CObject
 {
 public:
@@ -114,7 +114,8 @@ protected:
 	bool ControllMove(int nIdx);	// 移動操作
 	void ControllRotation(int nIdx);	// 回転操作
 	virtual HRESULT CreateParts(void);	// パーツの設定
-	
+	int GetModelIdxtFromPartsIdx(int nModelIdx);	// モデルインデックスからパーツのインデックス取得
+
 	bool m_bJump;				// ジャンプ中かどうか
 	bool m_bLandOld;			// 過去の着地情報
 	bool m_bHitStage;			// ステージの当たり判定
@@ -155,15 +156,17 @@ private:
 	// 列挙型定義
 	enum MOTION
 	{
-		MOTION_DEF = 0,			// ニュートラルモーション
-		MOTION_WALK,			// 移動モーション
-		MOTION_ULT_BEAMCHARGE,	// 必殺技ビームチャージ
-		MOTION_ULT_BEAMATK,		// 必殺技ビーム攻撃
+		MOTION_DEF = 0,				// ニュートラルモーション
+		MOTION_WALK,				// 移動モーション
+		MOTION_NORMAL_CHARGE,		// 通常チャージ
+		MOTION_NORMAL_ATK,			// 通常攻撃
+		MOTION_ULT_BEAMCHARGE,		// 必殺技ビームチャージ
+		MOTION_ULT_BEAMATK,			// 必殺技ビーム攻撃
 		MOTION_ULT_BIGPUNCHCHARGE,	// 必殺技デカパンチチャージ
 		MOTION_ULT_BIGPUNCHATK,		// 必殺技デカパンチ攻撃
-		MOTION_KNOCKBACK,		// やられモーション
-		MOTION_DEAD,			// 死亡モーション
-		MOTION_APPEARANCE,		// 出現
+		MOTION_KNOCKBACK,			// やられモーション
+		MOTION_DEAD,				// 死亡モーション
+		MOTION_APPEARANCE,			// 出現
 		MOTION_MAX
 	};
 
@@ -207,11 +210,10 @@ private:
 
 	// メンバ関数
 	void Controll(void);		// 操作
-	void ControllBody(int nIdx);		// 胴操作
-	void ControllLeg(int nIdx);			// 脚操作
-	void ControllRightArm(int nIdx);	// 右腕操作
-	void ControllLeftArm(int nIdx);		// 左腕操作
-
+	void ControllBody(int nIdx, int nLoop);		// 胴操作
+	void ControllLeg(int nIdx, int nLoop);			// 脚操作
+	void ControllRightArm(int nIdx, int nLoop);	// 右腕操作
+	void ControllLeftArm(int nIdx, int nLoop);		// 左腕操作
 
 	// メンバ変数
 	int m_nTexIdx;				// テクスチャのインデックス番号
@@ -224,6 +226,7 @@ private:
 	eUltAttack m_UltType;			// 必殺技の種類
 	eUltBranch m_UltBranch;			// 必殺技の分岐
 	bool m_bUltBigArm;				// ウルトで腕デカくしたか
+	std::vector<int> m_nModelIdx[mylib_const::MAX_PLAYER];	// 各パーツごとのモデルインデックス番号
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定
 

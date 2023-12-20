@@ -5,6 +5,7 @@
 // 
 //=============================================================================
 #include "game.h"
+#include "tutorial.h"
 #include "player_union.h"
 #include "camera.h"
 #include "manager.h"
@@ -377,26 +378,42 @@ void CPlayerUnion::Update(void)
 		SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	}
 
-	// エディット中は抜ける
-	if (CGame::GetElevation()->IsEdit())
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
 	{
-		return;
+		// コンボ演出中は抜ける
+		if (CManager::GetInstance()->GetScene()->GetMode() != CScene::MODE_RANKING)
+		{
+			if (CTutorial::GetEnemyManager()->GetState() == CEnemyManager::STATE_COMBOANIM)
+			{
+				return;
+			}
+		}
 	}
-
-	// エディット中は抜ける
-	if (CGame::GetEditType() != CGame::EDITTYPE_OFF)
+	else
 	{
-		return;
-	}
-
-	// コンボ演出中は抜ける
-	if (CManager::GetInstance()->GetScene()->GetMode() != CScene::MODE_RANKING)
-	{
-		if (CGame::GetEnemyManager()->GetState() == CEnemyManager::STATE_COMBOANIM)
+		// エディット中は抜ける
+		if (CGame::GetElevation()->IsEdit())
 		{
 			return;
 		}
+
+		// エディット中は抜ける
+		if (CGame::GetEditType() != CGame::EDITTYPE_OFF)
+		{
+			return;
+		}
+	
+		// コンボ演出中は抜ける
+		if (CManager::GetInstance()->GetScene()->GetMode() != CScene::MODE_RANKING)
+		{
+			if (CGame::GetEnemyManager()->GetState() == CEnemyManager::STATE_COMBOANIM)
+			{
+				return;
+			}
+		}
 	}
+
+
 
 	// 過去の位置保存
 	SetOldPosition(GetPosition());
@@ -2168,6 +2185,9 @@ void CPlayerUnion::KnockBack(void)
 		m_bKnockBack = false;
 		//m_pMotion[PARTS_BODY]->ToggleFinish(true);
 
+		if (CManager::GetInstance()->GetScene()->GetMode() != CScene::MODE_TUTORIAL)
+		{
+		}
 		// Xファイルとの判定
 		CStage *pStage = CGame::GetStage();
 		if (pStage == NULL)

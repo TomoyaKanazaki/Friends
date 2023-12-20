@@ -21,6 +21,7 @@
 #include "3D_effect.h"
 #include "shadow.h"
 #include "player_union.h"
+#include "tutorialmanager.h"
 
 //==========================================================================
 // ƒ}ƒNƒ’è‹`
@@ -418,7 +419,7 @@ void CTutorialPlayer::Controll(void)
 
 	if (m_state != STATE_COMPACTUNION &&
 		m_state != STATE_RELEASEUNION &&
-		CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx) != CGameManager::STATUS_SPEED)
+		CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx) != CTutorialManager::STATUS_SPEED)
 	{// ˆÚ“®’†
 		m_nCntWalk = (m_nCntWalk + 1) % 4;
 

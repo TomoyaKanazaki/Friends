@@ -28,7 +28,6 @@ public:
 		STEP_POWERUP,		//強化
 		STEP_UNDER_UNION,		//簡易合体-合体
 		STEP_UNDER_FREE,		//簡易合体-自由
-		STEP_UNION_ITEM,		//合体-アイテム取得
 		STEP_UNION_FREE,		//合体-自由
 		STEP_MAX
 	};
@@ -40,7 +39,6 @@ public:
 		STEPFRAG_POWERUP,		//強化
 		STEPFRAG_UNDER_UNION,		//簡易合体-合体
 		STEPFRAG_UNDER_FREE,		//簡易合体-自由
-		STEPFRAG_UNION_ITEM,		//合体-アイテム取得
 		STEPFRAG_UNION_FREE,		//合体-自由
 		STEPFRAG_MAX
 	};
@@ -61,6 +59,7 @@ public:
 	bool IsEndStep(void);	// ステップ終了の判定取得
 	void SetDisableOKSign(void);	// OKサインのフラグOFFにする
 	bool IsEndAll(void);	// 全ステップ終了の判定取得
+	bool IsUpdate(void) { return m_bUpdStep; }	// ステップ更新の判定取得
 
 private:
 
@@ -72,6 +71,7 @@ private:
 	bool m_bEndStep;		// ステップの終了判定
 	bool m_bSetOK;			// OKの設定判定
 	bool m_bEndAll;			// 全終了判定
+	bool m_bUpdStep;		// ステップ更新判定
 	STEP m_step;			// 現在のステップ
 };
 

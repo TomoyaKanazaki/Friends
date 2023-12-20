@@ -471,29 +471,6 @@ bool CElevation::IsHit(D3DXVECTOR3& pos)
 				return bHit;
 			}
 
-			//if (CollisionTriangle(pVtxPos[nNowPoint], pVtxPos[nLeft], pVtxPos[nRight], pos, pos) == true)
-			//{// 三角に入っていたら
-
-			//	// ベクトルを計算
-			//	vec1 = pVtxPos[nRight] - pVtxPos[nNowPoint];
-			//	vec2 = pVtxPos[nLeft] - pVtxPos[nNowPoint];
-
-			//	// 外積を求める
-			//	D3DXVec3Cross(&nor, &vec1, &vec2);
-
-			//	// 外積の正規化をして法線にする
-			//	D3DXVec3Normalize(&nor, &nor);
-
-			//	if (nor.y != 0.0f)
-			//	{// 法線が0.0fじゃなかったら
-
-			//		// 高さを求める
-			//		fHeight = ((pos.x - pVtxPos[nNowPoint].x) * nor.x + (pos.z - pVtxPos[nNowPoint].z) * nor.z + (pVtxPos[nNowPoint].y * -nor.y)) / -nor.y;
-			//		fHeight += GetPosition().y;
-			//		break;
-			//	}
-			//}
-
 			bLand = false;
 			fHeight = GetVtxHeight(pos, pVtxPos[nNowPoint + GetWidthBlock()] + posfield, pVtxPos[nRight] + posfield, pVtxPos[nLeft] + posfield, bLand);
 			if (bLand)
@@ -505,29 +482,6 @@ bool CElevation::IsHit(D3DXVECTOR3& pos)
 				}
 				return bHit;
 			}
-
-			//if (CollisionTriangle(pVtxPos[nNowPoint + m_aInfo.nWidthBlock], pVtxPos[nRight], pVtxPos[nLeft], pos, pos) == true)
-			//{// 三角に入っていたら
-
-			//	// ベクトルを計算
-			//	vec1 = pVtxPos[nLeft] - pVtxPos[nNowPoint + m_aInfo.nWidthBlock];
-			//	vec2 = pVtxPos[nRight] - pVtxPos[nNowPoint + m_aInfo.nWidthBlock];
-
-			//	// 外積を求める
-			//	D3DXVec3Cross(&nor, &vec1, &vec2);
-
-			//	// 外積の正規化をして法線にする
-			//	D3DXVec3Normalize(&nor, &nor);
-
-			//	if (nor.y != 0.0f)
-			//	{// 法線が0.0fじゃなかったら
-
-			//		// 高さを求める
-			//		fHeight = ((pos.x - pVtxPos[nNowPoint + m_aInfo.nWidthBlock].x) * nor.x + (pos.z - pVtxPos[nNowPoint + m_aInfo.nWidthBlock].z) * nor.z + (pVtxPos[nNowPoint + m_aInfo.nWidthBlock].y * -nor.y)) / -nor.y;
-			//		fHeight += GetPosition().y;
-			//		break;
-			//	}
-			//}
 		}
 	}
 
@@ -855,7 +809,7 @@ HRESULT CElevation::Load(const char *pText)
 		break;
 
 	default:
-		pFile = fopen("data\\TEXT\\elevation\\field_city.txt", "r");
+		pFile = fopen("data\\TEXT\\elevation\\field_outgame.txt", "r");
 		break;
 	}
 

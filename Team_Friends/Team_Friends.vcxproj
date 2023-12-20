@@ -217,6 +217,7 @@
     <ClCompile Include="input.cpp" />
     <ClCompile Include="instantfade.cpp" />
     <ClCompile Include="item.cpp" />
+    <ClCompile Include="itemmanager.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="limitarea.cpp" />
     <ClCompile Include="limitereamanager.cpp" />
@@ -286,6 +287,7 @@
     <ClCompile Include="title.cpp" />
     <ClCompile Include="title_logo.cpp" />
     <ClCompile Include="tutorial.cpp" />
+    <ClCompile Include="tutorialmanager.cpp" />
     <ClCompile Include="tutorialplayer.cpp" />
     <ClCompile Include="tutorialstep.cpp" />
     <ClCompile Include="tutorialtext.cpp" />
@@ -356,6 +358,7 @@
     <ClInclude Include="input.h" />
     <ClInclude Include="instantfade.h" />
     <ClInclude Include="item.h" />
+    <ClInclude Include="itemmanager.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="limitarea.h" />
     <ClInclude Include="limitereamanager.h" />
@@ -421,6 +424,7 @@
     <ClInclude Include="title.h" />
     <ClInclude Include="title_logo.h" />
     <ClInclude Include="tutorial.h" />
+    <ClInclude Include="tutorialmanager.h" />
     <ClInclude Include="tutorialplayer.h" />
     <ClInclude Include="tutorialstep.h" />
     <ClInclude Include="tutorialtext.h" />

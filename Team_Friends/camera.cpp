@@ -43,7 +43,7 @@
 //#define RESULT_LEN	(1000.0f)
 #define RANKINGROT_NONE		(D3DXVECTOR3(0.0f, 0.15f, 0.06f))
 #define DECIDECAMERAROT_NONE		(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
-#define DECIDECAMERAPOS_NONE		(D3DXVECTOR3(0.0f, 200.0f, 0.0f))
+#define DECIDECAMERAPOS_NONE		(D3DXVECTOR3(0.0f, 230.0f, -50.0f))
 #define DECIDE_LEN	(500.0f)
 
 //==========================================================================

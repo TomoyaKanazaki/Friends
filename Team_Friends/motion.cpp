@@ -540,7 +540,7 @@ void CMotion::Update(float fBuff)
 			float fMoveDiff =
 				sqrtf((m_aInfo[m_nType].aKey[nNextMoveKey].aParts[nCntParts].pos.x - aPartsOld[nCntParts].pos.x) * (m_aInfo[m_nType].aKey[nNextMoveKey].aParts[nCntParts].pos.x - aPartsOld[nCntParts].pos.x)
 					+ (m_aInfo[m_nType].aKey[nNextMoveKey].aParts[nCntParts].pos.z - aPartsOld[nCntParts].pos.z) * (m_aInfo[m_nType].aKey[nNextMoveKey].aParts[nCntParts].pos.z - aPartsOld[nCntParts].pos.z));
-			fMoveDiff /= (float)nFrame;
+			fMoveDiff /= (static_cast<float>(nFrame) / static_cast<float>(fBuff));
 
 			// 動きの向きを一時代入
 			float fRot = m_aInfo[m_nType].aKey[nNextMoveKey].fRotMove;
@@ -635,6 +635,25 @@ void CMotion::Update(float fBuff)
 
 				// 終了判定ON
 				m_bFinish = true;
+			}
+			else
+			{
+				for (int nCntAttack = 0; nCntAttack < nNumAttackInfo; nCntAttack++)
+				{
+					if (m_aInfo[m_nType].AttackInfo[nCntAttack] == NULL)
+					{// NULLだったら
+						continue;
+					}
+
+					if (m_aInfo[m_nType].AttackInfo[nCntAttack]->nInpactCnt < 0)
+					{
+						continue;
+					}
+
+					// まだ衝撃カウントの行動をしてない状態にする
+					m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactAct = false;
+					m_aInfo[m_nType].AttackInfo[nCntAttack]->bInpactActSet = false;
+				}
 			}
 		}
 	}

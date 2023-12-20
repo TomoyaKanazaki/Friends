@@ -21,6 +21,7 @@
 #include "3D_effect.h"
 #include "shadow.h"
 #include "player_union.h"
+#include "tutorialmanager.h"
 
 //==========================================================================
 // マクロ定義
@@ -214,7 +215,24 @@ void CTutorialPlayer::Update(void)
 void CTutorialPlayer::UpdateByStep(void)
 {
 	// ステップの設定
-	CTutorial::GetStep()->SetStep(CTutorialStep::STEP_WAIT);
+	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+	CTutorialStep *pStep = CTutorial::GetStep();
+
+	if (pInputKeyboard->GetTrigger(DIK_RSHIFT) == true)
+	{// RSHIFTで最終合体ステップ
+		if (pStep->GetNowStep() == CTutorialStep::STEP_UNDER_FREE)
+		{
+			pStep->SetStep(CTutorialStep::STEP_UNDER_FREE);
+			pStep->AddStep();
+		}
+	}
+
+	if (pStep->GetNowStep() == CTutorialStep::STEP_WAIT)
+	{
+		pStep->SetStep(CTutorialStep::STEP_WAIT);
+		pStep->AddStep();
+	}
 }
 
 //==========================================================================
@@ -401,7 +419,7 @@ void CTutorialPlayer::Controll(void)
 
 	if (m_state != STATE_COMPACTUNION &&
 		m_state != STATE_RELEASEUNION &&
-		CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx) != CGameManager::STATUS_SPEED)
+		CManager::GetInstance()->GetByPlayerPartsType(m_nMyPlayerIdx) != CTutorialManager::STATUS_SPEED)
 	{// 移動中
 		m_nCntWalk = (m_nCntWalk + 1) % 4;
 

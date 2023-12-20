@@ -1,22 +1,23 @@
-//==========================================
+//==========================================================================
 // 
 //  人数選択メニュー(decide_menu.h)
-//  Author : Tomoya Kanazaki
+//  Author : 橋本 賢太
 // 
-//==========================================
+//==========================================================================
 #ifndef _DECIDE_MENU_H_
 #define _DECIDE_MENU_H_
 #include "object.h"
 
-//==========================================
+//==========================================================================
 //  前方宣言
-//==========================================
+//==========================================================================
 class CObject3D;
 class CPlayerTitle;
+class CDecideDoor;
 
-//==========================================
+//==========================================================================
 //  クラス定義
-//==========================================
+//==========================================================================
 class CDecideMenu : public CObject
 {
 public:
@@ -57,7 +58,6 @@ private:
 
 	// メンバ関数
 	void UpdateSelect(int nCntSelect);	// 選択肢の更新処理
-	void CreateUI(void); // UIの生成
 	void CreateSelect(void); // 選択対象の生成
 	void CretePlayer(void); // プレイヤーの生成
 
@@ -66,8 +66,10 @@ private:
 	int m_nNowSelect;		// 現在の選択肢
 	int m_nTexIdx[VTX_MAX];						// テクスチャのインデックス番号
 	int m_nTexIdx_Select[VTXSELECT_MAX];						// テクスチャのインデックス番号
+	D3DXVECTOR3 KeepSize[VTXSELECT_MAX];
 	CObject3D*m_pObj3D[VTX_MAX];					// オブジェクト2Dのオブジェクト
-	CObject3D*m_pSelect3D[VTXSELECT_MAX];				// 選択肢のオブジェクト
+	CObjectX*m_pSelectX[VTXSELECT_MAX];				// 選択肢のオブジェクト
+	CDecideDoor *m_pDecideDoor;	// ドアのオブジェクト
 	static CPlayerTitle *m_apPlayer[VTXSELECT_MAX]; // プレイヤーのポインタ配列
 };
 

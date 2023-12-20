@@ -492,6 +492,12 @@
     <ClCompile Include="glass.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="itemmanager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorialmanager.cpp">
+      <Filter>ソース ファイル\mode\tutorial</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -892,6 +898,12 @@
     </ClInclude>
     <ClInclude Include="glass.h">
       <Filter>ヘッダー ファイル\mode\result</Filter>
+    </ClInclude>
+    <ClInclude Include="itemmanager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorialmanager.h">
+      <Filter>ヘッダー ファイル\mode\tutorial</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

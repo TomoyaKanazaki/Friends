@@ -10,6 +10,8 @@
 #include "manager.h"
 #include "game.h"
 #include "gamemanager.h"
+#include "tutorial.h"
+#include "tutorialmanager.h"
 #include "renderer.h"
 #include "enemy.h"
 #include "enemy_boss.h"
@@ -197,13 +199,27 @@ void CEnemyManager::Update(void)
 		m_bChangeStage = true;
 
 		// 通常クリア状態にする
-		CGame::GetGameManager()->SetType(CGameManager::SCENE_MAINCLEAR);
+		if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+		{
+			CTutorial::GetTutorialManager()->SetType(CTutorialManager::SCENE_MAINCLEAR);
+		}
+		else
+		{
+			CGame::GetGameManager()->SetType(CGameManager::SCENE_MAINCLEAR);
+		}
 
 		// 遷移なしフェード追加
 		CManager::GetInstance()->GetInstantFade()->SetFade(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f), 40);
 
 		// 遷移状態に変更
-		CGame::GetGameManager()->SetType(CGameManager::SCENE_TRANSITION);
+		if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+		{
+			CTutorial::GetTutorialManager()->SetType(CTutorialManager::SCENE_TRANSITION);
+		}
+		else
+		{
+			CGame::GetGameManager()->SetType(CGameManager::SCENE_TRANSITION);
+		}
 
 		CStageClearText::Create(D3DXVECTOR3(640.0f, 360.0f, 0.0f));
 
@@ -240,46 +256,94 @@ void CEnemyManager::SetStageEnemy(void)
 {
 	// ゲームマネージャ取得
 	CGameManager *pGameManager = CGame::GetGameManager();
-	if (pGameManager == NULL)
+	CTutorialManager *TutorialManager = CTutorial::GetTutorialManager();
+
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
 	{
-		return;
-	}
+		if (TutorialManager == nullptr)
+		{
+			return;
+		}
 
-	if (pGameManager->IsEndNormalStage() == true)
+		if (TutorialManager->IsEndNormalStage() == true)
+		{
+			return;
+		}
+	
+		// ステージの総数取得
+		int nNumStage = TutorialManager->GetNumStage();
+		int nNowStage = TutorialManager->GetNowStage();
+
+		if (nNumStage <= nNowStage)
+		{
+			return;
+		}
+
+		// 敵拠点データ取得
+		CEnemyBase *pEnemyBase = CTutorial::GetEnemyBase();
+		if (pEnemyBase == NULL)
+		{
+			return;
+		}
+
+		// 拠点の数取得
+		int nNumBase = pEnemyBase->GetNumBase(nNowStage);
+
+		for (int i = 0; i < nNumBase; i++)
+		{
+			// 拠点ごとのデータ取得
+			CEnemyBase::sInfo sEnemyBaseInfo = pEnemyBase->GetEnemyBaseInfo(nNowStage, i);
+
+			// 敵の配置
+			SetEnemy(sEnemyBaseInfo.pos, sEnemyBaseInfo.rot, sEnemyBaseInfo.nPattern);
+		}
+
+		// ステージ加算
+		TutorialManager->AddNowStage();
+	}
+	else
 	{
-		return;
+		if (pGameManager == NULL)
+		{
+			return;
+		}
+
+		if (pGameManager->IsEndNormalStage() == true)
+		{
+			return;
+		}
+	
+		// ステージの総数取得
+		int nNumStage = pGameManager->GetNumStage();
+		int nNowStage = pGameManager->GetNowStage();
+
+		if (nNumStage <= nNowStage)
+		{
+			return;
+		}
+
+		// 敵拠点データ取得
+		CEnemyBase *pEnemyBase = CGame::GetEnemyBase();
+		if (pEnemyBase == NULL)
+		{
+			return;
+		}
+
+		// 拠点の数取得
+		int nNumBase = pEnemyBase->GetNumBase(nNowStage);
+
+		for (int i = 0; i < nNumBase; i++)
+		{
+			// 拠点ごとのデータ取得
+			CEnemyBase::sInfo sEnemyBaseInfo = pEnemyBase->GetEnemyBaseInfo(nNowStage, i);
+
+			// 敵の配置
+			SetEnemy(sEnemyBaseInfo.pos, sEnemyBaseInfo.rot, sEnemyBaseInfo.nPattern);
+		}
+
+		// ステージ加算
+		pGameManager->AddNowStage();
 	}
-
-	// ステージの総数取得
-	int nNumStage = pGameManager->GetNumStage();
-	int nNowStage = pGameManager->GetNowStage();
-
-	if (nNumStage <= nNowStage)
-	{
-		return;
-	}
-
-	// 敵拠点データ取得
-	CEnemyBase *pEnemyBase = CGame::GetEnemyBase();
-	if (pEnemyBase == NULL)
-	{
-		return;
-	}
-
-	// 拠点の数取得
-	int nNumBase = pEnemyBase->GetNumBase(nNowStage);
-
-	for (int i = 0; i < nNumBase; i++)
-	{
-		// 拠点ごとのデータ取得
-		CEnemyBase::sInfo sEnemyBaseInfo = pEnemyBase->GetEnemyBaseInfo(nNowStage, i);
-
-		// 敵の配置
-		SetEnemy(sEnemyBaseInfo.pos, sEnemyBaseInfo.rot, sEnemyBaseInfo.nPattern);
-	}
-
-	// ステージ加算
-	pGameManager->AddNowStage();
 }
 
 //==========================================================================

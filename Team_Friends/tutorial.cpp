@@ -17,13 +17,26 @@
 #include "tutorialplayer.h"
 #include "compactcore.h"
 #include "enemymanager.h"
+#include "tutorialmanager.h"
 #include "enemybase.h"
+#include "bulletmanager.h"
+#include "limitereamanager.h"
+#include "limitarea.h"
+#include "stage.h"
+#include "camera.h"
 
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
-CTutorialStep *CTutorial::m_pStep = nullptr;	// ステップ
-bool CTutorial::m_bMovingPlayer = false;	// プレイヤーが動いてる判定
+CTutorialStep *CTutorial::m_pStep = nullptr;					// ステップ
+bool CTutorial::m_bMovingPlayer = false;						// プレイヤーが動いてる判定
+CTutorialManager *CTutorial::m_pTutorialManager = nullptr;			// チュートリアルマネージャのオブジェクト
+CEnemyManager *CTutorial::m_pEnemyManager = nullptr;				// 敵マネージャー
+CEnemyBase *CTutorial::m_pEnemyBase = nullptr;						// 敵拠点
+CBulletManager *CTutorial::m_pBulletManager = nullptr;				// 弾マネージャのオブジェクト
+CLimitAreaManager *CTutorial::m_pLimitEreaManager = nullptr;		// エリア制限マネージャのオブジェクト
+CLimitArea *CTutorial::m_pLimitArea = nullptr;						// エリア制限のオブジェクト
+CStage *CTutorial::m_pStage = nullptr;								// ステージのオブジェクト
 
 //==========================================================================
 // コンストラクタ
@@ -37,8 +50,6 @@ CTutorial::CTutorial()
 	}
 
 	m_pText = nullptr;
-	m_pEnemyManager = nullptr;
-	m_pEnemyBase = nullptr;
 }
 
 //==========================================================================
@@ -86,6 +97,16 @@ HRESULT CTutorial::Init(void)
 	}
 
 	//**********************************
+	// チュートリアルマネージャの拠点
+	//**********************************
+	m_pTutorialManager = CTutorialManager::Create();
+
+	if (m_pTutorialManager == nullptr)
+	{
+		return E_FAIL;
+	}
+
+	//**********************************
 	// 敵の拠点
 	//**********************************
 	m_pEnemyBase = CEnemyBase::Create("data\\TEXT\\enemydata\\base.txt");
@@ -101,6 +122,54 @@ HRESULT CTutorial::Init(void)
 	m_pEnemyManager = CEnemyManager::Create("data\\TEXT\\enemydata\\manager.txt");
 
 	if (m_pEnemyManager == nullptr)
+	{// NULLだったら
+		return E_FAIL;
+	}
+
+	//**********************************
+	// 弾マネージャ
+	//**********************************
+	m_pBulletManager = CBulletManager::Create();
+
+	if (m_pBulletManager == nullptr)
+	{// NULLだったら
+		return E_FAIL;
+	}
+
+	//**********************************
+	// ステージ(地面)
+	//**********************************
+	m_pStage = CStage::Create("data\\TEXT\\stage\\info.txt");
+
+	if (m_pEnemyManager == nullptr)
+	{// NULLだったら
+		return E_FAIL;
+	}
+
+	CManager::GetInstance()->GetCamera()->Reset(CScene::MODE_TUTORIAL);
+
+	//**********************************
+	// エリア制限
+	//**********************************
+	CLimitArea::sLimitEreaInfo info;
+	info.fMaxX = 13000.0f;
+	info.fMaxZ = 1200.0f;
+	info.fMinX = -1200.0f;
+	info.fMinZ = -1200.0f;
+	m_pLimitArea = CLimitArea::Create(info);
+
+	if (m_pLimitArea == nullptr)
+	{// NULLだったら
+		return E_FAIL;
+	}
+	m_pLimitArea->SetEnableDisp(false);
+
+	//**********************************
+	// エリア制限マネージャ
+	//**********************************
+	m_pLimitEreaManager = CLimitAreaManager::Create();
+
+	if (m_pLimitEreaManager == nullptr)
 	{// NULLだったら
 		return E_FAIL;
 	}
@@ -167,19 +236,57 @@ void CTutorial::Uninit(void)
 		m_pText = nullptr;
 	}
 
+	//=======================
+	// ゲーム引用
+	if (m_pTutorialManager != nullptr)
+	{
+		m_pTutorialManager->Uninit();
+		delete m_pTutorialManager;
+		m_pTutorialManager = nullptr;
+	}
+
+	if (m_pBulletManager != nullptr)
+	{
+		// 終了させる
+		m_pBulletManager->Uninit();
+		delete m_pBulletManager;
+		m_pBulletManager = nullptr;
+	}
+
+	if (m_pLimitEreaManager != nullptr)
+	{
+		// 終了させる
+		m_pLimitEreaManager->Uninit();
+		delete m_pLimitEreaManager;
+		m_pLimitEreaManager = nullptr;
+	}
+
+	// ステージの破棄
+	if (m_pStage != nullptr)
+	{// メモリの確保が出来ていたら
+
+	 // 終了処理
+		m_pStage->Uninit();
+		delete m_pStage;
+		m_pStage = nullptr;
+	}
+
+	// 敵マネージャ
+	if (m_pEnemyManager != nullptr)
+	{
+		m_pEnemyManager->Uninit();
+		delete m_pEnemyManager;
+		m_pEnemyManager = nullptr;
+	}
+
 	// 敵の拠点
-	if (m_pEnemyBase != NULL)
+	if (m_pEnemyBase != nullptr)
 	{
 		m_pEnemyBase->Uninit();
 		delete m_pEnemyBase;
-		m_pEnemyBase = NULL;
+		m_pEnemyBase = nullptr;
 	}
-
-	if (m_pEnemyManager != nullptr)
-	{// NULLだったら
-		m_pEnemyManager->Kill();
-		m_pEnemyManager = nullptr;
-	}
+	//=======================
 
 	// 終了処理
 	CScene::Uninit();
@@ -195,6 +302,12 @@ void CTutorial::Update(void)
 
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+	//チュートリアルマネージャ
+	if (m_pTutorialManager == nullptr)
+	{
+		m_pTutorialManager->Update();
+	}
 
 	if (m_pStep->IsEndAll() &&
 		(pInputKeyboard->GetTrigger(DIK_BACKSPACE) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_START, 0) == true))
@@ -223,13 +336,6 @@ void CTutorial::Update(void)
 	if (m_pStep != nullptr)
 	{// nullptrじゃなかったら
 		m_pStep->Update();
-		//ステップ更新フラグ
-		m_pStep->IsUpdate();
-	}
-
-	if (m_pEnemyBase != nullptr)
-	{
-		m_pEnemyBase->Update();
 	}
 
 	if (m_pEnemyManager != nullptr)
@@ -237,13 +343,40 @@ void CTutorial::Update(void)
 
 		if (m_pEnemyManager->GetNumAll() == 0)
 		{
+			//敵がいなくステップが
+			if (m_pStep->GetNowStep() == CTutorialStep::STEP_MOVE)
+			{
+				return;
+			}
 
+			if (m_pEnemyBase != nullptr)
+			{
+				m_pEnemyBase->CreatePos(1, 1, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0);
+			}
 		}
+
+		////最終合体ステップに更新してて
+		//ResetScene();
 	}
 
+	if (GetEnemyManager() != NULL)
+	{// 敵マネージャの更新処理
+		GetEnemyManager()->Update();
+	}
 
-	//最終合体ステップに更新してて
-	ResetScene();
+	// 敵の拠点
+	if (m_pEnemyBase != NULL)
+	{
+		m_pEnemyBase->Update();
+	}
+
+	// ステージの更新
+	if (m_pStage != NULL)
+	{
+		m_pStage->Update();
+	}
+
+	CScene::Update();
 }
 
 //==========================================================================
@@ -349,4 +482,108 @@ void CTutorial::StepInitContent()
 	default:
 		break;
 	}
+}
+
+//==========================================================================
+// 弾マネージャの取得
+//==========================================================================
+CTutorialManager *CTutorial::GetTutorialManager(void)
+{
+	return m_pTutorialManager;
+}
+
+//==========================================================================
+// 弾マネージャの取得
+//==========================================================================
+CBulletManager *CTutorial::GetBulletManager(void)
+{
+	return m_pBulletManager;
+}
+
+//==========================================================================
+// エリア制限マネージャマネージャの取得
+//==========================================================================
+CLimitAreaManager *CTutorial::GetLimitEreaManager(void)
+{
+	return m_pLimitEreaManager;
+}
+
+//==========================================================================
+// ステージの取得
+//==========================================================================
+CStage *CTutorial::GetStage(void)
+{
+	return m_pStage;
+}
+
+//==========================================================================
+// 敵マネージャの取得
+//==========================================================================
+CEnemyManager *CTutorial::GetEnemyManager(void)
+{
+	return m_pEnemyManager;
+}
+
+//==========================================================================
+// 敵の拠点
+//==========================================================================
+CEnemyBase *CTutorial::GetEnemyBase(void)
+{
+	return m_pEnemyBase;
+}
+
+//==========================================================================
+// リセット処理
+//==========================================================================
+void CTutorial::Reset(void)
+{
+	// ステージの破棄
+	if (m_pStage != NULL)
+	{// メモリの確保が出来ていたら
+
+	 // 終了処理
+		m_pStage->Release();
+		delete m_pStage;
+		m_pStage = NULL;
+	}
+
+	// 敵の拠点
+	if (m_pEnemyBase != NULL)
+	{
+		m_pEnemyBase->Uninit();
+		delete m_pEnemyBase;
+		m_pEnemyBase = NULL;
+	}
+
+	// 敵マネージャ
+	if (m_pEnemyManager != NULL)
+	{
+		m_pEnemyManager->Kill();
+	}
+
+	// エリア制限
+	if (m_pLimitArea != NULL)
+	{
+		m_pLimitArea->Uninit();
+		m_pLimitArea = NULL;
+	}
+
+	// ステージ
+	m_pStage = CStage::Create("data\\TEXT\\stage\\boss_info.txt");
+
+	//**********************************
+	// 敵の拠点
+	//**********************************
+	m_pEnemyBase = CEnemyBase::Create("data\\TEXT\\enemydata\\base_boss.txt");
+	if (m_pEnemyBase == NULL)
+	{// NULLだったら
+		return;
+	}
+
+	/*if (m_pLimitArea == NULL)
+	{
+	CLimitArea::sLimitEreaInfo info;
+	info.fMaxX = 8200.0f, info.fMaxZ = 785.0f, info.fMinX = -785.0f, info.fMinZ = -785.0f;
+	m_pLimitArea = CLimitArea::Create(info);
+	}*/
 }

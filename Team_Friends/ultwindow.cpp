@@ -26,7 +26,7 @@ namespace
 	const char* TEXTURE_OFFLINE = "data\\TEXTURE\\statuswindow\\OFFLINE.png";		// オフライン
 	const char* TEXTURE_NUMBER = "data\\TEXTURE\\number_status.png";				// 数字
 	const char* TEXTURE_STATUSTEXT = "data\\TEXTURE\\statuswindow\\status_ult.png"; // 必殺テキスト
-	const D3DXCOLOR DEFAULT_GAUGECOLOR = D3DXCOLOR(0.2f, 1.0f, 0.2f, 0.9f);			// デフォルトのゲージ色
+	const D3DXCOLOR DEFAULT_GAUGECOLOR = D3DXCOLOR(0.9f, 0.3f, 0.9f, 0.9f);			// デフォルトのゲージ色
 	const float CYCLE_GAUGEFLASH = 1.2f;	// ゲージ点滅の周期	
 }
 
@@ -222,7 +222,7 @@ void CUltWindow::Update(void)
 		m_bEndCharge = false;
 		D3DXCOLOR col = m_pCircleGauge2D->GetColor();
 
-		col += (col - DEFAULT_GAUGECOLOR) * 0.15f;
+		col.r += (DEFAULT_GAUGECOLOR - col) * 0.15f;
 
 		m_pCircleGauge2D->SetColor(col);
 	}
@@ -270,6 +270,19 @@ void CUltWindow::GaugeFlash(void)
 void CUltWindow::Draw(void)
 {
 
+}
+
+//==========================================================================
+// ゲージのリセット
+//==========================================================================
+void CUltWindow::ResetGauge(void)
+{
+	if (m_pCircleGauge2D == nullptr)
+	{
+		return;
+	}
+
+	m_pCircleGauge2D->SetRateDest(0.0f);
 }
 
 //==========================================================================

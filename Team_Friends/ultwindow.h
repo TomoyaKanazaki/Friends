@@ -34,6 +34,7 @@ public:
 	void Update(void);
 	void Draw(void);
 
+	void ResetGauge(void);	// ゲージのリセット
 	void SetEnableCharge(bool bEnd) { m_bEndCharge = bEnd; }	// チャージのフラグ
 	bool IsEndCharge() { return m_bEndCharge; }	// チャージが終わってるか
 	CObjectCircleGauge2D *GetGauge();	// ゲージ取得

@@ -87,7 +87,7 @@ public:
 	D3DXVECTOR3 GetSpawnPosition(void);	// スポーン地点取得
 
 	HRESULT RoadText(const char *pFileName);
-	virtual void Kill(void);
+	virtual void Kill(void);	// 削除
 	void SetParent(CEnemy *pParent);		// 親のポインタ設定
 	void SetOriginRotation(D3DXVECTOR3 rot);	// 元の向き
 	CEnemy *GetEnemy(void);

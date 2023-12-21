@@ -1,10 +1,10 @@
 //=============================================================================
 // 
-//  ステータスウィンドウ処理 [statuswindow.cpp]
+//  必殺ウィンドウ処理 [ultwindow.cpp]
 //  Author : 相馬靜雅
 // 
 //=============================================================================
-#include "statuswindow.h"
+#include "ultwindow.h"
 #include "manager.h"
 #include "texture.h"
 #include "renderer.h"
@@ -15,49 +15,41 @@
 #include "multinumber.h"
 
 //==========================================================================
-// マクロ定義
-//==========================================================================
-
-//==========================================================================
 // 定数定義
 //==========================================================================
 namespace
 {
+	const float RATIO = 1.2f;
 	const char* TEXTURE_SHAPE = "data\\TEXTURE\\statuswindow\\statuswindow_shape02.png";		// 型のテクスチャ
 	const char* TEXTURE_SHAPELID = "data\\TEXTURE\\statuswindow\\statuswindow_shapeLid2.png";	// 型のフタテクスチャ
-	const char* TEXTURE_ONLINE = "data\\TEXTURE\\statuswindow\\ONLINE.png";		// オンライン
-	const char* TEXTURE_OFFLINE = "data\\TEXTURE\\statuswindow\\OFFLINE.png";	// オフライン
-	const char* TEXTURE_NUMBER = "data\\TEXTURE\\number_status.png";	// 数字
-	const char* TEXTURE_STATUSTEXT[CGameManager::STATUS_MAX] =			// ステータステキスト
-	{
-		"data\\TEXTURE\\statuswindow\\status_attack.png",
-		"data\\TEXTURE\\statuswindow\\status_speed.png",
-		"data\\TEXTURE\\statuswindow\\status_life.png",
-	};
+	const char* TEXTURE_ONLINE = "data\\TEXTURE\\statuswindow\\ONLINE.png";			// オンライン
+	const char* TEXTURE_OFFLINE = "data\\TEXTURE\\statuswindow\\OFFLINE.png";		// オフライン
+	const char* TEXTURE_NUMBER = "data\\TEXTURE\\number_status.png";				// 数字
+	const char* TEXTURE_STATUSTEXT = "data\\TEXTURE\\statuswindow\\status_ult.png"; // 必殺テキスト
+	const D3DXCOLOR DEFAULT_GAUGECOLOR = D3DXCOLOR(0.2f, 1.0f, 0.2f, 0.9f);			// デフォルトのゲージ色
+	const float CYCLE_GAUGEFLASH = 1.2f;	// ゲージ点滅の周期	
 }
-
-//==========================================================================
-// 静的メンバ変数宣言
-//==========================================================================
 
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CStatusWindow::CStatusWindow(int nPriority) : CObject(nPriority)
+CUltWindow::CUltWindow(int nPriority) : CObject(nPriority)
 {
 	// 値のクリア
-	memset(&m_apOnOffSign[0], NULL, sizeof(m_apOnOffSign));		// オンオフサイン
-	memset(&m_apStatusText[0], NULL, sizeof(m_apStatusText));	// ステータステキスト
-	memset(&m_apWindowShape[0], NULL, sizeof(m_apWindowShape));	// ウィンドウの型
-	memset(&m_apWindowShapeLid[0], NULL, sizeof(m_apWindowShapeLid));	// ウィンドウの型
-	memset(&m_pCircleGauge2D[0], NULL, sizeof(m_pCircleGauge2D));	// 円ゲージのポインタ
-	memset(&m_pStatusNumber[0], NULL, sizeof(m_pStatusNumber));		// ステータスの数字
+	memset(&m_pOnOffSign[0], NULL, sizeof(m_pOnOffSign));		// オンオフサイン
+	m_pUltText = nullptr;				// 必殺テキスト
+	m_pWindowShape = nullptr;			// ウィンドウの型
+	m_pWindowShapeLid = nullptr;		// ウィンドウの型の蓋
+	m_pCircleGauge2D = nullptr;			// 円ゲージのポインタ
+	m_pUltNumber = nullptr;				// 必殺の数字
+	m_bEndCharge = false;				// チャージ完了
+	m_fColorFlashValue = 0.0f;			// 点滅の色
 }
 
 //==========================================================================
 // デストラクタ
 //==========================================================================
-CStatusWindow::~CStatusWindow()
+CUltWindow::~CUltWindow()
 {
 
 }
@@ -65,16 +57,16 @@ CStatusWindow::~CStatusWindow()
 //==========================================================================
 // 生成処理
 //==========================================================================
-CStatusWindow *CStatusWindow::Create(D3DXVECTOR3 pos, bool bJoin)
+CUltWindow *CUltWindow::Create(D3DXVECTOR3 pos, bool bJoin)
 {
 	// 生成用のオブジェクト
-	CStatusWindow *pScore = NULL;
+	CUltWindow *pScore = NULL;
 
 	if (pScore == NULL)
 	{// NULLだったら
 
 		// メモリの確保
-		pScore = DEBUG_NEW CStatusWindow;
+		pScore = DEBUG_NEW CUltWindow;
 
 		if (pScore != NULL)
 		{// メモリの確保が出来ていたら
@@ -98,7 +90,7 @@ CStatusWindow *CStatusWindow::Create(D3DXVECTOR3 pos, bool bJoin)
 //==========================================================================
 // 初期化処理
 //==========================================================================
-HRESULT CStatusWindow::Init(void)
+HRESULT CUltWindow::Init(void)
 {
 	// 種類設定
 	SetType(CObject::TYPE_OBJECT2D);
@@ -109,92 +101,71 @@ HRESULT CStatusWindow::Init(void)
 	D3DXVECTOR2 sizeBase = pBase->GetSize();
 	posBase.y = SCREEN_HEIGHT - sizeBase.y;
 	pBase->SetPosition(posBase);
+	pBase->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f));
 
 	// テクスチャのオブジェクト取得
 	CTexture *pTexture = CManager::GetInstance()->GetTexture();
 
 	int nIdxTex = pTexture->Regist(TEXTURE_SHAPE);
 	int nIdxTexLid = pTexture->Regist(TEXTURE_SHAPELID);
-	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
-	{
-		if (m_apWindowShape[i] != NULL)
-		{
-			continue;
-		}
 
-		// ウィンドウの型生成
-		m_apWindowShape[i] = CObject2D::Create(GetPriority());
-		m_apWindowShape[i]->BindTexture(nIdxTex);
-		m_apWindowShape[i]->SetSize(pTexture->GetImageSize(nIdxTex) * 0.078f);
+	// ウィンドウの型生成
+	m_pWindowShape = CObject2D::Create(GetPriority());
+	m_pWindowShape->BindTexture(nIdxTex);
+	m_pWindowShape->SetSize(pTexture->GetImageSize(nIdxTex) * 0.078f * RATIO);
 
-		D3DXVECTOR3 WindowPos = mylib_const::DEFAULT_VECTOR3;
-		D3DXVECTOR2 WindowSize = m_apWindowShape[i]->GetSize();
-		D3DXCOLOR StatusColor = mylib_const::DEFAULT_COLOR;
-		switch (i)
-		{
-		case CGameManager::STATUS_POWER:
-			WindowPos = D3DXVECTOR3(pos.x - WindowSize.x * 1.5f, pos.y, pos.z);
-			StatusColor = D3DXCOLOR(1.0f, 0.4f, 0.4f, 0.9f);
-			break;
+	D3DXVECTOR3 WindowPos = mylib_const::DEFAULT_VECTOR3;
+	D3DXVECTOR2 WindowSize = m_pWindowShape->GetSize();
+	D3DXCOLOR UltColor = mylib_const::DEFAULT_COLOR;
+	WindowPos = D3DXVECTOR3(pos.x, pos.y + WindowSize.y * 0.5f, pos.z);
+	UltColor = DEFAULT_GAUGECOLOR;
 
-		case CGameManager::STATUS_SPEED:
-			WindowPos = D3DXVECTOR3(pos.x + WindowSize.x * 1.5f, pos.y, pos.z);
-			StatusColor = D3DXCOLOR(0.4f, 0.4f, 1.0f, 0.9f);
-			break;
-
-		case CGameManager::STATUS_LIFE:
-			WindowPos = D3DXVECTOR3(pos.x, pos.y + WindowSize.y, pos.z);
-			StatusColor = D3DXCOLOR(0.2f, 1.0f, 0.2f, 0.9f);
-			break;
-		}
-
-		// 位置設定
-		m_apWindowShape[i]->SetPosition(WindowPos);
-		m_apWindowShape[i]->SetType(CObject::TYPE_OBJECT2D);
+	// 位置設定
+	m_pWindowShape->SetPosition(WindowPos);
+	m_pWindowShape->SetType(CObject::TYPE_OBJECT2D);
 
 
-		// 多角形ゲージ生成
-		m_pCircleGauge2D[i] = CObjectCircleGauge2D::Create(6, WindowSize.y * 0.9f);
-		m_pCircleGauge2D[i]->SetType(CObject::TYPE_OBJECT2D);
-		m_pCircleGauge2D[i]->SetPosition(WindowPos);
-		m_pCircleGauge2D[i]->SetRotation(D3DXVECTOR3(0.0f, 0.0f, D3DXToRadian(30.0f)));
-		m_pCircleGauge2D[i]->SetColor(StatusColor);
+	// 多角形ゲージ生成
+	m_pCircleGauge2D = CObjectCircleGauge2D::Create(6, WindowSize.y * 0.8f * RATIO);
+	m_pCircleGauge2D->SetType(CObject::TYPE_OBJECT2D);
+	m_pCircleGauge2D->SetPosition(WindowPos);
+	m_pCircleGauge2D->SetRotation(D3DXVECTOR3(0.0f, 0.0f, D3DXToRadian(30.0f)));
+	m_pCircleGauge2D->SetColor(UltColor);
 
-		// 枠の蓋生成
-		m_apWindowShapeLid[i] = CObject2D::Create(GetPriority());
-		m_apWindowShapeLid[i]->SetType(CObject::TYPE_OBJECT2D);
-		m_apWindowShapeLid[i]->BindTexture(nIdxTexLid);
-		m_apWindowShapeLid[i]->SetPosition(m_apWindowShape[i]->GetPosition());
-		m_apWindowShapeLid[i]->SetSize(m_apWindowShape[i]->GetSize());
+	// 枠の蓋生成
+	m_pWindowShapeLid = CObject2D::Create(GetPriority());
+	m_pWindowShapeLid->SetType(CObject::TYPE_OBJECT2D);
+	m_pWindowShapeLid->BindTexture(nIdxTexLid);
+	m_pWindowShapeLid->SetPosition(m_pWindowShape->GetPosition());
+	m_pWindowShapeLid->SetSize(m_pWindowShape->GetSize());
 
-		// ステータスの数字
-		m_pStatusNumber[i] = CMultiNumber::Create(
-			D3DXVECTOR3(WindowPos.x + WindowSize.x * 0.15f, WindowPos.y + WindowSize.x * 0.15f, WindowPos.z),
-			D3DXVECTOR2(WindowSize.x, WindowSize.x) * 0.15f,
-			4,
-			CNumber::OBJECTTYPE_2D,
-			TEXTURE_NUMBER, true, 8);
+	// 必殺の数字
+	m_pUltNumber = CMultiNumber::Create(
+		D3DXVECTOR3(WindowPos.x + WindowSize.x * 0.15f, WindowPos.y + WindowSize.x * 0.15f, WindowPos.z),
+		D3DXVECTOR2(WindowSize.x, WindowSize.x) * 0.15f,
+		4,
+		CNumber::OBJECTTYPE_2D,
+		TEXTURE_NUMBER, true, 8);
 
-		// ステータステキスト
-		m_apStatusText[i] = CObject2D::Create(GetPriority());
+	// 必殺テキスト
+	m_pUltText = CObject2D::Create(GetPriority());
 
-		int nIdxTexText = pTexture->Regist(TEXTURE_STATUSTEXT[i]);
-		m_apStatusText[i]->SetType(CObject::TYPE_OBJECT2D);
-		m_apStatusText[i]->BindTexture(nIdxTexText);
-		m_apStatusText[i]->SetSize(pTexture->GetImageSize(nIdxTexText) * 0.09f);
-		m_apStatusText[i]->SetPosition(D3DXVECTOR3(WindowPos.x - WindowSize.x * 0.18f, WindowPos.y, WindowPos.z));
+	int nIdxTexText = pTexture->Regist(TEXTURE_STATUSTEXT);
+	m_pUltText->SetType(CObject::TYPE_OBJECT2D);
+	m_pUltText->BindTexture(nIdxTexText);
+	m_pUltText->SetSize(pTexture->GetImageSize(nIdxTexText) * 0.09f * RATIO * 1.2f);
+	m_pUltText->SetPosition(D3DXVECTOR3(WindowPos.x - WindowSize.x * 0.2f * 1.2f, WindowPos.y, WindowPos.z));
 
-		// 値の設定処理
-		m_pStatusNumber[i]->SetValue(100);
+	// 値の設定処理
+	m_pUltNumber->SetValue(100);
 
-	}
 
 	int nIdxTexOnOffline = pTexture->Regist(TEXTURE_ONLINE);
 	for (int i = 0; i < 2; i++)
 	{
-		m_apOnOffSign[i] = CObject2D::Create(GetPriority());
+		m_pOnOffSign[i] = CObject2D::Create(GetPriority());
 
-		m_apOnOffSign[i]->SetType(CObject::TYPE_OBJECT2D);
+		m_pOnOffSign[i]->SetType(CObject::TYPE_OBJECT2D);
 
 		if (m_bJoin == true)
 		{
@@ -203,85 +174,32 @@ HRESULT CStatusWindow::Init(void)
 		else
 		{
 			nIdxTexOnOffline = pTexture->Regist(TEXTURE_OFFLINE);
-			m_apOnOffSign[i]->SetColor(D3DXCOLOR(0.6f, 0.6f, 0.6f, 1.0f));
+			m_pOnOffSign[i]->SetColor(D3DXCOLOR(0.6f, 0.6f, 0.6f, 1.0f));
 		}
-		m_apOnOffSign[i]->BindTexture(nIdxTexOnOffline);
-		m_apOnOffSign[i]->SetSize(pTexture->GetImageSize(nIdxTexOnOffline) * 0.075f);
+		m_pOnOffSign[i]->BindTexture(nIdxTexOnOffline);
+		m_pOnOffSign[i]->SetSize(pTexture->GetImageSize(nIdxTexOnOffline) * 0.075f * RATIO);
 
-		D3DXVECTOR3 posShape = m_apWindowShape[i]->GetPosition();
-		D3DXVECTOR2 WindowSize = m_apWindowShape[i]->GetSize();
-		m_apOnOffSign[i]->SetPosition(D3DXVECTOR3(posShape.x, posShape.y + WindowSize.y * 1.5f, posShape.z));
+		D3DXVECTOR3 posShape = m_pWindowShape->GetPosition();
+		D3DXVECTOR2 WindowSize = m_pWindowShape->GetSize();
+		WindowSize.x *= 1.2f;
 
+		m_pOnOffSign[i]->SetPosition(D3DXVECTOR3(posShape.x - WindowSize.x + (WindowSize.x * 2.0f * i), posShape.y + WindowSize.y * 0.75f, posShape.z));
 	}
-	
+
 	return S_OK;
 }
 
 //==========================================================================
 // 終了処理
 //==========================================================================
-void CStatusWindow::Uninit(void)
+void CUltWindow::Uninit(void)
 {
-	
-	// ウィンドウの型の終了処理
-	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
-	{
-		if (m_apWindowShape[i] == NULL)
-		{
-			continue;
-		}
-		m_apWindowShape[i] = NULL;
-	}
-
-	// ウィンドウの型の終了処理
-	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
-	{
-		if (m_apWindowShapeLid[i] == NULL)
-		{
-			continue;
-		}
-		m_apWindowShapeLid[i] = NULL;
-	}
-
-	// ステータステキストの終了処理
-	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
-	{
-		if (m_apStatusText[i] == NULL)
-		{
-			continue;
-		}
-		m_apStatusText[i] = NULL;
-	}
-
-	// 円ゲージのポインタの終了処理
-	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
-	{
-		if (m_pCircleGauge2D[i] == NULL)
-		{
-			continue;
-		}
-		m_pCircleGauge2D[i] = NULL;
-	}
-
 	// 数字のオブジェクトの終了処理
-	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
+	if (m_pUltNumber != NULL)
 	{
-		if (m_pStatusNumber[i] == NULL)
-		{
-			continue;
-		}
-		m_pStatusNumber[i]->Uninit();
-		delete m_pStatusNumber[i];
-		m_pStatusNumber[i] = NULL;
-	}
-
-	for (int i = 0; i < 2; i++)
-	{
-		if (m_pStatusNumber[i] == NULL)
-		{
-			continue;
-		}
-		m_apOnOffSign[i] = NULL;
+		m_pUltNumber->Uninit();
+		delete m_pUltNumber;
+		m_pUltNumber = NULL;
 	}
 
 	// 情報削除
@@ -291,23 +209,65 @@ void CStatusWindow::Uninit(void)
 //==========================================================================
 // 更新処理
 //==========================================================================
-void CStatusWindow::Update(void)
+void CUltWindow::Update(void)
 {
-	// 数字のオブジェクトの更新処理
-	for (int i = 0; i < CGameManager::STATUS_MAX; i++)
+
+	float fRate = m_pCircleGauge2D->GetRateDest();
+	if (fRate >= 1.0f)
 	{
-		if (m_pStatusNumber[i] == NULL)
-		{
-			continue;
-		}
-		m_pStatusNumber[i]->Update();
+		m_bEndCharge = true;
 	}
+	else
+	{
+		m_bEndCharge = false;
+		D3DXCOLOR col = m_pCircleGauge2D->GetColor();
+
+		col += (col - DEFAULT_GAUGECOLOR) * 0.15f;
+
+		m_pCircleGauge2D->SetColor(col);
+	}
+
+	if (m_bEndCharge)
+	{
+		GaugeFlash();
+	}
+
+	// 数字のオブジェクトの更新処理
+	if (m_pUltNumber != NULL)
+	{
+		m_pUltNumber->Update();
+	}
+}
+
+//==========================================================================
+// ゲージの点滅処理
+//==========================================================================
+void CUltWindow::GaugeFlash(void)
+{
+	// 色取得
+	D3DXCOLOR col = m_pCircleGauge2D->GetColor();
+
+	// 点滅の色
+	m_fColorFlashValue += CManager::GetInstance()->GetDeltaTime();
+
+	float fValue = sinf(D3DX_PI * (m_fColorFlashValue / CYCLE_GAUGEFLASH)) * 0.5f;
+	col.r = DEFAULT_GAUGECOLOR.r + fValue;
+	col.g = DEFAULT_GAUGECOLOR.g + fValue;
+	col.b = DEFAULT_GAUGECOLOR.b + fValue;
+
+	if (m_fColorFlashValue >= CYCLE_GAUGEFLASH * 1.0f)
+	{
+		m_fColorFlashValue = 0.0f;
+	}
+
+	// 色設定
+	m_pCircleGauge2D->SetColor(col);
 }
 
 //==========================================================================
 // 描画処理
 //==========================================================================
-void CStatusWindow::Draw(void)
+void CUltWindow::Draw(void)
 {
 
 }
@@ -315,7 +275,7 @@ void CStatusWindow::Draw(void)
 //==========================================================================
 // ゲージ取得
 //==========================================================================
-CObjectCircleGauge2D *CStatusWindow::GetGauge(CGameManager::eStatus status)
+CObjectCircleGauge2D *CUltWindow::GetGauge()
 {
-	return m_pCircleGauge2D[status];
+	return m_pCircleGauge2D;
 }

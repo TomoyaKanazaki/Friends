@@ -107,10 +107,20 @@ HRESULT CTutorial::Init(void)
 	}
 
 	//**********************************
+	// エリア制限マネージャ
+	//**********************************
+	m_pLimitEreaManager = CLimitAreaManager::Create();
+
+	if (m_pLimitEreaManager == nullptr)
+	{// NULLだったら
+		return E_FAIL;
+	}
+
+	//**********************************
 	// 敵の拠点
 	//**********************************
 	m_pEnemyBase = CEnemyBase::Create("data\\TEXT\\enemydata\\base.txt");
-	
+
 	if (m_pEnemyBase == nullptr)
 	{
 		return E_FAIL;
@@ -141,7 +151,7 @@ HRESULT CTutorial::Init(void)
 	//**********************************
 	m_pStage = CStage::Create("data\\TEXT\\stage\\info.txt");
 
-	if (m_pEnemyManager == nullptr)
+	if (m_pStage == nullptr)
 	{// NULLだったら
 		return E_FAIL;
 	}
@@ -163,16 +173,6 @@ HRESULT CTutorial::Init(void)
 		return E_FAIL;
 	}
 	m_pLimitArea->SetEnableDisp(false);
-
-	//**********************************
-	// エリア制限マネージャ
-	//**********************************
-	m_pLimitEreaManager = CLimitAreaManager::Create();
-
-	if (m_pLimitEreaManager == nullptr)
-	{// NULLだったら
-		return E_FAIL;
-	}
 
 	//**********************************
 	// プレイヤー

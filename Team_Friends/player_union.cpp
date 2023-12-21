@@ -42,6 +42,8 @@
 #include "enemy_boss.h"
 #include "beam.h"
 #include "unioncore.h"
+#include "ultwindow.h"
+#include "object_circlegauge2D.h"
 
 // 派生先
 #include "union_bodytoleg.h"
@@ -81,6 +83,10 @@ namespace
 			"data\\TEXTURE\\union\\SuperUnion\\Arm\\union_arm_UV_Yellow.jpg",
 		}
 	};
+	const float MAX_ULTGAUGEVALUE = 200.0f;	// 必殺ゲージの最大量
+	const float ADD_AUTO_ULTGAUGEVALUE = 0.1f;	// 必殺ゲージの自動加算量
+	const float COOLTIME_BOOST = 120.0f;	// ブーストのクールタイム
+	const float TIME_BOOST = 20.0f;	// ブーストのタイム
 }
 #define JUMP			(20.0f * 1.5f)	// ジャンプ力初期値
 #define MAX_LIFE		(100)			// 体力
@@ -152,6 +158,9 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_UltType = ULT_BEAM;		// 必殺技の種類
 	m_UltBranch = ULTBRANCH_CHARGE_BEAM;	// 必殺技の分岐
 	m_bUltBigArm = false;		// ウルトで腕デカくしたか
+	memset(&m_fUltGaugeValue[0], 0, sizeof(m_fUltGaugeValue));	// 必殺ゲージの量
+	m_fCooltimeBoost = 0.0f;	// ブーストのクールタイム
+	m_fBoostTime = 0.0f;	// ブーストのタイム
 
 	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
 	{
@@ -459,6 +468,31 @@ void CPlayerUnion::Update(void)
 	// 状態更新
 	UpdateState();
 
+
+	// ブーストのクールタイム
+	m_fCooltimeBoost -= 1.0f;
+	ValueNormalize(m_fCooltimeBoost, COOLTIME_BOOST, 0.0f);
+
+	// ブーストのタイム
+	m_fBoostTime -= 1.0f;
+	ValueNormalize(m_fBoostTime, TIME_BOOST, 0.0f);
+
+	// 自動加算量分加算
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		m_fUltGaugeValue[i] += ADD_AUTO_ULTGAUGEVALUE;
+		ValueNormalize(m_fUltGaugeValue[i], MAX_ULTGAUGEVALUE, 0.0f);
+
+		// ステータスウィンドウ
+		CUltWindow *pUltWindow = CGame::GetUltWindow(i);
+		if (pUltWindow != NULL)
+		{
+			// ゲージの割合更新
+			pUltWindow->GetGauge()->SetRateDest(m_fUltGaugeValue[i] / MAX_ULTGAUGEVALUE);
+		}
+	}
+
+
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
 
@@ -745,6 +779,11 @@ void CPlayerUnion::ControllLeg(int nIdx, int nLoop)
 				{
 					m_sMotionFrag[nLeftArmIdx].bMove = false;
 				}
+
+				if (m_fBoostTime > 0.0f)
+				{
+					m_pMotion[i]->Set(MOTION_BOOST);
+				}
 			}
 		}
 		else
@@ -896,6 +935,21 @@ bool CPlayerUnion::ControllMove(int nIdx)
 	float fMove = 0.5f;
 
 	bool bMove = true;
+
+	if (m_fCooltimeBoost <= 0.0f &&
+		m_fBoostTime <= 0.0f &&
+		(pInputKeyboard->GetPress(DIK_SPACE) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_B, nIdx)))
+	{
+		m_fCooltimeBoost = COOLTIME_BOOST;
+		m_fBoostTime = TIME_BOOST;
+		m_pMotion[nIdx]->Set(MOTION_BOOST);
+	}
+
+	if (m_fBoostTime > 0.0f)
+	{
+		fMove *= 15.0f;
+		m_pMotion[nIdx]->Set(MOTION_BOOST);
+	}
 
 	if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(nIdx).x < 0)
 	{//←キーが押された,左移動
@@ -1362,6 +1416,8 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int n
 	CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 #endif
 
+	CEffect3D *pEffect = nullptr;
+
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
 
@@ -1373,6 +1429,51 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int n
 	// 種類別
 	switch (m_pMotion[nIdx]->GetType())
 	{
+	case MOTION_BOOST:
+	{
+		// 炎
+		float fMove = 16.0f + Random(-2, 4);
+		float fRot = Random(-20, 20) * 0.01f;
+
+		pEffect = CEffect3D::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y + fRot) * -fMove,
+				static_cast<float>(Random(-40, 40)) * 0.1f,
+				cosf(D3DX_PI + rot.y + fRot) * -fMove),
+			D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
+			150.0f + (float)Random(-20, 20),
+			15,
+			CEffect3D::MOVEEFFECT_ADD,
+			CEffect3D::TYPE_SMOKE);
+
+		if (pEffect != NULL)
+		{
+			// セットアップ位置設定
+			pEffect->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+		}
+
+		fRot = Random(-20, 20) * 0.01f;
+		// 炎
+		pEffect = CEffect3D::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y + fRot) * -fMove,
+				static_cast<float>(Random(-40, 40)) * 0.1f,
+				cosf(D3DX_PI + rot.y + fRot) * -fMove),
+			D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
+			100.0f + (float)Random(-10, 10),
+			15,
+			CEffect3D::MOVEEFFECT_ADD,
+			CEffect3D::TYPE_SMOKE);
+		if (pEffect != NULL)
+		{
+			// セットアップ位置設定
+			pEffect->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+		}
+	}
+		break;
+
 	case MOTION_ULT_BEAMCHARGE:
 		if ((int)fAllCount % repeat == 0)
 		{
@@ -1481,7 +1582,7 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int n
 			pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
 		}
 	}
-		break;
+	break;
 
 	}// 終端
 
@@ -2589,6 +2690,8 @@ void CPlayerUnion::Draw(void)
 //==========================================================================
 void CPlayerUnion::BindByPlayerIdxTexture(int nIdx, int nPartsIdx)
 {
+	ValueNormalize(nPartsIdx, 4, 0);
+
 	// ファイルインデックス番号取得
 	int nIdxXFile = m_pObjChara[nPartsIdx]->GetIdxFile();
 	CObjectChara::Load LoadData = m_pObjChara[nPartsIdx]->GetLoadData(nIdxXFile);

@@ -501,6 +501,9 @@
     <ClCompile Include="message_win.cpp">
       <Filter>ソース ファイル\mode\result</Filter>
     </ClCompile>
+    <ClCompile Include="ultwindow.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2D_effect.h">
@@ -910,6 +913,9 @@
     </ClInclude>
     <ClInclude Include="message_win.h">
       <Filter>ヘッダー ファイル\mode\result</Filter>
+    </ClInclude>
+    <ClInclude Include="ultwindow.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

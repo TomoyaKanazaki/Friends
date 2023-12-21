@@ -29,11 +29,12 @@ public:
 	~CStatusWindow();
 
 	// オーバーライドされた関数
-	HRESULT Init(void);
-	void Uninit(void);
-	void Update(void);
-	void Draw(void);
+	HRESULT Init(void) override;
+	void Uninit(void) override;
+	void Update(void) override;
+	void Draw(void) override;
 
+	void Kill(void);
 	CObjectCircleGauge2D *GetGauge(CGameManager::eStatus status);	// ゲージ取得
 	static CStatusWindow *Create(D3DXVECTOR3 pos, bool bJoin);
 private:

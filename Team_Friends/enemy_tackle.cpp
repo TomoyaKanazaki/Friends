@@ -16,6 +16,8 @@
 #include "particle.h"
 #include "3D_Effect.h"
 #include "game.h"
+#include "tutorial.h"
+#include "tutorialmanager.h"
 
 //==========================================
 //  定数定義
@@ -100,9 +102,20 @@ void CEnemyTackle::Update(void)
 	{// 死亡フラグが立っていたら
 		return;
 	}
-	if (!CGame::GetGameManager()->IsControll())
-	{// 行動できるとき
-		return;
+
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+	{
+		if (!CTutorial::GetTutorialManager()->IsControll())
+		{// 行動できるとき
+			return;
+		}
+	}
+	else
+	{
+		if (!CGame::GetGameManager()->IsControll())
+		{// 行動できるとき
+			return;
+		}
 	}
 
 	// 発生物のタイマー加算

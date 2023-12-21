@@ -15,15 +15,17 @@
 #include "resultscore.h"
 #include "fog.h"
 #include "game.h"
-#include "result_message.h"
 #include "union_title.h"
+#include "message_lose.h"
+#include "message_win.h"
 
 //==========================================
 //  定数定義 金崎
 //==========================================
 namespace
 {
-	const D3DXCOLOR TARGET_COLOR = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
+	const D3DXCOLOR WIN_COLOR = D3DXCOLOR(1.0f, 0.7f, 0.0f, 1.0f);
+	const D3DXCOLOR LOSE_COLOR = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
 	const float START_LENGTH = 300.0f; // 初期距離
 	const float END_LENGTH = 2000.0f; // 目標距離
 
@@ -42,7 +44,7 @@ bool CResult::m_bAllArrival = false;		// 全て到着した判定
 //==========================================================================
 CResult::CResult() :
 	m_fLength(END_LENGTH),
-	m_col(TARGET_COLOR),
+	m_col(LOSE_COLOR),
 	m_clear(false)
 {
 	// 値のクリア
@@ -77,6 +79,19 @@ HRESULT CResult::Init(void)
 	// BGM再生
 	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_RESULT);
 
+	// メッセージを生成
+	if (CGame::IsClearFrag())
+	{
+		CMessageWin::Create();
+		CMessageWin::Create();
+		m_col = WIN_COLOR;
+	}
+	else
+	{
+		CMessageLose::Create();
+		m_col = LOSE_COLOR;
+	}
+
 	// 煙をかける
 	Fog::Set(true);
 
@@ -84,9 +99,6 @@ HRESULT CResult::Init(void)
 	Fog::SetStart(START_LENGTH);
 	Fog::SetEnd(m_fLength);
 	Fog::SetCol(m_col);
-	
-	// リザルトメッセージドーン
-	CResultMessage::Create(m_clear);
 
 	// リザルト画面
 	m_pResultScore = CResultScore::Create();

@@ -158,6 +158,7 @@ private:
 	{
 		MOTION_DEF = 0,				// ニュートラルモーション
 		MOTION_WALK,				// 移動モーション
+		MOTION_BOOST,				// ブーストモーション
 		MOTION_NORMAL_CHARGE,		// 通常チャージ
 		MOTION_NORMAL_ATK,			// 通常攻撃
 		MOTION_ULT_BEAMCHARGE,		// 必殺技ビームチャージ
@@ -226,6 +227,9 @@ private:
 	eUltAttack m_UltType;			// 必殺技の種類
 	eUltBranch m_UltBranch;			// 必殺技の分岐
 	bool m_bUltBigArm;				// ウルトで腕デカくしたか
+	float m_fUltGaugeValue[mylib_const::MAX_PLAYER];		// 必殺ゲージの量
+	float m_fCooltimeBoost;	// ブーストのクールタイム
+	float m_fBoostTime;	// ブーストのタイム
 	std::vector<int> m_nModelIdx[mylib_const::MAX_PLAYER];	// 各パーツごとのモデルインデックス番号
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定

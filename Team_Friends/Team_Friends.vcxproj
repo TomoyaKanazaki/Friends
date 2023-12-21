@@ -209,6 +209,7 @@
     <ClCompile Include="fog.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gamemanager.cpp" />
+    <ClCompile Include="glass.cpp" />
     <ClCompile Include="hp_gauge.cpp" />
     <ClCompile Include="hp_gauge_player.cpp" />
     <ClCompile Include="impactwave.cpp" />
@@ -272,7 +273,6 @@
     <ClCompile Include="result.cpp" />
     <ClCompile Include="resultmanager.cpp" />
     <ClCompile Include="resultscore.cpp" />
-    <ClCompile Include="result_message.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="shadow.cpp" />
@@ -293,6 +293,7 @@
     <ClCompile Include="tutorialstep.cpp" />
     <ClCompile Include="tutorialtext.cpp" />
     <ClCompile Include="tutorialwindow.cpp" />
+    <ClCompile Include="ultwindow.cpp" />
     <ClCompile Include="unioncore.cpp" />
     <ClCompile Include="union_armtoarm.cpp" />
     <ClCompile Include="union_bodytoarm.cpp" />
@@ -351,6 +352,7 @@
     <ClInclude Include="fog.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="gamemanager.h" />
+    <ClInclude Include="glass.h" />
     <ClInclude Include="hp_gauge.h" />
     <ClInclude Include="hp_gauge_player.h" />
     <ClInclude Include="impactwave.h" />
@@ -410,7 +412,6 @@
     <ClInclude Include="result.h" />
     <ClInclude Include="resultmanager.h" />
     <ClInclude Include="resultscore.h" />
-    <ClInclude Include="result_message.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="shadow.h" />
@@ -431,6 +432,7 @@
     <ClInclude Include="tutorialstep.h" />
     <ClInclude Include="tutorialtext.h" />
     <ClInclude Include="tutorialwindow.h" />
+    <ClInclude Include="ultwindow.h" />
     <ClInclude Include="unioncore.h" />
     <ClInclude Include="union_armtoarm.h" />
     <ClInclude Include="union_bodytoarm.h" />

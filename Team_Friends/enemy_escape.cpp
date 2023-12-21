@@ -12,6 +12,8 @@
 #include "hp_gauge.h"
 #include "model.h"
 #include "game.h"
+#include "tutorial.h"
+#include "tutorialmanager.h"
 
 //==========================================
 //  定数定義
@@ -89,9 +91,20 @@ void CEnemyEscape::Update(void)
 	{// 死亡フラグが立っていたら
 		return;
 	}
-	if (!CGame::GetGameManager()->IsControll())
-	{// 行動できるとき
-		return;
+
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+	{
+		if (!CTutorial::GetTutorialManager()->IsControll())
+		{// 行動できるとき
+			return;
+		}
+	}
+	else
+	{
+		if (!CGame::GetGameManager()->IsControll())
+		{// 行動できるとき
+			return;
+		}
 	}
 
 	// モーションの情報取得

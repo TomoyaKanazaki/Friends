@@ -13,6 +13,7 @@
 #include "debugproc.h"
 #include "player.h"
 #include "game.h"
+#include "tutorial.h"
 
 
 //==========================================================================
@@ -96,7 +97,15 @@ HRESULT CLimitArea::Init(void)
 	SetType(TYPE_ELEVATION);
 
 	// Š„‚è“–‚Ä
-	m_nIdxEreaManager = CGame::GetLimitEreaManager()->Regist(this);
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+	{
+		m_nIdxEreaManager = CTutorial::GetLimitEreaManager()->Regist(this);
+	}
+	else
+	{
+		m_nIdxEreaManager = CGame::GetLimitEreaManager()->Regist(this);
+	}
+	
 
 	// Šeí•Ï”‰Šú‰»
 	D3DXVECTOR3 WallPos[mylib_const::SHAPE_LIMITEREA];

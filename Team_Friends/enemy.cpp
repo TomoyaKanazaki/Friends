@@ -8,6 +8,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "game.h"
+#include "tutorial.h"
 #include "texture.h"
 #include "input.h"
 #include "calculation.h"
@@ -32,6 +33,7 @@
 #include "item.h"
 #include "collisionobject.h"
 #include "limitereamanager.h"
+#include "tutorialmanager.h"
 
 // 子クラス
 #include "enemy_boss.h"
@@ -396,16 +398,33 @@ void CEnemy::Update(void)
 		return;
 	}
 
-	// エディット中は抜ける
-	if (CGame::GetElevation()->IsEdit())
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
 	{
-		return;
+		// エディット中は抜ける
+		if (CTutorial::GetElevation()->IsEdit())
+		{
+			return;
+		}
+
+		if (!CTutorial::GetTutorialManager()->IsControll())
+		{// 行動できるとき
+			return;
+		}
+	}
+	else
+	{
+		// エディット中は抜ける
+		if (CGame::GetElevation()->IsEdit())
+		{
+			return;
+		}
+
+		if (!CGame::GetGameManager()->IsControll())
+		{// 行動できるとき
+			return;
+		}
 	}
 
-	if (!CGame::GetGameManager()->IsControll())
-	{// 行動できるとき
-		return;
-	}
 
 	// 過去の位置設定
 	SetOldPosition(GetPosition());
@@ -1781,9 +1800,18 @@ void CEnemy::LimitArea(void)
 {
 	// 自身の値を取得
 	D3DXVECTOR3 pos = GetPosition();
+	CLimitAreaManager* pLimitManager = nullptr;
 
 	// 大人の壁
-	CLimitAreaManager* pLimitManager = CGame::GetLimitEreaManager();
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+	{
+		pLimitManager = CTutorial::GetLimitEreaManager();
+	}
+	else
+	{
+		pLimitManager = CGame::GetLimitEreaManager();
+	}
+
 	CLimitArea** ppLimit = pLimitManager->GetLimitErea();
 
 	// 総数取得

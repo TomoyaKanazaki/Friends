@@ -93,6 +93,8 @@ CEnemyManager *CEnemyManager::Create(const std::string pTextFile)
 
 			if (FAILED(hr))
 			{// Ž¸”s‚µ‚Ä‚¢‚½‚ç
+				pModel->Uninit();
+				pModel = nullptr;
 				return NULL;
 			}
 		}
@@ -118,8 +120,18 @@ HRESULT CEnemyManager::Init(void)
 	// ‘JˆÚó‘Ô‚É•ÏX
 	//CGame::GetGameManager()->SetType(CGameManager::SCENE_TRANSITION);
 
+	CEnemyBase *pEnemyBase = nullptr;
+
 	// “G‹’“_ƒf[ƒ^Žæ“¾
-	CEnemyBase *pEnemyBase = CGame::GetEnemyBase();
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+	{
+		pEnemyBase = CTutorial::GetEnemyBase();
+	}
+	else
+	{
+		pEnemyBase = CGame::GetEnemyBase();
+	}
+
 	if (pEnemyBase == NULL)
 	{
 		return E_FAIL;

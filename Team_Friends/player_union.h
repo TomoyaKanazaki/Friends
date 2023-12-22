@@ -170,6 +170,8 @@ private:
 		MOTION_ULT_RIDERKICKATK,	// 必殺技ライダーキック攻撃
 		MOTION_ULT_BOOSTPUNCHCHARGE,	// 必殺技ブーストパンチチャージ
 		MOTION_ULT_BOOSTPUNCHATK,	// 必殺技ブーストパンチ攻撃
+		MOTION_ULT_RUSHCHARGE,		// 必殺技ラッシュチャージ
+		MOTION_ULT_RUSHATK,			// 必殺技ラッシュ攻撃
 		MOTION_KNOCKBACK,			// やられモーション
 		MOTION_DEAD,				// 死亡モーション
 		MOTION_APPEARANCE,			// 出現
@@ -182,6 +184,7 @@ private:
 		ULT_BIGPUNCH,	// ビッグパンチ
 		ULT_RIDERKICK,	// ライダーキック
 		ULT_BOOSTPUNCH,	// ブーストパンチ
+		ULT_RUSH,		// ラッシュ
 		ULT_MAX
 	};
 
@@ -195,6 +198,8 @@ private:
 		ULTBRANCH_ATTACK_RIDERKICK,		// ライダーキック攻撃
 		ULTBRANCH_CHARGE_BOOSTPUNCH,	// ブーストパンチチャージ
 		ULTBRANCH_ATTACK_BOOSTPUNCH,	// ブーストパンチ攻撃
+		ULTBRANCH_CHARGE_RUSH,			// ラッシュチャージ
+		ULTBRANCH_ATTACK_RUSH,			// ラッシュ攻撃
 		ULTBRANCH_MAX
 	};
 
@@ -205,10 +210,11 @@ private:
 	static ULT_FUNC m_UltFuncList[];	// 必殺技の関数リスト
 
 	// 必殺技関数
-	void UltBeam(void);	// ビーム
-	void UltBigPunch(void);	// デカパンチ
+	void UltBeam(void);			// ビーム
+	void UltBigPunch(void);		// デカパンチ
 	void UltRiderKick(void);	// ライダーキック
 	void UltBoostPunch(void);	// ブーストパンチ
+	void UltRush(void);			// ラッシュ
 
 	// 必殺分岐関数
 	void UltChargeBeam(void);		// ビームチャージ
@@ -219,6 +225,8 @@ private:
 	void UltAttackRiderKick(void);	// ライダーキック攻撃
 	void UltChargeBoostPunch(void);	// ブーストパンチチャージ
 	void UltAttackBoostPunch(void);	// ブーストパンチ攻撃
+	void UltChargeRush(void);		// ラッシュチャージ
+	void UltAttackRush(void);		// ラッシュ攻撃
 
 	// メンバ関数
 	void Controll(void);		// 操作

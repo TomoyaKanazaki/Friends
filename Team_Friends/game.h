@@ -69,6 +69,7 @@ public:
 	static CGameManager *GetGameManager(void);
 	static CStatusWindow *GetStatusWindow(int nIdx);
 	static CUltWindow *GetUltWindow(int nIdx);		// 必殺のウィンドウ取得
+	static void SetClear(bool clear) { m_clear = clear; }
 	static bool IsClearFrag(void) { return m_clear; } // クリアフラグの取得
 
 	static CEnemyManager *GetEnemyManager(void);

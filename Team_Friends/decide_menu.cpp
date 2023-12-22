@@ -63,7 +63,7 @@ namespace
 //==========================================================================
 CDecideMenu::CDecideMenu(int nPriority) : CObject(nPriority),
 	m_nCntAlpha(0),
-	m_nNowSelect(0)
+	m_nNowSelect(3)
 {
 	memset(&m_pNumber3D[0], NULL, sizeof(m_pNumber3D)); // オブジェクト2Dのオブジェクト
 	memset(&m_pElecboard3D[0], NULL, sizeof(m_pElecboard3D)); // オブジェクト2Dのオブジェクト
@@ -107,6 +107,11 @@ HRESULT CDecideMenu::Init(void)
 
 	// ドア生成
 	m_pDecideDoor = CDecideDoor::Create();
+	// 選択肢設定
+	if (m_pDecideDoor != nullptr)
+	{
+		m_pDecideDoor->SetSelect(m_nNowSelect);
+	}
 
 	for (int nCnt = 0; nCnt < VTX_MAX; nCnt++)
 	{
@@ -188,10 +193,10 @@ void CDecideMenu::Update(void)
 		}
 
 		// 値の設定処理
-		for (int nCnt = 0; nCnt < VTX_MAX; nCnt++)
-		{
-			SetValue(m_nNowSelect + 1);
-		}
+		//for (int nCnt = 0; nCnt < VTX_MAX; nCnt++)
+		//{
+		//	SetValue(m_nNowSelect + 1);
+		//}
 
 		// 頂点情報設定
 		m_pNumber3D[nCntSelect]->SetVtx();
@@ -254,7 +259,7 @@ void CDecideMenu::Update(void)
 		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_Y);
 
 		// パターンNo.を更新
-		m_nNowSelect = (m_nNowSelect + (VTXSELECT_MAX - 1)) % VTXSELECT_MAX;
+		//m_nNowSelect = (m_nNowSelect + (VTXSELECT_MAX - 1)) % VTXSELECT_MAX;
 
 		// サウンド再生
 		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_CURSOR);
@@ -277,7 +282,7 @@ void CDecideMenu::Update(void)
 		pInputGamepad->SetEnableStickSelect(true, CInputGamepad::STICK_Y);
 
 		// パターンNo.を更新
-		m_nNowSelect = (m_nNowSelect + 1) % VTXSELECT_MAX;
+		//m_nNowSelect = (m_nNowSelect + 1) % VTXSELECT_MAX;
 
 		// サウンド再生
 		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_CURSOR);

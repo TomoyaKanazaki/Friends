@@ -80,6 +80,7 @@ HRESULT CGame::Init(void)
 {
 	// エディット判定OFF
 	m_bEdit = false;
+	m_clear = false;
 
 	// BGM再生
 	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_GAME);

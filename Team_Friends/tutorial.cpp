@@ -177,9 +177,26 @@ HRESULT CTutorial::Init(void)
 	//**********************************
 	// プレイヤー
 	//**********************************
-#if _DEBUG		
-	//デバッグ用人数
-	int nNumPlayer = 4;
+//#if _DEBUG		
+//	//デバッグ用人数
+//	int nNumPlayer = 4;
+//
+//	CManager::GetInstance()->SetNumPlayer(nNumPlayer);
+//	for (int i = 0; i < nNumPlayer; i++)
+//#else
+//	for (int nCntPlayer = 0; nCntPlayer < CManager::GetInstance()->GetNumPlayer(); nCntPlayer++)
+//#endif
+//	{
+//		m_apPlayer[nCntPlayer] = (CTutorialPlayer*)CManager::G[etInstance()->GetScene()->GetPlayer(nCntPlayer);
+//
+//		if (m_apPlayer[nCntPlayer] == nullptr)
+//		{
+//			m_apPlayer[nCntPlayer] = (CTutorialPlayer*)CTutorialPlayer::Create(nCntPlayer);
+//		}
+//
+//		m_apPlayer[nCntPlayer]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 100.0f));
+//		m_apPlayer[nCntPlayer]->SetRotation(D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
+//	}
 
 	CManager::GetInstance()->SetNumPlayer(nNumPlayer);
 	for (int i = 0; i < nNumPlayer; i++)

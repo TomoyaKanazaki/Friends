@@ -9,6 +9,8 @@
 #include "manager.h"
 #include "renderer.h"
 #include "calculation.h"
+#include "fade.h"
+#include "game.h"
 
 //==========================================================================
 // マクロ定義
@@ -196,6 +198,12 @@ void CHP_GaugeBoss::Update(void)
 		SetVtx(nCntGauge);
 	}
 
+	if (m_nLife <= 0)
+	{
+		// モード設定
+		CGame::SetClear(true);
+		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RESULT);
+	}
 }
 
 //==================================================================================

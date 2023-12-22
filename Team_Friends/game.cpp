@@ -80,7 +80,7 @@ HRESULT CGame::Init(void)
 {
 	// エディット判定OFF
 	m_bEdit = false;
-
+	m_clear = false;
 	// 初期化処理
 	if (FAILED(CScene::Init()))
 	{// 失敗した場合

@@ -234,11 +234,11 @@ void CTitle::Update(void)
 #endif
 	}
 
-	if (m_fCnt >= SWITCH_TIME)
-	{// Ž©“®‘JˆÚ
-		// ƒ‚[ƒhÝ’è
-		CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
-	}
+	//if (m_fCnt >= SWITCH_TIME)
+	//{// Ž©“®‘JˆÚ
+	//	// ƒ‚[ƒhÝ’è
+	//	CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_RANKING);
+	//}
 }
 
 //==========================================================================

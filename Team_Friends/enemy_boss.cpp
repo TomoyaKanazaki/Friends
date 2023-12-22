@@ -8,10 +8,10 @@
 #include "manager.h"
 #include "debugproc.h"
 #include "calculation.h"
-#include "hp_gauge.h"
 #include "blackframe.h"
 #include "beam.h"
 #include "particle.h"
+#include "hp_gauge_boss.h"
 
 //==========================================================================
 // 定数定義
@@ -40,6 +40,7 @@ namespace
 		{ CEnemyBoss::ACTION_REMOTE, 0.3f },		// 遠隔攻撃
 		{ CEnemyBoss::ACTION_ASSAULT, 0.2f },		// 突撃攻撃
 		{ CEnemyBoss::ACTION_WAIT, 0.0f },			// 待機
+		{ CEnemyBoss::ACTION_GUARD, 0.0f },			// ガード
 		{ CEnemyBoss::ACTION_SELFEXPLOSION, 0.0f },	// 自爆
 	};
 }
@@ -54,6 +55,7 @@ CEnemyBoss::ACT_FUNC CEnemyBoss::m_ActFuncList[] =
 	&CEnemyBoss::ActAttackRemote,		// 遠隔
 	&CEnemyBoss::ActAttackAssault,		// 突撃
 	&CEnemyBoss::ActWait,				// 待機
+	&CEnemyBoss::ActGuard,				// ガード
 	&CEnemyBoss::ActAttackExplosion,	// 自爆
 };
 
@@ -70,6 +72,7 @@ CEnemyBoss::CEnemyBoss(int nPriority) : CEnemy(nPriority)
 	m_fAssultLength = 0.0f;		// 突撃長さ
 	m_fAssultLengthDest = 0.0f;	// 目標の突撃長さ
 	m_bCatchUp = false;			// 追い着き判定
+	m_pBossHPGauge = nullptr;	// ボスのHPゲージ
 }
 
 //==========================================================================
@@ -89,7 +92,8 @@ HRESULT CEnemyBoss::Init(void)
 	CEnemy::Init();
 
 	// HPの設定
-	m_pHPGauge = CHP_Gauge::Create(100.0f, GetLifeOrigin());
+	m_pBossHPGauge = CHP_GaugeBoss::Create(D3DXVECTOR3(640.0f, 50.0f, 0.0f), GetLifeOrigin());	// ボスのHPゲージ
+	m_pBossHPGauge->SetLife(0);
 
 	// 黒フレーム捌ける
 	CManager::GetInstance()->GetBlackFrame()->SetState(CBlackFrame::STATE_OUT);
@@ -127,6 +131,9 @@ void CEnemyBoss::Update(void)
 	{// 死亡フラグが立っていたら
 		return;
 	}
+
+	// HP更新
+	m_pBossHPGauge->SetLife(GetLife());
 
 	// 黒フレーム捌ける
 	if (CManager::GetInstance()->GetBlackFrame()->GetState() == CBlackFrame::STATE_INCOMPLETION)
@@ -273,6 +280,22 @@ void CEnemyBoss::ActWait(void)
 		DrawingAction();
 		m_fActTime = 0.0f;
 	}
+}
+
+
+//==========================================================================
+// ガード
+//==========================================================================
+void CEnemyBoss::ActGuard(void)
+{
+	// ガードモーション設定
+	m_pMotion->Set(MOTION_GUARD);
+
+	// 行動カウンターリセット
+	m_fActTime = 0.0f;
+
+	// ターゲットの方を向く
+	RotationTarget();
 }
 
 //==========================================================================
@@ -637,6 +660,12 @@ void CEnemyBoss::Draw(void)
 //==========================================================================
 void CEnemyBoss::Kill(void)
 {
+	if (m_pHPGauge != nullptr)
+	{
+		m_pBossHPGauge->Kill();
+		m_pBossHPGauge = nullptr;
+	}
+
 	// 死亡処理
 	CEnemy::Kill();
 }
@@ -646,6 +675,11 @@ void CEnemyBoss::Kill(void)
 //==========================================================================
 void CEnemyBoss::MotionSet(void)
 {
+	if (m_Action == ACTION_GUARD)
+	{
+		return;
+	}
+
 	if (m_pMotion->IsFinish() == true)
 	{// 終了していたら
 

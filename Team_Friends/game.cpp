@@ -27,6 +27,7 @@
 #include "stage.h"
 #include "compactcore.h"
 #include "statuswindow.h"
+#include "ultwindow.h"
 #include "emergency.h"
 
 #include "enemymanager.h"
@@ -52,6 +53,7 @@ CGame::EEditType CGame::m_EditType = EDITTYPE_OFF;		// エディットの種類
 CEnemyBase *CGame::m_pEnemyBase = NULL;	// 敵の拠点
 CEnemyManager *CGame::m_pEnemyManager = NULL;	// 敵マネージャのオブジェクト
 CStatusWindow *CGame::m_pStatusWindow[mylib_const::MAX_PLAYER] = {};	// ステータスウィンドウのオブジェクト
+CUltWindow *CGame::m_pUltWindow[mylib_const::MAX_PLAYER] = {};			// 必殺のウィンドウ
 bool CGame::m_bEdit = false;				// エディットの判定
 bool CGame::m_clear = false;				// クリア判定
 
@@ -302,7 +304,7 @@ void CGame::Update(void)
 
 #ifdef _DEBUG
 	// クリア判定切り替え
-	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_NUMPADENTER))
+	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_V))
 	{
 		m_clear = !m_clear;
 	}
@@ -507,6 +509,14 @@ CStatusWindow *CGame::GetStatusWindow(int nIdx)
 }
 
 //==========================================================================
+// 必殺のウィンドウ取得
+//==========================================================================
+CUltWindow *CGame::GetUltWindow(int nIdx)
+{
+	return m_pUltWindow[nIdx];
+}
+
+//==========================================================================
 // リセット処理
 //==========================================================================
 void CGame::Reset(void)
@@ -558,7 +568,7 @@ void CGame::Reset(void)
 		{
 			continue;
 		}
-		m_pStatusWindow[i]->Uninit();
+		m_pStatusWindow[i]->Kill();
 		m_pStatusWindow[i] = nullptr;
 	}
 
@@ -571,12 +581,16 @@ void CGame::Reset(void)
 		return;
 	}
 
-	/*if (m_pLimitArea == NULL)
+	// 必殺ゲージ
+	for (int nCntPlayer = 0; nCntPlayer < mylib_const::MAX_PLAYER; nCntPlayer++)
 	{
-		CLimitArea::sLimitEreaInfo info;
-		info.fMaxX = 8200.0f, info.fMaxZ = 785.0f, info.fMinX = -785.0f, info.fMinZ = -785.0f;
-		m_pLimitArea = CLimitArea::Create(info);
-	}*/
+		bool bJoin = true;
+		if (CManager::GetInstance()->GetNumPlayer() <= nCntPlayer)
+		{
+			bJoin = false;
+		}
+		m_pUltWindow[nCntPlayer] = CUltWindow::Create(D3DXVECTOR3(160.0f + nCntPlayer * 320.0f, 600.0f, 0.0f), bJoin);
+	}
 }
 
 //==========================================================================

@@ -24,7 +24,7 @@ class CEditEnemyBase;
 class CStage;
 class CHitScore;
 class CStatusWindow;
-
+class CUltWindow;
 class CEnemyManager;
 class CItemManager;
 class CLimitArea;
@@ -68,6 +68,7 @@ public:
 	static CStage *GetStage(void);
 	static CGameManager *GetGameManager(void);
 	static CStatusWindow *GetStatusWindow(int nIdx);
+	static CUltWindow *GetUltWindow(int nIdx);		// 必殺のウィンドウ取得
 	static bool IsClearFrag(void) { return m_clear; } // クリアフラグの取得
 
 	static CEnemyManager *GetEnemyManager(void);
@@ -93,6 +94,7 @@ private:
 	static CEnemyManager *m_pEnemyManager;			// 敵マネージャのオブジェクト
 	static CEnemyBase *m_pEnemyBase;				// 敵の拠点
 	static CStatusWindow *m_pStatusWindow[mylib_const::MAX_PLAYER];	// ステータスウィンドウのオブジェクト
+	static CUltWindow *m_pUltWindow[mylib_const::MAX_PLAYER];		// 必殺のウィンドウ
 	static bool m_bEdit;				// エディットの判定
 	static bool m_clear; // クリア判定
 

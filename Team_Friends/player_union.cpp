@@ -42,6 +42,9 @@
 #include "enemy_boss.h"
 #include "beam.h"
 #include "unioncore.h"
+#include "ultwindow.h"
+#include "object_circlegauge2D.h"
+#include "ultcutin.h"
 
 // 派生先
 #include "union_bodytoleg.h"
@@ -81,6 +84,11 @@ namespace
 			"data\\TEXTURE\\union\\SuperUnion\\Arm\\union_arm_UV_Yellow.jpg",
 		}
 	};
+	const float MAX_ULTGAUGEVALUE = 200.0f;	// 必殺ゲージの最大量
+	const float ADD_AUTO_ULTGAUGEVALUE = 10.1f;	// 必殺ゲージの自動加算量
+	const float COOLTIME_BOOST = 120.0f;	// ブーストのクールタイム
+	const float TIME_BOOST = 20.0f;	// ブーストのタイム
+	const int INTERVAL_ULTENTRY = 180;	// 必殺エントリーのインターバル
 }
 #define JUMP			(20.0f * 1.5f)	// ジャンプ力初期値
 #define MAX_LIFE		(100)			// 体力
@@ -99,15 +107,16 @@ namespace
 bool CPlayerUnion::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
 bool CPlayerUnion::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// 射出台の着地判定
 
-
 //==========================================================================
 // 関数ポインタ
 //==========================================================================
 CPlayerUnion::ULT_FUNC CPlayerUnion::m_UltFuncList[] =
 {
-	&CPlayerUnion::UltBeam,		// ビーム
-	&CPlayerUnion::UltBigPunch,	// デカパンチ
+	&CPlayerUnion::UltBeam,			// ビーム
+	&CPlayerUnion::UltBigPunch,		// デカパンチ
 	&CPlayerUnion::UltRiderKick,	// ライダーキック
+	&CPlayerUnion::UltBoostPunch,	// ブーストパンチ
+	&CPlayerUnion::UltRush,			// ラッシュ
 };
 
 //==========================================================================
@@ -127,6 +136,12 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_nUnionLife = 0;			// 合体時間
 	m_nCntWalk = 0;				// 歩行カウンター
 	m_nCntInputAtk = 0;			// 攻撃の入力カウンター
+
+	m_nInputSuperAtkIdx = 0;	// 必殺技入力のインデックス
+	m_nIntervalAlternately = 0;	// 交互入力のインターバル
+	m_nCntInputSuperATK = 0;	// 必殺技の入力回数
+
+
 	m_state = STATE_NONE;		// 状態
 	memset(&m_pMotion[0], NULL, sizeof(m_pMotion));	// パーツ分のモーションポインタ
 	memset(&m_sMotionFrag[0], false, sizeof(m_sMotionFrag));	// モーションのフラグ
@@ -152,6 +167,9 @@ CPlayerUnion::CPlayerUnion(int nPriority) : CObject(nPriority)
 	m_UltType = ULT_BEAM;		// 必殺技の種類
 	m_UltBranch = ULTBRANCH_CHARGE_BEAM;	// 必殺技の分岐
 	m_bUltBigArm = false;		// ウルトで腕デカくしたか
+	memset(&m_fUltGaugeValue[0], 0, sizeof(m_fUltGaugeValue));	// 必殺ゲージの量
+	m_fCooltimeBoost = 0.0f;	// ブーストのクールタイム
+	m_fBoostTime = 0.0f;	// ブーストのタイム
 
 	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
 	{
@@ -326,12 +344,12 @@ void CPlayerUnion::Uninit(void)
 //==========================================================================
 void  CPlayerUnion::UninitByMode(void)
 {
-	//CScene *pScene = CManager::GetInstance()->GetScene();
-	//if (pScene != NULL)
-	//{
-	//	// プレイヤーをNULL
-	//	CManager::GetInstance()->GetScene()->UninitPlayer(m_nMyPlayerIdx);
-	//}
+	CScene *pScene = CManager::GetInstance()->GetScene();
+	if (pScene != NULL)
+	{
+		// プレイヤーをNULL
+		CManager::GetInstance()->GetScene()->UninitPlayerUnion();
+	}
 }
 
 //==========================================================================
@@ -459,6 +477,33 @@ void CPlayerUnion::Update(void)
 	// 状態更新
 	UpdateState();
 
+
+	// ブーストのクールタイム
+	m_fCooltimeBoost -= 1.0f;
+	ValueNormalize(m_fCooltimeBoost, COOLTIME_BOOST, 0.0f);
+
+	// ブーストのタイム
+	m_fBoostTime -= 1.0f;
+	ValueNormalize(m_fBoostTime, TIME_BOOST, 0.0f);
+
+	// 自動加算量分加算
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		m_fUltGaugeValue[i] += ADD_AUTO_ULTGAUGEVALUE;
+		ValueNormalize(m_fUltGaugeValue[i], MAX_ULTGAUGEVALUE, 0.0f);
+
+		// ステータスウィンドウ
+		CUltWindow *pUltWindow = CGame::GetUltWindow(i);
+		if (pUltWindow != NULL)
+		{
+			// ゲージの割合更新
+			pUltWindow->GetGauge()->SetRateDest(m_fUltGaugeValue[i] / MAX_ULTGAUGEVALUE);
+		}
+	}
+
+	// エントリーの更新
+	UpdateEntry();
+
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
 
@@ -536,11 +581,32 @@ void CPlayerUnion::Controll(void)
 
 #if _DEBUG
 
-	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true)
+	if (pInputKeyboard->GetTrigger(DIK_1) == true)
+	{
+		m_state = STATE_ULT;	// 状態
+		m_UltType = ULT_BEAM;
+		m_UltBranch = ULTBRANCH_CHARGE_BEAM;
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_2) == true)
 	{
 		m_state = STATE_ULT;	// 状態
 		m_UltType = ULT_BIGPUNCH;
 		m_UltBranch = ULTBRANCH_CHARGE_BIGPUNCH;
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_3) == true)
+	{
+		m_state = STATE_ULT;	// 状態
+		m_UltType = ULT_RIDERKICK;
+		m_UltBranch = ULTBRANCH_CHARGE_RIDERKICK;
+	}
+
+	if (pInputKeyboard->GetTrigger(DIK_4) == true)
+	{
+		m_state = STATE_ULT;	// 状態
+		m_UltType = ULT_BOOSTPUNCH;
+		m_UltBranch = ULTBRANCH_CHARGE_BOOSTPUNCH;
 	}
 #endif
 
@@ -687,6 +753,12 @@ void CPlayerUnion::ControllParts(void)
 			ControllRightArm(nPartsIdx, i);
 			break;
 		}
+
+		// 必殺エントリー
+		if (m_state != STATE_ULT)
+		{
+			EntryUltimate(nPartsIdx, i);
+		}
 	}
 }
 
@@ -698,6 +770,8 @@ void CPlayerUnion::ControllBody(int nIdx, int nLoop)
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
+	// カメラ操作
+	CManager::GetInstance()->GetCamera()->MoveCameraStick(nLoop);
 }
 
 //==========================================================================
@@ -745,50 +819,23 @@ void CPlayerUnion::ControllLeg(int nIdx, int nLoop)
 				{
 					m_sMotionFrag[nLeftArmIdx].bMove = false;
 				}
+
+				if (m_sMotionFrag[i].bATK == false &&
+					m_sMotionFrag[i].bCharge == false &&
+					m_fBoostTime > 0.0f)
+				{
+					m_pMotion[i]->Set(MOTION_BOOST);
+				}
 			}
 		}
 		else
-		{
+		{// 移動してない
 			for (int i = 0; i < PARTS_MAX; i++)
 			{
 				m_sMotionFrag[i].bMove = false;
 			}
 		}
 
-
-		// 移動量取得
-		D3DXVECTOR3 move = GetMove();
-
-		// ジャンプ
-#if 0
-		if (m_bJump == false &&
-			pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LB, nIdx))
-		{//SPACEが押された,ジャンプ
-
-			m_bJump = true;
-			move.y += 17.0f;
-
-			// ジャンプ中にする
-			for (int i = 0; i < PARTS_MAX; i++)
-			{
-				m_sMotionFrag[i].bJump = true;
-				if (m_sMotionFrag[nRightArmIdx].bCharge == true)
-				{
-					m_sMotionFrag[nRightArmIdx].bJump = false;
-				}
-				if (m_sMotionFrag[nLeftArmIdx].bCharge == true)
-				{
-					m_sMotionFrag[nLeftArmIdx].bJump = false;
-				}
-			}
-
-			// サウンド再生
-			CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
-		}
-#endif
-
-		// 移動量設定
-		SetMove(move);
 	}
 	
 	if ((pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, nLoop)))
@@ -872,6 +919,197 @@ void CPlayerUnion::ControllLeftArm(int nIdx, int nLoop)
 }
 
 //==========================================================================
+// 必殺エントリー
+//==========================================================================
+void CPlayerUnion::EntryUltimate(int nIdx, int nLoop)
+{
+	// ゲームパッド情報取得
+	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+
+	// ステータスウィンドウ
+	CUltWindow *pUltWindow = CGame::GetUltWindow(nIdx);
+	if (pUltWindow == nullptr)
+	{
+		return;
+	}
+	
+	if (pUltWindow->IsEndCharge() &&
+		m_sMotionFrag[nIdx].bUltEntry == false &&
+		pInputGamepad->GetTrigger(CInputGamepad::BUTTON_LB, nIdx))
+	{//	必殺エントリー
+
+		// エントリー中にする
+		m_sMotionFrag[nIdx].bUltEntry = true;
+
+		// 必殺入力回数加算
+		m_nCntInputSuperATK++;
+
+		// 入力のインターバルリセット
+		m_nIntervalAlternately = INTERVAL_ULTENTRY;
+	}
+}
+
+//==========================================================================
+// エントリー関連の更新
+//==========================================================================
+void CPlayerUnion::UpdateEntry(void)
+{
+	if (m_state == STATE_ULT)
+	{
+		return;
+	}
+
+	if (m_nCntInputSuperATK >= 2)
+	{// 入力エントリー完了！
+
+		// 必殺状態にする
+		m_state = STATE_ULT;
+		m_UltBranch = ULTBRANCH_MAX;
+
+		// 必殺エントリーの猶予リセット
+		m_nIntervalAlternately = 0;
+
+		// 入力回数リセット
+		m_nCntInputSuperATK = 0;
+
+		// エントリーしてる組み合わせで必殺の種類変更
+		int nFirst = -1, nSecond = -1;
+		for (int i = 0; i < PARTS_MAX; i++)
+		{
+			if (m_sMotionFrag[i].bUltEntry)
+			{
+				if (nFirst < 0)
+				{
+					nFirst = i;
+				}
+				else
+				{
+					nSecond = i;
+				}
+			}
+
+			// エントリーフラグリセット
+			m_sMotionFrag[i].bUltEntry = false;
+		}
+
+		int nFirstPartsIdx = CManager::GetInstance()->GetByPlayerPartsType(nFirst);
+		int nSecondPartsIdx = CManager::GetInstance()->GetByPlayerPartsType(nSecond);
+
+		// ウルトの派生先抽選
+		DrawingUlt(nFirstPartsIdx, nSecondPartsIdx);
+
+		// ウルトゲージ量リセット
+		m_fUltGaugeValue[nFirst] = 0.0f;
+		m_fUltGaugeValue[nSecond] = 0.0f;
+
+		// 必殺のカットイン
+		CUltCutin::Create();
+	}
+
+	if (m_nCntInputSuperATK >= 1)
+	{// 誰かがエントリーしてたら
+
+		// 必殺エントリーの猶予減算
+		m_nIntervalAlternately--;
+		ValueNormalize(m_nIntervalAlternately, INTERVAL_ULTENTRY, 0);
+
+		if (m_nIntervalAlternately <= 0)
+		{// 猶予が切れたら
+
+			// 入力回数リセット
+			m_nCntInputSuperATK = 0;
+
+			for (int i = 0; i < PARTS_MAX; i++)
+			{
+				// エントリーフラグリセット
+				m_sMotionFrag[i].bUltEntry = false;
+			}
+		}
+	}
+}
+
+//==========================================================================
+// ウルト先抽選
+//==========================================================================
+void CPlayerUnion::DrawingUlt(int nFirst, int nSecond)
+{
+	// 最初のエントリー種別
+	switch (nFirst)
+	{
+	case PARTS_BODY:
+
+		switch (nSecond)
+		{
+		case PARTS_LEG:
+			m_UltType = ULT_RIDERKICK;
+			break;
+
+		case PARTS_L_ARM:
+		case PARTS_R_ARM:
+			m_UltType = ULT_BIGPUNCH;
+			break;
+		}
+
+		break;
+
+	case PARTS_LEG:
+
+		switch (nSecond)
+		{
+		case PARTS_BODY:
+			m_UltType = ULT_RIDERKICK;
+			break;
+
+		case PARTS_L_ARM:
+		case PARTS_R_ARM:
+			m_UltType = ULT_BOOSTPUNCH;
+			break;
+		}
+
+		break;
+
+	case PARTS_L_ARM:
+
+		switch (nSecond)
+		{
+		case PARTS_BODY:
+			m_UltType = ULT_BIGPUNCH;
+			break;
+
+		case PARTS_LEG:
+			m_UltType = ULT_BOOSTPUNCH;
+			break;
+
+		case PARTS_R_ARM:
+			m_UltType = ULT_RUSH;
+			break;
+		}
+
+		break;
+
+	case PARTS_R_ARM:
+
+		switch (nSecond)
+		{
+		case PARTS_BODY:
+			m_UltType = ULT_BIGPUNCH;
+			break;
+
+		case PARTS_LEG:
+			m_UltType = ULT_BOOSTPUNCH;
+			break;
+
+		case PARTS_L_ARM:
+			m_UltType = ULT_RUSH;
+			break;
+		}
+
+		break;
+	}
+
+}
+
+//==========================================================================
 // 移動操作
 //==========================================================================
 bool CPlayerUnion::ControllMove(int nIdx)
@@ -896,6 +1134,21 @@ bool CPlayerUnion::ControllMove(int nIdx)
 	float fMove = 0.5f;
 
 	bool bMove = true;
+
+	if (m_fCooltimeBoost <= 0.0f &&
+		m_fBoostTime <= 0.0f &&
+		(pInputKeyboard->GetPress(DIK_SPACE) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_B, nIdx)))
+	{
+		m_fCooltimeBoost = COOLTIME_BOOST;
+		m_fBoostTime = TIME_BOOST;
+		m_pMotion[nIdx]->Set(MOTION_BOOST);
+	}
+
+	if (m_fBoostTime > 0.0f)
+	{
+		fMove *= 15.0f;
+		m_pMotion[nIdx]->Set(MOTION_BOOST);
+	}
 
 	if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(nIdx).x < 0)
 	{//←キーが押された,左移動
@@ -1362,6 +1615,8 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int n
 	CEffect3D::Create(weponpos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), ATKInfo.fRangeSize, 10, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 #endif
 
+	CEffect3D *pEffect = nullptr;
+
 	// 向き取得
 	D3DXVECTOR3 rot = GetRotation();
 
@@ -1373,6 +1628,51 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int n
 	// 種類別
 	switch (m_pMotion[nIdx]->GetType())
 	{
+	case MOTION_BOOST:
+	{
+		// 炎
+		float fMove = 16.0f + Random(-2, 4);
+		float fRot = Random(-20, 20) * 0.01f;
+
+		pEffect = CEffect3D::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y + fRot) * -fMove,
+				static_cast<float>(Random(-40, 40)) * 0.1f,
+				cosf(D3DX_PI + rot.y + fRot) * -fMove),
+			D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
+			150.0f + (float)Random(-20, 20),
+			15,
+			CEffect3D::MOVEEFFECT_ADD,
+			CEffect3D::TYPE_SMOKE);
+
+		if (pEffect != NULL)
+		{
+			// セットアップ位置設定
+			pEffect->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+		}
+
+		fRot = Random(-20, 20) * 0.01f;
+		// 炎
+		pEffect = CEffect3D::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y + fRot) * -fMove,
+				static_cast<float>(Random(-40, 40)) * 0.1f,
+				cosf(D3DX_PI + rot.y + fRot) * -fMove),
+			D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
+			100.0f + (float)Random(-10, 10),
+			15,
+			CEffect3D::MOVEEFFECT_ADD,
+			CEffect3D::TYPE_SMOKE);
+		if (pEffect != NULL)
+		{
+			// セットアップ位置設定
+			pEffect->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+		}
+	}
+		break;
+
 	case MOTION_ULT_BEAMCHARGE:
 		if ((int)fAllCount % repeat == 0)
 		{
@@ -1481,7 +1781,148 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int n
 			pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
 		}
 	}
+
+	case MOTION_ULT_BOOSTPUNCHCHARGE:
+	{
+
+		D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
+		for (int i = 0; i < 3; i++)
+		{
+			RandPos.x = Random(-5, 5) * 10.0f;
+			RandPos.y = Random(-5, 5) * 10.0f;
+			RandPos.z = Random(-5, 5) * 10.0f;
+
+			CEffect3D *pEffect = CEffect3D::Create(
+				weponpos + RandPos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				300.0f + (float)Random(-20, 20), 6,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_THUNDER);
+			pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+		}
+	}
 		break;
+
+	case MOTION_ULT_BOOSTPUNCHATK:
+	{
+		// 炎
+		float fMove = 16.0f + Random(-2, 4);
+		float fRot = Random(-20, 20) * 0.01f;
+
+		pEffect = CEffect3D::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y + fRot) * -fMove,
+				static_cast<float>(Random(-40, 40)) * 0.1f,
+				cosf(D3DX_PI + rot.y + fRot) * -fMove),
+			D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
+			80.0f + (float)Random(-20, 20),
+			15,
+			CEffect3D::MOVEEFFECT_ADD,
+			CEffect3D::TYPE_SMOKE);
+
+		if (pEffect != NULL)
+		{
+			// セットアップ位置設定
+			pEffect->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+		}
+
+		fRot = Random(-20, 20) * 0.01f;
+		// 炎
+		pEffect = CEffect3D::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y + fRot) * -fMove,
+				static_cast<float>(Random(-40, 40)) * 0.1f,
+				cosf(D3DX_PI + rot.y + fRot) * -fMove),
+			D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
+			40.0f + (float)Random(-10, 10),
+			15,
+			CEffect3D::MOVEEFFECT_ADD,
+			CEffect3D::TYPE_SMOKE);
+		if (pEffect != NULL)
+		{
+			// セットアップ位置設定
+			pEffect->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+		}
+	}
+		break;	// BOOSTPUNCH_ATK
+
+		case MOTION_ULT_RIDERKICKCHARGE:
+		{
+			D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
+			for (int i = 0; i < 3; i++)
+			{
+				RandPos.x = Random(-5, 5) * 10.0f;
+				RandPos.y = Random(-5, 5) * 10.0f;
+				RandPos.z = Random(-5, 5) * 10.0f;
+
+				CEffect3D *pEffect = CEffect3D::Create(
+					weponpos + RandPos,
+					D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+					D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+					300.0f, 6,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_THUNDER);
+
+				RandPos.x = Random(-5, 5) * 10.0f;
+				RandPos.y = Random(-5, 5) * 10.0f;
+				RandPos.z = Random(-5, 5) * 10.0f;
+				CEffect3D::Create(
+					weponpos + RandPos,
+					D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+					D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+					300.0f, 6,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_POINT);
+				pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+				if (pEffect != NULL)
+				{
+					// セットアップ位置設定
+					pEffect->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+				}
+			}// BOOSTPUNCH_ATK
+		}
+		break;
+
+	case MOTION_ULT_RIDERKICKATK:
+	{
+		D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
+		for (int i = 0; i < 3; i++)
+		{
+			RandPos.x = Random(-5, 5) * 10.0f;
+			RandPos.y = Random(-5, 5) * 10.0f;
+			RandPos.z = Random(-5, 5) * 10.0f;
+
+			CEffect3D *pEffect = CEffect3D::Create(
+				weponpos + RandPos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				300.0f, 6,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_THUNDER);
+
+			RandPos.x = Random(-5, 5) * 10.0f;
+			RandPos.y = Random(-5, 5) * 10.0f;
+			RandPos.z = Random(-5, 5) * 10.0f;
+			CEffect3D::Create(
+				weponpos + RandPos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				300.0f, 6,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_POINT);
+			pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+			if (pEffect != NULL)
+			{
+				// セットアップ位置設定
+				pEffect->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+			}
+		}
+	}
+
+	break;
 
 	}// 終端
 
@@ -2282,6 +2723,16 @@ void CPlayerUnion::Appearance(void)
 //==========================================================================
 void CPlayerUnion::Ultimate(void)
 {
+	if (CGame::GetEnemyManager() != NULL && CGame::GetEnemyManager()->GetBoss() != NULL)
+	{
+		CEnemyBoss *pEnemyBoss = CGame::GetEnemyManager()->GetBoss();
+		if (pEnemyBoss != NULL)
+		{
+			// ガードしてあげる
+			pEnemyBoss->SetAction(CEnemyBoss::ACTION_GUARD);
+		}
+	}
+
 	// 状態別処理
 	(this->*(m_UltFuncList[m_UltType]))();
 }
@@ -2303,6 +2754,7 @@ void CPlayerUnion::UltBeam(void)
 
 	default:
 		m_UltBranch = ULTBRANCH_CHARGE_BEAM;
+		UltChargeBeam();
 		break;
 	}
 }
@@ -2354,13 +2806,23 @@ void CPlayerUnion::UltAttackBeam(void)
 
 		int nType = m_pMotion[i]->GetType();
 		if (nType == MOTION_ULT_BEAMATK && m_pMotion[i]->IsFinish() == true)
-		{// チャージが終わってたら
+		{// 攻撃が終わってたら
 
 			// なにもない状態
 			m_state = STATE_NONE;
 
-			// 必殺ビームモーション設定
+			// デフォルト設定
 			m_pMotion[i]->Set(MOTION_DEF);
+
+			if (CGame::GetEnemyManager() != NULL && CGame::GetEnemyManager()->GetBoss() != NULL)
+			{
+				CEnemyBoss *pEnemyBoss = CGame::GetEnemyManager()->GetBoss();
+				if (pEnemyBoss != NULL)
+				{
+					// 待機状態にする
+					pEnemyBoss->SetAction(CEnemyBoss::ACTION_WAIT);
+				}
+			}
 			return;
 		}
 
@@ -2390,6 +2852,7 @@ void CPlayerUnion::UltBigPunch(void)
 
 	default:
 		m_UltBranch = ULTBRANCH_CHARGE_BIGPUNCH;
+		UltChargeBigPunch();
 		break;
 	}
 }
@@ -2444,13 +2907,23 @@ void CPlayerUnion::UltAttackBigPunch(void)
 
 		int nType = m_pMotion[i]->GetType();
 		if (nType == MOTION_ULT_BIGPUNCHATK && m_pMotion[i]->IsFinish() == true)
-		{// チャージが終わってたら
+		{// 攻撃が終わってたら
 
 			// なにもない状態
 			m_state = STATE_NONE;
 
-			// 必殺ビームモーション設定
+			// デフォルト設定
 			m_pMotion[i]->Set(MOTION_DEF);
+
+			if (CGame::GetEnemyManager() != NULL && CGame::GetEnemyManager()->GetBoss() != NULL)
+			{
+				CEnemyBoss *pEnemyBoss = CGame::GetEnemyManager()->GetBoss();
+				if (pEnemyBoss != NULL)
+				{
+					// 待機状態にする
+					pEnemyBoss->SetAction(CEnemyBoss::ACTION_WAIT);
+				}
+			}
 			return;
 		}
 
@@ -2479,6 +2952,7 @@ void CPlayerUnion::UltRiderKick(void)
 
 	default:
 		m_UltBranch = ULTBRANCH_CHARGE_RIDERKICK;
+		UltChargeRiderKick();
 		break;
 	}
 }
@@ -2496,21 +2970,21 @@ void CPlayerUnion::UltChargeRiderKick(void)
 		}
 
 		int nType = m_pMotion[i]->GetType();
-		if (nType == MOTION_ULT_BIGPUNCHCHARGE && m_pMotion[i]->IsFinish() == true)
+		if (nType == MOTION_ULT_RIDERKICKCHARGE && m_pMotion[i]->IsFinish() == true)
 		{// チャージが終わってたら
 
-			// 待機行動
-			m_UltBranch = ULTBRANCH_ATTACK_BIGPUNCH;
+			// 攻撃行動
+			m_UltBranch = ULTBRANCH_ATTACK_RIDERKICK;
 
-			// 必殺ビームモーション設定
-			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHATK);
+			// 必殺モーション設定
+			m_pMotion[i]->Set(MOTION_ULT_RIDERKICKATK);
 			return;
 		}
 
-		if (nType != MOTION_ULT_BIGPUNCHCHARGE)
+		if (nType != MOTION_ULT_RIDERKICKCHARGE)
 		{
 			// チャージモーション設定
-			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHCHARGE);
+			m_pMotion[i]->Set(MOTION_ULT_RIDERKICKCHARGE);
 		}
 	}
 }
@@ -2528,21 +3002,223 @@ void CPlayerUnion::UltAttackRiderKick(void)
 		}
 
 		int nType = m_pMotion[i]->GetType();
-		if (nType == MOTION_ULT_BIGPUNCHATK && m_pMotion[i]->IsFinish() == true)
-		{// チャージが終わってたら
+		if (nType == MOTION_ULT_RIDERKICKATK && m_pMotion[i]->IsFinish() == true)
+		{// 攻撃が終わってたら
 
 			// なにもない状態
 			m_state = STATE_NONE;
 
-			// 必殺ビームモーション設定
+			// デフォルト設定
 			m_pMotion[i]->Set(MOTION_DEF);
+
+			if (CGame::GetEnemyManager() != NULL && CGame::GetEnemyManager()->GetBoss() != NULL)
+			{
+				CEnemyBoss *pEnemyBoss = CGame::GetEnemyManager()->GetBoss();
+				if (pEnemyBoss != NULL)
+				{
+					// 待機状態にする
+					pEnemyBoss->SetAction(CEnemyBoss::ACTION_WAIT);
+				}
+			}
 			return;
 		}
 
-		if (nType != MOTION_ULT_BIGPUNCHATK)
+		if (nType != MOTION_ULT_RIDERKICKATK)
 		{
-			// ビームモーション設定
-			m_pMotion[i]->Set(MOTION_ULT_BIGPUNCHATK);
+			// 攻撃モーション設定
+			m_pMotion[i]->Set(MOTION_ULT_RIDERKICKATK);
+		}
+	}
+}
+
+//==========================================================================
+// ブーストパンチ
+//==========================================================================
+void CPlayerUnion::UltBoostPunch(void)
+{
+	switch (m_UltBranch)
+	{
+	case CPlayerUnion::ULTBRANCH_CHARGE_BOOSTPUNCH:
+		UltChargeBoostPunch();
+		break;
+
+	case CPlayerUnion::ULTBRANCH_ATTACK_BOOSTPUNCH:
+		UltAttackBoostPunch();
+		break;
+
+	default:
+		m_UltBranch = ULTBRANCH_CHARGE_BOOSTPUNCH;
+		UltChargeBoostPunch();
+		break;
+	}
+}
+
+//==========================================================================
+// ブーストパンチチャージ
+//==========================================================================
+void CPlayerUnion::UltChargeBoostPunch(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_BOOSTPUNCHCHARGE && m_pMotion[i]->IsFinish() == true)
+		{// チャージが終わってたら
+
+			// 攻撃行動
+			m_UltBranch = ULTBRANCH_ATTACK_BOOSTPUNCH;
+
+			// 必殺モーション設定
+			m_pMotion[i]->Set(MOTION_ULT_BOOSTPUNCHATK);
+			return;
+		}
+
+		if (nType != MOTION_ULT_BOOSTPUNCHCHARGE)
+		{
+			// チャージモーション設定
+			m_pMotion[i]->Set(MOTION_ULT_BOOSTPUNCHCHARGE);
+		}
+	}
+}
+
+//==========================================================================
+// ブーストパンチ攻撃
+//==========================================================================
+void CPlayerUnion::UltAttackBoostPunch(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_BOOSTPUNCHATK && m_pMotion[i]->IsFinish() == true)
+		{// 攻撃が終わってたら
+
+			// なにもない状態
+			m_state = STATE_NONE;
+
+			// デフォルト設定
+			m_pMotion[i]->Set(MOTION_DEF);
+
+			if (CGame::GetEnemyManager() != NULL && CGame::GetEnemyManager()->GetBoss() != NULL)
+			{
+				CEnemyBoss *pEnemyBoss = CGame::GetEnemyManager()->GetBoss();
+				if (pEnemyBoss != NULL)
+				{
+					// 待機状態にする
+					pEnemyBoss->SetAction(CEnemyBoss::ACTION_WAIT);
+				}
+			}
+			return;
+		}
+
+		if (nType != MOTION_ULT_BOOSTPUNCHATK)
+		{
+			// 攻撃モーション設定
+			m_pMotion[i]->Set(MOTION_ULT_BOOSTPUNCHATK);
+		}
+	}
+}
+
+//==========================================================================
+// ラッシュ
+//==========================================================================
+void CPlayerUnion::UltRush(void)
+{
+	switch (m_UltBranch)
+	{
+	case CPlayerUnion::ULTBRANCH_CHARGE_RUSH:
+		UltChargeRush();
+		break;
+
+	case CPlayerUnion::ULTBRANCH_ATTACK_RUSH:
+		UltAttackRush();
+		break;
+
+	default:
+		m_UltBranch = ULTBRANCH_CHARGE_RUSH;
+		UltChargeRush();
+		break;
+	}
+}
+
+//==========================================================================
+// ラッシュチャージ
+//==========================================================================
+void CPlayerUnion::UltChargeRush(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_RUSHCHARGE && m_pMotion[i]->IsFinish() == true)
+		{// チャージが終わってたら
+
+			// 攻撃行動
+			m_UltBranch = ULTBRANCH_ATTACK_RUSH;
+
+			// 必殺モーション設定
+			m_pMotion[i]->Set(MOTION_ULT_RUSHATK);
+			return;
+		}
+
+		if (nType != MOTION_ULT_RUSHCHARGE)
+		{
+			// チャージモーション設定
+			m_pMotion[i]->Set(MOTION_ULT_RUSHCHARGE);
+		}
+	}
+}
+
+//==========================================================================
+// ラッシュ攻撃
+//==========================================================================
+void CPlayerUnion::UltAttackRush(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_RUSHATK && m_pMotion[i]->IsFinish() == true)
+		{// 攻撃が終わってたら
+
+			// なにもない状態
+			m_state = STATE_NONE;
+
+			// デフォルト設定
+			m_pMotion[i]->Set(MOTION_DEF);
+
+			if (CGame::GetEnemyManager() != NULL && CGame::GetEnemyManager()->GetBoss() != NULL)
+			{
+				CEnemyBoss *pEnemyBoss = CGame::GetEnemyManager()->GetBoss();
+				if (pEnemyBoss != NULL)
+				{
+					// 待機状態にする
+					pEnemyBoss->SetAction(CEnemyBoss::ACTION_WAIT);
+				}
+			}
+			return;
+		}
+
+		if (nType != MOTION_ULT_RUSHATK)
+		{
+			// 攻撃モーション設定
+			m_pMotion[i]->Set(MOTION_ULT_RUSHATK);
 		}
 	}
 }
@@ -2589,6 +3265,8 @@ void CPlayerUnion::Draw(void)
 //==========================================================================
 void CPlayerUnion::BindByPlayerIdxTexture(int nIdx, int nPartsIdx)
 {
+	ValueNormalize(nPartsIdx, 4, 0);
+
 	// ファイルインデックス番号取得
 	int nIdxXFile = m_pObjChara[nPartsIdx]->GetIdxFile();
 	CObjectChara::Load LoadData = m_pObjChara[nPartsIdx]->GetLoadData(nIdxXFile);

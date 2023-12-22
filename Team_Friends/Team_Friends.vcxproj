@@ -211,6 +211,7 @@
     <ClCompile Include="gamemanager.cpp" />
     <ClCompile Include="glass.cpp" />
     <ClCompile Include="hp_gauge.cpp" />
+    <ClCompile Include="hp_gauge_boss.cpp" />
     <ClCompile Include="hp_gauge_player.cpp" />
     <ClCompile Include="impactwave.cpp" />
     <ClCompile Include="injectiontable.cpp" />
@@ -247,6 +248,7 @@
     <ClCompile Include="number_Billboard.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="object2D.cpp" />
+    <ClCompile Include="object2D_Anim.cpp" />
     <ClCompile Include="object3D.cpp" />
     <ClCompile Include="object3DMesh.cpp" />
     <ClCompile Include="object3D_Anim.cpp" />
@@ -293,6 +295,8 @@
     <ClCompile Include="tutorialstep.cpp" />
     <ClCompile Include="tutorialtext.cpp" />
     <ClCompile Include="tutorialwindow.cpp" />
+    <ClCompile Include="ultcutin.cpp" />
+    <ClCompile Include="ultwindow.cpp" />
     <ClCompile Include="unioncore.cpp" />
     <ClCompile Include="union_armtoarm.cpp" />
     <ClCompile Include="union_bodytoarm.cpp" />
@@ -353,6 +357,7 @@
     <ClInclude Include="gamemanager.h" />
     <ClInclude Include="glass.h" />
     <ClInclude Include="hp_gauge.h" />
+    <ClInclude Include="hp_gauge_boss.h" />
     <ClInclude Include="hp_gauge_player.h" />
     <ClInclude Include="impactwave.h" />
     <ClInclude Include="injectiontable.h" />
@@ -389,6 +394,7 @@
     <ClInclude Include="number_Billboard.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="object2D.h" />
+    <ClInclude Include="object2D_Anim.h" />
     <ClInclude Include="object3D.h" />
     <ClInclude Include="object3DMesh.h" />
     <ClInclude Include="object3D_Anim.h" />
@@ -431,6 +437,8 @@
     <ClInclude Include="tutorialstep.h" />
     <ClInclude Include="tutorialtext.h" />
     <ClInclude Include="tutorialwindow.h" />
+    <ClInclude Include="ultcutin.h" />
+    <ClInclude Include="ultwindow.h" />
     <ClInclude Include="unioncore.h" />
     <ClInclude Include="union_armtoarm.h" />
     <ClInclude Include="union_bodytoarm.h" />

@@ -236,27 +236,26 @@ void CCamera::MoveCameraInput(void)
 #if _DEBUG
 	// マウスでの移動処理
 	MoveCameraMouse();
-#endif
 
 	// スティックでの移動処理
 	MoveCameraStick();
+#endif
 }
 
 //==================================================================================
 // コントローラーでの移動処理
 //==================================================================================
-void CCamera::MoveCameraStick(void)
+void CCamera::MoveCameraStick(int nIdx)
 {
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
 
-#if 0
-	m_rot.y += pInputGamepad->GetStickMoveR(0).x * ROT_MOVE_STICK;
-	m_rot.z += pInputGamepad->GetStickMoveR(0).y * ROT_MOVE_STICK;
+#if 1
+	m_rot.y += pInputGamepad->GetStickMoveR(nIdx).x * ROT_MOVE_STICK;
+	//m_rot.z += pInputGamepad->GetStickMoveR(nIdx).y * ROT_MOVE_STICK;
 #endif
 	// 角度の正規化
-	RotNormalize(m_rot.y);
-	RotNormalize(m_rot.z);
+	RotNormalize(m_rot);
 
 	// 視点の代入処理
 	SetCameraV();

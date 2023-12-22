@@ -36,7 +36,8 @@ CScene::CScene()
 {
 	// 変数のクリア
 	m_mode = MODE_TITLE;
-	memset(&m_pPlayer[0], 0, sizeof(m_pPlayer));
+	memset(&m_pPlayer[0], 0, sizeof(m_pPlayer));	// プレイヤーのオブジェクト
+	m_pPlayerUnion = nullptr;	// 合体プレイヤーのオブジェクト
 }
 
 //==========================================================================
@@ -185,6 +186,14 @@ void CScene::Uninit(void)
 			m_pPlayer[nCntPlayer] = NULL;
 		}
 	}
+
+	// 合体プレイヤーの破棄
+	if (m_pPlayerUnion != nullptr)
+	{
+		m_pPlayerUnion->Uninit();
+		m_pPlayerUnion = nullptr;
+	}
+
 }
 
 //==========================================================================
@@ -246,7 +255,7 @@ void CScene::ResetScene(void)
 
 
 	// 合体後プレイヤー生成
-	CPlayerUnion::Create(CPlayerUnion::TYPE_ALL);
+	m_pPlayerUnion = CPlayerUnion::Create(CPlayerUnion::TYPE_ALL);
 }
 
 //==========================================================================
@@ -290,9 +299,25 @@ CPlayer *CScene::GetPlayer(int nIdx)
 }
 
 //==========================================================================
+// 合体プレイヤーの取得
+//==========================================================================
+CPlayerUnion *CScene::GetPlayerUnion(void)
+{
+	return m_pPlayerUnion;
+}
+
+//==========================================================================
 // プレイヤーの終了
 //==========================================================================
 void CScene::UninitPlayer(int nIdx)
 {
 	m_pPlayer[nIdx] = NULL;
+}
+
+//==========================================================================
+// 合体プレイヤーの終了
+//==========================================================================
+void CScene::UninitPlayerUnion(void)
+{
+	m_pPlayerUnion = nullptr;
 }

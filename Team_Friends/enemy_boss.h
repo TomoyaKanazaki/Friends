@@ -10,6 +10,9 @@
 
 #include "enemy.h"
 
+// 前方宣言
+class CHP_GaugeBoss;
+
 //==========================================================================
 // クラス定義
 //==========================================================================
@@ -17,18 +20,6 @@
 class CEnemyBoss : public CEnemy
 {
 public:
-
-	CEnemyBoss(int nPriority = mylib_const::ENEMY_PRIORITY);
-	~CEnemyBoss();
-
-	// オーバーライドされた関数
-	HRESULT Init(void) override;
-	void Uninit(void) override;
-	void Update(void) override;
-	void Draw(void) override;
-	void Kill(void) override;
-
-	void SetTargetPosition(D3DXVECTOR3 pos);	// 目標の位置設定
 
 	//=============================
 	// 列挙型定義
@@ -39,6 +30,7 @@ public:
 		MOTION_DEF = 0,			// ニュートラルモーション
 		MOTION_WALK,			// 移動モーション
 		MOTION_DASH,			// ダッシュ移動モーション
+		MOTION_GUARD,			// ガードモーション
 		MOTION_PUNCH,			// パンチモーション
 		MOTION_KICK,			// キックモーション
 		MOTION_BEAM,			// ビームモーション
@@ -68,9 +60,24 @@ public:
 		ACTION_REMOTE,			// 遠隔攻撃
 		ACTION_ASSAULT,			// 突撃攻撃
 		ACTION_WAIT,			// 待機
+		ACTION_GUARD,			// ガード
 		ACTION_SELFEXPLOSION,	// 自爆
 		ACTION_MAX
 	};
+
+	CEnemyBoss(int nPriority = mylib_const::ENEMY_PRIORITY);
+	~CEnemyBoss();
+
+	// オーバーライドされた関数
+	HRESULT Init(void) override;
+	void Uninit(void) override;
+	void Update(void) override;
+	void Draw(void) override;
+	void Kill(void) override;
+
+	void SetAction(ACTION action) { m_Action = action; }	// アクション設定
+	void SetTargetPosition(D3DXVECTOR3 pos);	// 目標の位置設定
+
 private:
 
 
@@ -87,11 +94,12 @@ private:
 	void ActionSet(void) override;		// 行動の設定
 	void DrawingAction(void);			// 行動抽選
 	void UpdateAction(void) override;	// 行動更新
-	void ActWait(void);					// 待機
 	void ActChase(void);				// 追い掛け
 	void ActAttackProximity(void);		// 近接攻撃
 	void ActAttackRemote(void);			// 遠隔攻撃
 	void ActAttackAssault(void);		// 突撃攻撃
+	void ActWait(void);					// 待機
+	void ActGuard(void);				// ガード
 	void ActAttackExplosion(void);		// 自爆攻撃
 
 	// 行動内関数
@@ -120,6 +128,7 @@ private:
 	float m_fAssultLength;		// 突撃長さ
 	float m_fAssultLengthDest;	// 目標の突撃長さ
 	bool m_bCatchUp;	// 追い着き判定
+	CHP_GaugeBoss *m_pBossHPGauge;	// ボスのHPゲージ
 };
 
 

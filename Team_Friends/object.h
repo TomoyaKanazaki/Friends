@@ -100,6 +100,7 @@ public:
 	int GetPriority(void) { return m_nPriority; }	// 優先順位取得
 	void SetEnableDisp(bool bDisp) { m_bDisp = bDisp; }		// 描画設定
 	bool IsDisp(void) { return m_bDisp; }					// 描画状況取得
+	void SetEnableHitstopMove(void) { m_bHitstopMove = true; }	// ヒットストップ中に動くフラグ有効
 
 	int SetEffectParent(CEffect3D *pEffect3D);	// エフェクト設定
 	CEffect3D *GetEffectParent(int nIdx);	// 親設定したエフェクト取得
@@ -118,7 +119,6 @@ public:
 	bool IsDeath(void);						// 死亡の判定
 	void SetType(const TYPE type);
 	TYPE GetType(void) const;
-	void SetEnableHitstopMove(void) { m_bHitstopMove = true; }	// ヒットストップ中に動くフラグ有効
 	virtual CObject *GetObject(void);
 	virtual CObject2D *GetObject2D(void);
 	virtual CObject3D *GetObject3D(void);

@@ -86,10 +86,11 @@ protected:
 	// モーションの判定
 	struct SMotionFrag
 	{
-		bool bJump;			// ジャンプ中かどうか
-		bool bATK;			// 攻撃中かどうか
-		bool bCharge;		// チャージ中かどうか
-		bool bMove;			// 移動中かどうか
+		bool bJump;		// ジャンプ中
+		bool bATK;		// 攻撃中
+		bool bCharge;	// チャージ中
+		bool bMove;		// 移動中
+		bool bUltEntry;	// 必殺エントリー
 	};
 
 
@@ -158,12 +159,19 @@ private:
 	{
 		MOTION_DEF = 0,				// ニュートラルモーション
 		MOTION_WALK,				// 移動モーション
+		MOTION_BOOST,				// ブーストモーション
 		MOTION_NORMAL_CHARGE,		// 通常チャージ
 		MOTION_NORMAL_ATK,			// 通常攻撃
 		MOTION_ULT_BEAMCHARGE,		// 必殺技ビームチャージ
 		MOTION_ULT_BEAMATK,			// 必殺技ビーム攻撃
 		MOTION_ULT_BIGPUNCHCHARGE,	// 必殺技デカパンチチャージ
 		MOTION_ULT_BIGPUNCHATK,		// 必殺技デカパンチ攻撃
+		MOTION_ULT_RIDERKICKCHARGE,	// 必殺技ライダーキックチャージ
+		MOTION_ULT_RIDERKICKATK,	// 必殺技ライダーキック攻撃
+		MOTION_ULT_BOOSTPUNCHCHARGE,	// 必殺技ブーストパンチチャージ
+		MOTION_ULT_BOOSTPUNCHATK,	// 必殺技ブーストパンチ攻撃
+		MOTION_ULT_RUSHCHARGE,		// 必殺技ラッシュチャージ
+		MOTION_ULT_RUSHATK,			// 必殺技ラッシュ攻撃
 		MOTION_KNOCKBACK,			// やられモーション
 		MOTION_DEAD,				// 死亡モーション
 		MOTION_APPEARANCE,			// 出現
@@ -175,17 +183,23 @@ private:
 		ULT_BEAM = 0,	// ビーム
 		ULT_BIGPUNCH,	// ビッグパンチ
 		ULT_RIDERKICK,	// ライダーキック
+		ULT_BOOSTPUNCH,	// ブーストパンチ
+		ULT_RUSH,		// ラッシュ
 		ULT_MAX
 	};
 
 	enum eUltBranch
 	{
-		ULTBRANCH_CHARGE_BEAM = 0,	// ビームチャージ
-		ULTBRANCH_ATTACK_BEAM,		// ビーム攻撃
-		ULTBRANCH_CHARGE_BIGPUNCH,	// デカパンチチャージ
-		ULTBRANCH_ATTACK_BIGPUNCH,	// デカパンチ攻撃
-		ULTBRANCH_CHARGE_RIDERKICK,	// ライダーキックチャージ
-		ULTBRANCH_ATTACK_RIDERKICK,	// ライダーキック攻撃
+		ULTBRANCH_CHARGE_BEAM = 0,		// ビームチャージ
+		ULTBRANCH_ATTACK_BEAM,			// ビーム攻撃
+		ULTBRANCH_CHARGE_BIGPUNCH,		// デカパンチチャージ
+		ULTBRANCH_ATTACK_BIGPUNCH,		// デカパンチ攻撃
+		ULTBRANCH_CHARGE_RIDERKICK,		// ライダーキックチャージ
+		ULTBRANCH_ATTACK_RIDERKICK,		// ライダーキック攻撃
+		ULTBRANCH_CHARGE_BOOSTPUNCH,	// ブーストパンチチャージ
+		ULTBRANCH_ATTACK_BOOSTPUNCH,	// ブーストパンチ攻撃
+		ULTBRANCH_CHARGE_RUSH,			// ラッシュチャージ
+		ULTBRANCH_ATTACK_RUSH,			// ラッシュ攻撃
 		ULTBRANCH_MAX
 	};
 
@@ -196,9 +210,11 @@ private:
 	static ULT_FUNC m_UltFuncList[];	// 必殺技の関数リスト
 
 	// 必殺技関数
-	void UltBeam(void);	// ビーム
-	void UltBigPunch(void);	// デカパンチ
+	void UltBeam(void);			// ビーム
+	void UltBigPunch(void);		// デカパンチ
 	void UltRiderKick(void);	// ライダーキック
+	void UltBoostPunch(void);	// ブーストパンチ
+	void UltRush(void);			// ラッシュ
 
 	// 必殺分岐関数
 	void UltChargeBeam(void);		// ビームチャージ
@@ -207,6 +223,10 @@ private:
 	void UltAttackBigPunch(void);	// デカパンチ攻撃
 	void UltChargeRiderKick(void);	// ライダーキックチャージ
 	void UltAttackRiderKick(void);	// ライダーキック攻撃
+	void UltChargeBoostPunch(void);	// ブーストパンチチャージ
+	void UltAttackBoostPunch(void);	// ブーストパンチ攻撃
+	void UltChargeRush(void);		// ラッシュチャージ
+	void UltAttackRush(void);		// ラッシュ攻撃
 
 	// メンバ関数
 	void Controll(void);		// 操作
@@ -214,6 +234,9 @@ private:
 	void ControllLeg(int nIdx, int nLoop);			// 脚操作
 	void ControllRightArm(int nIdx, int nLoop);	// 右腕操作
 	void ControllLeftArm(int nIdx, int nLoop);		// 左腕操作
+	void EntryUltimate(int nIdx, int nLoop);	// 必殺エントリー
+	void UpdateEntry(void);	// エントリー関連の更新
+	void DrawingUlt(int nFirst, int nSecond);	// ウルト先抽選
 
 	// メンバ変数
 	int m_nTexIdx;				// テクスチャのインデックス番号
@@ -226,6 +249,9 @@ private:
 	eUltAttack m_UltType;			// 必殺技の種類
 	eUltBranch m_UltBranch;			// 必殺技の分岐
 	bool m_bUltBigArm;				// ウルトで腕デカくしたか
+	float m_fUltGaugeValue[mylib_const::MAX_PLAYER];		// 必殺ゲージの量
+	float m_fCooltimeBoost;	// ブーストのクールタイム
+	float m_fBoostTime;	// ブーストのタイム
 	std::vector<int> m_nModelIdx[mylib_const::MAX_PLAYER];	// 各パーツごとのモデルインデックス番号
 	static bool m_bAllLandInjectionTable;	// 全員の射出台着地判定
 	static bool m_bLandInjectionTable[mylib_const::MAX_PLAYER];	// 射出台の着地判定

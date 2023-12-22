@@ -16,6 +16,7 @@
 //==========================================================================
 class CXLoad;
 class CPlayer;
+class CPlayerUnion;
 class CCamera;
 
 //==========================================================================
@@ -53,7 +54,9 @@ public:
 	static CElevation *GetElevation(void);	// オブジェクト3Dの取得
 	CPlayer **GetPlayer(void);				// プレイヤーの取得
 	CPlayer *GetPlayer(int nIdx);			// プレイヤーの取得
+	CPlayerUnion *GetPlayerUnion(void);		// 合体プレイヤーの取得
 	void UninitPlayer(int nIdx);			// プレイヤーの情報取得
+	void UninitPlayerUnion(void);			// 合体プレイヤーの終了
 	MODE GetMode(void);						// 現在のモード取得
 
 protected:
@@ -61,9 +64,10 @@ protected:
 private:
 
 	MODE m_mode;				// 現在のモード
-	CPlayer *m_pPlayer[mylib_const::MAX_PLAYER];		// プレイヤーのオブジェクト
-	static CXLoad *m_pXLoad;							// Xファイルのオブジェクト
-	static CElevation *m_pObject3DMesh;					// オブジェクト3Dメッシュのオブジェクト
+	CPlayer *m_pPlayer[mylib_const::MAX_PLAYER];	// プレイヤーのオブジェクト
+	CPlayerUnion *m_pPlayerUnion;					// 合体プレイヤーのオブジェクト
+	static CXLoad *m_pXLoad;						// Xファイルのオブジェクト
+	static CElevation *m_pObject3DMesh;				// オブジェクト3Dメッシュのオブジェクト
 };
 
 

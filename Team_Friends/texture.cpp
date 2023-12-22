@@ -15,6 +15,7 @@
 #include "effect_thunderring.h"
 #include "effect_enemyspawn.h"
 #include "effect_startupeye.h"
+#include "ultcutin.h"
 
 //==========================================================================
 // マクロ定義
@@ -77,6 +78,9 @@ HRESULT CTexture::LoadAll(void)
 
 	// 起動時の目
 	CEffectStartupEye::LoadTexture();
+
+	// 必殺のカットイン
+	CUltCutin::LoadTexture();
 
 	return S_OK;
 }

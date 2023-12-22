@@ -68,13 +68,13 @@ public:
 	void Reset(CScene::MODE mode);	// リセット
 	void ResetBoss(void);	// リセット
 	bool OnScreen(const D3DXVECTOR3 pos); // スクリーン内の判定
+	void MoveCameraStick(int nIdx = 0);	// スティック操作
 
 private:
 
 	// メンバ変数
 	void UpdateByMode(void);	// モード別更新処理
 	void MoveCameraInput(void);
-	void MoveCameraStick(void);
 	void MoveCameraMouse(void);
 	void MoveCameraVR(void);
 	void MoveCameraV(void);

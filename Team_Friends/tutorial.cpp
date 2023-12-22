@@ -198,11 +198,11 @@ HRESULT CTutorial::Init(void)
 //		m_apPlayer[nCntPlayer]->SetRotation(D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
 //	}
 
-	CManager::GetInstance()->SetNumPlayer(nNumPlayer);
-	for (int i = 0; i < nNumPlayer; i++)
-#else
-	for (int nCntPlayer = 0; nCntPlayer < CManager::GetInstance()->GetNumPlayer(); nCntPlayer++)
-#endif
+//	CManager::GetInstance()->SetNumPlayer(nNumPlayer);
+//	for (int i = 0; i < nNumPlayer; i++)
+//#else
+//	for (int nCntPlayer = 0; nCntPlayer < CManager::GetInstance()->GetNumPlayer(); nCntPlayer++)
+//#endif
 	{
 		//m_apPlayer[i] = (CTutorialPlayer*)CManager::GetInstance()->GetScene()->GetPlayer(i);
 

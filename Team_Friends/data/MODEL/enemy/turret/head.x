@@ -6292,7 +6292,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "turret_UV.jpg";
+    "data\\TEXTURE\\enemy\\turret\\turret_UV.jpg";
    }
   }
  }

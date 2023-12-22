@@ -107,16 +107,16 @@ namespace
 bool CPlayerUnion::m_bAllLandInjectionTable = false;	// 全員の射出台着地判定
 bool CPlayerUnion::m_bLandInjectionTable[mylib_const::MAX_PLAYER] = {};	// 射出台の着地判定
 
-
 //==========================================================================
 // 関数ポインタ
 //==========================================================================
 CPlayerUnion::ULT_FUNC CPlayerUnion::m_UltFuncList[] =
 {
-	&CPlayerUnion::UltBeam,		// ビーム
-	&CPlayerUnion::UltBigPunch,	// デカパンチ
+	&CPlayerUnion::UltBeam,			// ビーム
+	&CPlayerUnion::UltBigPunch,		// デカパンチ
 	&CPlayerUnion::UltRiderKick,	// ライダーキック
 	&CPlayerUnion::UltBoostPunch,	// ブーストパンチ
+	&CPlayerUnion::UltRush,			// ラッシュ
 };
 
 //==========================================================================
@@ -1081,7 +1081,7 @@ void CPlayerUnion::DrawingUlt(int nFirst, int nSecond)
 			break;
 
 		case PARTS_R_ARM:
-			//m_UltType = ULT_RUSH;
+			m_UltType = ULT_RUSH;
 			break;
 		}
 
@@ -1100,7 +1100,7 @@ void CPlayerUnion::DrawingUlt(int nFirst, int nSecond)
 			break;
 
 		case PARTS_L_ARM:
-			//m_UltType = ULT_RUSH;
+			m_UltType = ULT_RUSH;
 			break;
 		}
 
@@ -1781,6 +1781,147 @@ void CPlayerUnion::AttackInDicision(int nIdx, CMotion::AttackInfo ATKInfo, int n
 			pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
 		}
 	}
+
+	case MOTION_ULT_BOOSTPUNCHCHARGE:
+	{
+
+		D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
+		for (int i = 0; i < 3; i++)
+		{
+			RandPos.x = Random(-5, 5) * 10.0f;
+			RandPos.y = Random(-5, 5) * 10.0f;
+			RandPos.z = Random(-5, 5) * 10.0f;
+
+			CEffect3D *pEffect = CEffect3D::Create(
+				weponpos + RandPos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				300.0f + (float)Random(-20, 20), 6,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_THUNDER);
+			pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+		}
+	}
+		break;
+
+	case MOTION_ULT_BOOSTPUNCHATK:
+	{
+		// 炎
+		float fMove = 16.0f + Random(-2, 4);
+		float fRot = Random(-20, 20) * 0.01f;
+
+		pEffect = CEffect3D::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y + fRot) * -fMove,
+				static_cast<float>(Random(-40, 40)) * 0.1f,
+				cosf(D3DX_PI + rot.y + fRot) * -fMove),
+			D3DXCOLOR(1.0f + Random(-10, 0) * 0.01f, 0.0f, 0.0f, 1.0f),
+			80.0f + (float)Random(-20, 20),
+			15,
+			CEffect3D::MOVEEFFECT_ADD,
+			CEffect3D::TYPE_SMOKE);
+
+		if (pEffect != NULL)
+		{
+			// セットアップ位置設定
+			pEffect->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+		}
+
+		fRot = Random(-20, 20) * 0.01f;
+		// 炎
+		pEffect = CEffect3D::Create(
+			weponpos,
+			D3DXVECTOR3(
+				sinf(D3DX_PI + rot.y + fRot) * -fMove,
+				static_cast<float>(Random(-40, 40)) * 0.1f,
+				cosf(D3DX_PI + rot.y + fRot) * -fMove),
+			D3DXCOLOR(0.8f + Random(-10, 0) * 0.01f, 0.5f + Random(-10, 0) * 0.01f, 0.0f, 1.0f),
+			40.0f + (float)Random(-10, 10),
+			15,
+			CEffect3D::MOVEEFFECT_ADD,
+			CEffect3D::TYPE_SMOKE);
+		if (pEffect != NULL)
+		{
+			// セットアップ位置設定
+			pEffect->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+		}
+	}
+		break;	// BOOSTPUNCH_ATK
+
+		case MOTION_ULT_RIDERKICKCHARGE:
+		{
+			D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
+			for (int i = 0; i < 3; i++)
+			{
+				RandPos.x = Random(-5, 5) * 10.0f;
+				RandPos.y = Random(-5, 5) * 10.0f;
+				RandPos.z = Random(-5, 5) * 10.0f;
+
+				CEffect3D *pEffect = CEffect3D::Create(
+					weponpos + RandPos,
+					D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+					D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+					300.0f, 6,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_THUNDER);
+
+				RandPos.x = Random(-5, 5) * 10.0f;
+				RandPos.y = Random(-5, 5) * 10.0f;
+				RandPos.z = Random(-5, 5) * 10.0f;
+				CEffect3D::Create(
+					weponpos + RandPos,
+					D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+					D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+					300.0f, 6,
+					CEffect3D::MOVEEFFECT_ADD,
+					CEffect3D::TYPE_POINT);
+				pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+				if (pEffect != NULL)
+				{
+					// セットアップ位置設定
+					pEffect->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+				}
+			}// BOOSTPUNCH_ATK
+		}
+		break;
+
+	case MOTION_ULT_RIDERKICKATK:
+	{
+		D3DXVECTOR3 RandPos = mylib_const::DEFAULT_VECTOR3;
+		for (int i = 0; i < 3; i++)
+		{
+			RandPos.x = Random(-5, 5) * 10.0f;
+			RandPos.y = Random(-5, 5) * 10.0f;
+			RandPos.z = Random(-5, 5) * 10.0f;
+
+			CEffect3D *pEffect = CEffect3D::Create(
+				weponpos + RandPos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				300.0f, 6,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_THUNDER);
+
+			RandPos.x = Random(-5, 5) * 10.0f;
+			RandPos.y = Random(-5, 5) * 10.0f;
+			RandPos.z = Random(-5, 5) * 10.0f;
+			CEffect3D::Create(
+				weponpos + RandPos,
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(0.2f, 0.2f, 0.9f, 1.0f),
+				300.0f, 6,
+				CEffect3D::MOVEEFFECT_ADD,
+				CEffect3D::TYPE_POINT);
+			pEffect->SetRotation(D3DXVECTOR3(0.0f, 0.0f, GetRandomCircleValue()));
+			if (pEffect != NULL)
+			{
+				// セットアップ位置設定
+				pEffect->SetUp(ATKInfo.Offset, m_apModel[ATKInfo.nCollisionNum]->GetPtrWorldMtx(), CObject::GetObject(), SetEffectParent(pEffect));
+			}
+		}
+	}
+
 	break;
 
 	}// 終端
@@ -2982,6 +3123,102 @@ void CPlayerUnion::UltAttackBoostPunch(void)
 		{
 			// 攻撃モーション設定
 			m_pMotion[i]->Set(MOTION_ULT_BOOSTPUNCHATK);
+		}
+	}
+}
+
+//==========================================================================
+// ラッシュ
+//==========================================================================
+void CPlayerUnion::UltRush(void)
+{
+	switch (m_UltBranch)
+	{
+	case CPlayerUnion::ULTBRANCH_CHARGE_RUSH:
+		UltChargeRush();
+		break;
+
+	case CPlayerUnion::ULTBRANCH_ATTACK_RUSH:
+		UltAttackRush();
+		break;
+
+	default:
+		m_UltBranch = ULTBRANCH_CHARGE_RUSH;
+		UltChargeRush();
+		break;
+	}
+}
+
+//==========================================================================
+// ラッシュチャージ
+//==========================================================================
+void CPlayerUnion::UltChargeRush(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_RUSHCHARGE && m_pMotion[i]->IsFinish() == true)
+		{// チャージが終わってたら
+
+			// 攻撃行動
+			m_UltBranch = ULTBRANCH_ATTACK_RUSH;
+
+			// 必殺モーション設定
+			m_pMotion[i]->Set(MOTION_ULT_RUSHATK);
+			return;
+		}
+
+		if (nType != MOTION_ULT_RUSHCHARGE)
+		{
+			// チャージモーション設定
+			m_pMotion[i]->Set(MOTION_ULT_RUSHCHARGE);
+		}
+	}
+}
+
+//==========================================================================
+// ラッシュ攻撃
+//==========================================================================
+void CPlayerUnion::UltAttackRush(void)
+{
+	for (int i = 0; i < mylib_const::MAX_PLAYER; i++)
+	{
+		if (m_pMotion[i] == NULL)
+		{
+			continue;
+		}
+
+		int nType = m_pMotion[i]->GetType();
+		if (nType == MOTION_ULT_RUSHATK && m_pMotion[i]->IsFinish() == true)
+		{// 攻撃が終わってたら
+
+			// なにもない状態
+			m_state = STATE_NONE;
+
+			// デフォルト設定
+			m_pMotion[i]->Set(MOTION_DEF);
+
+			if (CGame::GetEnemyManager() != NULL && CGame::GetEnemyManager()->GetBoss() != NULL)
+			{
+				CEnemyBoss *pEnemyBoss = CGame::GetEnemyManager()->GetBoss();
+				if (pEnemyBoss != NULL)
+				{
+					// 待機状態にする
+					pEnemyBoss->SetAction(CEnemyBoss::ACTION_WAIT);
+				}
+			}
+			return;
+		}
+
+		if (nType != MOTION_ULT_RUSHATK)
+		{
+			// 攻撃モーション設定
+			m_pMotion[i]->Set(MOTION_ULT_RUSHATK);
 		}
 	}
 }

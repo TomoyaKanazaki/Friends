@@ -167,7 +167,7 @@ HRESULT CGame::Init(void)
 	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_GAME);
 
 	// ä»à’çáëÃÉRÉA
-	CCompactCore::Create(D3DXVECTOR3(500.0f, 400.0f, 0.0f));
+	//CCompactCore::Create(D3DXVECTOR3(500.0f, 400.0f, 0.0f));
 
 	CLimitArea::sLimitEreaInfo info;
 	info.fMaxX = 13000.0f;

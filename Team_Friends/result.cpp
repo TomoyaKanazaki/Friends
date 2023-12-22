@@ -109,7 +109,7 @@ HRESULT CResult::Init(void)
 	Fog::SetCol(m_col);
 
 	// ƒŠƒUƒ‹ƒg‰æ–Ê
-	m_pResultScore = CResultScore::Create();
+	//m_pResultScore = CResultScore::Create();
 
 	// ¬Œ÷
 	return S_OK;

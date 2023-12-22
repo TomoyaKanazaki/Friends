@@ -31,7 +31,7 @@ namespace
 	const float DIS_RATIO_Y = 0.3f;			// Yの間隔
 	const int NUM_TIMER = 2;			// 桁数
 	const int MAX_TIME = 60 * 99;		// タイマーの最大数
-	const int START_TIME = 60 * 30;		// タイマーの初期値
+	const int START_TIME = 60 * 10;		// タイマーの初期値
 	const float TIME_APPEARANCE = 0.7f;	// 出現時間
 	const float TIME_ADDLITTLE = 2.0f;	// 少し加算時間
 	const float TIME_ADJUSTMENT = 0.5f;	// 調整時間
@@ -247,7 +247,8 @@ void CTimer::Update(void)
 	}
 	// デバッグ表示
 	CManager::GetInstance()->GetDebugProc()->Print(
-		"------------------[時間：%d分、%d秒、%d]------------------\n", minutes, seconds, milliseconds);
+		"------------------[時間：%d分、%d秒、%d]------------------\n",
+		minutes, seconds, milliseconds);
 }
 
 //==========================================================================

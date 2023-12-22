@@ -34,7 +34,7 @@ CDecide::~CDecide()
 HRESULT CDecide::Init(void)
 {
 	// BGMÄ¶
-	//CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_TITLE);
+	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_SELECT_NUMBER);
 
 	// ‰Šú‰»ˆ—
 	if (FAILED(CScene::Init()))

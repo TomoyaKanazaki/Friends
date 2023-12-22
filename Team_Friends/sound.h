@@ -21,9 +21,12 @@ public:
 	typedef enum
 	{
 		LABEL_BGM_TITLE = 0,	// タイトル
+		LABEL_BGM_SELECT_NUMBER,		// 人数選択
 		LABEL_BGM_GAME,		// ゲーム
-		LABEL_BGM_BOSSGAME,		// ボス
-		LABEL_BGM_RESULT,	// リザルト
+		LABEL_BGM_RESULT_WIN,	// 勝ちリザルト
+		LABEL_BGM_RESULT_LOSE,	// 負けリザルト
+		LABEL_BGM_BOSSGAME,	// ボス
+		LABEL_BGM_RANKING,	// ランキング
 		LABEL_SE_EXPLOSION,	// 爆発
 		LABEL_SE_KYUPIIN,	// キュピーン
 		LABEL_SE_WALK,		// 歩行

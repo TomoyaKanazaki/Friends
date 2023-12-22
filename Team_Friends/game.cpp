@@ -81,6 +81,9 @@ HRESULT CGame::Init(void)
 	// エディット判定OFF
 	m_bEdit = false;
 
+	// BGM再生
+	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_GAME);
+
 	// 初期化処理
 	if (FAILED(CScene::Init()))
 	{// 失敗した場合

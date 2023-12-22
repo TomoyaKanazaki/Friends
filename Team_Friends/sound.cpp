@@ -22,10 +22,13 @@
 //==========================================================================
 CSound::SOUNDINFO CSound::m_aSoundInfo[LABEL_MAX] = 
 {
-	{ "data/BGM/title.wav", -1 },			// タイトル
-	{ "data/BGM/gameBGM.wav", -1 },			// ゲーム中
-	{ "data/BGM/bossBGM.wav", -1 },			// ゲーム中
-	{ "data/BGM/result.wav", -1 },			// タイトル
+	{ "data/BGM/title.wav", -1 },	// タイトル
+	{ "data/BGM/select_number.wav", -1 },	// 人数選択
+	{ "data/BGM/gameBGM.wav", -1 },		// ゲーム中
+	{ "data/BGM/result_lose.wav", -1 },	// リザルト勝ち
+	{ "data/BGM/result_win.wav", -1 },	// リザルト負け
+	{ "data/BGM/bossBGM.wav", -1 },	// ボス戦
+	{ "data/BGM/ranking.wav", -1 },		// ランキング
 	{ "data/SE/explosion000moto.wav", 0 },		// 爆発
 	{ "data/SE/game_clear.wav", 0 },			// キュピーン
 	{ "data/SE/walk_glass.wav", 0 },			// 歩行

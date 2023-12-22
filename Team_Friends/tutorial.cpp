@@ -187,15 +187,15 @@ HRESULT CTutorial::Init(void)
 	for (int nCntPlayer = 0; nCntPlayer < CManager::GetInstance()->GetNumPlayer(); nCntPlayer++)
 #endif
 	{
-		m_apPlayer[i] = (CTutorialPlayer*)CManager::GetInstance()->GetScene()->GetPlayer(i);
+		//m_apPlayer[i] = (CTutorialPlayer*)CManager::GetInstance()->GetScene()->GetPlayer(i);
 
-		if (m_apPlayer[i] == nullptr)
-		{
-			m_apPlayer[i] = (CTutorialPlayer*)CTutorialPlayer::Create(i);
-		}
+		//if (m_apPlayer[i] == nullptr)
+		//{
+		//	m_apPlayer[i] = (CTutorialPlayer*)CTutorialPlayer::Create(i);
+		//}
 
-		m_apPlayer[i]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 100.0f));
-		m_apPlayer[i]->SetRotation(D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
+		//m_apPlayer[i]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 100.0f));
+		//m_apPlayer[i]->SetRotation(D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
 	}
 
 	// ê¨å˜

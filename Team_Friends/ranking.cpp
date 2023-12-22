@@ -14,6 +14,7 @@
 #include "enemymanager.h"
 #include "objectX.h"
 #include "player_union.h"
+#include "sound.h"
 
 //==========================================================================
 // マクロ定義
@@ -57,6 +58,9 @@ HRESULT CRanking::Init(void)
 {
 	// ステージのランダムインデックス番号
 	m_nRandStage = Random(1, 3);
+
+	// BGM再生
+	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_RANKING);
 
 	// 初期化処理
 	if (FAILED(CScene::Init()))

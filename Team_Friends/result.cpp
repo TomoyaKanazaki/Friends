@@ -76,8 +76,16 @@ HRESULT CResult::Init(void)
 		return E_FAIL;
 	}
 
-	// BGM再生
-	CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_RESULT);
+	if (m_clear)
+	{
+		// BGM再生
+		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_RESULT_WIN);
+	}
+	else
+	{
+		// BGM再生
+		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_BGM_RESULT_LOSE);
+	}
 
 	// メッセージを生成
 	if (CGame::IsClearFrag())
